@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.cosmeticos</groupId>
-	<artifactId>Cosméticos</artifactId>
+	<artifactId>cosmeticos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Cosméticos</name>
+	<name>cosmeticos</name>
 	<description>Projeto de cosméticos - Spring Boot</description>
 
 	<parent>
