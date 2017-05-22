@@ -74,7 +74,7 @@ public class ScheduleRepositoryTests {
 		Schedule schedule = repository.findOne(2L);
 		Assert.assertNotNull(schedule);
 
-		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 1.
+		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 2.
 		Assert.assertEquals(30, schedule.getScheduleDate().getDayOfMonth());
 		Assert.assertEquals(12, schedule.getScheduleDate().getMonth().getValue());
 		Assert.assertEquals(20, schedule.getScheduleDate().getHour());
@@ -85,7 +85,7 @@ public class ScheduleRepositoryTests {
 		Schedule schedule = repository.findOne(3L);
 		Assert.assertNotNull(schedule);
 
-		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 1.
+		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 3.
 		Assert.assertEquals(29, schedule.getScheduleDate().getDayOfMonth());
 		Assert.assertEquals(12, schedule.getScheduleDate().getMonth().getValue());
 		Assert.assertEquals(20, schedule.getScheduleDate().getHour());
@@ -96,7 +96,7 @@ public class ScheduleRepositoryTests {
 		Schedule schedule = repository.findOne(4L);
 		Assert.assertNotNull(schedule);
 
-		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 1.
+		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 4.
 		Assert.assertEquals(28, schedule.getScheduleDate().getDayOfMonth());
 		Assert.assertEquals(12, schedule.getScheduleDate().getMonth().getValue());
 		Assert.assertEquals(20, schedule.getScheduleDate().getHour());
@@ -107,7 +107,7 @@ public class ScheduleRepositoryTests {
 		Schedule schedule = repository.findOne(5L);
 		Assert.assertNotNull(schedule);
 
-		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 1.
+		// Confere se o Schedule que retornou foi o mesmo que foi inserido com id 5.
 		Assert.assertEquals(27, schedule.getScheduleDate().getDayOfMonth());
 		Assert.assertEquals(12, schedule.getScheduleDate().getMonth().getValue());
 		Assert.assertEquals(20, schedule.getScheduleDate().getHour());
