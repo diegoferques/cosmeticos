@@ -2,78 +2,44 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaapplication2.entity;
+package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.Collection;
+import lombok.Data;
+
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 /**
  *
  * @author magarrett.dias
  */
+@Data
 @Entity
-@Table(name = "Schedule")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Schedule.findAll", query = "SELECT s FROM Schedule s"),
-    @NamedQuery(name = "Schedule.findByScheduleId", query = "SELECT s FROM Schedule s WHERE s.scheduleId = :scheduleId"),
-    @NamedQuery(name = "Schedule.findByScheduleDate", query = "SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate"),
-    @NamedQuery(name = "Schedule.findByStatus", query = "SELECT s FROM Schedule s WHERE s.status = :status")})
 public class Schedule implements Serializable {
+
+    public enum Status
+    {
+        ACTIVE, INACTIVE
+    }
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @Column(name = "scheduleId")
     private Long scheduleId;
+
     @Column(name = "scheduleDate")
-    private String scheduleDate;
+    private LocalDateTime scheduleDate;
+
     @Column(name = "status")
-    private Integer status;
+    @Enumerated
+    private Status status;
+
     @OneToMany(mappedBy = "scheduleId")
     private Collection<ServiceRequest> serviceRequestCollection;
-
-    public Schedule() {
-    }
-
-    public Schedule(Long scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
-    public Long getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(Long scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
-    public String getScheduleDate() {
-        return scheduleDate;
-    }
-
-    public void setScheduleDate(String scheduleDate) {
-        this.scheduleDate = scheduleDate;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    @XmlTransient
-    public Collection<ServiceRequest> getServiceRequestCollection() {
-        return serviceRequestCollection;
-    }
-
-    public void setServiceRequestCollection(Collection<ServiceRequest> serviceRequestCollection) {
-        this.serviceRequestCollection = serviceRequestCollection;
-    }
 
     @Override
     public int hashCode() {
@@ -97,7 +63,7 @@ public class Schedule implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Schedule[ scheduleId=" + scheduleId + " ]";
+        return "{ scheduleId: " + scheduleId + " }";
     }
     
 }
