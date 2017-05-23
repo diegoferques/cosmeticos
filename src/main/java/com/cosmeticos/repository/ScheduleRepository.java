@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Responsavel por todas as operacoes de insercao, leitura e atualizacao d edados no banco de dados.
+ * Responsavel por todas as operacoes de insercao, leitura e atualizacao de dados no banco de dados.
  * Created by Lulu on 22/05/2017.
  */
 @Transactional
