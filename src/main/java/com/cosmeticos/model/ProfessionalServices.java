@@ -15,12 +15,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "ProfessionalServices")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "ProfessionalServices.findAll", query = "SELECT p FROM ProfessionalServices p"),
-    @NamedQuery(name = "ProfessionalServices.findByIdProfessional", query = "SELECT p FROM ProfessionalServices p WHERE p.professionalServicesPK.idProfessional = :idProfessional"),
-    @NamedQuery(name = "ProfessionalServices.findByIdService", query = "SELECT p FROM ProfessionalServices p WHERE p.professionalServicesPK.idService = :idService")})
 public class ProfessionalServices implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId

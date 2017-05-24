@@ -12,9 +12,13 @@ import java.util.Date;
 @Data
 public class ScheduleRequestBody {
 
+    private Long idSchedule;
+
     @NotEmpty(message = "ownerUser email was not set!")
     private String ownerUser;
 
     @NotNull(message = "ScheduleDate cannot be null!")
     private Date scheduleDate;
+
+    private String status;
 }

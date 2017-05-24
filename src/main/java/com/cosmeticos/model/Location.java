@@ -15,17 +15,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "Location")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
-    @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
-    @NamedQuery(name = "Location.findByCoordinate", query = "SELECT l FROM Location l WHERE l.coordinate = :coordinate")})
+@Table
 public class Location implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Basic(optional = false)
     @Column(name = "coordinate")

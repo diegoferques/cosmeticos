@@ -5,7 +5,10 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.commons.ScheduleRequestBody;
+import com.cosmeticos.model.Schedule;
+import com.cosmeticos.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
 @RestController
 public class ScheduleController {
 
+    private @Autowired ScheduleService service;
+
     @RequestMapping(path = "/schedule", method = RequestMethod.POST)
     public HttpEntity<ScheduleResponseBody> create(@Valid @RequestBody ScheduleRequestBody request, BindingResult bindingResult) {
 
@@ -27,9 +32,8 @@ public class ScheduleController {
         }
         else
         {
-            log.info("Schedule adicionado com sucesso scheduledDate[{}], ownerUser[{}]" //
-                , request.getScheduleDate().toString()
-                , request.getOwnerUser());
+            Schedule s = service.create(request);
+            log.info("Schedule adicionado com sucesso:  [{}]", s);
             return ok().build();
         }
     }
