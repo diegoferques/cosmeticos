@@ -13,19 +13,19 @@ import java.util.List;
 @Transactional
 public interface CustomerRepository extends CrudRepository<Customer, Long> {
     //TODO - Alterar o atributo "idCustomer" para somente "id"
-    public Customer findByCustomerIdCustomer(Long id);
-    public Customer findByCustomerIdLogin(User idLogin);
-    public Customer findByCustomerCpf(String cpf);
+    public Customer findByIdCustomer(Long id);
+    public Customer findByIdLogin(User idLogin);
+    public Customer findByCpf(String cpf);
 
     //TODO - Alterar o atributo "nameCustomer" para somente "name"
-    public List<Customer> findByCustomerNameCustomer(String nameCustomer);
-    public List<Customer> findByCustomerGenre(char genre);
-    public List<Customer> findByCustomerBirthDate(String birthDate);
-    public List<Customer> findByCustomerCellPhone(String cellPhone);
-    public List<Customer> findByCustomerStatus(short status);
+    public List<Customer> findByNameCustomer(String nameCustomer);
+    public List<Customer> findByGenre(char genre);
+    public List<Customer> findByBirthDate(String birthDate);
+    public List<Customer> findByCellPhone(String cellPhone);
+    public List<Customer> findByStatus(short status);
 
-    public List<Customer> findAllByOrderById();
-    public List<Customer> findAllByOrderByIdDesc();
+    public List<Customer> findAllByOrderByIdCustomer();
+    public List<Customer> findAllByOrderByIdCustomerDesc();
     public List<Customer> findAllByOrderByNameCustomer();
     public List<Customer> findAllByOrderByNameCustomerDesc();
     public List<Customer> findAllByOrderByBirthDate();
