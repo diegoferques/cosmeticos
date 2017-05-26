@@ -15,24 +15,10 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "Professional")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Professional.findAll", query = "SELECT p FROM Professional p"),
-    @NamedQuery(name = "Professional.findByIdProfessional", query = "SELECT p FROM Professional p WHERE p.idProfessional = :idProfessional"),
-    @NamedQuery(name = "Professional.findByNameProfessional", query = "SELECT p FROM Professional p WHERE p.nameProfessional = :nameProfessional"),
-    @NamedQuery(name = "Professional.findByCnpj", query = "SELECT p FROM Professional p WHERE p.cnpj = :cnpj"),
-    @NamedQuery(name = "Professional.findByGenre", query = "SELECT p FROM Professional p WHERE p.genre = :genre"),
-    @NamedQuery(name = "Professional.findByBirthDate", query = "SELECT p FROM Professional p WHERE p.birthDate = :birthDate"),
-    @NamedQuery(name = "Professional.findByCellPhone", query = "SELECT p FROM Professional p WHERE p.cellPhone = :cellPhone"),
-    @NamedQuery(name = "Professional.findBySpecialization", query = "SELECT p FROM Professional p WHERE p.specialization = :specialization"),
-    @NamedQuery(name = "Professional.findByTypeService", query = "SELECT p FROM Professional p WHERE p.typeService = :typeService"),
-    @NamedQuery(name = "Professional.findByDateRegister", query = "SELECT p FROM Professional p WHERE p.dateRegister = :dateRegister")})
 public class Professional implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "idProfessional")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfessional;
     @Basic(optional = false)
     @Column(name = "nameProfessional")

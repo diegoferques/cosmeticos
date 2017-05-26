@@ -15,17 +15,10 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "Role")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Role.findAll", query = "SELECT r FROM Role r"),
-    @NamedQuery(name = "Role.findByIdRole", query = "SELECT r FROM Role r WHERE r.idRole = :idRole"),
-    @NamedQuery(name = "Role.findByName", query = "SELECT r FROM Role r WHERE r.name = :name")})
 public class Role implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "idRole")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRole;
     @Column(name = "name")
     private String name;

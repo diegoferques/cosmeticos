@@ -15,17 +15,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "Service")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Service.findAll", query = "SELECT s FROM Service s"),
-    @NamedQuery(name = "Service.findByIdService", query = "SELECT s FROM Service s WHERE s.idService = :idService"),
-    @NamedQuery(name = "Service.findByCategory", query = "SELECT s FROM Service s WHERE s.category = :category")})
+@Table
 public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "idService")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idService;
     @Basic(optional = false)
     @Column(name = "category")

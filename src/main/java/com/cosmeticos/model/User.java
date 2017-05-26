@@ -27,8 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "idLogin")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLogin;
     @Basic(optional = false)
     @Column(name = "username")

@@ -5,6 +5,7 @@
 package com.cosmeticos.model;
 
 import lombok.Data;
+import org.hibernate.annotations.Generated;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,14 +28,13 @@ public class Schedule implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Basic(optional = false)
-    @Column(name = "scheduleId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-    @Column(name = "scheduleDate")
+    private String owner;
+
     private LocalDateTime scheduleDate;
 
-    @Column(name = "status")
     @Enumerated
     private Status status;
 
