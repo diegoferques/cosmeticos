@@ -1,10 +1,8 @@
 package com.cosmeticos.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
@@ -20,18 +18,21 @@ public class CustomerController {
     @RequestMapping(path = "/customers", method = RequestMethod.POST)
     @ResponseBody
     public String setCustomer(HttpServletResponse response,
+
                               @RequestParam(required = false) String name) {
-        response.setHeader("Access-Control-Allow-Origin", "*");
 
-        String customerName;
+        try {
+            response.setHeader("Access-Control-Allow-Origin", "*");
 
-        if (StringUtils.isEmpty(name)) {
-            customerName = "de nome indefinido!";
-        } else {
-            customerName = "de nome " + name;
+            log.info("Customer inserido com sucesso");
+
+            return "Criando novo Customer " + name.toString();
+
+        } catch (Exception e) {
+            log.error("Erro no insert: {} - {}", name, e.getMessage(), e );
+            return "Erro";
         }
 
-        return "Criando novo Customer " + customerName;
     }
 
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
