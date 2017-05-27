@@ -12,12 +12,12 @@ import java.util.List;
  */
 @Transactional
 public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
-    public Schedule findByScheduleId(Long id);
-    public Schedule findByScheduleDate(String url);
+     Schedule findByScheduleId(Long id);
+         Schedule findByScheduleDate(String url);
+    List<Schedule> findAllByOrderByScheduleId();
+     List<Schedule> findAllByOrderByScheduleIdDesc();
+         List<Schedule> findAllByOrderByScheduleDate();
+         List<Schedule> findAllByOrderByScheduleDateDesc();
 
-    public List<Schedule> findAllByOrderByScheduleId();
-    public List<Schedule> findAllByOrderByScheduleIdDesc();
-    public List<Schedule> findAllByOrderByScheduleDate();
-    public List<Schedule> findAllByOrderByScheduleDateDesc();
-
+    List<Schedule> findTop10ByOrderByScheduleDateDesc();
 }
