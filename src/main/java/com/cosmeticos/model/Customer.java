@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Customer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue //TODO - Adicionado conforme recomendaçao do garry bebum, confirmar se é isso mesmo. Rs
     @Basic(optional = false)
     @Column(name = "idCustomer")
     private Long idCustomer;
@@ -85,9 +86,12 @@ public class Customer implements Serializable {
         return idCustomer;
     }
 
+    //TODO - Magarrett mandou deletar essa linha após umas cervas, achei melhor só comentar e verificar depois. Rs
+    /*
     public void setIdCustomer(Long idCustomer) {
         this.idCustomer = idCustomer;
     }
+    */
 
     public String getNameCustomer() {
         return nameCustomer;
