@@ -6,7 +6,10 @@ import com.cosmeticos.model.Customer;
 import com.cosmeticos.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.mvc.HeaderLinksResponseEntity;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,29 +36,25 @@ public class CustomerController {
     @RequestMapping(path = "/customers", method = RequestMethod.POST)
     public HttpEntity<CustomerResponseBody> create(@Valid @RequestBody CustomerRequestBody request,
                                                    BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors()) {
-            log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
-            return badRequest().body(buildErrorResponse(bindingResult));
-        } else {
-            Customer c = service.create(request);
-            log.info("Customer adicionado com sucesso:  [{}]", c);
-            return ok().build();
-        }
-
-        /*
         try {
-            response.setHeader("Access-Control-Allow-Origin", "*");
-
-            log.info("Customer inserido com sucesso");
-
-            return "Criando novo Customer " + name.toString();
-
+            if(bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            } else {
+                Customer c = service.create(request);
+                log.info("Customer adicionado com sucesso:  [{}]", c);
+                return ok().build();
+            }
         } catch (Exception e) {
-            log.error("Erro no insert: {} - {}", name, e.getMessage(), e );
-            return "Erro";
+            String errorCode = String.valueOf(System.nanoTime());
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+            CustomerResponseBody b = new CustomerResponseBody();
+            b.setDescription("Erro interno: " + errorCode);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(b);
         }
-        */
+
     }
 
     private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {

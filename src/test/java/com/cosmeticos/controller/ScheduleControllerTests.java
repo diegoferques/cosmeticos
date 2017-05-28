@@ -26,7 +26,7 @@ public class ScheduleControllerTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testCreateScheduleOK() {
+	public void testCreateheduleOK() {
 
 		ScheduleRequestBody billingRequest = new ScheduleRequestBody();
 		billingRequest.setScheduleDate(Calendar.getInstance().getTime());
