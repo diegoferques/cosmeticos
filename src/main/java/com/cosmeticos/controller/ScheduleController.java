@@ -1,11 +1,8 @@
 package com.cosmeticos.controller;
 
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
-import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.commons.ScheduleRequestBody;
+import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Schedule;
 import com.cosmeticos.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +16,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController

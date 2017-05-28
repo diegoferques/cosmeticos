@@ -3,11 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ScheduleRequestBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
-import com.cosmeticos.model.Schedule;
-import com.cosmeticos.repository.ScheduleRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
 
 
@@ -30,17 +25,10 @@ public class ScheduleControllerTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@Before
-	public void setupTests()
-	{
-
-	}
-
 	@Test
-	public void testCreateScheduleOK() {
+	public void testCreateheduleOK() {
 
 		ScheduleRequestBody billingRequest = new ScheduleRequestBody();
-		billingRequest.setOwnerUser("garrydias@gmail.com");
 		billingRequest.setScheduleDate(Calendar.getInstance().getTime());
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //

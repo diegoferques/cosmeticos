@@ -1,0 +1,16 @@
+{
+  "customer": {
+      "nameCustomer": "Diego",
+    "cellPhone": "2342",
+    "cpf": "egsgs",
+    "birthDate": "2017-05-20"
+  },
+
+  "address": {
+      "address": "Rua do Diego"
+  },
+
+  "user": {
+    "username": "diegoferques"
+  }
+}
