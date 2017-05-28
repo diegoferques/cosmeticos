@@ -39,6 +39,7 @@ public class Address implements Serializable {
     private String country;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAddress")
     private Collection<Customer> customerCollection;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAddress")
     private Collection<Professional> professionalCollection;
 

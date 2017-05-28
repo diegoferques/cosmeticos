@@ -30,7 +30,7 @@ public class User implements Serializable {
     private String password;
 
     private String email;
-    
+
     private String sourceApp;
 
     @ManyToMany(mappedBy = "userCollection")

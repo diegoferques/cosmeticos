@@ -23,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -70,6 +72,8 @@ public class CustomerControllerTests {
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
+
+		u.setCustomerCollection(new ArrayList<>());
 		u.getCustomerCollection().add(c);
 		return u;
 	}
@@ -82,6 +86,9 @@ public class CustomerControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+
+
+		a.setCustomerCollection(new ArrayList<>());
 		a.getCustomerCollection().add(customer);
 		return a;
 	}
