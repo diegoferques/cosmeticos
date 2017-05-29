@@ -7,17 +7,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Responsavel por todas as operacoes de insercao, leitura e atualizacao d edados no banco de dados.
+ * Responsavel por todas as operacoes de insercao, leitura e atualizacao de dados no banco de dados.
  * Created by Lulu on 22/05/2017.
  */
 @Transactional
 public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
-    public Schedule findByScheduleId(Long id);
-    public Schedule findByScheduleDate(String url);
+     Schedule findByScheduleId(Long id);
+         Schedule findByScheduleDate(String url);
+    List<Schedule> findAllByOrderByScheduleId();
+     List<Schedule> findAllByOrderByScheduleIdDesc();
+         List<Schedule> findAllByOrderByScheduleDate();
+         List<Schedule> findAllByOrderByScheduleDateDesc();
 
-    public List<Schedule> findAllByOrderByScheduleId();
-    public List<Schedule> findAllByOrderByScheduleIdDesc();
-    public List<Schedule> findAllByOrderByScheduleDate();
-    public List<Schedule> findAllByOrderByScheduleDateDesc();
-
+    List<Schedule> findTop10ByOrderByScheduleDateDesc();
 }

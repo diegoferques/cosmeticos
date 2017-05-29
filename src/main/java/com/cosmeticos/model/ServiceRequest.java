@@ -13,18 +13,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "ServiceRequest")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "ServiceRequest.findAll", query = "SELECT s FROM ServiceRequest s"),
-    @NamedQuery(name = "ServiceRequest.findByIdServiceRequest", query = "SELECT s FROM ServiceRequest s WHERE s.idServiceRequest = :idServiceRequest"),
-    @NamedQuery(name = "ServiceRequest.findByDate", query = "SELECT s FROM ServiceRequest s WHERE s.date = :date"),
-    @NamedQuery(name = "ServiceRequest.findByStatus", query = "SELECT s FROM ServiceRequest s WHERE s.status = :status")})
+@Table
 public class ServiceRequest implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "idServiceRequest")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idServiceRequest;
     @Basic(optional = false)
     @Column(name = "date")

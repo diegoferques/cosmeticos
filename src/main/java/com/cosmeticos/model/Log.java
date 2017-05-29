@@ -13,21 +13,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author magarrett.dias
  */
 @Entity
-@Table(name = "Log")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Log.findAll", query = "SELECT l FROM Log l"),
-    @NamedQuery(name = "Log.findByIdLog", query = "SELECT l FROM Log l WHERE l.idLog = :idLog"),
-    @NamedQuery(name = "Log.findByCustomerEmail", query = "SELECT l FROM Log l WHERE l.customerEmail = :customerEmail"),
-    @NamedQuery(name = "Log.findByServiceType", query = "SELECT l FROM Log l WHERE l.serviceType = :serviceType"),
-    @NamedQuery(name = "Log.findByProfessionalEmail", query = "SELECT l FROM Log l WHERE l.professionalEmail = :professionalEmail"),
-    @NamedQuery(name = "Log.findByEvent", query = "SELECT l FROM Log l WHERE l.event = :event"),
-    @NamedQuery(name = "Log.findByDate", query = "SELECT l FROM Log l WHERE l.date = :date")})
+@Table
 public class Log implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @Column(name = "idLog")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLog;
     @Column(name = "customerEmail")
     private String customerEmail;
