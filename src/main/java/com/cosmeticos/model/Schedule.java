@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  *
@@ -33,7 +34,7 @@ public class Schedule implements Serializable {
 
     private String owner;
 
-    private LocalDateTime scheduleDate;
+    private Date scheduleDate;
 
     @Enumerated
     private Status status;

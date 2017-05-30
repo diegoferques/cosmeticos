@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Lulu on 23/05/2017.
@@ -20,10 +22,8 @@ public class ScheduleService {
 
     public Schedule create(ScheduleRequestBody request)
     {
-        LocalDateTime ldt = LocalDateTime.ofInstant(request.getScheduleDate().toInstant(), ZoneId.systemDefault());
-
         Schedule s = new Schedule();
-        s.setScheduleDate(ldt);
+        s.setScheduleDate(request.getScheduleDate());
         s.setOwner(request.getOwnerUser());
         s.setStatus(Schedule.Status.ACTIVE);
 
@@ -32,22 +32,24 @@ public class ScheduleService {
 
     public Schedule update(ScheduleRequestBody request)
     {
-        LocalDateTime ldt = LocalDateTime.ofInstant(request.getScheduleDate().toInstant(), ZoneId.systemDefault());
-
         Schedule schedule = repository.findOne(request.getIdSchedule());
-        schedule.setScheduleDate(ldt);
+        schedule.setScheduleDate(request.getScheduleDate());
         schedule.setOwner(request.getOwnerUser());
         schedule.setStatus(Schedule.Status.valueOf(request.getStatus()));
         return repository.save(schedule);
     }
 
-    public Schedule find(Long id)
+    public Optional<Schedule> find(Long id)
     {
-        return repository.findOne(id);
+        return Optional.of(repository.findOne(id));
     }
 
     public void delete()
     {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
+    }
+
+    public List<Schedule> find10Lastest() {
+        return repository.findTop10ByOrderByScheduleDateDesc();
     }
 }
