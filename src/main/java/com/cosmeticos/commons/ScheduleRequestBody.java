@@ -1,5 +1,6 @@
 package com.cosmeticos.commons;
 
+import com.cosmeticos.model.Schedule;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -21,4 +22,11 @@ public class ScheduleRequestBody {
     private Date scheduleDate;
 
     private String status;
+
+    public ScheduleRequestBody() {
+
+    }
+    public ScheduleRequestBody(Schedule schedule) {
+
+    }
 }
