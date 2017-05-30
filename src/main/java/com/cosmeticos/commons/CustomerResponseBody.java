@@ -1,5 +1,6 @@
 package com.cosmeticos.commons;
 
+import com.cosmeticos.model.Customer;
 import lombok.Data;
 
 /**
@@ -22,4 +23,6 @@ public class CustomerResponseBody {
     //private Address idAddress;
 
     private String description;
+
+    private Customer customer;
 }
