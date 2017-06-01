@@ -8,6 +8,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -40,8 +41,9 @@ public class Customer implements Serializable {
     private char genre;
 
     //TODO - Troquei o TemporalType de TIMESTAMP para DATE, verificar se essa alteração não tem problema
-    @NotEmpty(message = "birthDate was not set!")
-    @Temporal(TemporalType.DATE)
+    //Voltei para TimeStamp
+    @NotNull(message = "birthDate was not set!")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date birthDate;
 
     @NotEmpty(message = "cellPhone was not set!")

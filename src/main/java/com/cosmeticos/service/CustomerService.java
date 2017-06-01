@@ -4,7 +4,9 @@ import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
+import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,12 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository repository;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public Optional<Customer> find(Long idCustomer) {
         return Optional.of(repository.findOne(idCustomer));
@@ -73,18 +81,19 @@ public class CustomerService {
         return repository.findTop10ByOrderByDateRegisterDesc();
     }
 
-    private User createFakeLogin(Customer c) {
+    public User createFakeLogin(Customer c) {
         User u = new User();
         u.setEmail("diego@bol.com");
-        u.setIdLogin(1234L);
+        //u.setIdLogin(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
         u.setUsername("diegoferques");
-        u.getCustomerCollection().add(c);
+        //u.getCustomerCollection().add(c);
+        userRepository.save(u);
         return u;
     }
 
-    private Address createFakeAddress(Customer customer) {
+    public Address createFakeAddress(Customer customer) {
         Address a = new Address();
         a.setAddress("Rua Perlita");
         a.setCep("0000000");
@@ -92,7 +101,8 @@ public class CustomerService {
         a.setCountry("BRA");
         a.setNeighborhood("Austin");
         a.setState("RJ");
-        a.getCustomerCollection().add(customer);
+        //a.getCustomerCollection().add(customer);
+        addressRepository.save(a);
         return a;
     }
 }
