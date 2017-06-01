@@ -23,10 +23,5 @@ public class ScheduleRequestBody {
 
     private String status;
 
-    public ScheduleRequestBody() {
 
-    }
-    public ScheduleRequestBody(Schedule schedule) {
-
-    }
 }

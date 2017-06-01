@@ -20,8 +20,10 @@ public class Role implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRole;
+
     @Column(name = "name")
     private String name;
+
     @JoinTable(name = "UserRoles", joinColumns = {
         @JoinColumn(name = "idRole", referencedColumnName = "idRole")}, inverseJoinColumns = {
         @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")})
