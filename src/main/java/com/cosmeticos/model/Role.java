@@ -4,6 +4,9 @@
  */
 package com.cosmeticos.model;
 
+import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
@@ -14,51 +17,22 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
+@Data
 @Entity
 public class Role implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRole;
-    @Column(name = "name")
+
+    @NotEmpty(message="Role name cannot be empty")
     private String name;
+
     @JoinTable(name = "UserRoles", joinColumns = {
         @JoinColumn(name = "idRole", referencedColumnName = "idRole")}, inverseJoinColumns = {
         @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")})
     @ManyToMany
     private Collection<User> userCollection;
-
-    public Role() {
-    }
-
-    public Role(Long idRole) {
-        this.idRole = idRole;
-    }
-
-    public Long getIdRole() {
-        return idRole;
-    }
-
-    public void setIdRole(Long idRole) {
-        this.idRole = idRole;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @XmlTransient
-    public Collection<User> getUserCollection() {
-        return userCollection;
-    }
-
-    public void setUserCollection(Collection<User> userCollection) {
-        this.userCollection = userCollection;
-    }
 
     @Override
     public int hashCode() {

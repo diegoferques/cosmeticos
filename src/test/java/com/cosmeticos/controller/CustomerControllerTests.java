@@ -2,6 +2,7 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CustomerRequestBody;
+import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.commons.ScheduleRequestBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Address;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
@@ -36,10 +38,10 @@ public class CustomerControllerTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testCreateOK() {
+	public void testCreateOK() throws IOException {
 
 
-		//String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
+		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
 
 		Customer customer = createFakeCustomer();
 		Address addres = createFakeAddress(customer);
@@ -49,6 +51,8 @@ public class CustomerControllerTests {
 		requestBody.setAddress(addres);
 		requestBody.setUser(user);
 		requestBody.setCustomer(customer);
+
+		CustomerResponseBody rsp = restTemplate.postForObject("/customers", content, CustomerResponseBody.class);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //

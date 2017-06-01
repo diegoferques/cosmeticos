@@ -18,7 +18,7 @@ import java.time.ZoneId;
  */
 @Configuration
 @Profile("default")
-public class ScheduleTestConfiguration {
+public class SchedulePreLoadConfiguration {
 
     @Autowired
     private ScheduleRepository repository;
