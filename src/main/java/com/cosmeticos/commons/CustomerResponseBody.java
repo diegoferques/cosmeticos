@@ -3,26 +3,23 @@ package com.cosmeticos.commons;
 import com.cosmeticos.model.Customer;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by matto on 27/05/2017.
  */
 @Data
 public class CustomerResponseBody {
 
-    //private Long idCustomer;
-
-    //private String nameCustomer;
-    //private String cpf;
-    //private char genre;
-    //private String birthDate;
-    //private String cellPhone;
-
-    //private String dateRegister;
-    //private short status;
-    //private User idLogin;
-    //private Address idAddress;
-
     private String description;
 
-    private Customer customer;
+    private List<Customer> customerList = new ArrayList<>(10);
+
+    public CustomerResponseBody() {
+    }
+
+    public CustomerResponseBody(Customer customer) {
+        this.customerList.add(customer);
+    }
 }

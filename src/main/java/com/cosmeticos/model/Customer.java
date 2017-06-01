@@ -7,12 +7,10 @@ package com.cosmeticos.model;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -36,13 +34,17 @@ public class Customer implements Serializable {
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
 
+    @NotEmpty(message = "cpf was not set!")
     private String cpf;
 
     private char genre;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    //TODO - Troquei o TemporalType de TIMESTAMP para DATE, verificar se essa alteração não tem problema
+    @NotEmpty(message = "birthDate was not set!")
+    @Temporal(TemporalType.DATE)
     private Date birthDate;
 
+    @NotEmpty(message = "cellPhone was not set!")
     private String cellPhone;
 
     @Temporal(TemporalType.TIMESTAMP)

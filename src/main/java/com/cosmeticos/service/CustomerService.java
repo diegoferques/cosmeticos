@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by matto on 27/05/2017.
@@ -19,8 +21,8 @@ public class CustomerService {
     @Autowired
     private CustomerRepository repository;
 
-    public Customer find(Long idCustomer) {
-        return repository.findOne(idCustomer);
+    public Optional<Customer> find(Long idCustomer) {
+        return Optional.of(repository.findOne(idCustomer));
     }
 
     public Customer create(CustomerRequestBody request) {
@@ -48,6 +50,27 @@ public class CustomerService {
         c.setIdLogin(createFakeLogin(c));
 
         return repository.save(c);
+    }
+
+    public Customer update(CustomerRequestBody request)
+    {
+        Customer customer = repository.findOne(request.getCustomer().getIdCustomer());
+        customer.setNameCustomer(request.getCustomer().getNameCustomer());
+        customer.setCellPhone(request.getCustomer().getCellPhone());
+        customer.setCpf(request.getCustomer().getCpf());
+        customer.setGenre(request.getCustomer().getGenre());
+        customer.setBirthDate(request.getCustomer().getBirthDate());
+        //customer.setStatus(Customer.Status.valueOf(request.getCustomer().getStatus()));
+        return repository.save(customer);
+    }
+
+    public void delete()
+    {
+        throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
+    }
+
+    public List<Customer> find10Lastest() {
+        return repository.findTop10ByOrderByDateRegisterDesc();
     }
 
     private User createFakeLogin(Customer c) {
