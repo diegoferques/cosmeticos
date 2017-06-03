@@ -37,7 +37,7 @@ public class ScheduleController {
         {
             Schedule s = service.create(request);
             log.info("Schedule adicionado com sucesso:  [{}]", s);
-            return ok().build();
+            return ok().       build();
         }
     }
 
