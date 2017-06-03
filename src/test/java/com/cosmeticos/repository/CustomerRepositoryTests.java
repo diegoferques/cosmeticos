@@ -202,7 +202,8 @@ public class CustomerRepositoryTests {
 
     //TODO - IMPLEMENTAR O MÉTOTO
     @Test
-    public void forcedError500() {}
+    public void testForcedError500() {
+    }
 
     //TRECHO ABAIXO COMENTADO, POIS ESTAVA DANDO NULLPOINTER. TIVE QUE REESCREVER CÓDIGO
     /*
