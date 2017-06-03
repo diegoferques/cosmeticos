@@ -200,11 +200,6 @@ public class CustomerRepositoryTests {
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
 
-    //TODO - IMPLEMENTAR O MÉTOTO
-    @Test
-    public void testForcedError500() {
-    }
-
     //TRECHO ABAIXO COMENTADO, POIS ESTAVA DANDO NULLPOINTER. TIVE QUE REESCREVER CÓDIGO
     /*
     private Address createFakeAddress(Customer customer) {

@@ -8,11 +8,14 @@ import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
+import com.cosmeticos.service.CustomerService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -36,6 +39,9 @@ public class CustomerControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
+	@MockBean
+	private CustomerService service;
 
 	@Test
 	public void testCreateOK() throws IOException {
@@ -65,6 +71,33 @@ public class CustomerControllerTests {
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 	}
 
+
+	@Test
+	public void testCreateError500() throws IOException {
+
+		Mockito.when(
+				service.create(Mockito.anyObject())
+		).thenThrow(new RuntimeException());
+
+		Customer customer = createFakeCustomer();
+		Address addres = createFakeAddress(customer);
+		User user = createFakeLogin(customer);
+
+		CustomerRequestBody requestBody = new CustomerRequestBody();
+		requestBody.setAddress(addres);
+		requestBody.setUser(user);
+		requestBody.setCustomer(customer);
+
+		final ResponseEntity<CustomerResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/customers", //
+						HttpMethod.POST, //
+						new HttpEntity(requestBody), // Body
+						CustomerResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
+	}
 
 
 
