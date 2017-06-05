@@ -82,7 +82,7 @@ public class ServiceController {
 
         ServiceResponseBody responseBody = new ServiceResponseBody();
         responseBody.setServiceList(entitylist);
-        responseBody.setDescription("TOP 10 successfully retrieved.");
+        responseBody.setDescription("TOP "+entitylist.size()+" successfully retrieved.");
 
         log.info("{} service successfully retrieved.", entitylist.size());
 
