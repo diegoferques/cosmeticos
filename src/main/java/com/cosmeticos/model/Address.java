@@ -36,8 +36,8 @@ public class Address implements Serializable {
 
     private String country;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAddress")
-    private Collection<Customer> customerCollection= new ArrayList<>();
+    @OneToOne(mappedBy = "idAddress")
+    private Customer customer;
 
     @OneToOne(mappedBy = "idAddress")
     private Professional professional;

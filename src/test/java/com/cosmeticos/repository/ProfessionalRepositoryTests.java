@@ -3,6 +3,7 @@ package com.cosmeticos.repository;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,20 +33,24 @@ public class ProfessionalRepositoryTests {
     public void setupTests() {
 
         Address address = new Address();
+        User u1 = new User();
 
-        Professional c1 = new Professional();
-        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
-        c1.setCellPhone("(21) 98877-6655");
-        c1.setCnpj("098.765.432-10");
-        c1.setDateRegister(Calendar.getInstance().getTime());
-        c1.setGenre('M');
-        c1.setNameProfessional("João da Silva");
-        c1.setStatus(Professional.Status.ACTIVE);
+        Professional p1 = new Professional();
+        p1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
+        p1.setCellPhone("(21) 98877-6655");
+        p1.setCnpj("098.765.432-10");
+        p1.setDateRegister(Calendar.getInstance().getTime());
+        p1.setGenre('M');
+        p1.setNameProfessional("João da Silva");
+        p1.setStatus(Professional.Status.ACTIVE);
 
-        c1.setIdAddress(address);
-        address.setProfessional(c1);
+        p1.setIdAddress(address);
+        p1.setIdLogin(u1);
 
-        repository.save(c1);
+        u1.setProfessional(p1);
+        address.setProfessional(p1);
+
+        repository.save(p1);
     }
 
     @Test

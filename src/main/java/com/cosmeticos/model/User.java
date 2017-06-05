@@ -36,8 +36,8 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLogin")
-    private Collection<Customer> customerCollection;
+    @OneToOne(mappedBy = "idLogin")
+    private Customer customer;
 
     @OneToOne(mappedBy = "idLogin")
     private Professional professional;
