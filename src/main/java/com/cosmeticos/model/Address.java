@@ -7,6 +7,7 @@ package com.cosmeticos.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -34,11 +35,12 @@ public class Address implements Serializable {
     private String state;
 
     private String country;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAddress")
-    private Collection<Customer> customerCollection;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAddress")
-    private Collection<Professional> professionalCollection;
+    private Collection<Customer> customerCollection= new ArrayList<>();
+
+    @OneToOne(mappedBy = "idAddress")
+    private Professional professional;
 
 
 

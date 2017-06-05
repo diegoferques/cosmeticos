@@ -39,8 +39,8 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLogin")
     private Collection<Customer> customerCollection;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLogin")
-    private Collection<Professional> professionalCollection;
+    @OneToOne(mappedBy = "idLogin")
+    private Professional professional;
 
     @Override
     public int hashCode() {
