@@ -61,6 +61,12 @@ public class ProfessionalRepositoryTests {
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("João da Silva", customer.getNameProfessional());
+
+        Assert.assertNotNull(customer.getIdLogin());
+        Assert.assertEquals((Long) 1L, customer.getIdLogin().getIdLogin());
+
+        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertEquals((Long) 1L, customer.getIdAddress().getIdAddress());
     }
 
 
