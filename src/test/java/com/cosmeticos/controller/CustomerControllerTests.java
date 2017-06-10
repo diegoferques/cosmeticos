@@ -77,8 +77,7 @@ public class CustomerControllerTests {
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
 
-		u.setCustomerCollection(new ArrayList<>());
-		u.getCustomerCollection().add(c);
+		u.setCustomer(c);
 		return u;
 	}
 
@@ -92,8 +91,7 @@ public class CustomerControllerTests {
 		a.setState("RJ");
 
 
-		a.setCustomerCollection(new ArrayList<>());
-		a.getCustomerCollection().add(customer);
+		a.setCustomer(customer);
 		return a;
 	}
 
