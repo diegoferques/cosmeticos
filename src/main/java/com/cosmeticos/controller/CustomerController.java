@@ -6,7 +6,6 @@ import com.cosmeticos.model.Customer;
 import com.cosmeticos.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.mvc.HeaderLinksResponseEntity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +29,10 @@ public class CustomerController {
     @RequestMapping(path = "/customers", method = RequestMethod.GET)
     @ResponseBody
     String getCustomers() {
+
+
+        CustomerResponseBody b = new CustomerResponseBody();
+
         return "Exibição de todos os Customers cadastrados";
     }
 
@@ -57,27 +60,40 @@ public class CustomerController {
 
     }
 
-    private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {
-        List<String> errors = bindingResult.getFieldErrors()
-                .stream()
-                .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
-                .collect(Collectors.toList());
-
-        CustomerResponseBody responseBody = new CustomerResponseBody();
-        responseBody.setDescription(errors.toString());
-        return responseBody;
-    }
-
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
     @ResponseBody
-    String getCustomer(@PathVariable String idCustomer) {
+    public HttpEntity<CustomerResponseBody> get(@PathVariable String idCustomer) {
+
+        CustomerResponseBody responseBody = new CustomerResponseBody();
 
         try {
-            return "Exibição do Customer de ID " + idCustomer;
+
+            if(idCustomer.isEmpty()) {
+                String erro = "Erro na requisicao do cliente: idCustomer não informado";
+
+                responseBody.setDescription(erro);
+
+                log.error(erro);
+
+                return badRequest().body(responseBody);
+
+            } else {
+                Customer customer = service.find(Long.valueOf(idCustomer));
+                responseBody.setCustomer(customer);
+
+                log.info("Customer exibido com sucesso:  [{}]", customer);
+                return ok().body(responseBody);
+            }
 
         } catch (Exception e) {
-            log.error("Erro na exibição do Customer ID: {} - {}", idCustomer, e.getMessage(), e );
-            return "Erro";
+
+            String errorCode = String.valueOf(System.nanoTime());
+            String erro = "Erro interno: " + errorCode;
+
+            responseBody.setDescription(erro);
+
+            log.error("Erro na exibição do Customer ID: {} - {}", errorCode, e.getMessage(), e );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
@@ -106,6 +122,17 @@ public class CustomerController {
             return "Erro";
         }
 
+    }
+
+    private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {
+        List<String> errors = bindingResult.getFieldErrors()
+                .stream()
+                .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
+                .collect(Collectors.toList());
+
+        CustomerResponseBody responseBody = new CustomerResponseBody();
+        responseBody.setDescription(errors.toString());
+        return responseBody;
     }
 
 

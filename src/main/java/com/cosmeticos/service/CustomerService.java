@@ -57,7 +57,7 @@ public class CustomerService {
         u.setPassword("123qwe");
         u.setSourceApp("google+");
         u.setUsername("diegoferques");
-        u.getCustomerCollection().add(c);
+        u.setCustomer(c);
         return u;
     }
 
@@ -69,7 +69,7 @@ public class CustomerService {
         a.setCountry("BRA");
         a.setNeighborhood("Austin");
         a.setState("RJ");
-        a.getCustomerCollection().add(customer);
+        a.setCustomer(customer);
         return a;
     }
 }

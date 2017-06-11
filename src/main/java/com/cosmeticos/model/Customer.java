@@ -50,12 +50,12 @@ public class Customer implements Serializable {
 
     private Integer status;
 
-    @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
-    @ManyToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "idCustomer")
     private User idLogin;
 
-    @JoinColumn(name = "idAddress", referencedColumnName = "idAddress")
-    @ManyToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idCustomer")
     private Address idAddress;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
