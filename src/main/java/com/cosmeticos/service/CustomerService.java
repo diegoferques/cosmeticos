@@ -1,15 +1,16 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,13 @@ public class CustomerService {
     private AddressRepository addressRepository;
 
     @Autowired
+    private AddressService addressService;
+
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     public Optional<Customer> find(Long idCustomer) {
         return Optional.of(repository.findOne(idCustomer));
@@ -41,39 +48,52 @@ public class CustomerService {
         c.setBirthDate(request.getCustomer().getBirthDate());
         c.setCellPhone(request.getCustomer().getCellPhone());
         c.setCpf(request.getCustomer().getCpf());
-        //c.setDateRegister();
+        //TODO - Não poderia ser o TimeStamp do banco?
+        c.setDateRegister(Calendar.getInstance().getTime());
+        //c.setDateRegister(Timestamp.valueOf(LocalDateTime.now()));
         c.setGenre(request.getCustomer().getGenre());
-        //c.setIdAddress(null);
-        //c.setIdCustomer(Long.valueOf(1));
-        //c.setIdLogin(null);
         c.setNameCustomer(request.getCustomer().getNameCustomer());
         //c.setServiceRequestCollection(null);
         c.setStatus(Customer.Status.ACTIVE.ordinal());
 
-        //TODO - Não poderia ser o TimeStamp do banco?
-        c.setDateRegister(Calendar.getInstance().getTime());
-
-        //TODO - Não consigo passar os parâmetros dos métodos abaixo
-        c.setIdAddress(createFakeAddress(c));
-        c.setIdLogin(createFakeLogin(c));
+        c.setIdAddress(addressService.createFromCustomer(request));
+        c.setIdLogin(userService.createFromCustomer(request));
 
         return repository.save(c);
     }
 
-    public Customer update(CustomerRequestBody request)
-    {
-        Customer customer = repository.findOne(request.getCustomer().getIdCustomer());
-        customer.setNameCustomer(request.getCustomer().getNameCustomer());
-        customer.setCellPhone(request.getCustomer().getCellPhone());
-        customer.setCpf(request.getCustomer().getCpf());
-        customer.setGenre(request.getCustomer().getGenre());
-        customer.setBirthDate(request.getCustomer().getBirthDate());
-        //customer.setStatus(Customer.Status.valueOf(request.getCustomer().getStatus()));
+    public Customer update(CustomerRequestBody request) {
+        Customer cr = request.getCustomer();
+        Customer customer = repository.findOne(cr.getIdCustomer());
+
+        if(!StringUtils.isEmpty(cr.getBirthDate())) {
+            customer.setBirthDate(cr.getBirthDate());
+        }
+
+        if(!StringUtils.isEmpty(cr.getCellPhone())) {
+            customer.setCellPhone(cr.getCellPhone());
+        }
+
+        if(!StringUtils.isEmpty(cr.getCpf())) {
+            customer.setCpf(cr.getCpf());
+        }
+
+        if(!StringUtils.isEmpty(cr.getGenre())) {
+            customer.setGenre(cr.getGenre());
+        }
+
+        if(!StringUtils.isEmpty(cr.getNameCustomer())) {
+            customer.setNameCustomer(cr.getNameCustomer());
+        }
+
+        if(!StringUtils.isEmpty(cr.getStatus())) {
+            customer.setStatus(cr.getStatus());
+        }
+
         return repository.save(customer);
     }
 
-    public void delete()
-    {
+    public void delete() {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
 
@@ -81,28 +101,21 @@ public class CustomerService {
         return repository.findTop10ByOrderByDateRegisterDesc();
     }
 
-    public User createFakeLogin(Customer c) {
-        User u = new User();
-        u.setEmail("diego@bol.com");
-        //u.setIdLogin(1234L);
-        u.setPassword("123qwe");
-        u.setSourceApp("google+");
-        u.setUsername("diegoferques");
-        //u.getCustomerCollection().add(c);
-        userRepository.save(u);
-        return u;
+    public Customer createFakeCustomer() {
+        Customer c = new Customer();
+        c.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
+        c.setCellPhone("(21) 98877-6655");
+        c.setCpf("098.765.432-10");
+        c.setDateRegister(Calendar.getInstance().getTime());
+        c.setGenre('M');
+        c.setNameCustomer("João da Silva");
+        //c.setServiceRequestCollection(null);
+        c.setStatus(Customer.Status.ACTIVE.ordinal());
+        c.setIdAddress(addressService.createFakeAddress());
+        c.setIdLogin(userService.createFakeUser());
+
+        return c;
     }
 
-    public Address createFakeAddress(Customer customer) {
-        Address a = new Address();
-        a.setAddress("Rua Perlita");
-        a.setCep("0000000");
-        a.setCity("RJO");
-        a.setCountry("BRA");
-        a.setNeighborhood("Austin");
-        a.setState("RJ");
-        //a.getCustomerCollection().add(customer);
-        addressRepository.save(a);
-        return a;
-    }
+
 }

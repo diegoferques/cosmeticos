@@ -91,7 +91,8 @@ public class CustomerController {
                 log.info("Busca de Customer com exito: [{}]", customer.get());
                 CustomerResponseBody response = new CustomerResponseBody(customer.get());
 
-                return ok().body(response);
+                //return ok().body(response);
+                return ok(response);
             } else {
                 log.error("Nenhum registro encontrado para o id: {}", idCustomer);
                 return notFound().build();
@@ -107,6 +108,21 @@ public class CustomerController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.DELETE)
+    public HttpEntity<CustomerResponseBody> delete(@PathVariable String idCustomer) {
+
+
+        String errorCode = String.valueOf(System.nanoTime());
+
+        CustomerResponseBody response = new CustomerResponseBody();
+        response.setDescription("Ação não permitida: Atualize o status do Customer para desativado: " + errorCode);
+
+        log.warn("Ação não permitida para deletar o Customer: {}. Atualize o status do Customer para desativado. - {}", idCustomer, errorCode);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+
     }
 
     @RequestMapping(path = "/customers", method = RequestMethod.GET)

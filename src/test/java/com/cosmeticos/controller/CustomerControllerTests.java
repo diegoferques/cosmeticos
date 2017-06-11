@@ -186,17 +186,67 @@ public class CustomerControllerTests {
 		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
 	}
 
-	// TODO - terminar a implementação
+	@Test
+	public void testUpdateOK() throws IOException {
+
+		Customer c1 = new Customer();
+		c1.setIdCustomer(1L);
+		c1.setNameCustomer("Diego Fernandes Marques da Silva");
+
+		CustomerRequestBody cr = new CustomerRequestBody();
+		cr.setCustomer(c1);
+
+		final ResponseEntity<ScheduleResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/customers", //
+						HttpMethod.PUT, //
+						new HttpEntity(cr), // Body
+						ScheduleResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+	}
+
+	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection
 	@Test
 	public void testFindById() throws ParseException {
-
-		CustomerRequestBody requestBody = createFakeRequestBody();
 
 		final ResponseEntity<CustomerResponseBody> exchange = //
 				restTemplate.exchange( //
 						"/customers/1", //
 						HttpMethod.GET, //
-						new HttpEntity(requestBody), // Body
+						null,
+						CustomerResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+	}
+
+	@Test
+	public void testDeleteForbiden() throws ParseException {
+
+		final ResponseEntity<CustomerResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/customers/1", //
+						HttpMethod.DELETE, //
+						null,
+						CustomerResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.FORBIDDEN, exchange.getStatusCode());
+
+	}
+
+	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection, o mesmo erro de testFindById
+	@Test
+	public void testLastest10OK() throws ParseException {
+
+		final ResponseEntity<CustomerResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/customers", //
+						HttpMethod.GET, //
+						null,
 						CustomerResponseBody.class);
 
 		Assert.assertNotNull(exchange);
@@ -258,7 +308,7 @@ public class CustomerControllerTests {
 		customerRepository.save(c1);
 
 		return c1;
-
 	}
+
 
 }
