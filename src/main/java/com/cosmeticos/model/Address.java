@@ -4,14 +4,11 @@
  */
 package com.cosmeticos.model;
 
-import com.oracle.webservices.internal.api.databinding.DatabindingMode;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -19,7 +16,6 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Data
 @Entity
-@Table
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
