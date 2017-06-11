@@ -5,14 +5,13 @@
 package com.cosmeticos.model;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -25,8 +24,9 @@ public class Service implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idService;
-    @Basic(optional = false)
-    @Column(name = "category")
+
+    @NotEmpty(message = "category cannot be empty")
+    @Column(unique = true)
     private String category;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")

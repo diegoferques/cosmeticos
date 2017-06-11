@@ -23,22 +23,35 @@ public class ServiceBeanService {
    @Autowired
    private ServiceRepository repository;
 
-    public Service create(ServiceRequestBody request){
-        Service service = new Service();
-        service.setCategory(request.toString());
+    public Service create(ServiceRequestBody request) {
+        Service s = new Service();
+        s.setCategory(request.getEntity().getCategory());
 
-        return repository.save(service);
+        return repository.save(s);
     }
 
-    public Service update(ServiceRequestBody request){
-        Service service = repository.findOne(request.getIdService());
-        service.setCategory(request.getCategory());
+    public Optional<Service> update(ServiceRequestBody request) {
+        Service serviceFromRequest = request.getEntity();
 
-        return repository.save(service);
+        // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
+        Long requestedIdService = serviceFromRequest.getIdService();
+
+        Optional<Service> optional = Optional.ofNullable(repository.findOne(requestedIdService));
+
+        if (optional.isPresent()) {
+            Service persistentService = optional.get();
+
+            persistentService.setCategory(serviceFromRequest.getCategory());
+            persistentService.setProfessionalServicesCollection(serviceFromRequest.getProfessionalServicesCollection());
+
+            repository.save(persistentService);
+        }
+
+        return optional;
     }
 
-    public Optional<Service> find(Long id){
-        return Optional.of(repository.findOne(id));
+    public Optional<Service> find(String id){
+        return Optional.of(repository.findOne(Long.valueOf(id)));
     }
 
     public void deletar(){

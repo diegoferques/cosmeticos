@@ -34,10 +34,11 @@ public class ServiceControllerTests {
     public void testCreateServiceOK() {
 
         Service s = new Service();
+
         s.setCategory("CONTENTMANAGER");
 
         ServiceRequestBody request = new ServiceRequestBody();
-        request.setIdService(1L);
+        request.setEntity(s);
 
         final ResponseEntity<ServiceResponseBody> exchange = //
                 restTemplate.exchange( //

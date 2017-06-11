@@ -16,10 +16,5 @@ public class ServiceResponseBody {
 
     private List<Service> serviceList = new ArrayList<>(10);
 
-    public ServiceResponseBody() {
-    }
 
-    public ServiceResponseBody(Service service) {
-        this.serviceList.add(service);
-    }
 }

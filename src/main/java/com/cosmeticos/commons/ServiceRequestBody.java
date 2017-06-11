@@ -10,12 +10,8 @@ import javax.validation.Valid;
  * Created by Vinicius on 31/05/2017.
  */
 @Data
-
 public class ServiceRequestBody {
 
-    private Long idService;
-
-    private String category;
-
-
+    @Valid
+    private Service entity;
 }
