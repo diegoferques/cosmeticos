@@ -4,65 +4,34 @@
  */
 package com.cosmeticos.model;
 
+import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 
 /**
  *
  * @author magarrett.dias
  */
+@Data
 @Entity
-@Table
 public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idService;
-    @Basic(optional = false)
-    @Column(name = "category")
+
+    @NotEmpty(message = "category cannot be empty")
+    @Column(unique = true)
     private String category;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")
     private Collection<ProfessionalServices> professionalServicesCollection;
 
-    public Service() {
-    }
-
-    public Service(Long idService) {
-        this.idService = idService;
-    }
-
-    public Service(Long idService, String category) {
-        this.idService = idService;
-        this.category = category;
-    }
-
-    public Long getIdService() {
-        return idService;
-    }
-
-    public void setIdService(Long idService) {
-        this.idService = idService;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    @XmlTransient
-    public Collection<ProfessionalServices> getProfessionalServicesCollection() {
-        return professionalServicesCollection;
-    }
-
-    public void setProfessionalServicesCollection(Collection<ProfessionalServices> professionalServicesCollection) {
-        this.professionalServicesCollection = professionalServicesCollection;
-    }
 
     @Override
     public int hashCode() {
