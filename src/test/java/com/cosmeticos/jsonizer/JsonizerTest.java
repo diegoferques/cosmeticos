@@ -44,8 +44,8 @@ public class JsonizerTest {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
         Customer customer = createFakeCustomer();
-        Address addres = createFakeAddress(customer);
-        User user = createFakeLogin(customer);
+        Address addres = new Address();
+        User user = new User();
 
         CustomerRequestBody requestBody = new CustomerRequestBody();
         requestBody.setAddress(addres);
@@ -57,33 +57,6 @@ public class JsonizerTest {
         System.out.println(json);
     }
 
-    private User createFakeLogin(Customer c) {
-        User u = new User();
-        u.setEmail("diego@bol.com");
-        u.setIdLogin(1234L);
-        u.setPassword("123qwe");
-        u.setSourceApp("google+");
-        u.setUsername("diegoferques");
-
-        u.setCustomerCollection(new ArrayList<>());
-        u.getCustomerCollection().add(c);
-        return u;
-    }
-
-    private Address createFakeAddress(Customer customer) {
-        Address a = new Address();
-        a.setAddress("Rua Perlita");
-        a.setCep("0000000");
-        a.setCity("RJO");
-        a.setCountry("BRA");
-        a.setNeighborhood("Austin");
-        a.setState("RJ");
-
-
-        a.setCustomerCollection(new ArrayList<>());
-        a.getCustomerCollection().add(customer);
-        return a;
-    }
 
 
     private Customer createFakeCustomer() {

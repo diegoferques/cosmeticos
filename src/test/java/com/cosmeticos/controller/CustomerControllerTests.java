@@ -141,7 +141,7 @@ public class CustomerControllerTests {
 	public void testCreateOK() throws IOException {
 
 
-		String content = new String(Files.readAllBytes(Paths.get("C:\\xampp\\htdocs\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
+		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
 
 		Customer customer = createFakeCustomer();
 		Address addres = createFakeAddress(customer);
@@ -309,6 +309,4 @@ public class CustomerControllerTests {
 
 		return c1;
 	}
-
-
 }

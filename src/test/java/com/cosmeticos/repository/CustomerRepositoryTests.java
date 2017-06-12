@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,6 +41,9 @@ public class CustomerRepositoryTests {
     @Before
     public void setupTests() throws ParseException {
 
+        User u1 = new  User();
+        Address address = new Address();
+
         //TODO: pesquisar como gravar apenas dia mes e ano.
         //c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
         //Date birthDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-20");
@@ -53,9 +57,16 @@ public class CustomerRepositoryTests {
         c1.setNameCustomer("João da Silva");
         //c1.setServiceRequestCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
-        c1.setIdAddress(this.createFakeAddress(c1));
-        c1.setIdLogin(this.createFakeLogin(c1));
+        c1.setIdLogin(u1);
+        c1.setIdAddress(address);
 
+        u1.setCustomer(c1);
+        address.setCustomer(c1);
+
+
+        User u2 = new  User();
+        Address address2 = new Address();
+		
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
         Customer c2 = new Customer();
         c2.setBirthDate(birthDate2);
@@ -66,8 +77,18 @@ public class CustomerRepositoryTests {
         c2.setNameCustomer("Diego Fernandes");
         //c2.setServiceRequestCollection(null);
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
-        c2.setIdAddress(this.createFakeAddress(c2));
-        c2.setIdLogin(this.createFakeLogin(c2));
+
+		
+        c2.setIdAddress(address2);
+        c2.setIdLogin(u2);
+
+        u2.setCustomer(c2);
+        address2.setCustomer(c2);
+
+
+
+        User u3 = new  User();
+        Address address3 = new Address();
 
         Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
         Customer c3 = new Customer();
@@ -79,8 +100,17 @@ public class CustomerRepositoryTests {
         c3.setNameCustomer("Maria das Dores");
         //c3.setServiceRequestCollection(null);
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
-        c3.setIdAddress(this.createFakeAddress(c3));
-        c3.setIdLogin(this.createFakeLogin(c3));
+
+		
+        c3.setIdAddress(address3);
+        c3.setIdLogin(u3);
+
+        u3.setCustomer(c3);
+        address3.setCustomer(c3);
+
+
+        User u4 = new  User();
+        Address address4 = new Address();
 
         Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
         Customer c4 = new Customer();
@@ -92,9 +122,17 @@ public class CustomerRepositoryTests {
         c4.setNameCustomer("Fernanda Cavalcante");
         //c4.setServiceRequestCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
-        c4.setIdAddress(this.createFakeAddress(c4));
-        c4.setIdLogin(this.createFakeLogin(c4));
 
+        c4.setIdAddress(address4);
+        c4.setIdLogin(u4);
+
+        u4.setCustomer(c4);
+        address4.setCustomer(c4);
+
+
+
+        User u5 = new  User();
+        Address address5 = new Address();
         Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
         Customer c5 = new Customer();
         c5.setBirthDate(birthDate5);
@@ -103,10 +141,12 @@ public class CustomerRepositoryTests {
         c5.setDateRegister(Calendar.getInstance().getTime());
         c5.setGenre('M');
         c5.setNameCustomer("José das Couves");
-        //c5.setServiceRequestCollection(null);
         c5.setStatus(Customer.Status.ACTIVE.ordinal());
-        c5.setIdAddress(this.createFakeAddress(c5));
-        c5.setIdLogin(this.createFakeLogin(c5));
+        c5.setIdAddress(address5);
+        c5.setIdLogin(u5);
+
+        u5.setCustomer(c5);
+        address5.setCustomer(c5);
 
         repository.save(c1);
         repository.save(c2);

@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -54,12 +55,14 @@ public class Customer implements Serializable {
 
     private Integer status;
 
-    @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
-    @ManyToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "idCustomer")
+    @JsonManagedReference // Evita infinite recursion
     private User idLogin;
 
-    @JoinColumn(name = "idAddress", referencedColumnName = "idAddress")
-    @ManyToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idCustomer")
+    @JsonManagedReference // Evita infinite recursion
     private Address idAddress;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")

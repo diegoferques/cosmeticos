@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,11 +38,12 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLogin")
-    private Collection<Customer> customerCollection;
+    @OneToOne(mappedBy = "idLogin")
+    @JsonBackReference // Evita infinite recursion
+    private Customer customer;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLogin")
-    private Collection<Professional> professionalCollection;
+    @OneToOne(mappedBy = "idLogin")
+    private Professional professional;
 
     @Override
     public int hashCode() {
