@@ -57,12 +57,10 @@ public class Customer implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idCustomer")
-    @JsonManagedReference // Evita infinite recursion
     private User idLogin;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
-    @JsonManagedReference // Evita infinite recursion
     private Address idAddress;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")

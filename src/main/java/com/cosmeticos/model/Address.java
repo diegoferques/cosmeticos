@@ -37,8 +37,7 @@ public class Address implements Serializable {
 
     private String country;
 
-    @OneToOne(mappedBy = "idAddress")
-    @JsonBackReference // Evita infinite recursion
+    @OneToOne
     private Customer customer;
 
     @OneToOne(mappedBy = "idAddress")

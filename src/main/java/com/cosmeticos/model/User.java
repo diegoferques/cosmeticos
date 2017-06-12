@@ -38,8 +38,7 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
-    @OneToOne(mappedBy = "idLogin")
-    @JsonBackReference // Evita infinite recursion
+    @OneToOne
     private Customer customer;
 
     @OneToOne(mappedBy = "idLogin")
