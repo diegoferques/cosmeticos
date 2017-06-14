@@ -18,6 +18,7 @@ public class ProfessionalServicesPK implements Serializable {
     @Basic(optional = false)
     @Column(name = "idProfessional")
     private long idProfessional;
+
     @Basic(optional = false)
     @Column(name = "idService")
     private long idService;

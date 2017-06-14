@@ -11,14 +11,9 @@ import java.util.List;
  */
 @Data
 public class UserResponseBody {
+
     private String description;
 
     private List<User> userList = new ArrayList<>(10);
 
-    public UserResponseBody() {
-    }
-
-    public UserResponseBody(User user) {
-        this.userList.add(user);
-    }
 }

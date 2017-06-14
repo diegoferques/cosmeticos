@@ -16,5 +16,4 @@ public class ServiceResponseBody {
 
     private List<Service> serviceList = new ArrayList<>(10);
 
-
 }

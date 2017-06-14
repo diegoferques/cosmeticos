@@ -5,6 +5,7 @@
 package com.cosmeticos.model;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -25,6 +26,7 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLogin;
 
+    @NotEmpty(message = "UserName cannot be empty")
     private String username;
 
     private String password;

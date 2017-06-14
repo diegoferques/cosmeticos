@@ -22,25 +22,40 @@ public class UserService {
     private UserRepository repository;
 
     public User create(UserRequestBody request){
-        User user = new User();
-        user.setUsername(request.getOwnerName());
-        user.setPassword(request.getPassWordUser());
-        user.setSourceApp(request.getSourceApp());
+        User u = new User();
+        u.setUsername(request.getEntity().getUsername());
+        u.setPassword(request.getEntity().getPassword());
+        u.setEmail(request.getEntity().getEmail());
+        u.setSourceApp(request.getEntity().getSourceApp());
 
-        return repository.save(user);
+        return repository.save(u);
     }
 
-    public User update(UserRequestBody request){
-        User user = repository.findOne(request.getIdUser());
-        user.setUsername(request.getOwnerName());
-        user.setPassword(request.getPassWordUser());
-        user.setSourceApp(request.getSourceApp());
+    public Optional<User> update(UserRequestBody request){
+        User userFromRequest = request.getEntity();
 
-        return repository.save(user);
+        // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
+        Long requestedIdLogin = userFromRequest.getIdLogin();
+
+        Optional<User> optional = Optional.ofNullable(repository.findOne(requestedIdLogin));
+
+        if (optional.isPresent()) {
+            User persistentUser = optional.get();
+
+            persistentUser.setUsername(userFromRequest.getUsername());
+            persistentUser.setPassword(userFromRequest.getPassword());
+            persistentUser.setEmail(userFromRequest.getEmail());
+            persistentUser.setSourceApp(userFromRequest.getSourceApp());
+            persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
+
+            repository.save(persistentUser);
+        }
+
+        return optional;
     }
 
     public Optional<User> find(Long id){
-        return Optional.of(repository.findOne(id));
+        return Optional.ofNullable(repository.findOne(id));
     }
 
     public void deletar(){
