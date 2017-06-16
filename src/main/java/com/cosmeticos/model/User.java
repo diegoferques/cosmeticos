@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,7 +38,7 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
-    @OneToOne(mappedBy = "idLogin")
+    @OneToOne
     private Customer customer;
 
     @OneToOne(mappedBy = "idLogin")

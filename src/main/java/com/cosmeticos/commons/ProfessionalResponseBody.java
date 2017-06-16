@@ -1,7 +1,10 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Professional;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by matto on 27/05/2017.
@@ -9,20 +12,14 @@ import lombok.Data;
 @Data
 public class ProfessionalResponseBody {
 
-    //private Long idCustomer;
-
-    //private String nameCustomer;
-    //private String cpf;
-    //private char genre;
-    //private String birthDate;
-    //private String cellPhone;
-
-    //private String dateRegister;
-    //private short status;
-    //private User idLogin;
-    //private Address idAddress;
-
     private String description;
 
-    private Customer customer;
+    private List<Professional> professionalList = new ArrayList<>(10);
+
+    public ProfessionalResponseBody() {
+    }
+
+    public ProfessionalResponseBody(Professional customer) {
+        this.professionalList.add(customer);
+    }
 }

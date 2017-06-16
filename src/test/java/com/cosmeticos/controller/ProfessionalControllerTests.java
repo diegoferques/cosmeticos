@@ -1,16 +1,16 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.commons.CustomerResponseBody;
+import com.cosmeticos.commons.ProfessionalRequestBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
-import com.cosmeticos.service.CustomerService;
+import com.cosmeticos.service.ProfessionalService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,17 +35,18 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CustomerControllerTests {
+public class ProfessionalControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Autowired
-	private CustomerRepository customerRepository;
+	private ProfessionalRepository customerRepository;
 
 	@Autowired
 	private AddressRepository addressRepository;
@@ -54,7 +55,7 @@ public class CustomerControllerTests {
 	private UserRepository userRepository;
 
 	@MockBean
-	private CustomerService service;
+	private ProfessionalService mockedService;
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -66,67 +67,67 @@ public class CustomerControllerTests {
 		//c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
 		//Date birthDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-20");
 
-		Customer c1 = new Customer();
+		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
-		c1.setCpf("098.765.432-10");
+		c1.setCnpj("098.765.432-10");
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
-		c1.setNameCustomer("João da Silva");
+		c1.setNameProfessional("João da Silva");
 		//c1.setServiceRequestCollection(null);
-		c1.setStatus(Customer.Status.ACTIVE.ordinal());
+		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setIdAddress(this.createFakeAddress(c1));
 		c1.setIdLogin(this.createFakeLogin(c1));
 
 		Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
-		Customer c2 = new Customer();
+		Professional c2 = new Professional();
 		c2.setBirthDate(birthDate2);
 		c2.setCellPhone("(21) 98807-2756");
-		c2.setCpf("098.330.987-62");
+		c2.setCnpj("098.330.987-62");
 		c2.setDateRegister(Calendar.getInstance().getTime());
 		c2.setGenre('M');
-		c2.setNameCustomer("Diego Fernandes");
+		c2.setNameProfessional("Diego Fernandes");
 		//c2.setServiceRequestCollection(null);
-		c2.setStatus(Customer.Status.ACTIVE.ordinal());
+		c2.setStatus(Professional.Status.ACTIVE);
 		c2.setIdAddress(this.createFakeAddress(c2));
 		c2.setIdLogin(this.createFakeLogin(c2));
 
 		Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
-		Customer c3 = new Customer();
+		Professional c3 = new Professional();
 		c3.setBirthDate(birthDate3);
 		c3.setCellPhone("(21) 99988-7766");
-		c3.setCpf("831.846.135-15");
+		c3.setCnpj("831.846.135-15");
 		c3.setDateRegister(Calendar.getInstance().getTime());
 		c3.setGenre('F');
-		c3.setNameCustomer("Maria das Dores");
+		c3.setNameProfessional("Maria das Dores");
 		//c3.setServiceRequestCollection(null);
-		c3.setStatus(Customer.Status.ACTIVE.ordinal());
+		c3.setStatus(Professional.Status.ACTIVE);
 		c3.setIdAddress(this.createFakeAddress(c3));
 		c3.setIdLogin(this.createFakeLogin(c3));
 
 		Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
-		Customer c4 = new Customer();
+		Professional c4 = new Professional();
 		c4.setBirthDate(birthDate4);
 		c4.setCellPhone("(21) 99887-7665");
-		c4.setCpf("816.810.695-68");
+		c4.setCnpj("816.810.695-68");
 		c4.setDateRegister(Calendar.getInstance().getTime());
 		c4.setGenre('F');
-		c4.setNameCustomer("Fernanda Cavalcante");
+		c4.setNameProfessional("Fernanda Cavalcante");
 		//c4.setServiceRequestCollection(null);
-		c4.setStatus(Customer.Status.INACTIVE.ordinal());
+		c4.setStatus(Professional.Status.INACTIVE);
 		c4.setIdAddress(this.createFakeAddress(c4));
 		c4.setIdLogin(this.createFakeLogin(c4));
 
 		Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
-		Customer c5 = new Customer();
+		Professional c5 = new Professional();
 		c5.setBirthDate(birthDate5);
 		c5.setCellPhone("(21) 97766-5544");
-		c5.setCpf("541.913.254-81");
+		c5.setCnpj("541.913.254-81");
 		c5.setDateRegister(Calendar.getInstance().getTime());
 		c5.setGenre('M');
-		c5.setNameCustomer("José das Couves");
+		c5.setNameProfessional("José das Couves");
 		//c5.setServiceRequestCollection(null);
-		c5.setStatus(Customer.Status.ACTIVE.ordinal());
+		c5.setStatus(Professional.Status.ACTIVE);
 		c5.setIdAddress(this.createFakeAddress(c5));
 		c5.setIdLogin(this.createFakeLogin(c5));
 
@@ -143,20 +144,20 @@ public class CustomerControllerTests {
 
 		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
 
-		Customer customer = createFakeCustomer();
+		Professional customer = createFakeProfessional();
 		Address addres = createFakeAddress(customer);
 		User user = createFakeLogin(customer);
 
-		CustomerRequestBody requestBody = new CustomerRequestBody();
+		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
 		requestBody.setAddress(addres);
 		requestBody.setUser(user);
-		requestBody.setCustomer(customer);
+		requestBody.setProfessional(customer);
 
-		CustomerResponseBody rsp = restTemplate.postForObject("/customers", content, CustomerResponseBody.class);
+		ProfessionalResponseBody rsp = restTemplate.postForObject("/professionals", content, ProfessionalResponseBody.class);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/customers", //
+						"/professionals", //
 						HttpMethod.POST, //
 						new HttpEntity(requestBody), // Body
 						ScheduleResponseBody.class);
@@ -170,17 +171,17 @@ public class CustomerControllerTests {
 	public void testCreateError500() throws IOException {
 		/**/
 		Mockito.when(
-				service.create(Mockito.anyObject())
+				mockedService.create(Mockito.anyObject())
 		).thenThrow(new RuntimeException());
 
-		CustomerRequestBody requestBody = createFakeRequestBody();
+		ProfessionalRequestBody requestBody = createFakeRequestBody();
 
-		final ResponseEntity<CustomerResponseBody> exchange = //
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/customers", //
+						"/professionals", //
 						HttpMethod.POST, //
 						new HttpEntity(requestBody), // Body
-						CustomerResponseBody.class);
+						ProfessionalResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
@@ -189,16 +190,16 @@ public class CustomerControllerTests {
 	@Test
 	public void testUpdateOK() throws IOException {
 
-		Customer c1 = new Customer();
-		c1.setIdCustomer(1L);
-		c1.setNameCustomer("Diego Fernandes Marques da Silva");
+		Professional c1 = new Professional();
+		c1.setIdProfessional(1L);
+		c1.setNameProfessional("Diego Fernandes Marques da Silva");
 
-		CustomerRequestBody cr = new CustomerRequestBody();
-		cr.setCustomer(c1);
+		ProfessionalRequestBody cr = new ProfessionalRequestBody();
+		cr.setProfessional(c1);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/customers", //
+						"/professionals", //
 						HttpMethod.PUT, //
 						new HttpEntity(cr), // Body
 						ScheduleResponseBody.class);
@@ -207,16 +208,19 @@ public class CustomerControllerTests {
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 	}
 
-	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection
 	@Test
 	public void testFindById() throws ParseException {
 
-		final ResponseEntity<CustomerResponseBody> exchange = //
+		Mockito.when(
+				mockedService.find(Long.valueOf(1))
+		).thenReturn(Optional.of(new Professional()));
+
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/customers/1", //
+						"/professionals/1", //
 						HttpMethod.GET, //
 						null,
-						CustomerResponseBody.class);
+						ProfessionalResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -226,60 +230,58 @@ public class CustomerControllerTests {
 	@Test
 	public void testDeleteForbiden() throws ParseException {
 
-		final ResponseEntity<CustomerResponseBody> exchange = //
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/customers/1", //
+						"/professionals/1", //
 						HttpMethod.DELETE, //
 						null,
-						CustomerResponseBody.class);
+						ProfessionalResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.FORBIDDEN, exchange.getStatusCode());
 
 	}
 
-	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection, o mesmo erro de testFindById
+	// TODO - Aparentemente o erro é por conta do retorno infinito de ProfessionalCollection, o mesmo erro de testFindById
 	@Test
 	public void testLastest10OK() throws ParseException {
 
-		final ResponseEntity<CustomerResponseBody> exchange = //
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/customers", //
+						"/professionals", //
 						HttpMethod.GET, //
 						null,
-						CustomerResponseBody.class);
+						ProfessionalResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
 	}
 
-	private CustomerRequestBody createFakeRequestBody() {
-		Customer customer = createFakeCustomer();
+	private ProfessionalRequestBody createFakeRequestBody() {
+		Professional customer = createFakeProfessional();
 		Address address = createFakeAddress(customer);
 		User user = createFakeLogin(customer);
 
-		CustomerRequestBody requestBody = new CustomerRequestBody();
+		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
 		requestBody.setAddress(address);
 		requestBody.setUser(user);
-		requestBody.setCustomer(customer);
+		requestBody.setProfessional(customer);
 
 		return requestBody;
 	}
 
-	public User createFakeLogin(Customer c) {
+	public User createFakeLogin(Professional c) {
 		User u = new User();
 		u.setEmail("diego@bol.com");
-		//u.setIdLogin(1234L);
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
-		//u.getCustomerCollection().add(c);
-		userRepository.save(u);
+
 		return u;
 	}
 
-	public Address createFakeAddress(Customer customer) {
+	private Address createFakeAddress(Professional customer) {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
 		a.setCep("0000000");
@@ -287,25 +289,22 @@ public class CustomerControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
-		//a.getCustomerCollection().add(customer);
-		addressRepository.save(a);
+
 		return a;
 	}
 
-	public Customer createFakeCustomer() {
-		Customer c1 = new Customer();
+	private Professional createFakeProfessional() {
+		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
-		c1.setCpf("098.765.432-10");
+		c1.setCnpj("098.765.432-10");
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
-		c1.setNameCustomer("João da Silva");
+		c1.setNameProfessional("João da Silva");
 		//c1.setServiceRequestCollection(null);
-		c1.setStatus(Customer.Status.ACTIVE.ordinal());
+		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setIdAddress(this.createFakeAddress(c1));
 		c1.setIdLogin(this.createFakeLogin(c1));
-
-		customerRepository.save(c1);
 
 		return c1;
 	}

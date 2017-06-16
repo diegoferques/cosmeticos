@@ -16,5 +16,5 @@ public class ProfessionalRequestBody {
 
     private User user;
 
-    private Professional customer;
+    private Professional professional;
 }

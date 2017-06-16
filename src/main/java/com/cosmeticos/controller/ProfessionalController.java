@@ -1,10 +1,10 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.commons.CustomerResponseBody;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.service.CustomerService;
+import com.cosmeticos.commons.ProfessionalRequestBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.model.Professional;
 import com.cosmeticos.service.ProfessionalService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 @Slf4j
 @RestController
@@ -27,115 +27,143 @@ public class ProfessionalController {
     @Autowired
     private ProfessionalService service;
 
-    @RequestMapping(path = "/professionals", method = RequestMethod.GET)
-    @ResponseBody
-    String getProfessionals() {
-
-
-        ProfessionalResponseBody b = new ProfessionalResponseBody();
-
-        return "Exibição de todos os Customers cadastrados";
-    }
-
     @RequestMapping(path = "/professionals", method = RequestMethod.POST)
-    public HttpEntity<CustomerResponseBody> create(@Valid @RequestBody CustomerRequestBody request,
+    public HttpEntity<ProfessionalResponseBody> create(@Valid @RequestBody ProfessionalRequestBody request,
                                                    BindingResult bindingResult) {
         try {
             if(bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                Customer c = service.create(request);
-                log.info("Customer adicionado com sucesso:  [{}]", c);
-                return ok().build();
+                Professional professional = service.create(request);
+                log.info("Professional adicionado com sucesso:  [{}]", professional);
+                //return ok().build();
+                return ok(new ProfessionalResponseBody(professional));
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
+
+            ProfessionalResponseBody b = new ProfessionalResponseBody();
+            b.setDescription("Erro interno: " + errorCode);
 
             log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
 
-            CustomerResponseBody b = new CustomerResponseBody();
-            b.setDescription("Erro interno: " + errorCode);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(b);
+        }
+    }
+
+    @RequestMapping(path = "/professionals", method = RequestMethod.PUT)
+    public HttpEntity<ProfessionalResponseBody> update(@Valid @RequestBody ProfessionalRequestBody request, BindingResult bindingResult) {
+
+        try {
+            if(bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            }
+            else
+            {
+                Professional Professional = service.update(request);
+
+                ProfessionalResponseBody responseBody = new ProfessionalResponseBody(Professional);
+                log.info("Professional atualizado com sucesso:  [{}] responseJson[{}]",
+                        Professional,
+                        new ObjectMapper().writeValueAsString(responseBody));
+                return ok(responseBody);
+            }
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            ProfessionalResponseBody response = new ProfessionalResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na atualização do Professional: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
     }
 
-    @RequestMapping(path = "/professionals/{idCustomer}", method = RequestMethod.GET)
-    @ResponseBody
-    public HttpEntity<CustomerResponseBody> get(@PathVariable String idCustomer) {
-
-        CustomerResponseBody responseBody = new CustomerResponseBody();
+    @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalResponseBody> findById(@PathVariable String idProfessional) {
 
         try {
 
-            if(idCustomer.isEmpty()) {
-                String erro = "Erro na requisicao do cliente: idCustomer não informado";
+            Optional<Professional> professional = service.find(Long.valueOf(idProfessional));
 
-                responseBody.setDescription(erro);
+            if (professional.isPresent()) {
+                log.info("Busca de Professional com exito: [{}]", professional.get());
+                ProfessionalResponseBody response = new ProfessionalResponseBody(professional.get());
 
-                log.error(erro);
-
-                return badRequest().body(responseBody);
-
+                //return ok().body(response);
+                return ok(response);
             } else {
-                Customer customer = service.find(Long.valueOf(idCustomer));
-                responseBody.setCustomer(customer);
-
-                log.info("Customer exibido com sucesso:  [{}]", customer);
-                return ok().body(responseBody);
+                log.error("Nenhum registro encontrado para o id: {}", idProfessional);
+                return notFound().build();
             }
 
         } catch (Exception e) {
-
             String errorCode = String.valueOf(System.nanoTime());
-            String erro = "Erro interno: " + errorCode;
 
-            responseBody.setDescription(erro);
+            ProfessionalResponseBody response = new ProfessionalResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
 
-            log.error("Erro na exibição do Customer ID: {} - {}", errorCode, e.getMessage(), e );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+            log.error("Erro na exibição do Professional: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    @RequestMapping(path = "/professionals/{idCustomer}", method = RequestMethod.PUT)
-    @ResponseBody
-    String updateCustomer(@PathVariable String idCustomer) {
+    @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.DELETE)
+    public HttpEntity<ProfessionalResponseBody> delete(@PathVariable String idProfessional) {
+
+
+        String errorCode = String.valueOf(System.nanoTime());
+
+        ProfessionalResponseBody response = new ProfessionalResponseBody();
+        response.setDescription("Ação não permitida: Atualize o status do Professional para desativado: " + errorCode);
+
+        log.warn("Ação não permitida para deletar o Professional: {}. Atualize o status do Professional para desativado. - {}", idProfessional, errorCode);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+
+    }
+
+    @RequestMapping(path = "/professionals", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalResponseBody> findLastest10() {
 
         try {
-            return "Atualizando o Customer de ID " + idCustomer;
+            List<Professional> entitylist = service.find10Lastest();
+
+            ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+            responseBody.setProfessionalList(entitylist);
+            responseBody.setDescription("TOP 10 successfully retrieved.");
+
+            log.info("{} Professionals successfully retrieved.", entitylist.size());
+
+            return ok().body(responseBody);
 
         } catch (Exception e) {
-            log.error("Erro na Atualização do Customer ID: {} - {}", idCustomer, e.getMessage(), e );
-            return "Erro";
+            String errorCode = String.valueOf(System.nanoTime());
+
+            ProfessionalResponseBody response = new ProfessionalResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na exibição da Lista de Professional: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    @RequestMapping(path = "/professionals/{idCustomer}", method = RequestMethod.DELETE)
-    @ResponseBody
-    String deleteCustomer(@PathVariable String idCustomer) {
-
-        try {
-            return "Customer de ID " + idCustomer + " Deletado com sucesso!";
-
-        } catch (Exception e) {
-            log.error("Erro ao Deletar o Customer ID: {} - {}", idCustomer, e.getMessage(), e );
-            return "Erro";
-        }
-
-    }
-
-    private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {
+    private ProfessionalResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
                 .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
                 .collect(Collectors.toList());
 
-        CustomerResponseBody responseBody = new CustomerResponseBody();
+        ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
         responseBody.setDescription(errors.toString());
         return responseBody;
     }
-
 
 
 }

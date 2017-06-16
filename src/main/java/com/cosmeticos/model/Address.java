@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -35,7 +36,7 @@ public class Address implements Serializable {
 
     private String country;
 
-    @OneToOne(mappedBy = "idAddress")
+    @OneToOne
     private Customer customer;
 
     @OneToOne(mappedBy = "idAddress")
