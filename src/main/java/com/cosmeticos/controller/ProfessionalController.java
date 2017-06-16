@@ -60,15 +60,29 @@ public class ProfessionalController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             }
-            else
+            else if(request.getProfessional() == null || request.getProfessional().getIdProfessional() == null)
             {
-                Professional Professional = service.update(request);
+                log.error("Entidade a ser alterada esta nula.");
+                return badRequest().body(buildErrorResponse(bindingResult));
+            }
+            else {
+                Optional<Professional> optional = service.update(request);
 
-                ProfessionalResponseBody responseBody = new ProfessionalResponseBody(Professional);
-                log.info("Professional atualizado com sucesso:  [{}] responseJson[{}]",
-                        Professional,
-                        new ObjectMapper().writeValueAsString(responseBody));
-                return ok(responseBody);
+                if (optional.isPresent()) {
+                    Professional Professional = optional.get();
+
+                    ProfessionalResponseBody responseBody = new ProfessionalResponseBody(Professional);
+                    log.info("Professional atualizado com sucesso:  [{}] responseJson[{}]",
+                            Professional,
+                            new ObjectMapper().writeValueAsString(responseBody));
+                    return ok(responseBody);
+                }
+                else
+                {
+                    log.info("Professional inexistente:  [{}]",
+                            request.getProfessional());
+                    return ResponseEntity.notFound().build();
+                }
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

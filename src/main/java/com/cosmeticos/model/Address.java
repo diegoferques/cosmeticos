@@ -39,7 +39,7 @@ public class Address implements Serializable {
     @OneToOne
     private Customer customer;
 
-    @OneToOne(mappedBy = "idAddress")
+    @OneToOne
     private Professional professional;
 
 

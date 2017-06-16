@@ -46,35 +46,46 @@ public class ProfessionalService {
         return repository.save(c);
     }
 
-    public Professional update(ProfessionalRequestBody request) {
+    public Optional<Professional> update(ProfessionalRequestBody request) {
         Professional cr = request.getProfessional();
-        Professional customer = repository.findOne(cr.getIdProfessional());
 
-        if(!StringUtils.isEmpty(cr.getBirthDate())) {
-            customer.setBirthDate(cr.getBirthDate());
+        Optional<Professional> optional = Optional.ofNullable(repository.findOne(cr.getIdProfessional()));
+
+        if(optional.isPresent()) {
+
+            Professional customer = optional.get();
+
+            if (!StringUtils.isEmpty(cr.getBirthDate())) {
+                customer.setBirthDate(cr.getBirthDate());
+            }
+
+            if (!StringUtils.isEmpty(cr.getCellPhone())) {
+                customer.setCellPhone(cr.getCellPhone());
+            }
+
+            if (!StringUtils.isEmpty(cr.getCnpj())) {
+                customer.setCnpj(cr.getCnpj());
+            }
+
+            if (!StringUtils.isEmpty(cr.getGenre())) {
+                customer.setGenre(cr.getGenre());
+            }
+
+            if (!StringUtils.isEmpty(cr.getNameProfessional())) {
+                customer.setNameProfessional(cr.getNameProfessional());
+            }
+
+            if (!StringUtils.isEmpty(cr.getStatus())) {
+                customer.setStatus(cr.getStatus());
+            }
+
+            repository.save(customer);
+
+            return Optional.of(customer);
         }
-
-        if(!StringUtils.isEmpty(cr.getCellPhone())) {
-            customer.setCellPhone(cr.getCellPhone());
+        else{
+            return optional;
         }
-
-        if(!StringUtils.isEmpty(cr.getCnpj())) {
-            customer.setCnpj(cr.getCnpj());
-        }
-
-        if(!StringUtils.isEmpty(cr.getGenre())) {
-            customer.setGenre(cr.getGenre());
-        }
-
-        if(!StringUtils.isEmpty(cr.getNameProfessional())) {
-            customer.setNameProfessional(cr.getNameProfessional());
-        }
-
-        if(!StringUtils.isEmpty(cr.getStatus())) {
-            customer.setStatus(cr.getStatus());
-        }
-
-        return repository.save(customer);
     }
 
     public void delete() {
