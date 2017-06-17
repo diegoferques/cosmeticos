@@ -18,7 +18,6 @@ import javax.persistence.*;
  */
 @Data
 @Entity
-@Table
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -40,7 +39,7 @@ public class Address implements Serializable {
     @OneToOne
     private Customer customer;
 
-    @OneToOne(mappedBy = "idAddress")
+    @OneToOne
     private Professional professional;
 
 

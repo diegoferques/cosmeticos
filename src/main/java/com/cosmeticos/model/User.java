@@ -41,7 +41,7 @@ public class User implements Serializable {
     @OneToOne
     private Customer customer;
 
-    @OneToOne(mappedBy = "idLogin")
+    @OneToOne
     private Professional professional;
 
     @Override
