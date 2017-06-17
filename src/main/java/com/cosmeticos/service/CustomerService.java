@@ -97,25 +97,8 @@ public class CustomerService {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
 
+
     public List<Customer> find10Lastest() {
         return repository.findTop10ByOrderByDateRegisterDesc();
     }
-
-    public Customer createFakeCustomer() {
-        Customer c = new Customer();
-        c.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
-        c.setCellPhone("(21) 98877-6655");
-        c.setCpf("098.765.432-10");
-        c.setDateRegister(Calendar.getInstance().getTime());
-        c.setGenre('M');
-        c.setNameCustomer("João da Silva");
-        //c.setServiceRequestCollection(null);
-        c.setStatus(Customer.Status.ACTIVE.ordinal());
-        c.setIdAddress(addressService.createFakeAddress());
-        c.setIdLogin(userService.createFakeUser());
-
-        return c;
-    }
-
-
 }

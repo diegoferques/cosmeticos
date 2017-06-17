@@ -4,6 +4,7 @@ import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.service.CustomerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -64,8 +65,12 @@ public class CustomerController {
             else
             {
                 Customer customer = service.update(request);
-                log.info("Customer atualizado com sucesso:  [{}]", customer);
-                return ok(new CustomerResponseBody(customer));
+
+                CustomerResponseBody responseBody = new CustomerResponseBody(customer);
+                log.info("Customer atualizado com sucesso:  [{}] responseJson[{}]",
+                        customer,
+                        new ObjectMapper().writeValueAsString(responseBody));
+                return ok(responseBody);
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
