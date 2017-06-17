@@ -53,7 +53,7 @@ public class CustomerService {
         //c.setDateRegister(Timestamp.valueOf(LocalDateTime.now()));
         c.setGenre(request.getCustomer().getGenre());
         c.setNameCustomer(request.getCustomer().getNameCustomer());
-        //c.setServiceRequestCollection(null);
+        //c.setOrderCollection(null);
         c.setStatus(Customer.Status.ACTIVE.ordinal());
 
         c.setIdAddress(addressService.createFromCustomer(request));

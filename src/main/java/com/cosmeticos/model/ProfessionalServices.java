@@ -7,7 +7,6 @@ package com.cosmeticos.model;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -26,7 +25,7 @@ public class ProfessionalServices implements Serializable {
     @ManyToOne(optional = false)
     private Professional professional;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Order> orderCollection;
 
     public ProfessionalServices() {
     }
@@ -64,12 +63,12 @@ public class ProfessionalServices implements Serializable {
     }
 
     @XmlTransient
-    public Collection<ServiceRequest> getServiceRequestCollection() {
-        return serviceRequestCollection;
+    public Collection<Order> getOrderCollection() {
+        return orderCollection;
     }
 
-    public void setServiceRequestCollection(Collection<ServiceRequest> serviceRequestCollection) {
-        this.serviceRequestCollection = serviceRequestCollection;
+    public void setOrderCollection(Collection<Order> orderCollection) {
+        this.orderCollection = orderCollection;
     }
 
     @Override

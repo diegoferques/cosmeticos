@@ -74,7 +74,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setIdAddress(this.createFakeAddress(c1));
 		c1.setIdLogin(this.createFakeLogin(c1));
@@ -87,7 +87,7 @@ public class ProfessionalControllerTests {
 		c2.setDateRegister(Calendar.getInstance().getTime());
 		c2.setGenre('M');
 		c2.setNameProfessional("Diego Fernandes");
-		//c2.setServiceRequestCollection(null);
+		//c2.setOrderCollection(null);
 		c2.setStatus(Professional.Status.ACTIVE);
 		c2.setIdAddress(this.createFakeAddress(c2));
 		c2.setIdLogin(this.createFakeLogin(c2));
@@ -100,7 +100,7 @@ public class ProfessionalControllerTests {
 		c3.setDateRegister(Calendar.getInstance().getTime());
 		c3.setGenre('F');
 		c3.setNameProfessional("Maria das Dores");
-		//c3.setServiceRequestCollection(null);
+		//c3.setOrderCollection(null);
 		c3.setStatus(Professional.Status.ACTIVE);
 		c3.setIdAddress(this.createFakeAddress(c3));
 		c3.setIdLogin(this.createFakeLogin(c3));
@@ -113,7 +113,7 @@ public class ProfessionalControllerTests {
 		c4.setDateRegister(Calendar.getInstance().getTime());
 		c4.setGenre('F');
 		c4.setNameProfessional("Fernanda Cavalcante");
-		//c4.setServiceRequestCollection(null);
+		//c4.setOrderCollection(null);
 		c4.setStatus(Professional.Status.INACTIVE);
 		c4.setIdAddress(this.createFakeAddress(c4));
 		c4.setIdLogin(this.createFakeLogin(c4));
@@ -126,7 +126,7 @@ public class ProfessionalControllerTests {
 		c5.setDateRegister(Calendar.getInstance().getTime());
 		c5.setGenre('M');
 		c5.setNameProfessional("José das Couves");
-		//c5.setServiceRequestCollection(null);
+		//c5.setOrderCollection(null);
 		c5.setStatus(Professional.Status.ACTIVE);
 		c5.setIdAddress(this.createFakeAddress(c5));
 		c5.setIdLogin(this.createFakeLogin(c5));
@@ -301,7 +301,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setIdAddress(this.createFakeAddress(c1));
 		c1.setIdLogin(this.createFakeLogin(c1));

@@ -4,9 +4,8 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  *
@@ -14,11 +13,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table
-public class ServiceRequest implements Serializable {
+public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idServiceRequest;
+    private Long idOrder;
     @Basic(optional = false)
     @Column(name = "date")
     private String date;
@@ -40,25 +39,25 @@ public class ServiceRequest implements Serializable {
     @ManyToOne(optional = false)
     private Customer idCustomer;
 
-    public ServiceRequest() {
+    public Order() {
     }
 
-    public ServiceRequest(Long idServiceRequest) {
-        this.idServiceRequest = idServiceRequest;
+    public Order(Long idOrder) {
+        this.idOrder = idOrder;
     }
 
-    public ServiceRequest(Long idServiceRequest, String date, short status) {
-        this.idServiceRequest = idServiceRequest;
+    public Order(Long idOrder, String date, short status) {
+        this.idOrder = idOrder;
         this.date = date;
         this.status = status;
     }
 
-    public Long getIdServiceRequest() {
-        return idServiceRequest;
+    public Long getIdOrder() {
+        return idOrder;
     }
 
-    public void setIdServiceRequest(Long idServiceRequest) {
-        this.idServiceRequest = idServiceRequest;
+    public void setIdOrder(Long idOrder) {
+        this.idOrder = idOrder;
     }
 
     public String getDate() {
@@ -112,18 +111,18 @@ public class ServiceRequest implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idServiceRequest != null ? idServiceRequest.hashCode() : 0);
+        hash += (idOrder != null ? idOrder.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ServiceRequest)) {
+        if (!(object instanceof Order)) {
             return false;
         }
-        ServiceRequest other = (ServiceRequest) object;
-        if ((this.idServiceRequest == null && other.idServiceRequest != null) || (this.idServiceRequest != null && !this.idServiceRequest.equals(other.idServiceRequest))) {
+        Order other = (Order) object;
+        if ((this.idOrder == null && other.idOrder != null) || (this.idOrder != null && !this.idOrder.equals(other.idOrder))) {
             return false;
         }
         return true;
@@ -131,7 +130,7 @@ public class ServiceRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.ServiceRequest[ idServiceRequest=" + idServiceRequest + " ]";
+        return "javaapplication2.entity.Order[ idOrder=" + idOrder + " ]";
     }
     
 }

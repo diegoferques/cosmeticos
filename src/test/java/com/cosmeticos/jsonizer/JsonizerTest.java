@@ -6,7 +6,6 @@ import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Role;
 import com.cosmeticos.model.User;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,7 +13,6 @@ import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -67,7 +65,7 @@ public class JsonizerTest {
         c4.setDateRegister(Calendar.getInstance().getTime());
         c4.setGenre('F');
         c4.setNameCustomer("Fernanda Cavalcante");
-        c4.setServiceRequestCollection(null);
+        c4.setOrderCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
         return c4;
     }

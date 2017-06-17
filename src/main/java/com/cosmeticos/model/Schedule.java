@@ -5,11 +5,9 @@
 package com.cosmeticos.model;
 
 import lombok.Data;
-import org.hibernate.annotations.Generated;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 
@@ -40,7 +38,7 @@ public class Schedule implements Serializable {
     private Status status;
 
     @OneToMany(mappedBy = "scheduleId")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Order> orderCollection;
 
     @Override
     public int hashCode() {

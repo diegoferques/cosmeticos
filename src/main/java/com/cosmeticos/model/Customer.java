@@ -4,7 +4,6 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -64,7 +63,7 @@ public class Customer implements Serializable {
     private Address idAddress;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Order> orderCollection;
 
     @Override
     public int hashCode() {
