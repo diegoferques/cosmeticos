@@ -4,6 +4,7 @@ import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.service.CustomerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
@@ -26,16 +29,6 @@ public class CustomerController {
     @Autowired
     private CustomerService service;
 
-    @RequestMapping(path = "/customers", method = RequestMethod.GET)
-    @ResponseBody
-    String getCustomers() {
-
-
-        CustomerResponseBody b = new CustomerResponseBody();
-
-        return "Exibição de todos os Customers cadastrados";
-    }
-
     @RequestMapping(path = "/customers", method = RequestMethod.POST)
     public HttpEntity<CustomerResponseBody> create(@Valid @RequestBody CustomerRequestBody request,
                                                    BindingResult bindingResult) {
@@ -44,84 +37,123 @@ public class CustomerController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                Customer c = service.create(request);
-                log.info("Customer adicionado com sucesso:  [{}]", c);
-                return ok().build();
+                Customer customer = service.create(request);
+                log.info("Customer adicionado com sucesso:  [{}]", customer);
+                //return ok().build();
+                return ok(new CustomerResponseBody(customer));
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
-            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
-
             CustomerResponseBody b = new CustomerResponseBody();
             b.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(b);
+        }
+    }
+
+    @RequestMapping(path = "/customers", method = RequestMethod.PUT)
+    public HttpEntity<CustomerResponseBody> update(@Valid @RequestBody CustomerRequestBody request, BindingResult bindingResult) {
+
+        try {
+            if(bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            }
+            else
+            {
+                Customer customer = service.update(request);
+
+                CustomerResponseBody responseBody = new CustomerResponseBody(customer);
+                log.info("Customer atualizado com sucesso:  [{}] responseJson[{}]",
+                        customer,
+                        new ObjectMapper().writeValueAsString(responseBody));
+                return ok(responseBody);
+            }
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            CustomerResponseBody response = new CustomerResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na atualização do Customer: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
     }
 
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
-    @ResponseBody
-    public HttpEntity<CustomerResponseBody> get(@PathVariable String idCustomer) {
-
-        CustomerResponseBody responseBody = new CustomerResponseBody();
+    public HttpEntity<CustomerResponseBody> findById(@PathVariable String idCustomer) {
 
         try {
 
-            if(idCustomer.isEmpty()) {
-                String erro = "Erro na requisicao do cliente: idCustomer não informado";
+            Optional<Customer> customer = service.find(Long.valueOf(idCustomer));
 
-                responseBody.setDescription(erro);
+            if (customer.isPresent()) {
+                log.info("Busca de Customer com exito: [{}]", customer.get());
+                CustomerResponseBody response = new CustomerResponseBody(customer.get());
 
-                log.error(erro);
-
-                return badRequest().body(responseBody);
-
+                //return ok().body(response);
+                return ok(response);
             } else {
-                Customer customer = service.find(Long.valueOf(idCustomer));
-                responseBody.setCustomer(customer);
-
-                log.info("Customer exibido com sucesso:  [{}]", customer);
-                return ok().body(responseBody);
+                log.error("Nenhum registro encontrado para o id: {}", idCustomer);
+                return notFound().build();
             }
 
         } catch (Exception e) {
-
             String errorCode = String.valueOf(System.nanoTime());
-            String erro = "Erro interno: " + errorCode;
 
-            responseBody.setDescription(erro);
+            CustomerResponseBody response = new CustomerResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
 
-            log.error("Erro na exibição do Customer ID: {} - {}", errorCode, e.getMessage(), e );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
-        }
-    }
+            log.error("Erro na exibição do Customer: {} - {}", errorCode, e.getMessage(), e);
 
-    @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.PUT)
-    @ResponseBody
-    String updateCustomer(@PathVariable String idCustomer) {
-
-        try {
-            return "Atualizando o Customer de ID " + idCustomer;
-
-        } catch (Exception e) {
-            log.error("Erro na Atualização do Customer ID: {} - {}", idCustomer, e.getMessage(), e );
-            return "Erro";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.DELETE)
-    @ResponseBody
-    String deleteCustomer(@PathVariable String idCustomer) {
+    public HttpEntity<CustomerResponseBody> delete(@PathVariable String idCustomer) {
+
+
+        String errorCode = String.valueOf(System.nanoTime());
+
+        CustomerResponseBody response = new CustomerResponseBody();
+        response.setDescription("Ação não permitida: Atualize o status do Customer para desativado: " + errorCode);
+
+        log.warn("Ação não permitida para deletar o Customer: {}. Atualize o status do Customer para desativado. - {}", idCustomer, errorCode);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+
+    }
+
+    @RequestMapping(path = "/customers", method = RequestMethod.GET)
+    public HttpEntity<CustomerResponseBody> findLastest10() {
 
         try {
-            return "Customer de ID " + idCustomer + " Deletado com sucesso!";
+            List<Customer> entitylist = service.find10Lastest();
+
+            CustomerResponseBody responseBody = new CustomerResponseBody();
+            responseBody.setCustomerList(entitylist);
+            responseBody.setDescription("TOP 10 successfully retrieved.");
+
+            log.info("{} schedules successfully retrieved.", entitylist.size());
+
+            return ok().body(responseBody);
 
         } catch (Exception e) {
-            log.error("Erro ao Deletar o Customer ID: {} - {}", idCustomer, e.getMessage(), e );
-            return "Erro";
-        }
+            String errorCode = String.valueOf(System.nanoTime());
 
+            CustomerResponseBody response = new CustomerResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na exibição da Lista de Customer: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {
@@ -134,7 +166,6 @@ public class CustomerController {
         responseBody.setDescription(errors.toString());
         return responseBody;
     }
-
 
 
 }

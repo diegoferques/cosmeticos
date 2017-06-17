@@ -29,6 +29,12 @@ public class CustomerRepositoryTests {
     @Autowired
     private CustomerRepository repository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      * Inicializa o H2 com dados iniciais.
      */
@@ -38,15 +44,18 @@ public class CustomerRepositoryTests {
         User u1 = new  User();
         Address address = new Address();
 
-        Customer c1 = new Customer();
         //TODO: pesquisar como gravar apenas dia mes e ano.
-        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
+        //c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
+        //Date birthDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-20");
+
+        Customer c1 = new Customer();
+        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
         c1.setCellPhone("(21) 98877-6655");
         c1.setCpf("098.765.432-10");
         c1.setDateRegister(Calendar.getInstance().getTime());
         c1.setGenre('M');
         c1.setNameCustomer("João da Silva");
-        c1.setServiceRequestCollection(null);
+        //c1.setServiceRequestCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
         c1.setIdLogin(u1);
         c1.setIdAddress(address);
@@ -57,6 +66,7 @@ public class CustomerRepositoryTests {
 
         User u2 = new  User();
         Address address2 = new Address();
+		
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
         Customer c2 = new Customer();
         c2.setBirthDate(birthDate2);
@@ -67,6 +77,8 @@ public class CustomerRepositoryTests {
         c2.setNameCustomer("Diego Fernandes");
         //c2.setServiceRequestCollection(null);
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
+
+		
         c2.setIdAddress(address2);
         c2.setIdLogin(u2);
 
@@ -77,6 +89,7 @@ public class CustomerRepositoryTests {
 
         User u3 = new  User();
         Address address3 = new Address();
+
         Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
         Customer c3 = new Customer();
         c3.setBirthDate(birthDate3);
@@ -87,6 +100,8 @@ public class CustomerRepositoryTests {
         c3.setNameCustomer("Maria das Dores");
         //c3.setServiceRequestCollection(null);
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
+
+		
         c3.setIdAddress(address3);
         c3.setIdLogin(u3);
 
@@ -96,6 +111,7 @@ public class CustomerRepositoryTests {
 
         User u4 = new  User();
         Address address4 = new Address();
+
         Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
         Customer c4 = new Customer();
         c4.setBirthDate(birthDate4);
@@ -106,6 +122,7 @@ public class CustomerRepositoryTests {
         c4.setNameCustomer("Fernanda Cavalcante");
         //c4.setServiceRequestCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
+
         c4.setIdAddress(address4);
         c4.setIdLogin(u4);
 
@@ -131,7 +148,6 @@ public class CustomerRepositoryTests {
         u5.setCustomer(c5);
         address5.setCustomer(c5);
 
-
         repository.save(c1);
         repository.save(c2);
         repository.save(c3);
@@ -150,8 +166,116 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("1980-01-20 00:00:00.0", customer.getBirthDate().toString());
         Assert.assertEquals("(21) 98877-6655", customer.getCellPhone());
         Assert.assertEquals("098.765.432-10", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
         Assert.assertEquals('M', customer.getGenre());
-        //Assert.assertEquals(1, customer.getStatus());
+        Assert.assertEquals("João da Silva", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer2() {
+        Customer customer = repository.findOne(2L);
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getIdLogin());
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1981-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 98807-2756", customer.getCellPhone());
+        Assert.assertEquals("098.330.987-62", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals("Diego Fernandes", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer3() {
+        Customer customer = repository.findOne(3L);
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getIdLogin());
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1982-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 99988-7766", customer.getCellPhone());
+        Assert.assertEquals("831.846.135-15", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('F', customer.getGenre());
+        Assert.assertEquals("Maria das Dores", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer4() {
+        Customer customer = repository.findOne(4L);
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getIdLogin());
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1983-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 99887-7665", customer.getCellPhone());
+        Assert.assertEquals("816.810.695-68", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('F', customer.getGenre());
+        Assert.assertEquals("Fernanda Cavalcante", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.INACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer5() {
+        Customer customer = repository.findOne(5L);
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getIdLogin());
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1984-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 97766-5544", customer.getCellPhone());
+        Assert.assertEquals("541.913.254-81", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals("José das Couves", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    //TRECHO ABAIXO COMENTADO, POIS ESTAVA DANDO NULLPOINTER. TIVE QUE REESCREVER CÓDIGO
+    /*
+    private Address createFakeAddress(Customer customer) {
+        CustomerService cs = new CustomerService();
+        return cs.createFakeAddress(customer);
+    }
+
+    private User createFakeLogin(Customer customer) {
+        CustomerService cs = new CustomerService();
+        return cs.createFakeLogin(customer);
+    }
+    */
+
+    public User createFakeLogin(Customer c) {
+        User u = new User();
+        u.setEmail("diego@bol.com");
+        //u.setIdLogin(1234L);
+        u.setPassword("123qwe");
+        u.setSourceApp("google+");
+        u.setUsername("diegoferques");
+        //u.getCustomerCollection().add(c);
+        userRepository.save(u);
+        return u;
+    }
+
+    public Address createFakeAddress(Customer customer) {
+        Address a = new Address();
+        a.setAddress("Rua Perlita");
+        a.setCep("0000000");
+        a.setCity("RJO");
+        a.setCountry("BRA");
+        a.setNeighborhood("Austin");
+        a.setState("RJ");
+        //a.getCustomerCollection().add(customer);
+        addressRepository.save(a);
+        return a;
     }
 
 

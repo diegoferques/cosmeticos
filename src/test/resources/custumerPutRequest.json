@@ -1,6 +1,7 @@
 {
   "customer": {
-    "nameCustomer": "Diego Fernandes",
+    "idCustomer": 1,
+    "nameCustomer": "Diego Fernandes Marques da Silva",
     "cellPhone": "(21) 98877-6655",
     "cpf": "098.765.432-10",
     "birthDate": "1980-10-21",
