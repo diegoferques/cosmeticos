@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 public class Professional implements Serializable {
 
+
     public  enum Status
     {
         INACTIVE, ACTIVE
@@ -48,6 +49,9 @@ public class Professional implements Serializable {
     private Date dateRegister;
 
     private Status status;
+
+    @ManyToMany
+    private  Collection<Hability> habilityCollection;
 
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idProfessional")
