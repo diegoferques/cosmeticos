@@ -22,3 +22,17 @@ Projeto sem nome definido, estamos aguardando o cliente.
 - Caso queira executar independentemente da IDE, no diretorio raiz do projeto (onde encontra-se o pom.xml) execute: mvn clean install spring-boot:run -DskipTests
 
 - Pronto, só aguardar o Tomcat finalizar o startup
+
+
+# Fluxo de changes
+- Os fluxos seguirão, em sua essencia, o conhecido fluxo Git Flow: ótimo post sobre as práticas do git flow https://www.atlassian.com/git/tutorials/comparing-workflows.
+
+- As branches MASTER e DEV jamais podem receber commites. 
+
+- Todo trabalho deve ser iniciado a partir da branch DEV mas nenhuma linha de codigo pode ser escrita nela. Para começar o desenvolvimento, mova-se para a branch dev com: git checkout dev. Depois crie uma nova branch com todo o conteúdo de dev: git checkout -b MINHA_NOVA_BRANCH_PESSOAL.
+
+- As alterações realizadas em sua branch só poderá ser agregada à branch dev mediante PULL REQUEST. Para tal, faça o push de suas alterações para o servidor remoto. Acesse a branch pelo browser do servidor git e clique em NEW PULL REQUEST, selecione os avaliadores, aguarde que eles aprovem suas alterações e depois clique em MERGE.
+
+- Mantenha a branch DEV sempre atualizada no repositorio local. Faça pull nela constantemente.
+
+- A branch MASTER só pode ser atualizada quando a change estiver indo para produção e o merge tem que ser feito exclusivamente com a branch DEV.
