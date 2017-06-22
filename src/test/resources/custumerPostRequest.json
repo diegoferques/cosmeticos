@@ -1,23 +1,16 @@
 {
   "customer": {
-    "nameCustomer": "Diego Fernandes",
-    "cellPhone": "(21) 98877-6655",
-    "cpf": "098.765.432-10",
-    "birthDate": "1980-10-21",
-    "genre": "M"
+      "nameCustomer": "Diego",
+    "cellPhone": "2342",
+    "cpf": "egsgs",
+    "birthDate": "2017-05-20"
   },
+
   "address": {
-    "address": "Avenida Presidente Vargas, 309",
-    "cep": "20940-000",
-    "city": "Rio de Janeiro",
-    "state": "RJ",
-    "country": "BRA",
-    "neighborhood": "Centro"
+      "address": "Rua do Diego"
   },
+
   "user": {
-    "email": "diegoferques@gmail.com",
-    "password": "abc123",
-    "sourceApp": "facebook",
     "username": "diegoferques"
   }
 }

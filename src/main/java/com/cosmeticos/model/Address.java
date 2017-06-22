@@ -4,7 +4,6 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import java.io.Serializable;

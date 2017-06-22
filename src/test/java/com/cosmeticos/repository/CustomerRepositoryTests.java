@@ -66,7 +66,7 @@ public class CustomerRepositoryTests {
 
         User u2 = new  User();
         Address address2 = new Address();
-		
+
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
         Customer c2 = new Customer();
         c2.setBirthDate(birthDate2);
@@ -78,7 +78,7 @@ public class CustomerRepositoryTests {
         //c2.setServiceRequestCollection(null);
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
 
-		
+
         c2.setIdAddress(address2);
         c2.setIdLogin(u2);
 
@@ -101,7 +101,7 @@ public class CustomerRepositoryTests {
         //c3.setServiceRequestCollection(null);
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
 
-		
+
         c3.setIdAddress(address3);
         c3.setIdLogin(u3);
 

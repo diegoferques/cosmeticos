@@ -125,7 +125,7 @@ public class ServiceController {
     public HttpEntity<ServiceResponseBody> findById(@PathVariable String id) {
 
         try {
-            Optional<Service> optional = service.find(id);
+            Optional<Service> optional = service.find(Long.valueOf(id));
 
             if (optional.isPresent()) {
 
@@ -145,7 +145,7 @@ public class ServiceController {
             log.error("Falha na busca por ID: {}", e.getMessage(), e);
             ServiceResponseBody responseBody = new ServiceResponseBody();
             responseBody.setDescription(e.getMessage());
-            return ResponseEntity.status(400).body(responseBody);
+            return ResponseEntity.status(500).body(responseBody);
         }
     }
 
