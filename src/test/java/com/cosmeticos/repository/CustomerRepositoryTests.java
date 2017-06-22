@@ -247,9 +247,9 @@ public class CustomerRepositoryTests {
         return cs.createFakeAddress(customer);
     }
 
-    private User createFakeLogin(Customer customer) {
+    private User createFakeUser(Customer customer) {
         CustomerService cs = new CustomerService();
-        return cs.createFakeLogin(customer);
+        return cs.createFakeUser(customer);
     }
     */
 

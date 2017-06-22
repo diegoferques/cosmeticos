@@ -4,16 +4,26 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  *
  * @author magarrett.dias
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
 public class Hability implements Serializable {
@@ -22,13 +32,26 @@ public class Hability implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message="Hability name cannot be empty")
     private String name;
 
     @ManyToOne
     private Service service;
 
+    public Hability() {
+    }
+
+    public Hability(String name) {
+        this.name = name;
+    }
+
+
+    /**
+     * Nao retornamos esse dado no json.
+     */
+    @JsonIgnore
     @ManyToMany
-    private Collection<Professional> professionalCollection;
+    private Collection<Professional> professionalCollection = new ArrayList<>();
 
     @Override
     public int hashCode() {

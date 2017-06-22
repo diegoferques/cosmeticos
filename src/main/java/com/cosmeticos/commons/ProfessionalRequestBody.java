@@ -12,9 +12,5 @@ import lombok.Data;
 @Data
 public class ProfessionalRequestBody {
 
-    private Address address;
-
-    private User user;
-
     private Professional professional;
 }

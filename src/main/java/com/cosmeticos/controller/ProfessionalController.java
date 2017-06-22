@@ -36,9 +36,13 @@ public class ProfessionalController {
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
                 Professional professional = service.create(request);
+
+                ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
+                responseBody.setDescription("sucess");
+
                 log.info("Professional adicionado com sucesso:  [{}]", professional);
-                //return ok().build();
-                return ok(new ProfessionalResponseBody(professional));
+
+                return ok(responseBody);
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

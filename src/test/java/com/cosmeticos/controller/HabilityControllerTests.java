@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.HabilityResponseBody;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
@@ -10,6 +11,7 @@ import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ServiceRepository;
 import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.service.ProfessionalService;
 import org.junit.Assert;
@@ -40,7 +42,7 @@ import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProfessionalControllerTests {
+public class HabilityControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -54,41 +56,65 @@ public class ProfessionalControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
-	/**
-	 * Inicializa o H2 com dados iniciais.
-	 */
-	@Before
-	public void setupTests() throws ParseException {
+	@Autowired
+	private ServiceRepository serviceRepository;
 
-	}
+	@MockBean
+	private ProfessionalService mockedService;
 
 	@Test
-	public void testCreateOK() throws IOException {
+	public void testCreateOK() throws IOException, URISyntaxException {
+
+		String content = "{\n" +
+				"  \"hability\" : {\n" +
+				"    \"name\" : \"h\",\n" +
+				"\t\n" +
+				"    \"service\" : {\n" +
+				"      \"idService\" : 1\n" +
+				"    },\n" +
+				"\t\n" +
+				"    \"professionalCollection\" : [ {\n" +
+				"      \"idProfessional\" : 1\n" +
+				"    } ]\n" +
+				"\t\n" +
+				"  }\n" +
+				"}";
+
+		 RequestEntity<String> entity =  RequestEntity
+				 .post(new URI("/habilities"))
+				 .contentType(MediaType.APPLICATION_JSON)
+				 .accept(MediaType.APPLICATION_JSON)
+				 .body(content);
+
+		ResponseEntity<String> rsp = restTemplate
+				.exchange(entity, String.class);
+
+		Assert.assertNotNull(rsp);
+		Assert.assertNotNull(rsp.getBody());
+		Assert.assertEquals(HttpStatus.OK, rsp.getStatusCode());
+
+		System.out.println(rsp.getBody());
+	}
 
 
-		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
+	@Test
+	public void testCreateError500() throws IOException {
+		/**/
+		Mockito.when(
+				mockedService.create(Mockito.anyObject())
+		).thenThrow(new RuntimeException());
 
-		Address addres = createFakeAddress();
-		User user = createFakeUser();
+		ProfessionalRequestBody requestBody = createFakeRequestBody();
 
-		Professional professional = createFakeProfessional();
-		professional.setUser(user);
-		professional.setAddress(addres);
-
-		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
-		requestBody.setProfessional(professional);
-
-		ProfessionalResponseBody rsp = restTemplate.postForObject("/professionals", content, ProfessionalResponseBody.class);
-
-		final ResponseEntity<ScheduleResponseBody> exchange = //
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
 				restTemplate.exchange( //
 						"/professionals", //
 						HttpMethod.POST, //
 						new HttpEntity(requestBody), // Body
-						ScheduleResponseBody.class);
+						ProfessionalResponseBody.class);
 
 		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
 	}
 
 	@Test
@@ -110,6 +136,25 @@ public class ProfessionalControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+	}
+
+	@Test
+	public void testFindById() throws ParseException {
+
+		Mockito.when(
+				mockedService.find(Long.valueOf(1))
+		).thenReturn(Optional.of(new Professional()));
+
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/professionals/1", //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
 	}
 
 	@Test
@@ -143,67 +188,11 @@ public class ProfessionalControllerTests {
 
 	}
 
-	@Test
-	public void testInsertNewHAbilityInCreateProfessionalRequest() throws ParseException, URISyntaxException {
-
-		String jsonRequest = "{\n" +
-				"  \"professional\" : {\n" +
-				"    \"nameProfessional\" : \"João da Silva\",\n" +
-				"    \"cnpj\" : \"098.765.432-10\",\n" +
-				"    \"genre\" : \"M\",\n" +
-				"    \"birthDate\" : 317185200000,\n" +
-				"    \"cellPhone\" : \"(21) 98877-6655\",\n" +
-				"    \"dateRegister\" : 1498145793560,\n" +
-				"    \"status\" : \"ACTIVE\",\n" +
-				"    \"habilityCollection\" : [ {\n" +
-				"      \"name\" : \"Escova Progressiva\"\n" + // Ver HabilityPreLoadConfiguration
-				"    }, {\n" +
-				"      \"name\" : \"Relaxamento\"\n" + // Ver HabilityPreLoadConfiguration
-				"    }, {\n" +
-				"      \"name\" : \"Nova Habilidade\"\n" + // Colocamos uma habilidade que HabilityPreLoadConfiguration nao insere.
-				"    } ],\n" +
-				"    \"user\" : {\n" +
-				"      \"username\" : \"profissional1\",\n" +
-				"      \"password\" : \"123qwe\",\n" +
-				"      \"email\" : \"profissional1@gmail.con\"\n" +
-				"    },\n" +
-				"    \"address\" : { }\n" +
-				"  }\n" +
-				"}";
-
-		RequestEntity<String> entity =  RequestEntity
-				.post(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonRequest);
-
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
-				.exchange(entity, ProfessionalResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-
-		Optional<Hability> habilityOptional = exchange.getBody().getProfessionalList().get(0).getHabilityCollection()
-				.stream()
-				.filter(h -> "Nova Habilidade".equals(h.getName()))
-				.findFirst();
-
-		if(habilityOptional.isPresent())
-		{
-			Hability hability = habilityOptional.get();
-			Assert.assertNotNull("O ID da nova habilidade deveria vir preenchido.", hability.getId());
-		}
-		else
-		{
-			Assert.fail("A resposta deveria trazer a habilidade que foi informada no request.");
-		}
-	}
-
 	private ProfessionalRequestBody createFakeRequestBody() {
-		Address address = createFakeAddress();
-		User user = createFakeUser();
-
 		Professional professional = createFakeProfessional();
+		Address address = createFakeAddress();
+		User user = createFakeLogin();
+
 		professional.setAddress(address);
 		professional.setUser(user);
 
@@ -213,7 +202,7 @@ public class ProfessionalControllerTests {
 		return requestBody;
 	}
 
-	public User createFakeUser() {
+	public User createFakeLogin() {
 		User u = new User();
 		u.setEmail("diego@bol.com");
 		u.setPassword("123qwe");
@@ -246,7 +235,7 @@ public class ProfessionalControllerTests {
 		//c1.setServiceRequestCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(this.createFakeAddress());
-		c1.setUser(this.createFakeUser());
+		c1.setUser(this.createFakeLogin());
 
 		return c1;
 	}

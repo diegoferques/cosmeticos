@@ -40,8 +40,8 @@ public class ProfessionalService {
         newProfessional.setNameProfessional(request.getProfessional().getNameProfessional());
         newProfessional.setStatus(Professional.Status.ACTIVE);
         newProfessional.setDateRegister(Calendar.getInstance().getTime());
-        newProfessional.setIdAddress(request.getAddress());
-        newProfessional.setIdLogin(request.getUser());
+        newProfessional.setAddress(request.getProfessional().getAddress());
+        newProfessional.setUser(request.getProfessional().getUser());
         newProfessional.setProfessionalServicesCollection(request.getProfessional().getProfessionalServicesCollection());
         newProfessional.setHabilityCollection(new ArrayList<>());
 
