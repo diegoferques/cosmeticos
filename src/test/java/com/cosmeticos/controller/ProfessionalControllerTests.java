@@ -199,6 +199,47 @@ public class ProfessionalControllerTests {
 		}
 	}
 
+	@Test
+	public void testBadRequestAtCascadeInsertingNewHabilityDuringProfessionalCreation() throws ParseException, URISyntaxException {
+
+		String jsonRequest = "{\n" +
+				"  \"professional\" : {\n" +
+				"    \"nameProfessional\" : \"João da Silva\",\n" +
+				"    \"cnpj\" : \"098.765.432-10\",\n" +
+				"    \"genre\" : \"M\",\n" +
+				"    \"birthDate\" : 317185200000,\n" +
+				"    \"cellPhone\" : \"(21) 98877-6655\",\n" +
+				"    \"dateRegister\" : 1498145793560,\n" +
+				"    \"status\" : \"ACTIVE\",\n" +
+				"    \"habilityCollection\" : [ {\n" +
+				"      \"name\" : \"\"\n" + // Deve dar erro devido a este campo vazio aqui.
+				"    }, {\n" +
+				"      \"name\" : \"Relaxamento\"\n" +
+				"    }, {\n" +
+				"      \"name\" : \"Nova Habilidade\"\n" +
+				"    } ],\n" +
+				"    \"user\" : {\n" +
+				"      \"username\" : \"profissional1\",\n" +
+				"      \"password\" : \"123qwe\",\n" +
+				"      \"email\" : \"profissional1@gmail.con\"\n" +
+				"    },\n" +
+				"    \"address\" : { }\n" +
+				"  }\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonRequest);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+	}
+
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
 		User user = createFakeUser();
