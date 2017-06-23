@@ -44,6 +44,15 @@ public class User implements Serializable {
     @OneToOne
     private Professional professional;
 
+    public User() {
+    }
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

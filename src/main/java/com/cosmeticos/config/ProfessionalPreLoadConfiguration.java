@@ -27,27 +27,27 @@ public class ProfessionalPreLoadConfiguration {
         Professional s1 = new Professional();
         s1.setNameProfessional("Garry");
         s1.setIdAddress(new Address());
-        s1.setIdLogin(new User());
+        s1.setIdLogin(new User("Garry", "123qwe", "Garry@gmail.com"));
 
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
         s2.setIdAddress(new Address());
-        s2.setIdLogin(new User());
+        s2.setIdLogin(new User("Diego", "123qwe", "Diego@gmail.com"));
 
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
         s3.setIdAddress(new Address());
-        s3.setIdLogin(new User());
+        s3.setIdLogin(new User("Deivison", "123qwe", "Deivison@gmail.com"));
 
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");
         s4.setIdAddress(new Address());
-        s4.setIdLogin(new User());
+        s4.setIdLogin(new User("Vinicius", "123qwe", "Vinicius@gmail.com"));
 
         Professional s5 = new Professional();
         s5.setNameProfessional("Habib");
         s5.setIdAddress(new Address());
-        s5.setIdLogin(new User());
+        s5.setIdLogin(new User("habib", "123qwe", "habibi@gmail.com"));
 
         repository.save(s1);
         repository.save(s2);

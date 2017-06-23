@@ -45,19 +45,27 @@ public class ProfessionalServicesPreLoadConfiguration {
         // Inserimos JOSICREIDE no banco com o username "username" rsrs..
         // Repare que "username" nao existe no banco e nao faço o insert dele.
         // Quando faco o insert do profissional aqui, o hibernate detecta que o User "username" nao existe e também o cria.
-        // Sacou?
-        //sim.. blz. agora vou ter q fazer pra associar ao serviço certo?
-        /* Isso, mas isso nao é no preload pq o preload nao faz parte da nossa logica de negocio,
-        é so codigo pra auxiliar nossas vidas. A associacao vai ser no postman.
-        rsrs.. jah eh.. vou cair dentro aki.. era soh isso msm. iiiiiiii.. sobre o git pow. esqueci disso mano. tah podendo ainda?
 
-         */
         professionalRepository.save(p);
 
 
         Service s = new Service();
         s.setCategory("MANICURE");
         serviceRepository.save(s);
+
+        // Segundo Preload
+        User user2 = new User();
+        user2.setUsername("username2");
+
+        Professional p2 = new Professional();
+        p2.setIdLogin(user2);
+        p2.setNameProfessional("ROSIVALDA");
+        professionalRepository.save(p2);
+
+        Service s2 = new Service();
+        s2.setCategory("PEDICURE");
+        serviceRepository.save(s2);
+
     }
 
 }

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Data
 @Entity
-public class Professional implements Serializable {
+public class Professional  implements Serializable {
 
     public  enum Status
     {
@@ -57,7 +57,7 @@ public class Professional implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address idAddress;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professional")
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<ProfessionalServices> professionalServicesCollection;
 
     @Override
