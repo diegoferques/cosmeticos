@@ -5,6 +5,7 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
@@ -18,9 +19,9 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-@Table
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -43,6 +44,15 @@ public class User implements Serializable {
 
     @OneToOne
     private Professional professional;
+
+    public User() {
+    }
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
     @Override
     public int hashCode() {

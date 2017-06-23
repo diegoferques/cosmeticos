@@ -1,17 +1,14 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.model.Address;
+import com.cosmeticos.model.*;
 import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
-import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -23,33 +20,56 @@ import java.util.Optional;
 public class ProfessionalService {
 
     @Autowired
-    private ProfessionalRepository repository;
+    private ProfessionalRepository professionalRepository;
+
+    @Autowired
+    private HabilityService habilityService;
 
     public Optional<Professional> find(Long idProfessional) {
-        return Optional.ofNullable(repository.findOne(idProfessional));
+        return Optional.ofNullable(professionalRepository.findOne(idProfessional));
     }
 
     public Professional create(ProfessionalRequestBody request) {
 
-        Professional c = new Professional();
+        Professional newProfessional = new Professional();
 
-        c.setBirthDate(request.getProfessional().getBirthDate());
-        c.setCellPhone(request.getProfessional().getCellPhone());
-        c.setCnpj(request.getProfessional().getCnpj());
-        c.setGenre(request.getProfessional().getGenre());
-        c.setNameProfessional(request.getProfessional().getNameProfessional());
-        c.setStatus(Professional.Status.ACTIVE);
-        c.setDateRegister(Calendar.getInstance().getTime());
-        c.setIdAddress(request.getAddress());
-        c.setIdLogin(request.getUser());
+        newProfessional.setBirthDate(request.getProfessional().getBirthDate());
+        newProfessional.setCellPhone(request.getProfessional().getCellPhone());
+        newProfessional.setCnpj(request.getProfessional().getCnpj());
+        newProfessional.setGenre(request.getProfessional().getGenre());
+        newProfessional.setNameProfessional(request.getProfessional().getNameProfessional());
+        newProfessional.setStatus(Professional.Status.ACTIVE);
+        newProfessional.setDateRegister(Calendar.getInstance().getTime());
+        newProfessional.setAddress(request.getProfessional().getAddress());
+        newProfessional.setUser(request.getProfessional().getUser());
+        newProfessional.setProfessionalServicesCollection(request.getProfessional().getProfessionalServicesCollection());
+        newProfessional.setHabilityCollection(new ArrayList<>());
 
-        return repository.save(c);
+        for (Hability h : request.getProfessional().getHabilityCollection()) {
+
+            Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
+
+            if(optional.isPresent()) {
+                newProfessional.getHabilityCollection().add(optional.get());
+            }
+            else
+            {
+                Hability newHability = new Hability();
+                newHability.setName(h.getName());
+                Hability persistentHability = habilityService.create(newHability);
+
+                newProfessional.getHabilityCollection().add(persistentHability);
+            }
+
+        }
+
+        return professionalRepository.save(newProfessional);
     }
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
         Professional cr = request.getProfessional();
 
-        Optional<Professional> optional = Optional.ofNullable(repository.findOne(cr.getIdProfessional()));
+        Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(cr.getIdProfessional()));
 
         if(optional.isPresent()) {
 
@@ -79,7 +99,7 @@ public class ProfessionalService {
                 customer.setStatus(cr.getStatus());
             }
 
-            repository.save(customer);
+            professionalRepository.save(customer);
 
             return Optional.of(customer);
         }
@@ -94,6 +114,6 @@ public class ProfessionalService {
 
 
     public List<Professional> find10Lastest() {
-        return repository.findTop10ByOrderByDateRegisterDesc();
+        return professionalRepository.findTop10ByOrderByDateRegisterDesc();
     }
 }

@@ -44,8 +44,8 @@ public class ProfessionalRepositoryTests {
         p1.setNameProfessional("João da Silva");
         p1.setStatus(Professional.Status.ACTIVE);
 
-        p1.setIdAddress(address);
-        p1.setIdLogin(u1);
+        p1.setAddress(address);
+        p1.setUser(u1);
 
         u1.setProfessional(p1);
         address.setProfessional(p1);
@@ -62,11 +62,11 @@ public class ProfessionalRepositoryTests {
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("João da Silva", customer.getNameProfessional());
 
-        Assert.assertNotNull(customer.getIdLogin());
-        Assert.assertEquals((Long) 1L, customer.getIdLogin().getIdLogin());
+        Assert.assertNotNull(customer.getUser());
+        Assert.assertEquals((Long) 1L, customer.getUser().getIdLogin());
 
-        Assert.assertNotNull(customer.getIdAddress());
-        Assert.assertEquals((Long) 1L, customer.getIdAddress().getIdAddress());
+        Assert.assertNotNull(customer.getAddress());
+        Assert.assertEquals((Long) 1L, customer.getAddress().getIdAddress());
     }
 
 
