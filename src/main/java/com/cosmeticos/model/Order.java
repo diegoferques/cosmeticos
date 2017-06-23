@@ -4,26 +4,39 @@
  */
 package com.cosmeticos.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
  * @author magarrett.dias
  */
+@Data
 @Entity
 @Table
 public class Order implements Serializable {
+
+    public enum Status {
+        CREATED, ABORTED, EXECUTED
+    }
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOrder;
-    @Basic(optional = false)
-    @Column(name = "date")
-    private String date;
+
+    //@Basic(optional = false)
+    //@Column(name = "date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+
     @Basic(optional = false)
     @Column(name = "status")
-    private short status;
+    private Integer status;
+
     @JoinColumn(name = "scheduleId", referencedColumnName = "scheduleId")
     @ManyToOne
     private Schedule scheduleId;
@@ -46,66 +59,10 @@ public class Order implements Serializable {
         this.idOrder = idOrder;
     }
 
-    public Order(Long idOrder, String date, short status) {
+    public Order(Long idOrder, Date date, Integer status) {
         this.idOrder = idOrder;
         this.date = date;
         this.status = status;
-    }
-
-    public Long getIdOrder() {
-        return idOrder;
-    }
-
-    public void setIdOrder(Long idOrder) {
-        this.idOrder = idOrder;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public short getStatus() {
-        return status;
-    }
-
-    public void setStatus(short status) {
-        this.status = status;
-    }
-
-    public Schedule getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(Schedule scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
-    public ProfessionalServices getProfessionalServices() {
-        return professionalServices;
-    }
-
-    public void setProfessionalServices(ProfessionalServices professionalServices) {
-        this.professionalServices = professionalServices;
-    }
-
-    public Location getIdLocation() {
-        return idLocation;
-    }
-
-    public void setIdLocation(Location idLocation) {
-        this.idLocation = idLocation;
-    }
-
-    public Customer getIdCustomer() {
-        return idCustomer;
-    }
-
-    public void setIdCustomer(Customer idCustomer) {
-        this.idCustomer = idCustomer;
     }
 
     @Override

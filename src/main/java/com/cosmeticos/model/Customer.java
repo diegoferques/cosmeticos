@@ -22,8 +22,7 @@ import java.util.Date;
 @Table
 public class Customer implements Serializable {
 
-    public  enum Status
-    {
+    public enum Status {
         INACTIVE, ACTIVE
     }
 

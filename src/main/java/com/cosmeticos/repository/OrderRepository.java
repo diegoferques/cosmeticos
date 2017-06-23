@@ -9,5 +9,7 @@ import java.util.List;
  * Created by matto on 17/06/2017.
  */
 public interface OrderRepository extends CrudRepository<Order, Long> {
-    List<Order> findTop10ByidOrderDesc();
+    List<Order> findTop10ByOrderByDateDesc();
+
+    List<Order> findAll();
 }

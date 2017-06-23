@@ -1,23 +1,24 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -30,6 +31,61 @@ public class OrderController {
 
     @Autowired
     OrderService orderService;
+
+    @RequestMapping(path = "/orders", method = RequestMethod.POST)
+    public HttpEntity<OrderResponseBody> create(@Valid @RequestBody OrderRequestBody request,
+                                                   BindingResult bindingResult) {
+        try {
+            if(bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            } else {
+                Order order = orderService.create(request);
+                log.info("Order adicionado com sucesso:  [{}]", order);
+                //return ok().build();
+                return ok(new OrderResponseBody(order));
+            }
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody orderResponseBody = new OrderResponseBody();
+            orderResponseBody.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(orderResponseBody);
+        }
+    }
+
+    @RequestMapping(path = "/orders", method = RequestMethod.PUT)
+    public HttpEntity<OrderResponseBody> update(@Valid @RequestBody OrderRequestBody request, BindingResult bindingResult) {
+
+        try {
+            if(bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+
+            } else {
+                Order order = orderService.update(request);
+
+                OrderResponseBody responseBody = new OrderResponseBody(order);
+                log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
+                        order,
+                        new ObjectMapper().writeValueAsString(responseBody));
+                return ok(responseBody);
+            }
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody response = new OrderResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+    }
 
     @RequestMapping(path = "/orders/{idOrder}", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findById(@PathVariable String idOrder) {
@@ -112,4 +168,6 @@ public class OrderController {
 
         return responseBody;
     }
+
+
 }
