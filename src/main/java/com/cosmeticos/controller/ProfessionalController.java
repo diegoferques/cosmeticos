@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -36,10 +37,24 @@ public class ProfessionalController {
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
                 Professional professional = service.create(request);
+
+                ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
+                responseBody.setDescription("sucess");
+
                 log.info("Professional adicionado com sucesso:  [{}]", professional);
-                //return ok().build();
-                return ok(new ProfessionalResponseBody(professional));
+
+                return ok(responseBody);
             }
+        } catch (ConstraintViolationException e) {
+            /**
+             * Alguns dados de requisicao invalidos podem nao ser processados no request devido ao nivel de aninhamento
+             * dos objetos. Entretanto, esses erros de validacao podem ser pegos em outras partes do codigo e acabam lancando
+             * ConstraintViolationException. Por isso mantemos este catch.
+             */
+            log.error("Erro no insert: {}", e.getMessage(), e.getConstraintViolations());
+
+            return badRequest().body(buildErrorResponse(e));
+
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
@@ -172,6 +187,17 @@ public class ProfessionalController {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
                 .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
+                .collect(Collectors.toList());
+
+        ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+        responseBody.setDescription(errors.toString());
+        return responseBody;
+    }
+
+    private ProfessionalResponseBody buildErrorResponse(ConstraintViolationException cve) {
+        List<String> errors = cve.getConstraintViolations()
+                .stream()
+                .map(v -> v.getMessageTemplate())
                 .collect(Collectors.toList());
 
         ProfessionalResponseBody responseBody = new ProfessionalResponseBody();

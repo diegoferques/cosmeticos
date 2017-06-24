@@ -42,7 +42,7 @@ public class ProfessionalServicesController {
 
                 ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
 
-                responseBody.setDescription("Success");
+                responseBody.setDescription("Success", String.valueOf(s));
                 responseBody.getProfessionalServicesList().add(s);
 
                 return ok().body(responseBody);
@@ -124,10 +124,10 @@ public class ProfessionalServicesController {
     }
 
     @RequestMapping(path = "/professionalservices/{id}", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalServicesResponseBody> findById(@PathVariable String id) {
+    public HttpEntity<ProfessionalServicesResponseBody> findById(@PathVariable Long id) {
 
         try {
-            Optional<ProfessionalServices> optional = service.find(Long.valueOf(id));
+            Optional<ProfessionalServices> optional = service.find(id);
 
             if (optional.isPresent()) {
 

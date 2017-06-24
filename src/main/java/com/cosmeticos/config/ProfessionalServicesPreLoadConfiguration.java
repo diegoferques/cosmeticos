@@ -1,11 +1,9 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Service;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
+import com.cosmeticos.repository.ScheduleRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -25,10 +23,6 @@ public class ProfessionalServicesPreLoadConfiguration {
 
     @Autowired
     private ServiceRepository serviceRepository;
-    /*
-   @Autowired
-    private ProfessionalServicesRepository repository;
-*/
 
     @PostConstruct
     public void insertInitialH2Data(){
@@ -36,16 +30,12 @@ public class ProfessionalServicesPreLoadConfiguration {
         // Criamos o Usuario que nao existe no banco.
         User user = new User();
         user.setUsername("username");
+        Schedule schedule = new Schedule();
 
-        // Criamos um profissional
+
         Professional p = new Professional();
-        p.setIdLogin(user);// Associamos o User acima ao Profissional.
+        p.setUser(user);
         p.setNameProfessional("JOSICREIDE");
-
-        // Inserimos JOSICREIDE no banco com o username "username" rsrs..
-        // Repare que "username" nao existe no banco e nao faço o insert dele.
-        // Quando faco o insert do profissional aqui, o hibernate detecta que o User "username" nao existe e também o cria.
-
         professionalRepository.save(p);
 
 
@@ -58,7 +48,7 @@ public class ProfessionalServicesPreLoadConfiguration {
         user2.setUsername("username2");
 
         Professional p2 = new Professional();
-        p2.setIdLogin(user2);
+        p2.setUser(user2);
         p2.setNameProfessional("ROSIVALDA");
         professionalRepository.save(p2);
 

@@ -15,4 +15,8 @@ public class ProfessionalServicesResponseBody {
     private String description;
 
     private List<ProfessionalServices> professionalServicesList = new ArrayList<>(10);
+
+    public void setDescription(String description, String inf) {
+        this.description = description;
+    }
 }

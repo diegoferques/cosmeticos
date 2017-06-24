@@ -5,6 +5,9 @@ import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
 
 /**
  * Created by matto on 27/05/2017.
@@ -12,9 +15,6 @@ import lombok.Data;
 @Data
 public class ProfessionalRequestBody {
 
-    private Address address;
-
-    private User user;
-
+    @Valid
     private Professional professional;
 }

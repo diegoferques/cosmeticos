@@ -1,9 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalservicesRequestBody;
-import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Service;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.repository.ServiceRepository;
