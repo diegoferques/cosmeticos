@@ -1,21 +1,20 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.ScheduleRequestBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
-import com.cosmeticos.commons.UserRequestBody;
-import com.cosmeticos.commons.UserResponseBody;
-import com.cosmeticos.model.Schedule;
+import com.cosmeticos.commons.*;
+import com.cosmeticos.model.Service;
 import com.cosmeticos.model.User;
 import com.cosmeticos.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.*;
@@ -31,66 +30,132 @@ import static org.springframework.http.ResponseEntity.ok;
 public class UserController {
 
     @Autowired
-    private UserService uService;
+    private UserService service;
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult){
 
-        if(bindingResult.hasErrors()){
-            log.error("Erro na requisição do cliente: {}", bindingResult.toString());
-            return badRequest().body(buildErrorResponse(bindingResult));
-        }else{
-            User us = uService.create(request);
-            log.info("User adicionado com sucesso:  [{}]", us);
-            return ok().build();
+        try {
+            if (bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            } else {
+                User u = service.create(request);
+                log.info("User adicionado com sucesso:  [{}]", u);
+
+                UserResponseBody responseBody = new UserResponseBody();
+
+                responseBody.setDescription("Success");
+                responseBody.getUserList().add(u);
+
+                return ok().body(responseBody);
+
+
+            }
+        }catch(Exception e){
+
+            log.error("Falha no cadastro: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
+
+            return ResponseEntity.status(500).body(responseBody);
         }
+
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.PUT)
     public HttpEntity<UserResponseBody> update(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
 
-        if(bindingResult.hasErrors()) {
-            log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
-            return badRequest().body(buildErrorResponse(bindingResult));
+        try {
+            if (bindingResult.hasErrors()) {
+
+                log.error("Erros na requisicao: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+
+            } else if (request.getEntity().getIdLogin() == null) {
+
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("Entity ID must to be set!");
+                return badRequest().body(responseBody);
+
+            } else {
+
+                Optional<User> userOptional = service.update(request);
+
+                if (userOptional.isPresent()) {
+                    User updatedUser = userOptional.get();
+
+                    UserResponseBody responseBody = new UserResponseBody();
+                    responseBody.getUserList().add(updatedUser);
+
+                    log.info("User atualizado com sucesso:  [{}]", updatedUser);
+                    return ok().body(responseBody);
+
+                } else {
+
+                    log.error("User nao encontrada: idLogin[{}]", request.getEntity().getIdLogin());
+                    return notFound().build();
+
+                }
+            }
+        } catch (Exception e) {
+            log.error("Falha na atualizacao: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
         }
-        else
-        {
-            User us = uService.update(request);
-            log.info(" atualizado com sucesso:  [{}]", us);
-            return ok(new UserResponseBody(us));
-        }
+
     }
 
     @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
     public HttpEntity<UserResponseBody> findById(@PathVariable String id) {
 
-        Optional<User> us = uService.find(Long.valueOf(id));
+        try {
+            Optional<User> optional = service.find(Long.valueOf(id));
 
-        if(us.isPresent()) {
-            log.info("Busca de User com exito: [{}]", us.get());
-            UserResponseBody response = new UserResponseBody(us.get());
+            if (optional.isPresent()) {
 
-            return ok().body(response);
+                User foundService = optional.get();
+                UserResponseBody response = new UserResponseBody();
+                response.setDescription("User succesfully retrieved");
+                response.getUserList().add(foundService);
+
+                log.info("Busca de User com exito: [{}]", foundService);
+
+                return ok().body(response);
+            } else {
+                log.error("Nenhum registro encontrado para o id: {}", id);
+                return notFound().build();
+            }
+        } catch (Exception e) {
+            log.error("Falha na busca por ID: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
         }
-        else
-        {
-            log.error("Nenhum registro encontrado para o id: {}", id);
-            return notFound().build();
-        }
+
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public HttpEntity<UserResponseBody> findLastest10() {
+    public HttpEntity<UserResponseBody> findAll() {
 
-        List<User> entitylist = uService.findAll();
+        try {
+            List<User> entitylist = service.findAll();
 
-        UserResponseBody response = new UserResponseBody();
-        response.setUserList(entitylist);
-        response.setDescription("TOP 10 successfully retrieved.");
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setUserList(entitylist);
+            responseBody.setDescription("All Users retrieved.");
 
-        log.info("{} User successfully retrieved.", entitylist.size());
+            log.info("{} Users successfully retrieved.", entitylist.size());
 
-        return ok().body(response);
+            return ok().body(responseBody);
+
+        } catch (Exception e) {
+            log.error("Falha no BUSCAR TODOS: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
+        }
     }
 
     private UserResponseBody buildErrorResponse(BindingResult bindingResult) {

@@ -1,7 +1,7 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.UserRequestBody;
+import com.cosmeticos.model.Schedule;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,51 +9,65 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
- * Created by matto on 10/06/2017.
+ * Created by Vinicius on 29/05/2017.
  */
 @Service
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository repository;
 
-    public User createFromCustomer(CustomerRequestBody request) {
+    public User create(UserRequestBody request){
         User u = new User();
-        u.setEmail(request.getUser().getEmail());
-        u.setPassword(request.getUser().getPassword());
-        u.setSourceApp(request.getUser().getSourceApp());
-        u.setUsername(request.getUser().getUsername());
+        u.setUsername(request.getEntity().getUsername());
+        u.setPassword(request.getEntity().getPassword());
+        u.setEmail(request.getEntity().getEmail());
+        u.setSourceApp(request.getEntity().getSourceApp());
 
-        return userRepository.save(u);
+        return repository.save(u);
     }
 
-    public User createFakeUser() {
-        User u = new User();
-        u.setEmail("diego@bol.com");
-        //u.setIdLogin(1234L);
-        u.setPassword("123qwe");
-        u.setSourceApp("google+");
-        u.setUsername("diegoferques");
-        //u.getCustomerCollection().add(c);
-        userRepository.save(u);
-        return u;
+    public Optional<User> update(UserRequestBody request){
+        User userFromRequest = request.getEntity();
+
+        // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
+        Long requestedIdLogin = userFromRequest.getIdLogin();
+
+        Optional<User> optional = Optional.ofNullable(repository.findOne(requestedIdLogin));
+
+        if (optional.isPresent()) {
+            User persistentUser = optional.get();
+
+            persistentUser.setUsername(userFromRequest.getUsername());
+            persistentUser.setPassword(userFromRequest.getPassword());
+            persistentUser.setEmail(userFromRequest.getEmail());
+            persistentUser.setSourceApp(userFromRequest.getSourceApp());
+            persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
+
+            repository.save(persistentUser);
+        }
+
+        return optional;
     }
 
-    public User create(UserRequestBody request) {
-        return null;
+    public Optional<User> find(Long id){
+        return Optional.ofNullable(repository.findOne(id));
     }
 
-    public User update(UserRequestBody request) {
-        return null;
-    }
-
-    public Optional<User> find(Long aLong) {
-        return null;
+    public void deletar(){
+        throw new UnsupportedOperationException("Excluir de acordo com o Status. ");
     }
 
     public List<User> findAll() {
-        return null;
+
+        Iterable<User> result = repository.findAll();
+
+        return StreamSupport.stream(result.spliterator(), false)
+                .collect(Collectors.toList());
     }
+
 }

@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
@@ -13,17 +15,22 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
+@Data
 @Entity
 public class ProfessionalServices implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     protected ProfessionalServicesPK professionalServicesPK;
+
     @JoinColumn(name = "idService", referencedColumnName = "idService", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Service service;
+
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Professional professional;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
     private Collection<Order> orderCollection;
 
@@ -38,6 +45,7 @@ public class ProfessionalServices implements Serializable {
         this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idService);
     }
 
+<<<<<<< HEAD
     public ProfessionalServicesPK getProfessionalServicesPK() {
         return professionalServicesPK;
     }
@@ -71,6 +79,8 @@ public class ProfessionalServices implements Serializable {
         this.orderCollection = orderCollection;
     }
 
+=======
+>>>>>>> dev
     @Override
     public int hashCode() {
         int hash = 0;

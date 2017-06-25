@@ -4,7 +4,7 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,6 +16,7 @@ import javax.persistence.*;
  *
  * @author magarrett.dias
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
 public class Address implements Serializable {
@@ -41,8 +42,6 @@ public class Address implements Serializable {
 
     @OneToOne
     private Professional professional;
-
-
 
     @Override
     public int hashCode() {

@@ -29,7 +29,7 @@ public class Service implements Serializable {
     @Column(unique = true)
     private String category;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<ProfessionalServices> professionalServicesCollection;
 
 

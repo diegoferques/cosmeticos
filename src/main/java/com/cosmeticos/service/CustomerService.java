@@ -55,7 +55,7 @@ public class CustomerService {
         c.setStatus(Customer.Status.ACTIVE.ordinal());
 
         c.setIdAddress(addressService.createFromCustomer(request));
-        c.setIdLogin(userService.createFromCustomer(request));
+        //c.setIdLogin(userService.createFromCustomer(request));
 
         return repository.save(c);
     }
