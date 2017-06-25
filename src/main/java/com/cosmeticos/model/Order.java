@@ -40,14 +40,17 @@ public class Order implements Serializable {
     @JoinColumn(name = "scheduleId", referencedColumnName = "scheduleId")
     @ManyToOne
     private Schedule scheduleId;
+
     @JoinColumns({
         @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional"),
         @JoinColumn(name = "idService", referencedColumnName = "idService")})
     @ManyToOne(optional = false)
     private ProfessionalServices professionalServices;
+
     @JoinColumn(name = "idLocation", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Location idLocation;
+
     @JoinColumn(name = "idCustomer", referencedColumnName = "idCustomer")
     @ManyToOne(optional = false)
     private Customer idCustomer;
