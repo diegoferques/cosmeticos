@@ -23,10 +23,9 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-@Table
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 

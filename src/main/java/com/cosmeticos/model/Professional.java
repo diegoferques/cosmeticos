@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Professional  implements Serializable {
 
 
+
     public  enum Status
     {
         INACTIVE, ACTIVE
