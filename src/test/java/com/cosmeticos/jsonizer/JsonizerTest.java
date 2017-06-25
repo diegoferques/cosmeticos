@@ -114,6 +114,17 @@ public class JsonizerTest {
 
     }
 
+    @Test
+    public void jsonizeService() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+        Service r= new Service();
+        r.setIdService((long)1);
+
+        String json = om.writeValueAsString(r);
+
+        System.out.println(json);
+    }
 
     private Customer createFakeCustomer() {
         Customer c4 = new Customer();

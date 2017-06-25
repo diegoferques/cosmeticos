@@ -50,8 +50,8 @@ public class ServiceBeanService {
         return optional;
     }
 
-    public Optional<Service> find(String id){
-        return Optional.of(repository.findOne(Long.valueOf(id)));
+    public Optional<Service> find(Long id){
+        return Optional.ofNullable(repository.findOne(id));
     }
 
     public void deletar(){

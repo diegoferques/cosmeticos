@@ -21,7 +21,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-public class Professional implements Serializable {
+public class Professional  implements Serializable {
+
 
 
     public  enum Status
@@ -61,7 +62,7 @@ public class Professional implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professional")
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<ProfessionalServices> professionalServicesCollection;
 
     @ManyToMany

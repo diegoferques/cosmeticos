@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
@@ -14,17 +16,22 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
+@Data
 @Entity
 public class ProfessionalServices implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     protected ProfessionalServicesPK professionalServicesPK;
+
     @JoinColumn(name = "idService", referencedColumnName = "idService", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Service service;
+
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Professional professional;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
     private Collection<ServiceRequest> serviceRequestCollection;
 
@@ -37,39 +44,6 @@ public class ProfessionalServices implements Serializable {
 
     public ProfessionalServices(long idProfessional, long idService) {
         this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idService);
-    }
-
-    public ProfessionalServicesPK getProfessionalServicesPK() {
-        return professionalServicesPK;
-    }
-
-    public void setProfessionalServicesPK(ProfessionalServicesPK professionalServicesPK) {
-        this.professionalServicesPK = professionalServicesPK;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public Professional getProfessional() {
-        return professional;
-    }
-
-    public void setProfessional(Professional professional) {
-        this.professional = professional;
-    }
-
-    @XmlTransient
-    public Collection<ServiceRequest> getServiceRequestCollection() {
-        return serviceRequestCollection;
-    }
-
-    public void setServiceRequestCollection(Collection<ServiceRequest> serviceRequestCollection) {
-        this.serviceRequestCollection = serviceRequestCollection;
     }
 
     @Override
