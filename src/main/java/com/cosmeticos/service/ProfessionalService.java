@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -45,24 +46,27 @@ public class ProfessionalService {
         newProfessional.setProfessionalServicesCollection(request.getProfessional().getProfessionalServicesCollection());
         newProfessional.setHabilityCollection(new ArrayList<>());
 
-        for (Hability h : request.getProfessional().getHabilityCollection()) {
+		Collection<Hability> habilityList = request.getProfessional().getHabilityCollection();
+		
+		if(habilityList != null)
+		{
+			for (Hability h : request.getProfessional().getHabilityCollection()) {
 
-            Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
+				Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
 
-            if(optional.isPresent()) {
-                newProfessional.getHabilityCollection().add(optional.get());
-            }
-            else
-            {
-                Hability newHability = new Hability();
-                newHability.setName(h.getName());
-                Hability persistentHability = habilityService.create(newHability);
+				if(optional.isPresent()) {
+					newProfessional.getHabilityCollection().add(optional.get());
+				}
+				else
+				{
+					Hability newHability = new Hability();
+					newHability.setName(h.getName());
+					Hability persistentHability = habilityService.create(newHability);
 
-                newProfessional.getHabilityCollection().add(persistentHability);
-            }
-
-        }
-
+					newProfessional.getHabilityCollection().add(persistentHability);
+				}
+			}
+		}
         return professionalRepository.save(newProfessional);
     }
 

@@ -5,15 +5,16 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
-
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 /**
  *
  * @author magarrett.dias
@@ -26,7 +27,12 @@ public class Professional implements Serializable {
 
     public  enum Status
     {
-        INACTIVE, ACTIVE
+        INACTIVE, ACTIVE;
+		
+		@JsonValue
+		public int toValue() {
+			return ordinal();
+		}
     }
 
     private static final long serialVersionUID = 1L;
@@ -50,9 +56,11 @@ public class Professional implements Serializable {
     private String typeService;
 
     private Date dateRegister;
-
+	
+    @Enumerated(EnumType.ORDINAL)
     private Status status;
 
+	// TODO incluir @NotNull
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idProfessional")
     private User user;
