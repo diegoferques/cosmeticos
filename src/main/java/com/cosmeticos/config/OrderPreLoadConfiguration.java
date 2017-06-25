@@ -4,6 +4,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
  * Created by matto on 24/06/2017.
  */
 
+@DependsOn({"schedulePreLoadConfiguration", "professionalPreLoadConfiguration", "customerPreLoadConfiguration"})
 @Configuration
 @Profile("default")
 public class OrderPreLoadConfiguration {
@@ -29,6 +31,9 @@ public class OrderPreLoadConfiguration {
     @Autowired
     private CustomerRepository customerRepository;
 
+    //@Autowired
+    // ProfessionalServicesRepository professionalServicesRepository;
+
     @PostConstruct
     public void insertInitialH2Data(){
 
@@ -38,6 +43,7 @@ public class OrderPreLoadConfiguration {
         Professional p1 = professionalRepository.findOne(1L);
         Schedule s1 = scheduleRepository.findOne(1L);
         ProfessionalServices ps1 = new ProfessionalServices(1L, 1L);
+        //professionalServicesRepository.save(ps1);
 
         //ps1.setProfessional(p1);
 
