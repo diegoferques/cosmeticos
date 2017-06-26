@@ -2,7 +2,8 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Sale;
 import com.cosmeticos.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +41,10 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                Order order = orderService.create(request);
-                log.info("Order adicionado com sucesso:  [{}]", order);
+                Sale sale = orderService.create(request);
+                log.info("Order adicionado com sucesso:  [{}]", sale);
                 //return ok().build();
-                return ok(new OrderResponseBody(order));
+                return ok(new OrderResponseBody(sale));
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -66,11 +67,11 @@ public class OrderController {
                 return badRequest().body(buildErrorResponse(bindingResult));
 
             } else {
-                Order order = orderService.update(request);
+                Sale sale = orderService.update(request);
 
-                OrderResponseBody responseBody = new OrderResponseBody(order);
+                OrderResponseBody responseBody = new OrderResponseBody(sale);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
-                        order,
+                        sale,
                         new ObjectMapper().writeValueAsString(responseBody));
                 return ok(responseBody);
             }
@@ -92,7 +93,7 @@ public class OrderController {
 
         try {
 
-            Optional<Order> order = orderService.find(Long.valueOf(idOrder));
+            Optional<Sale> order = orderService.find(Long.valueOf(idOrder));
 
             if (order.isPresent()) {
                 log.info("Busca de Order com exito: [{}]", order.get());
@@ -135,10 +136,10 @@ public class OrderController {
     public HttpEntity<OrderResponseBody> findLastest10() {
 
         try {
-            List<Order> entitylist = orderService.find10Lastest();
+            List<Sale> entitylist = orderService.find10Lastest();
 
             OrderResponseBody responseBody = new OrderResponseBody();
-            responseBody.setOrderList(entitylist);
+            responseBody.setSaleList(entitylist);
             responseBody.setDescription("TOP 10 successfully retrieved.");
 
             log.info("{} Orders successfully retrieved.", entitylist.size());

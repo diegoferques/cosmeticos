@@ -20,7 +20,7 @@ import java.util.Calendar;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class OrderControllerTests {
+public class SaleControllerTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -170,8 +170,8 @@ public class OrderControllerTests {
         p1.setNameProfessional("João da Silva");
         p1.setStatus(Professional.Status.ACTIVE);
 
-        p1.setIdAddress(customer.getIdAddress());
-        p1.setIdLogin(customer.getIdLogin());
+        p1.setAddress(customer.getIdAddress());
+        p1.setUser(customer.getIdLogin());
 
         professionalRepository.save(p1);
 

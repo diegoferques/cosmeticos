@@ -38,7 +38,7 @@ public class Schedule implements Serializable {
     private Status status;
 
     @OneToMany(mappedBy = "scheduleId")
-    private Collection<Order> orderCollection;
+    private Collection<Sale> saleCollection;
 
     @Override
     public int hashCode() {

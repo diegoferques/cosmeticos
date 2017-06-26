@@ -17,7 +17,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table
-public class Order implements Serializable {
+public class Sale implements Serializable {
 
     public enum Status {
         CREATED, ABORTED, EXECUTED
@@ -48,21 +48,21 @@ public class Order implements Serializable {
     private ProfessionalServices professionalServices;
 
     @JoinColumn(name = "idLocation", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     private Location idLocation;
 
     @JoinColumn(name = "idCustomer", referencedColumnName = "idCustomer")
     @ManyToOne(optional = false)
     private Customer idCustomer;
 
-    public Order() {
+    public Sale() {
     }
 
-    public Order(Long idOrder) {
+    public Sale(Long idOrder) {
         this.idOrder = idOrder;
     }
 
-    public Order(Long idOrder, Date date, Integer status) {
+    public Sale(Long idOrder, Date date, Integer status) {
         this.idOrder = idOrder;
         this.date = date;
         this.status = status;
@@ -78,10 +78,10 @@ public class Order implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Order)) {
+        if (!(object instanceof Sale)) {
             return false;
         }
-        Order other = (Order) object;
+        Sale other = (Sale) object;
         if ((this.idOrder == null && other.idOrder != null) || (this.idOrder != null && !this.idOrder.equals(other.idOrder))) {
             return false;
         }

@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Sale;
 import lombok.Data;
 
 /**
@@ -9,5 +10,5 @@ import lombok.Data;
 @Data
 public class OrderRequestBody {
 
-    private Order order;
+    private Sale sale;
 }

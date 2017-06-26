@@ -62,7 +62,7 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<ProfessionalServices> professionalServicesCollection;
 
     @ManyToMany

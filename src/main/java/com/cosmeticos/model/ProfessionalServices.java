@@ -32,7 +32,7 @@ public class ProfessionalServices implements Serializable {
     private Professional professional;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
-    private Collection<Order> orderCollection;
+    private Collection<Sale> saleCollection;
 
     public ProfessionalServices() {
     }
@@ -45,42 +45,6 @@ public class ProfessionalServices implements Serializable {
         this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idService);
     }
 
-<<<<<<< HEAD
-    public ProfessionalServicesPK getProfessionalServicesPK() {
-        return professionalServicesPK;
-    }
-
-    public void setProfessionalServicesPK(ProfessionalServicesPK professionalServicesPK) {
-        this.professionalServicesPK = professionalServicesPK;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public Professional getProfessional() {
-        return professional;
-    }
-
-    public void setProfessional(Professional professional) {
-        this.professional = professional;
-    }
-
-    @XmlTransient
-    public Collection<Order> getOrderCollection() {
-        return orderCollection;
-    }
-
-    public void setOrderCollection(Collection<Order> orderCollection) {
-        this.orderCollection = orderCollection;
-    }
-
-=======
->>>>>>> dev
     @Override
     public int hashCode() {
         int hash = 0;
