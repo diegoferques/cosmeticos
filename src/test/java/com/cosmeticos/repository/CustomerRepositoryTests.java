@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -66,7 +65,7 @@ public class CustomerRepositoryTests {
 
         User u2 = new  User();
         Address address2 = new Address();
-		
+
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
         Customer c2 = new Customer();
         c2.setBirthDate(birthDate2);
@@ -78,7 +77,7 @@ public class CustomerRepositoryTests {
         //c2.setOrderCollection(null);
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
 
-		
+
         c2.setIdAddress(address2);
         c2.setIdLogin(u2);
 
@@ -101,7 +100,7 @@ public class CustomerRepositoryTests {
         //c3.setOrderCollection(null);
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
 
-		
+
         c3.setIdAddress(address3);
         c3.setIdLogin(u3);
 
@@ -247,9 +246,9 @@ public class CustomerRepositoryTests {
         return cs.createFakeAddress(customer);
     }
 
-    private User createFakeLogin(Customer customer) {
+    private User createFakeUser(Customer customer) {
         CustomerService cs = new CustomerService();
-        return cs.createFakeLogin(customer);
+        return cs.createFakeUser(customer);
     }
     */
 

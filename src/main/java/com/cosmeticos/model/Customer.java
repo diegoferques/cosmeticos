@@ -19,7 +19,6 @@ import java.util.Date;
  */
 @Data
 @Entity
-@Table
 public class Customer implements Serializable {
 
     public enum Status {
@@ -45,7 +44,6 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthDate;
 
-    @NotEmpty(message = "cellPhone was not set!")
     private String cellPhone;
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -42,19 +42,19 @@ public class OrderPreLoadConfiguration {
         Customer c1 = customerRepository.findOne(1L);
         Professional p1 = professionalRepository.findOne(1L);
         Schedule s1 = scheduleRepository.findOne(1L);
-        ProfessionalServices ps1 = new ProfessionalServices(1L, 1L);
-        //professionalServicesRepository.save(ps1);
 
-        //ps1.setProfessional(p1);
-
-        //u1.setProfessional(p1);
-        //userRepository.save(u1);
+        /*
+        Se ja temos o profisional, ja temos ProfessionalService. No caso abaixo nao esstamos escolhendo
+        explicitamente qual servico esse profissional vai fazer (ja q ele pode ser manicure e podologo).
+        Como eh pra teste, estou pegando o primeiro q retornar da lista de especialidades dele.
+         */
+        ProfessionalServices ps1 =
+                p1.getProfessionalServicesCollection().stream().findFirst().get();
 
         Order o1 = new Order();
         o1.setStatus(Order.Status.CREATED.ordinal());
         o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
         o1.setIdCustomer(c1);
-        //o1.setIdLocation();
         o1.setProfessionalServices(ps1);
         o1.setScheduleId(s1);
         orderRepository.save(o1);

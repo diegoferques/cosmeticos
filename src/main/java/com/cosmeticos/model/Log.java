@@ -19,15 +19,20 @@ public class Log implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLog;
+
     @Column(name = "customerEmail")
     private String customerEmail;
+
     @Column(name = "serviceType")
     private String serviceType;
+
     @Column(name = "professionalEmail")
     private String professionalEmail;
+
     @Basic(optional = false)
     @Column(name = "event")
     private short event;
+
     @Basic(optional = false)
     @Column(name = "date")
     private String date;

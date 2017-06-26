@@ -5,12 +5,17 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import org.hibernate.annotations.*;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -18,15 +23,17 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-@Table
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLogin;
 
+    @NotEmpty(message = "UserName cannot be empty")
     private String username;
 
     private String password;
@@ -43,6 +50,15 @@ public class User implements Serializable {
 
     @OneToOne
     private Professional professional;
+
+    public User() {
+    }
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
     @Override
     public int hashCode() {

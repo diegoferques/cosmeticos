@@ -4,22 +4,24 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author magarrett.dias
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-public class Professional implements Serializable {
+public class Professional  implements Serializable {
+
+
 
     public  enum Status
     {
@@ -27,6 +29,7 @@ public class Professional implements Serializable {
     }
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfessional;
@@ -51,14 +54,22 @@ public class Professional implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idProfessional")
-    private User idLogin;
+    private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProfessional")
-    private Address idAddress;
+    private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professional")
+    /**
+     * FetchType deve ser EAGER, isso faz com que a collection seja
+     * carregada do banco junto com Professional. Nao eh ma pratica fazer isso
+     * com Professional pois a quantidade de itens deste atributo nunca vai atingir grandes quantidades.
+     */
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<ProfessionalServices> professionalServicesCollection;
+
+    @ManyToMany
+    private  Collection<Hability> habilityCollection;
 
     @Override
     public int hashCode() {
