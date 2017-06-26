@@ -4,7 +4,6 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -20,7 +19,6 @@ import java.util.Date;
  */
 @Data
 @Entity
-@Table
 public class Customer implements Serializable {
 
     public  enum Status
