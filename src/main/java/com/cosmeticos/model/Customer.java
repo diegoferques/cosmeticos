@@ -60,7 +60,7 @@ public class Customer implements Serializable {
     private Address idAddress;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
-    private Collection<Order> orderCollection;
+    private Collection<Sale> saleCollection;
 
     @Override
     public int hashCode() {

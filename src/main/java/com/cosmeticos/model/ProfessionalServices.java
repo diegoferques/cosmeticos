@@ -33,7 +33,7 @@ public class ProfessionalServices implements Serializable {
     private Professional professional;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
-    private Collection<Order> orderCollection;
+    private Collection<Sale> saleCollection;
 
     public ProfessionalServices() {
     }

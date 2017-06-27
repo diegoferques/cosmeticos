@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Sale;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -13,12 +14,12 @@ import java.util.List;
 public class OrderResponseBody {
     private String description;
 
-    private List<Order> orderList = new ArrayList<>(10);
+    private List<Sale> saleList = new ArrayList<>(10);
 
     public OrderResponseBody() {
     }
 
-    public OrderResponseBody(Order order) {
-        this.orderList.add(order);
+    public OrderResponseBody(Sale sale) {
+        this.saleList.add(sale);
     }
 }

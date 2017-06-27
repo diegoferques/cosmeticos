@@ -7,10 +7,12 @@ package com.cosmeticos.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -60,11 +62,6 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    /**
-     * FetchType deve ser EAGER, isso faz com que a collection seja
-     * carregada do banco junto com Professional. Nao eh ma pratica fazer isso
-     * com Professional pois a quantidade de itens deste atributo nunca vai atingir grandes quantidades.
-     */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<ProfessionalServices> professionalServicesCollection;
 
