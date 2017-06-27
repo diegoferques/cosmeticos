@@ -1,10 +1,8 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.Schedule;
-import com.cosmeticos.model.Service;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
