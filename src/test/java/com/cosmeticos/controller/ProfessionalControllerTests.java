@@ -154,7 +154,7 @@ public class ProfessionalControllerTests {
 				"    \"birthDate\" : 317185200000,\n" +
 				"    \"cellPhone\" : \"(21) 98877-6655\",\n" +
 				"    \"dateRegister\" : 1498145793560,\n" +
-				"    \"status\" : \"ACTIVE\",\n" +
+				"    \"status\" :0,\n" +
 				"    \"habilityCollection\" : [ {\n" +
 				"      \"name\" : \"Escova Progressiva\"\n" + // Ver HabilityPreLoadConfiguration
 				"    }, {\n" +

@@ -71,10 +71,17 @@ public class Sale implements Serializable {
         this.status = status;
     }
 
+    public Sale(Customer idCustomer, ProfessionalServices professionalServices, Schedule scheduleId) {
+        this.idCustomer = idCustomer;
+        this.professionalServices = professionalServices;
+        this.scheduleId = scheduleId;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idOrder != null ? idOrder.hashCode() : 0);
+        hash += (idOrder != null ? idOrder.hashCode() :
+                date != null ? date.hashCode() : 0);
         return hash;
     }
 

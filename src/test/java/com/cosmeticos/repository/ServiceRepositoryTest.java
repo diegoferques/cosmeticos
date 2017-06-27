@@ -18,27 +18,28 @@ public class ServiceRepositoryTest {
 
         @Autowired
         private ServiceRepository repository;
+    private Long id;
 
-        /**
+    /**
          * Inicializa o H2 com dados iniciais.
          */
         @Before
         public void setupTests()
         {
             Service s1 = new Service();
-            s1.setCategory("HAIR");
+            s1.setCategory("HAIR 123456");
 
             repository.save(s1);
-
+id = s1.getIdService();
         }
 
         @Test
         public void testFindServiceCabelo() {
-            Service service = repository.findOne(1L);
+            Service service = repository.findOne(id);
             Assert.assertNotNull(service);
 
             // Confere se o Service que retornou confere com o primeiro Service inserido.
-            Assert.assertEquals("HAIR", service.getCategory());
+            Assert.assertEquals("HAIR 123456", service.getCategory());
         }
 
 }

@@ -1,9 +1,6 @@
 package com.cosmeticos.jsonizer;
 
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.commons.HabilityRequestBody;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.RoleRequestBody;
+import com.cosmeticos.commons.*;
 
 import com.cosmeticos.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -123,6 +120,21 @@ public class JsonizerTest {
         r.setIdService((long)1);
 
         String json = om.writeValueAsString(r);
+
+        System.out.println(json);
+    }
+
+    @Test
+    public void jsonizeScheduleRequestBody() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+        ScheduleRequestBody scheduleRequest = new ScheduleRequestBody();
+        scheduleRequest.setScheduleDate(Calendar.getInstance().getTime());
+        scheduleRequest.setIdCustomer(1L);
+        scheduleRequest.setIdProfessional(1L);
+        scheduleRequest.setIdService(1L);
+
+        String json = om.writeValueAsString(scheduleRequest);
 
         System.out.println(json);
     }

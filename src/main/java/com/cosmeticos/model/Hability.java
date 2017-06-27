@@ -33,6 +33,7 @@ public class Hability implements Serializable {
     private Long id;
 
     @NotEmpty(message="Hability name cannot be empty")
+    @Column(unique = true)
     private String name;
 
     @ManyToOne
@@ -56,7 +57,10 @@ public class Hability implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (id != null ? id.hashCode() :
+
+                // Name eh unique, portanto nao preciso ter medo de usa-lo como hash.
+                name != null ? name.hashCode() : 0);
         return hash;
     }
 
@@ -68,9 +72,10 @@ public class Hability implements Serializable {
         }
         Hability other = (Hability) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
+
+                return false;
         }
-        return true;
+            return true;
     }
 
     @Override
