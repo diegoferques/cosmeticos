@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 /**
  * Created by matto on 24/06/2017.
  */
+//VAMOS ENVIAR!
 
 @DependsOn({"schedulePreLoadConfiguration", "professionalPreLoadConfiguration", "customerPreLoadConfiguration"})
 @Configuration
