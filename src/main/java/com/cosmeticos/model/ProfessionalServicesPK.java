@@ -31,6 +31,11 @@ public class ProfessionalServicesPK implements Serializable {
         this.idService = idService;
     }
 
+    public ProfessionalServicesPK(ProfessionalServices ps) {
+        this.idProfessional = ps.getProfessional().getIdProfessional();
+        this.idService = ps.getService().getIdService();
+    }
+
     public long getIdProfessional() {
         return idProfessional;
     }

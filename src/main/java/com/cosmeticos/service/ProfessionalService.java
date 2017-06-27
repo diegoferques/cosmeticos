@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by matto on 27/05/2017.
@@ -43,32 +39,15 @@ public class ProfessionalService {
         newProfessional.setDateRegister(Calendar.getInstance().getTime());
         newProfessional.setAddress(request.getProfessional().getAddress());
         newProfessional.setUser(request.getProfessional().getUser());
-        newProfessional.setProfessionalServicesCollection(request.getProfessional().getProfessionalServicesCollection());
-        newProfessional.setHabilityCollection(new ArrayList<>());
 
-		Collection<Hability> habilityList = request.getProfessional().getHabilityCollection();
-		
-		if(habilityList != null)
-		{
-			for (Hability h : request.getProfessional().getHabilityCollection()) {
+        professionalRepository.save(newProfessional);
 
-				Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
+        configureHability(request.getProfessional(), newProfessional);
+        configureProfessionalServices(request.getProfessional(), newProfessional);
 
-				if(optional.isPresent()) {
-					newProfessional.getHabilityCollection().add(optional.get());
-				}
-				else
-				{
-					Hability newHability = new Hability();
-					newHability.setName(h.getName());
-					Hability persistentHability = habilityService.create(newHability);
-
-					newProfessional.getHabilityCollection().add(persistentHability);
-				}
-			}
-		}
         return professionalRepository.save(newProfessional);
     }
+
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
         Professional cr = request.getProfessional();
@@ -119,5 +98,45 @@ public class ProfessionalService {
 
     public List<Professional> find10Lastest() {
         return professionalRepository.findTop10ByOrderByDateRegisterDesc();
+    }
+
+    private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {
+        List<ProfessionalServices> receivedProfessionalServices =
+                (List<ProfessionalServices>)receivedProfessional.getProfessionalServicesCollection();
+
+        for (int i = 0; i < receivedProfessionalServices.size(); i++) {
+            ProfessionalServices professionalServices =  receivedProfessionalServices.get(i);
+            professionalServices.setProfessional(newProfessional);
+
+            ProfessionalServicesPK pk = new ProfessionalServicesPK(professionalServices);
+            professionalServices.setProfessionalServicesPK(pk);
+
+            newProfessional.getProfessionalServicesCollection().add(professionalServices);
+        }
+
+    }
+
+    private void configureHability(Professional receivedProfessional, Professional newProfessional) {
+        Collection<Hability> habilityList = receivedProfessional.getHabilityCollection();
+
+        if(habilityList != null)
+        {
+            for (Hability h : receivedProfessional.getHabilityCollection()) {
+
+                Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
+
+                if(optional.isPresent()) {
+                    newProfessional.getHabilityCollection().add(optional.get());
+                }
+                else
+                {
+                    Hability newHability = new Hability();
+                    newHability.setName(h.getName());
+                    Hability persistentHability = habilityService.create(newHability);
+
+                    newProfessional.getHabilityCollection().add(persistentHability);
+                }
+            }
+        }
     }
 }

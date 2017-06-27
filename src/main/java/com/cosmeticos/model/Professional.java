@@ -4,12 +4,15 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.*;
@@ -70,11 +73,12 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Collection<ProfessionalServices> professionalServicesCollection;
+    private Collection<ProfessionalServices> professionalServicesCollection = new ArrayList<>();
 
     @ManyToMany
-    private  Collection<Hability> habilityCollection;
+    private  Collection<Hability> habilityCollection = new ArrayList<>();
 
     @Override
     public int hashCode() {
