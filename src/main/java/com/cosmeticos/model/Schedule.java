@@ -8,7 +8,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 
@@ -39,7 +38,7 @@ public class Schedule implements Serializable {
     private Status status;
 
     @OneToMany(mappedBy = "scheduleId")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Sale> saleCollection;
 
     @Override
     public int hashCode() {

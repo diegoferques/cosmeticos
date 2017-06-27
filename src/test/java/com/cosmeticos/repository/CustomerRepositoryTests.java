@@ -55,7 +55,7 @@ public class CustomerRepositoryTests {
         c1.setDateRegister(Calendar.getInstance().getTime());
         c1.setGenre('M');
         c1.setNameCustomer("João da Silva");
-        //c1.setServiceRequestCollection(null);
+        //c1.setOrderCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
         c1.setIdLogin(u1);
         c1.setIdAddress(address);
@@ -75,7 +75,7 @@ public class CustomerRepositoryTests {
         c2.setDateRegister(Calendar.getInstance().getTime());
         c2.setGenre('M');
         c2.setNameCustomer("Diego Fernandes");
-        //c2.setServiceRequestCollection(null);
+        //c2.setOrderCollection(null);
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
 
 
@@ -98,7 +98,7 @@ public class CustomerRepositoryTests {
         c3.setDateRegister(Calendar.getInstance().getTime());
         c3.setGenre('F');
         c3.setNameCustomer("Maria das Dores");
-        //c3.setServiceRequestCollection(null);
+        //c3.setOrderCollection(null);
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
 
 
@@ -120,7 +120,7 @@ public class CustomerRepositoryTests {
         c4.setDateRegister(Calendar.getInstance().getTime());
         c4.setGenre('F');
         c4.setNameCustomer("Fernanda Cavalcante");
-        //c4.setServiceRequestCollection(null);
+        //c4.setOrderCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
 
         c4.setIdAddress(address4);

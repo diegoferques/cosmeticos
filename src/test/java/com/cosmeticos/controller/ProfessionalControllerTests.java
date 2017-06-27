@@ -284,7 +284,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(this.createFakeAddress());
 		c1.setUser(this.createFakeUser());

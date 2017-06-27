@@ -4,8 +4,8 @@ import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.HabilityRequestBody;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.RoleRequestBody;
+
 import com.cosmeticos.model.*;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -134,7 +134,7 @@ public class JsonizerTest {
         c4.setDateRegister(Calendar.getInstance().getTime());
         c4.setGenre('F');
         c4.setNameCustomer("Fernanda Cavalcante");
-        c4.setServiceRequestCollection(null);
+        c4.setSaleCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
         return c4;
     }

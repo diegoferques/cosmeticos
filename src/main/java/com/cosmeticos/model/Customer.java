@@ -21,8 +21,7 @@ import java.util.Date;
 @Entity
 public class Customer implements Serializable {
 
-    public  enum Status
-    {
+    public enum Status {
         INACTIVE, ACTIVE
     }
 
@@ -61,7 +60,7 @@ public class Customer implements Serializable {
     private Address idAddress;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Sale> saleCollection;
 
     @Override
     public int hashCode() {

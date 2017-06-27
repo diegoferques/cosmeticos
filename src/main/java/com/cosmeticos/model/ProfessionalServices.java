@@ -9,7 +9,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -33,7 +32,7 @@ public class ProfessionalServices implements Serializable {
     private Professional professional;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Sale> saleCollection;
 
     public ProfessionalServices() {
     }
