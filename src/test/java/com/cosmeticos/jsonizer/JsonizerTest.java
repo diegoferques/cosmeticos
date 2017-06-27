@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 
 /**
  * Created by Lulu on 30/05/2017.
@@ -71,7 +72,7 @@ public class JsonizerTest {
         c1.setStatus(Professional.Status.ACTIVE);
         c1.setAddress(new Address());
         c1.setUser(new User("profissional1", "123qwe", "profissional1@gmail.con"));
-        c1.setHabilityCollection(new ArrayList<Hability>(){{
+        c1.setHabilityCollection(new HashSet<Hability>(){{
             add(new Hability("Escova Progressiva"));
             add(new Hability("Relaxamento"));
             add(new Hability("Nova Habilidade"));

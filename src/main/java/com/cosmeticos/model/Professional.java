@@ -12,9 +12,7 @@ import lombok.Data;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -26,8 +24,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @Data
 @Entity
 public class Professional  implements Serializable {
-
-
 
     public  enum Status
     {
@@ -74,11 +70,14 @@ public class Professional  implements Serializable {
     private Address address;
 
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Collection<ProfessionalServices> professionalServicesCollection = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
+    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
-    @ManyToMany
-    private  Collection<Hability> habilityCollection = new ArrayList<>();
+    @JoinTable(name = "PROFESSIONAL_HABILITY", joinColumns = {
+            @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional")}, inverseJoinColumns = {
+            @JoinColumn(name = "id_hability", referencedColumnName = "id")})
+    @ManyToMany(fetch = FetchType.EAGER)
+    private  Set<Hability> habilityCollection = new HashSet<>();
 
     @Override
     public int hashCode() {

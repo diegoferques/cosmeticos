@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by matto on 27/05/2017.
@@ -101,19 +102,17 @@ public class ProfessionalService {
     }
 
     private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {
-        List<ProfessionalServices> receivedProfessionalServices =
-                (List<ProfessionalServices>)receivedProfessional.getProfessionalServicesCollection();
+        Set<ProfessionalServices> receivedProfessionalServices =
+                receivedProfessional.getProfessionalServicesCollection();
 
-        for (int i = 0; i < receivedProfessionalServices.size(); i++) {
-            ProfessionalServices professionalServices =  receivedProfessionalServices.get(i);
-            professionalServices.setProfessional(newProfessional);
+        receivedProfessionalServices.stream().forEach(ps -> {
+            ps.setProfessional(newProfessional);
 
-            ProfessionalServicesPK pk = new ProfessionalServicesPK(professionalServices);
-            professionalServices.setProfessionalServicesPK(pk);
+            ProfessionalServicesPK pk = new ProfessionalServicesPK(ps);
+            ps.setProfessionalServicesPK(pk);
 
-            newProfessional.getProfessionalServicesCollection().add(professionalServices);
-        }
-
+            newProfessional.getProfessionalServicesCollection().add(ps);
+        });
     }
 
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {

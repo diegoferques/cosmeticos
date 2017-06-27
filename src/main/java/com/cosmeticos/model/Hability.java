@@ -50,7 +50,7 @@ public class Hability implements Serializable {
      * Nao retornamos esse dado no json.
      */
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(mappedBy = "habilityCollection")
     private Collection<Professional> professionalCollection = new ArrayList<>();
 
     @Override
