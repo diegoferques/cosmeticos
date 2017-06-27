@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -51,6 +53,7 @@ public class Sale implements Serializable {
     @ManyToOne(optional = true)
     private Location idLocation;
 
+    @JsonBackReference
     @JoinColumn(name = "idCustomer", referencedColumnName = "idCustomer")
     @ManyToOne(optional = false)
     private Customer idCustomer;
