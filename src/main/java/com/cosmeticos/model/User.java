@@ -4,21 +4,13 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Set;
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -44,7 +36,7 @@ public class User implements Serializable {
     private String sourceApp;
 
     @ManyToMany(mappedBy = "userCollection")
-    private Set<Role> roleCollection;
+    private Collection<Role> roleCollection;
 
     @OneToOne
     private Customer customer;
