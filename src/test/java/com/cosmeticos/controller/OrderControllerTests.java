@@ -1,18 +1,22 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.model.Sale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 /**
@@ -73,7 +77,6 @@ public class OrderControllerTests {
 
     }
 
-    /*
     @Test
     public void testUpdateOK() throws IOException {
 
@@ -86,13 +89,14 @@ public class OrderControllerTests {
 
         final ResponseEntity<OrderResponseBody> exchange = //
                 restTemplate.exchange( //
-                        "/customers", //
+                        "/orders", //
                         HttpMethod.PUT, //
-                        new HttpEntity(cr), // Body
-                        ScheduleResponseBody.class);
+                        new HttpEntity(or), // Body
+                        OrderResponseBody.class);
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals((int)Sale.Status.ABORTED.ordinal(), (int)exchange.getBody().getSaleList().get(0).getStatus());
     }
-    */
+
 }
