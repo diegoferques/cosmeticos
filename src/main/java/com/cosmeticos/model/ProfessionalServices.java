@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -21,6 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class ProfessionalServices implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonIgnore // Nao precisamos exibir este atributo pro cliente.
     @EmbeddedId
     protected ProfessionalServicesPK professionalServicesPK;
 
@@ -28,10 +31,12 @@ public class ProfessionalServices implements Serializable {
     @ManyToOne(optional = false)
     private Service service;
 
+    @JsonBackReference // Diz que Professional eh dono desta classe e professional nao eh serializado no json.
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Professional professional;
 
+    @JsonIgnore // As vendas serao obtidas por endpoint especifico.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
     private Collection<Sale> saleCollection;
 

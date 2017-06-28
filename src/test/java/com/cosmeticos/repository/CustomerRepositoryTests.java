@@ -40,7 +40,7 @@ public class CustomerRepositoryTests {
     @Before
     public void setupTests() throws ParseException {
 
-        User u1 = new  User();
+        User u1 = new  User("u1", "u1pass", "u1@gmail.com");
         Address address = new Address();
 
         //TODO: pesquisar como gravar apenas dia mes e ano.
@@ -53,7 +53,7 @@ public class CustomerRepositoryTests {
         c1.setCpf("098.765.432-10");
         c1.setDateRegister(Calendar.getInstance().getTime());
         c1.setGenre('M');
-        c1.setNameCustomer("João da Silva");
+        c1.setNameCustomer("Test João da Silva");
         //c1.setOrderCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
         c1.setIdLogin(u1);
@@ -63,7 +63,7 @@ public class CustomerRepositoryTests {
         address.setCustomer(c1);
 
 
-        User u2 = new  User();
+        User u2 = new  User("u2", "u2pass", "u2@gmail.com");
         Address address2 = new Address();
 
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
@@ -73,7 +73,7 @@ public class CustomerRepositoryTests {
         c2.setCpf("098.330.987-62");
         c2.setDateRegister(Calendar.getInstance().getTime());
         c2.setGenre('M');
-        c2.setNameCustomer("Diego Fernandes");
+        c2.setNameCustomer("Test Diego Fernandes");
         //c2.setOrderCollection(null);
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
 
@@ -86,7 +86,7 @@ public class CustomerRepositoryTests {
 
 
 
-        User u3 = new  User();
+        User u3 = new  User("u3", "u3pass", "u3@gmail.com");
         Address address3 = new Address();
 
         Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
@@ -96,7 +96,7 @@ public class CustomerRepositoryTests {
         c3.setCpf("831.846.135-15");
         c3.setDateRegister(Calendar.getInstance().getTime());
         c3.setGenre('F');
-        c3.setNameCustomer("Maria das Dores");
+        c3.setNameCustomer("Test Maria das Dores");
         //c3.setOrderCollection(null);
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
 
@@ -108,7 +108,7 @@ public class CustomerRepositoryTests {
         address3.setCustomer(c3);
 
 
-        User u4 = new  User();
+        User u4 = new  User("u4", "u4pass", "u4@gmail.com");
         Address address4 = new Address();
 
         Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
@@ -118,7 +118,7 @@ public class CustomerRepositoryTests {
         c4.setCpf("816.810.695-68");
         c4.setDateRegister(Calendar.getInstance().getTime());
         c4.setGenre('F');
-        c4.setNameCustomer("Fernanda Cavalcante");
+        c4.setNameCustomer("Test Fernanda Cavalcante");
         //c4.setOrderCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
 
@@ -130,7 +130,7 @@ public class CustomerRepositoryTests {
 
 
 
-        User u5 = new  User();
+        User u5 = new  User("u5", "u5pass", "u5@gmail.com");
         Address address5 = new Address();
         Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
         Customer c5 = new Customer();
@@ -139,7 +139,7 @@ public class CustomerRepositoryTests {
         c5.setCpf("541.913.254-81");
         c5.setDateRegister(Calendar.getInstance().getTime());
         c5.setGenre('M');
-        c5.setNameCustomer("José das Couves");
+        c5.setNameCustomer("Test José das Couves");
         c5.setStatus(Customer.Status.ACTIVE.ordinal());
         c5.setIdAddress(address5);
         c5.setIdLogin(u5);

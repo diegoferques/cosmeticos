@@ -3,6 +3,9 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ScheduleRequestBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ServiceRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,17 +28,29 @@ public class ScheduleControllerTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	@Autowired
+	private CustomerRepository customerRepository;
+
+	@Autowired
+	private ProfessionalRepository professionalRepository;
+
+	@Autowired
+	private ServiceRepository serviceRepository;
+
 	@Test
 	public void testCreateheduleOK() {
 
-		ScheduleRequestBody billingRequest = new ScheduleRequestBody();
-		billingRequest.setScheduleDate(Calendar.getInstance().getTime());
+		ScheduleRequestBody scheduleRequest = new ScheduleRequestBody();
+		scheduleRequest.setScheduleDate(Calendar.getInstance().getTime());
+		scheduleRequest.setIdCustomer(1L);
+		scheduleRequest.setIdProfessional(1L);
+		scheduleRequest.setIdService(1L);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //
-						"/schedule/", //
+						"/schedules/", //
 						HttpMethod.POST, //
-						new HttpEntity(billingRequest), // Body
+						new HttpEntity(scheduleRequest), // Body
 						ScheduleResponseBody.class);
 
 		Assert.assertNotNull(exchange);

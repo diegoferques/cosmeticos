@@ -48,9 +48,6 @@ public class CustomerControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
-	@MockBean
-	private CustomerService service;
-
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
@@ -161,27 +158,6 @@ public class CustomerControllerTests {
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 	}
 
-
-	@Test
-	public void testCreateError500() throws IOException {
-		/**/
-		Mockito.when(
-				service.create(Mockito.anyObject())
-		).thenThrow(new RuntimeException());
-
-		CustomerRequestBody requestBody = createFakeRequestBody();
-
-		final ResponseEntity<CustomerResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/customers", //
-						HttpMethod.POST, //
-						new HttpEntity(requestBody), // Body
-						CustomerResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
-	}
-
 	@Test
 	public void testUpdateOK() throws IOException {
 
@@ -271,7 +247,6 @@ public class CustomerControllerTests {
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
 		//u.getCustomerCollection().add(c);
-		userRepository.save(u);
 		return u;
 	}
 
@@ -284,7 +259,6 @@ public class CustomerControllerTests {
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
 		//a.getCustomerCollection().add(customer);
-		addressRepository.save(a);
 		return a;
 	}
 

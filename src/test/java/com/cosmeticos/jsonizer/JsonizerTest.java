@@ -1,24 +1,24 @@
 package com.cosmeticos.jsonizer;
 
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.commons.HabilityRequestBody;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.RoleRequestBody;
+import com.cosmeticos.commons.*;
 
 import com.cosmeticos.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 
 /**
  * Created by Lulu on 30/05/2017.
  */
+@Ignore
 public class JsonizerTest {
     ObjectMapper om = new ObjectMapper();
 
@@ -71,7 +71,7 @@ public class JsonizerTest {
         c1.setStatus(Professional.Status.ACTIVE);
         c1.setAddress(new Address());
         c1.setUser(new User("profissional1", "123qwe", "profissional1@gmail.con"));
-        c1.setHabilityCollection(new ArrayList<Hability>(){{
+        c1.setHabilityCollection(new HashSet<Hability>(){{
             add(new Hability("Escova Progressiva"));
             add(new Hability("Relaxamento"));
             add(new Hability("Nova Habilidade"));
@@ -122,6 +122,21 @@ public class JsonizerTest {
         r.setIdService((long)1);
 
         String json = om.writeValueAsString(r);
+
+        System.out.println(json);
+    }
+
+    @Test
+    public void jsonizeScheduleRequestBody() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+        ScheduleRequestBody scheduleRequest = new ScheduleRequestBody();
+        scheduleRequest.setScheduleDate(Calendar.getInstance().getTime());
+        scheduleRequest.setIdCustomer(1L);
+        scheduleRequest.setIdProfessional(1L);
+        scheduleRequest.setIdService(1L);
+
+        String json = om.writeValueAsString(scheduleRequest);
 
         System.out.println(json);
     }
