@@ -167,11 +167,11 @@ go
 ALTER TABLE [Service] ADD CONSTRAINT [Key6] PRIMARY KEY ([idService])
 go
 
--- Table ServiceRequest
+-- Table Order
 
 CREATE TABLE [ServiceRequest]
 (
- [idServiceRequest] Bigint IDENTITY NOT NULL,
+ [idOrder] Bigint IDENTITY NOT NULL,
  [date] Date NOT NULL,
  [status] Smallint NOT NULL,
  [idCustomer] Bigint NOT NULL,
@@ -182,7 +182,7 @@ CREATE TABLE [ServiceRequest]
 )
 go
 
--- Create indexes for table ServiceRequest
+-- Create indexes for table Order
 
 CREATE INDEX [IX_Relationship13] ON [ServiceRequest] ([idCustomer])
 go
@@ -196,9 +196,9 @@ go
 CREATE INDEX [IX_Relationship28] ON [ServiceRequest] ([scheduleId])
 go
 
--- Add keys for table ServiceRequest
+-- Add keys for table Order
 
-ALTER TABLE [ServiceRequest] ADD CONSTRAINT [Key7] PRIMARY KEY ([idServiceRequest])
+ALTER TABLE [ServiceRequest] ADD CONSTRAINT [Key7] PRIMARY KEY ([idOrder])
 go
 
 -- Table User

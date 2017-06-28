@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -21,8 +22,7 @@ import java.util.Date;
 @Entity
 public class Customer implements Serializable {
 
-    public  enum Status
-    {
+    public enum Status {
         INACTIVE, ACTIVE
     }
 
@@ -60,8 +60,9 @@ public class Customer implements Serializable {
     @JoinColumn(name = "idCustomer")
     private Address idAddress;
 
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private Collection<Sale> saleCollection;
 
     @Override
     public int hashCode() {

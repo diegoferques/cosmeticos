@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  *
  * @author magarrett.dias
@@ -29,11 +30,11 @@ public class Service implements Serializable {
     @Column(unique = true)
     private String category;
 
-    @OneToMany(cascade = CascadeType.ALL)
+	@JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")
     private Collection<ProfessionalServices> professionalServicesCollection;
 
-
-    @Override
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (idService != null ? idService.hashCode() : 0);

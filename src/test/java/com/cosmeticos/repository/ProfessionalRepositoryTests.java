@@ -25,7 +25,7 @@ public class ProfessionalRepositoryTests {
 
     @Autowired
     private ProfessionalRepository repository;
-
+ private  long id;
     /**
      * Inicializa o H2 com dados iniciais.
      */
@@ -33,7 +33,7 @@ public class ProfessionalRepositoryTests {
     public void setupTests() {
 
         Address address = new Address();
-        User u1 = new User();
+        User u1 = new User("username123","654321","username123@gmail" );
 
         Professional p1 = new Professional();
         p1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
@@ -41,7 +41,7 @@ public class ProfessionalRepositoryTests {
         p1.setCnpj("098.765.432-10");
         p1.setDateRegister(Calendar.getInstance().getTime());
         p1.setGenre('M');
-        p1.setNameProfessional("João da Silva");
+        p1.setNameProfessional("João da Silva 123");
         p1.setStatus(Professional.Status.ACTIVE);
 
         p1.setAddress(address);
@@ -51,22 +51,19 @@ public class ProfessionalRepositoryTests {
         address.setProfessional(p1);
 
         repository.save(p1);
+
+        id = p1.getIdProfessional();
     }
 
     @Test
-    public void testFindByIdEquals1() {
-        Professional customer = repository.findOne(1L);
+    public void testFindByNameEqualJoaoDaSilva123() {
+        Professional customer = repository.findOne(id);
 
         Assert.assertNotNull(customer);
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
-        Assert.assertEquals("João da Silva", customer.getNameProfessional());
+        Assert.assertEquals("João da Silva 123", customer.getNameProfessional());
 
-        Assert.assertNotNull(customer.getUser());
-        Assert.assertEquals((Long) 1L, customer.getUser().getIdLogin());
-
-        Assert.assertNotNull(customer.getAddress());
-        Assert.assertEquals((Long) 1L, customer.getAddress().getIdAddress());
     }
 
 

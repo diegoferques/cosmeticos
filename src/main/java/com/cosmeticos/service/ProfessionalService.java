@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by matto on 27/05/2017.
@@ -42,29 +40,15 @@ public class ProfessionalService {
         newProfessional.setDateRegister(Calendar.getInstance().getTime());
         newProfessional.setAddress(request.getProfessional().getAddress());
         newProfessional.setUser(request.getProfessional().getUser());
-        newProfessional.setProfessionalServicesCollection(request.getProfessional().getProfessionalServicesCollection());
-        newProfessional.setHabilityCollection(new ArrayList<>());
 
-        for (Hability h : request.getProfessional().getHabilityCollection()) {
+        professionalRepository.save(newProfessional);
 
-            Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
-
-            if(optional.isPresent()) {
-                newProfessional.getHabilityCollection().add(optional.get());
-            }
-            else
-            {
-                Hability newHability = new Hability();
-                newHability.setName(h.getName());
-                Hability persistentHability = habilityService.create(newHability);
-
-                newProfessional.getHabilityCollection().add(persistentHability);
-            }
-
-        }
+        configureHability(request.getProfessional(), newProfessional);
+        configureProfessionalServices(request.getProfessional(), newProfessional);
 
         return professionalRepository.save(newProfessional);
     }
+
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
         Professional cr = request.getProfessional();
@@ -115,5 +99,43 @@ public class ProfessionalService {
 
     public List<Professional> find10Lastest() {
         return professionalRepository.findTop10ByOrderByDateRegisterDesc();
+    }
+
+    private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {
+        Set<ProfessionalServices> receivedProfessionalServices =
+                receivedProfessional.getProfessionalServicesCollection();
+
+        receivedProfessionalServices.stream().forEach(ps -> {
+            ps.setProfessional(newProfessional);
+
+            ProfessionalServicesPK pk = new ProfessionalServicesPK(ps);
+            ps.setProfessionalServicesPK(pk);
+
+            newProfessional.getProfessionalServicesCollection().add(ps);
+        });
+    }
+
+    private void configureHability(Professional receivedProfessional, Professional newProfessional) {
+        Collection<Hability> habilityList = receivedProfessional.getHabilityCollection();
+
+        if(habilityList != null)
+        {
+            for (Hability h : receivedProfessional.getHabilityCollection()) {
+
+                Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
+
+                if(optional.isPresent()) {
+                    newProfessional.getHabilityCollection().add(optional.get());
+                }
+                else
+                {
+                    Hability newHability = new Hability();
+                    newHability.setName(h.getName());
+                    Hability persistentHability = habilityService.create(newHability);
+
+                    newProfessional.getHabilityCollection().add(persistentHability);
+                }
+            }
+        }
     }
 }

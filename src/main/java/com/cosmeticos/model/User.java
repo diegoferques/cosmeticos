@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -43,7 +44,7 @@ public class User implements Serializable {
     private String sourceApp;
 
     @ManyToMany(mappedBy = "userCollection")
-    private Collection<Role> roleCollection;
+    private Set<Role> roleCollection;
 
     @OneToOne
     private Customer customer;

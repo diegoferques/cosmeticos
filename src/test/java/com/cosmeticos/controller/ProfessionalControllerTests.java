@@ -154,7 +154,7 @@ public class ProfessionalControllerTests {
 				"    \"birthDate\" : 317185200000,\n" +
 				"    \"cellPhone\" : \"(21) 98877-6655\",\n" +
 				"    \"dateRegister\" : 1498145793560,\n" +
-				"    \"status\" : \"ACTIVE\",\n" +
+				"    \"status\" :0,\n" +
 				"    \"habilityCollection\" : [ {\n" +
 				"      \"name\" : \"Escova Progressiva\"\n" + // Ver HabilityPreLoadConfiguration
 				"    }, {\n" +
@@ -240,6 +240,64 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
 	}
 
+	@Test
+	public void testNewProfessionalWithServicesHeDoes() throws URISyntaxException {
+		String jsonBody = "{\n" +
+				"\t\"professional\":\n" +
+				"\t{\n" +
+				"\t\t\"address\":null,\n" +
+				"\t\t\"birthDate\":350535600000,\n" +
+				"\t\t\"cellPhone\":null,\"dateRegister\":null,\n" +
+				"\t\t\"status\":null,\n" +
+				"\t\t\"user\":\n" +
+				"\t\t{\n" +
+				"\t\t\t\"email\":\"E-mail\",\n" +
+				"\t\t\t\"idLogin\":null,\n" +
+				"\t\t\t\"password\":\"123\",\n" +
+				"\t\t\t\"sourceApp\":null,\n" +
+				"\t\t\t\"username\":\"E-mail\"\n" +
+				"\t\t},\n" +
+				"\t\t\"genre\":\"\\u0000\",\n" +
+				"\t\t\"cnpj\":\"CNPJ\",\n" +
+				"\t\t\"idProfessional\":null,\n" +
+				"\t\t\"nameProfessional\":\"Name\",\n" +
+				"\t\t\"professionalServicesCollection\":\n" +
+				"\t\t[\n" +
+				"\t\t\t{\n" +
+				"\t\t\t\t\"professional\":null,\n" +
+				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t{\n" +
+				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\",\n" +
+				"\t\t\t\t\t\"idService\":4\n" +
+				"\t\t\t\t}\n" +
+				"\t\t\t}\n" +
+				"\t\t]\n" +
+				"\t}\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonBody);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+		Assert.assertNotNull(exchange.getBody().getProfessionalList());
+		Assert.assertTrue(!exchange.getBody().getProfessionalList().isEmpty());
+
+		Professional p = exchange.getBody().getProfessionalList().get(0);
+
+		// Assegura que foi gerado ID para o profissional
+		Assert.assertNotNull(p.getIdProfessional());
+
+		// Assegura que foi gerado ID para o User do profissional
+		Assert.assertNotNull(p.getUser().getIdLogin());
+	}
+
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
 		User user = createFakeUser();
@@ -284,7 +342,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(this.createFakeAddress());
 		c1.setUser(this.createFakeUser());

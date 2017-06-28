@@ -42,7 +42,7 @@ public class ServiceControllerTests {
 
         final ResponseEntity<ServiceResponseBody> exchange = //
                 restTemplate.exchange( //
-                        "/Service/", //
+                        "/service/", //
                         HttpMethod.POST, //
                         new HttpEntity(request), // Body
                         ServiceResponseBody.class);
