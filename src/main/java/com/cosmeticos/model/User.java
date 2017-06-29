@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -50,7 +49,7 @@ public class User implements Serializable {
     private Collection<Role> roleCollection;
 
     @JsonBackReference
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<CreditCard> creditCardCollection = new ArrayList<>();
 
     @OneToOne
