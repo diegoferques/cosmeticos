@@ -44,9 +44,7 @@ public class UserController {
                 log.info("User adicionado com sucesso:  [{}]", u);
 
                 UserResponseBody responseBody = new UserResponseBody(u);
-
                 responseBody.setDescription("Success");
-                responseBody.getUserList().add(u);
 
                 return ok().body(responseBody);
 

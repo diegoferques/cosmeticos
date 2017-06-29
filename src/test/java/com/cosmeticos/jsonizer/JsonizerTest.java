@@ -1,9 +1,6 @@
 package com.cosmeticos.jsonizer;
 
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.commons.HabilityRequestBody;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.RoleRequestBody;
+import com.cosmeticos.commons.*;
 import com.cosmeticos.model.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,6 +28,32 @@ public class JsonizerTest {
 
         RoleRequestBody body = new RoleRequestBody();
         body.setEntity(r);
+
+        String json = om.writeValueAsString(body);
+
+        System.out.println(json);
+    }
+
+    @Test
+    public void jsonizeUser() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+
+        CreditCard cc = new CreditCard();
+        cc.setToken("1234");
+        cc.setVendor("MasterCard");
+        cc.setStatus(CreditCard.Status.ACTIVE);
+
+        //User
+        User u1 = new User();
+        u1.getCreditCardCollection().add(cc);
+        u1.setUsername("KILLER");
+        u1.setPassword("109809876");
+        u1.setEmail("Killer@gmail.com");
+        u1.setSourceApp("facebook");
+
+        UserRequestBody body = new UserRequestBody();
+        body.setEntity(u1);
 
         String json = om.writeValueAsString(body);
 
