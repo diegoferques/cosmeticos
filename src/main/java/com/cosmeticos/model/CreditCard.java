@@ -1,6 +1,5 @@
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -40,7 +39,7 @@ public class CreditCard implements Serializable {
     @Enumerated
     private Status status;
 
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
     @ManyToOne(optional = false)
     private User user;
