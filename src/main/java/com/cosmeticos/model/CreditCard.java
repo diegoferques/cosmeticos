@@ -39,7 +39,7 @@ public class CreditCard implements Serializable {
     @Enumerated
     private Status status;
 
-    @JoinColumn(name = "idLogin", referencedColumnName = "idLogin", insertable = false, updatable = false)
+    @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
     @ManyToOne(optional = false)
     private User user;
 

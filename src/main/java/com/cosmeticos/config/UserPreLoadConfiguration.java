@@ -32,17 +32,19 @@ public class UserPreLoadConfiguration {
 
 
         CreditCard cc = new CreditCard();
-        User u1 = new User();
         cc.setToken("1234");
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
+
         //User
+        User u1 = new User();
         u1.getCreditCardCollection().add(cc);
         u1.setUsername("KILLER");
         u1.setPassword("109809876");
         u1.setEmail("Killer@gmail.com");
         u1.setSourceApp("facebook");
 
+        cc.setUser(u1);
 
         // CreditCard
 
