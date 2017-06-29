@@ -5,6 +5,7 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -15,6 +16,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
@@ -49,9 +51,9 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Set<Role> roleCollection;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
-    private Collection<CreditCard> creditCardCollection = new ArrayList<>();
+    private Set<CreditCard> creditCardCollection = new HashSet<>();
 
     @OneToOne
     private Customer customer;
@@ -69,11 +71,16 @@ public class User implements Serializable {
         this.email = email;
     }
 
+   // @JsonIgnore
+   // public Collection<CreditCard> getCreditCardCollection() {
+   //     return creditCardCollection;
+   // }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idLogin != null ? idLogin.hashCode() : 0);
+        hash += (idLogin != null ? idLogin.hashCode() :
+                username != null ? username.hashCode() : 0);
         return hash;
     }
 

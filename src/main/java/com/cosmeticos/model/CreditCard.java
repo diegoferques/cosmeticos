@@ -1,5 +1,6 @@
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -39,7 +40,7 @@ public class CreditCard implements Serializable {
     @Enumerated
     private Status status;
 
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
     @ManyToOne(optional = false)
     private User user;
@@ -63,7 +64,8 @@ public class CreditCard implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idCreditCard != null ? idCreditCard.hashCode() : 0);
+        hash += (idCreditCard != null ? idCreditCard.hashCode() :
+                token != null ? token.hashCode() : 0);
         return hash;
     }
 

@@ -116,7 +116,6 @@ public class UserController {
                 User foundService = optional.get();
                 UserResponseBody response = new UserResponseBody(foundService);
                 response.setDescription("User succesfully retrieved");
-                response.getUserList().add(foundService);
 
                 log.info("Busca de User com exito: [{}]", foundService);
 
