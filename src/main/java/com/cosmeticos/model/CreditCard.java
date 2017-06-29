@@ -1,6 +1,8 @@
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +35,12 @@ public class CreditCard implements Serializable {
 
     private String token;
 
-
     private String vendor;
 
     @Enumerated
     private Status status;
 
+    @JsonBackReference
     @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
     @ManyToOne(optional = false)
     private User user;

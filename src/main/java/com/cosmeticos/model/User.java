@@ -49,6 +49,7 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<CreditCard> creditCardCollection = new ArrayList<>();
 
