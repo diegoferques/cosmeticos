@@ -67,6 +67,8 @@ public class Professional  implements Serializable {
     @ManyToMany
     private  Collection<Hability> habilityCollection;
 
+
+
     @Override
     public int hashCode() {
         int hash = 0;

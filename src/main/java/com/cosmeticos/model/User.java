@@ -9,11 +9,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.annotations.*;
+import org.hibernate.engine.internal.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,10 +26,10 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author magarrett.dias
  */
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-@Table
+
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -46,11 +49,15 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Collection<CreditCard> creditCardCollection = new ArrayList<>();
+
     @OneToOne
     private Customer customer;
 
     @OneToOne
     private Professional professional;
+
 
     public User() {
     }
@@ -60,6 +67,7 @@ public class User implements Serializable {
         this.password = password;
         this.email = email;
     }
+
 
     @Override
     public int hashCode() {
@@ -85,5 +93,6 @@ public class User implements Serializable {
     public String toString() {
         return "javaapplication2.entity.User[ idLogin=" + idLogin + " ]";
     }
-    
+
+
 }

@@ -63,6 +63,7 @@ public class Customer implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
     private Collection<ServiceRequest> serviceRequestCollection;
 
+
     @Override
     public int hashCode() {
         int hash = 0;

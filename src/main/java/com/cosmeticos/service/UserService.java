@@ -1,6 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.UserRequestBody;
+import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Schedule;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
@@ -22,6 +23,7 @@ public class UserService {
     private UserRepository repository;
 
     public User create(UserRequestBody request){
+
         User u = new User();
         u.setUsername(request.getEntity().getUsername());
         u.setPassword(request.getEntity().getPassword());

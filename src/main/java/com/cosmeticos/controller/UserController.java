@@ -43,7 +43,7 @@ public class UserController {
                 User u = service.create(request);
                 log.info("User adicionado com sucesso:  [{}]", u);
 
-                UserResponseBody responseBody = new UserResponseBody();
+                UserResponseBody responseBody = new UserResponseBody(u);
 
                 responseBody.setDescription("Success");
                 responseBody.getUserList().add(u);
@@ -116,7 +116,7 @@ public class UserController {
             if (optional.isPresent()) {
 
                 User foundService = optional.get();
-                UserResponseBody response = new UserResponseBody();
+                UserResponseBody response = new UserResponseBody(foundService);
                 response.setDescription("User succesfully retrieved");
                 response.getUserList().add(foundService);
 
