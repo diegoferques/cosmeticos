@@ -5,6 +5,7 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -49,7 +50,7 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Collection<Role> roleCollection;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<CreditCard> creditCardCollection = new ArrayList<>();
 
     @OneToOne

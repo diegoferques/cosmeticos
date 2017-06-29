@@ -50,15 +50,6 @@ public class CreditCard implements Serializable {
     private Customer customer;
     */
 
-    public CreditCard() {
-    }
-
-    public CreditCard(String token, String vendor, Status status) {
-        this.token = token;
-        this.vendor = vendor;
-        this.status = status;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
