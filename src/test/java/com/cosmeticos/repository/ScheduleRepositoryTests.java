@@ -25,7 +25,8 @@ public class ScheduleRepositoryTests {
 	 */
 	@Before
 	public void setupTests()
-	{		Schedule s1 = new Schedule();
+	{
+		Schedule s1 = new Schedule();
 		s1.setScheduleId(1L);
 		s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 31, 20, 0)));
 		s1.setStatus(Schedule.Status.ACTIVE);

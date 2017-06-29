@@ -59,9 +59,6 @@ public class HabilityControllerTests {
 	@Autowired
 	private ServiceRepository serviceRepository;
 
-	@MockBean
-	private ProfessionalService mockedService;
-
 	@Test
 	public void testCreateOK() throws IOException, URISyntaxException {
 
@@ -96,27 +93,6 @@ public class HabilityControllerTests {
 		System.out.println(rsp.getBody());
 	}
 
-
-	@Test
-	public void testCreateError500() throws IOException {
-		/**/
-		Mockito.when(
-				mockedService.create(Mockito.anyObject())
-		).thenThrow(new RuntimeException());
-
-		ProfessionalRequestBody requestBody = createFakeRequestBody();
-
-		final ResponseEntity<ProfessionalResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/professionals", //
-						HttpMethod.POST, //
-						new HttpEntity(requestBody), // Body
-						ProfessionalResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
-	}
-
 	@Test
 	public void testUpdateOK() throws IOException {
 
@@ -136,25 +112,6 @@ public class HabilityControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-	}
-
-	@Test
-	public void testFindById() throws ParseException {
-
-		Mockito.when(
-				mockedService.find(Long.valueOf(1))
-		).thenReturn(Optional.of(new Professional()));
-
-		final ResponseEntity<ProfessionalResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/professionals/1", //
-						HttpMethod.GET, //
-						null,
-						ProfessionalResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-
 	}
 
 	@Test

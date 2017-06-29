@@ -15,13 +15,17 @@ public class ScheduleRequestBody {
 
     private Long idSchedule;
 
-    @NotEmpty(message = "ownerUser email was not set!")
-    private String ownerUser;
+    @NotNull(message = "Customer ID was not set!")
+    private Long idCustomer;
+
+    @NotNull(message = "Professional ID was not set!")
+    private Long idProfessional;
+
+    @NotNull(message = "Service ID was not set!")
+    private Long idService;
 
     @NotNull(message = "ScheduleDate cannot be null!")
     private Date scheduleDate;
 
     private String status;
-
-
 }

@@ -15,6 +15,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -46,7 +47,7 @@ public class User implements Serializable {
     private String sourceApp;
 
     @ManyToMany(mappedBy = "userCollection")
-    private Collection<Role> roleCollection;
+    private Set<Role> roleCollection;
 
     @JsonBackReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")

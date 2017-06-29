@@ -4,16 +4,18 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
-
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 /**
  *
  * @author magarrett.dias
@@ -23,10 +25,14 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 public class Professional  implements Serializable {
 
-
     public  enum Status
     {
-        INACTIVE, ACTIVE
+        INACTIVE, ACTIVE;
+		
+		@JsonValue
+		public int toValue() {
+			return ordinal();
+		}
     }
 
     private static final long serialVersionUID = 1L;
@@ -50,9 +56,11 @@ public class Professional  implements Serializable {
     private String typeService;
 
     private Date dateRegister;
-
+	
+    @Enumerated(EnumType.ORDINAL)
     private Status status;
 
+	// TODO incluir @NotNull
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idProfessional")
     private User user;
@@ -61,11 +69,15 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Collection<ProfessionalServices> professionalServicesCollection;
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
+    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
-    @ManyToMany
-    private  Collection<Hability> habilityCollection;
+    @JoinTable(name = "PROFESSIONAL_HABILITY", joinColumns = {
+            @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional")}, inverseJoinColumns = {
+            @JoinColumn(name = "id_hability", referencedColumnName = "id")})
+    @ManyToMany(fetch = FetchType.EAGER)
+    private  Set<Hability> habilityCollection = new HashSet<>();
 
 
 

@@ -8,9 +8,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  *
@@ -19,6 +17,7 @@ import java.util.Date;
 @Data
 @Entity
 public class Schedule implements Serializable {
+
 
     public enum Status
     {
@@ -31,20 +30,19 @@ public class Schedule implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-    private String owner;
-
     private Date scheduleDate;
 
     @Enumerated
     private Status status;
 
     @OneToMany(mappedBy = "scheduleId")
-    private Collection<ServiceRequest> serviceRequestCollection;
+    private List<Sale> saleCollection = new ArrayList<>();
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (scheduleId != null ? scheduleId.hashCode() : 0);
+        hash += (scheduleId != null ? scheduleId.hashCode() :
+                scheduleDate != null ? scheduleDate.hashCode() : 0);
         return hash;
     }
 
