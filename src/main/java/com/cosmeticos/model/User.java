@@ -5,16 +5,21 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.annotations.*;
+import org.hibernate.engine.internal.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,11 +51,16 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Set<Role> roleCollection;
 
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<CreditCard> creditCardCollection = new HashSet<>();
+
     @OneToOne
     private Customer customer;
 
     @OneToOne
     private Professional professional;
+
 
     public User() {
     }
@@ -61,10 +71,22 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    public void addCreditCard(CreditCard creditCard)
+    {
+        creditCard.setUser(this);
+        getCreditCardCollection().add(creditCard);
+    }
+
+   // @JsonIgnore
+   // public Collection<CreditCard> getCreditCardCollection() {
+   //     return creditCardCollection;
+   // }
+
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idLogin != null ? idLogin.hashCode() : 0);
+        hash += (idLogin != null ? idLogin.hashCode() :
+                username != null ? username.hashCode() : 0);
         return hash;
     }
 
@@ -85,5 +107,6 @@ public class User implements Serializable {
     public String toString() {
         return "javaapplication2.entity.User[ idLogin=" + idLogin + " ]";
     }
-    
+
+
 }
