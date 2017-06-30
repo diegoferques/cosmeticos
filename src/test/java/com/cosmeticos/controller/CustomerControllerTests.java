@@ -53,9 +53,6 @@ public class CustomerControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
-	@MockBean
-	private CustomerService service;
-
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
@@ -73,7 +70,7 @@ public class CustomerControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameCustomer("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setIdAddress(this.createFakeAddress(c1));
 		c1.setIdLogin(this.createFakeLogin(c1));
@@ -86,7 +83,7 @@ public class CustomerControllerTests {
 		c2.setDateRegister(Calendar.getInstance().getTime());
 		c2.setGenre('M');
 		c2.setNameCustomer("Diego Fernandes");
-		//c2.setServiceRequestCollection(null);
+		//c2.setOrderCollection(null);
 		c2.setStatus(Customer.Status.ACTIVE.ordinal());
 		c2.setIdAddress(this.createFakeAddress(c2));
 		c2.setIdLogin(this.createFakeLogin(c2));
@@ -99,7 +96,7 @@ public class CustomerControllerTests {
 		c3.setDateRegister(Calendar.getInstance().getTime());
 		c3.setGenre('F');
 		c3.setNameCustomer("Maria das Dores");
-		//c3.setServiceRequestCollection(null);
+		//c3.setOrderCollection(null);
 		c3.setStatus(Customer.Status.ACTIVE.ordinal());
 		c3.setIdAddress(this.createFakeAddress(c3));
 		c3.setIdLogin(this.createFakeLogin(c3));
@@ -112,7 +109,7 @@ public class CustomerControllerTests {
 		c4.setDateRegister(Calendar.getInstance().getTime());
 		c4.setGenre('F');
 		c4.setNameCustomer("Fernanda Cavalcante");
-		//c4.setServiceRequestCollection(null);
+		//c4.setOrderCollection(null);
 		c4.setStatus(Customer.Status.INACTIVE.ordinal());
 		c4.setIdAddress(this.createFakeAddress(c4));
 		c4.setIdLogin(this.createFakeLogin(c4));
@@ -125,7 +122,7 @@ public class CustomerControllerTests {
 		c5.setDateRegister(Calendar.getInstance().getTime());
 		c5.setGenre('M');
 		c5.setNameCustomer("José das Couves");
-		//c5.setServiceRequestCollection(null);
+		//c5.setOrderCollection(null);
 		c5.setStatus(Customer.Status.ACTIVE.ordinal());
 		c5.setIdAddress(this.createFakeAddress(c5));
 		c5.setIdLogin(this.createFakeLogin(c5));
@@ -163,27 +160,6 @@ public class CustomerControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-	}
-
-
-	@Test
-	public void testCreateError500() throws IOException {
-		/**/
-		Mockito.when(
-				service.create(Mockito.anyObject())
-		).thenThrow(new RuntimeException());
-
-		CustomerRequestBody requestBody = createFakeRequestBody();
-
-		final ResponseEntity<CustomerResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/customers", //
-						HttpMethod.POST, //
-						new HttpEntity(requestBody), // Body
-						CustomerResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
 	}
 
 	@Test
@@ -275,7 +251,6 @@ public class CustomerControllerTests {
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
 		//u.getCustomerCollection().add(c);
-		userRepository.save(u);
 		return u;
 	}
 
@@ -288,7 +263,6 @@ public class CustomerControllerTests {
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
 		//a.getCustomerCollection().add(customer);
-		addressRepository.save(a);
 		return a;
 	}
 
@@ -300,7 +274,7 @@ public class CustomerControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameCustomer("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setIdAddress(this.createFakeAddress(c1));
 		c1.setIdLogin(this.createFakeLogin(c1));

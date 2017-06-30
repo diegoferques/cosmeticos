@@ -29,33 +29,43 @@ public class UserPreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data(){
 
-
-
-
-
         CreditCard cc = new CreditCard();
-        cc.setToken("1234");
+        cc.setToken("4321");
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
 
-        //User
+        CreditCard ccNovo = new CreditCard();
+        ccNovo.setToken("77777");
+        ccNovo.setVendor("Visa");
+        ccNovo.setStatus(CreditCard.Status.ACTIVE);
+
         User u1 = new User();
         u1.getCreditCardCollection().add(cc);
+        u1.getCreditCardCollection().add(ccNovo);
         u1.setUsername("KILLER");
         u1.setPassword("109809876");
         u1.setEmail("Killer@gmail.com");
         u1.setSourceApp("facebook");
 
         cc.setUser(u1);
+        ccNovo.setUser(u1);
+        //--------------------------//
 
-        // CreditCard
-
+        CreditCard cc2 = new CreditCard();
+        cc2.setToken("7772344377");
+        cc2.setVendor("Master");
+        cc2.setStatus(CreditCard.Status.INACTIVE);
 
         User u2 = new User();
+
+        u2.getCreditCardCollection().add(cc2);
         u2.setUsername("NAMEK");
         u2.setPassword("1234098765");
         u2.setEmail("namek@gmail.com");
         u2.setSourceApp("google+");
+
+        cc2.setUser(u2);
+        //-------------------------//
 
 
         User u3 = new User();

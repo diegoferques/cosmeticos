@@ -24,13 +24,7 @@ public class UserService {
 
     public User create(UserRequestBody request){
 
-        User u = new User();
-        u.setUsername(request.getEntity().getUsername());
-        u.setPassword(request.getEntity().getPassword());
-        u.setEmail(request.getEntity().getEmail());
-        u.setSourceApp(request.getEntity().getSourceApp());
-
-        return repository.save(u);
+        return repository.save(request.getEntity());
     }
 
     public Optional<User> update(UserRequestBody request){
@@ -49,6 +43,7 @@ public class UserService {
             persistentUser.setEmail(userFromRequest.getEmail());
             persistentUser.setSourceApp(userFromRequest.getSourceApp());
             persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
+            persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
 
             repository.save(persistentUser);
         }

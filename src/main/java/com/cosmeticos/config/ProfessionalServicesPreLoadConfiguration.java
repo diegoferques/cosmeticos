@@ -7,6 +7,7 @@ import com.cosmeticos.repository.ScheduleRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
  * Created by Vinicius on 20/06/2017.
  */
 @Configuration
+@DependsOn({"professionalPreLoadConfiguration", "servicePreLoadConfiguration"})
 @Profile("default")
 public class ProfessionalServicesPreLoadConfiguration {
 
@@ -24,38 +26,28 @@ public class ProfessionalServicesPreLoadConfiguration {
     @Autowired
     private ServiceRepository serviceRepository;
 
+    @Autowired
+    private ProfessionalServicesRepository professionalServicesRepository;
+
     @PostConstruct
     public void insertInitialH2Data(){
 
-        // Criamos o Usuario que nao existe no banco.
-        User user = new User();
-        user.setUsername("username");
-        Schedule schedule = new Schedule();
+        Professional p1 = professionalRepository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
+        Service s1 = serviceRepository.findOne(1L);
 
+        Professional p2 = professionalRepository.findOne(2L);        // Criamos o Usuario que nao existe no banco.
+        Service s2 = serviceRepository.findOne(2L);
 
-        Professional p = new Professional();
-        p.setUser(user);
-        p.setNameProfessional("JOSICREIDE");
-        professionalRepository.save(p);
+        Professional p3 = professionalRepository.findOne(3L);        // Criamos o Usuario que nao existe no banco.
+        Service s3 = serviceRepository.findOne(3L);
 
+        ProfessionalServices ps1 = new ProfessionalServices(p1.getIdProfessional(), s1.getIdService());
+        ps1.setProfessional(p1);
+        ps1.setService(s1);
 
-        Service s = new Service();
-        s.setCategory("MANICURE");
-        serviceRepository.save(s);
+        p1.getProfessionalServicesCollection().add(ps1);
 
-        // Segundo Preload
-        User user2 = new User();
-        user2.setUsername("username2");
-
-        Professional p2 = new Professional();
-        p2.setUser(user2);
-        p2.setNameProfessional("ROSIVALDA");
-        professionalRepository.save(p2);
-
-        Service s2 = new Service();
-        s2.setCategory("PEDICURE");
-        serviceRepository.save(s2);
-
+        professionalRepository.save(p1);
     }
 
 }

@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -53,11 +51,11 @@ public class CustomerService {
         //c.setDateRegister(Timestamp.valueOf(LocalDateTime.now()));
         c.setGenre(request.getCustomer().getGenre());
         c.setNameCustomer(request.getCustomer().getNameCustomer());
-        //c.setServiceRequestCollection(null);
+        //c.setOrderCollection(null);
         c.setStatus(Customer.Status.ACTIVE.ordinal());
 
         c.setIdAddress(addressService.createFromCustomer(request));
-        //c.setIdLogin(userService.createFromCustomer(request));
+        c.setIdLogin(request.getCustomer().getIdLogin());
 
         return repository.save(c);
     }
@@ -96,7 +94,6 @@ public class CustomerService {
     public void delete() {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
-
 
     public List<Customer> find10Lastest() {
         return repository.findTop10ByOrderByDateRegisterDesc();

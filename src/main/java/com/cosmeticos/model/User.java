@@ -16,6 +16,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -30,7 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -48,10 +49,11 @@ public class User implements Serializable {
     private String sourceApp;
 
     @ManyToMany(mappedBy = "userCollection")
-    private Collection<Role> roleCollection;
+    private Set<Role> roleCollection;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Collection<CreditCard> creditCardCollection = new ArrayList<>();
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<CreditCard> creditCardCollection = new HashSet<>();
 
     @OneToOne
     private Customer customer;
@@ -69,11 +71,22 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    public void addCreditCard(CreditCard creditCard)
+    {
+        creditCard.setUser(this);
+        getCreditCardCollection().add(creditCard);
+    }
+
+   // @JsonIgnore
+   // public Collection<CreditCard> getCreditCardCollection() {
+   //     return creditCardCollection;
+   // }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idLogin != null ? idLogin.hashCode() : 0);
+        hash += (idLogin != null ? idLogin.hashCode() :
+                username != null ? username.hashCode() : 0);
         return hash;
     }
 

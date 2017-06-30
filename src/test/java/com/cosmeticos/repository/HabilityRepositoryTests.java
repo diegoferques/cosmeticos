@@ -33,17 +33,20 @@ public class HabilityRepositoryTests {
     @Before
     public void setupTests() {
 
-        Hability h1 = new Hability();
-        h1.setName("Escova Progressiva");
-        h1.setService(serviceRepository.findOne(1L)); // Foi criado no PreLoad
-        h1.getProfessionalCollection().add(professionalRepository.findOne(1L)); // Foi criado no PreLoad
-
-        habilityRepository.save(h1);
     }
 
     @Test
     public void testFindByIdCategoryEscovaProgressiva() {
-        Hability hability = habilityRepository.findByName("Escova Progressiva");
+
+        Hability h1 = new Hability();
+        h1.setName("Escova Progressiva 1234");
+        h1.setService(serviceRepository.findOne(1L)); // Foi criado no PreLoad
+        h1.getProfessionalCollection().add(professionalRepository.findOne(1L)); // Foi criado no PreLoad
+
+        habilityRepository.save(h1);
+
+
+        Hability hability = habilityRepository.findByName("Escova Progressiva 1234");
 
         Assert.assertNotNull(hability);
     }
