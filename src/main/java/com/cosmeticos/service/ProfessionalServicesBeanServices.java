@@ -6,6 +6,7 @@ import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,4 +88,12 @@ public class ProfessionalServicesBeanServices {
     }
 
 
+    /**
+     * Usa a api Example do spring-data.
+     * @param professionalServicesProbe
+     * @return
+     */
+    public List<ProfessionalServices> findAllBy(ProfessionalServices professionalServicesProbe) {
+        return this.repository.findAll(Example.of(professionalServicesProbe));
+    }
 }

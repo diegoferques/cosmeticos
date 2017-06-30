@@ -1,6 +1,7 @@
 target/
 .mvn/
 mvnw*
+run.bat
 
 ### STS ###
 .apt_generated

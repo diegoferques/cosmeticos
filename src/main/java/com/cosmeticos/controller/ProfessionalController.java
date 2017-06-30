@@ -113,7 +113,8 @@ public class ProfessionalController {
     }
 
     @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalResponseBody> findById(@PathVariable String idProfessional) {
+    public HttpEntity<ProfessionalResponseBody> findById(
+            @PathVariable String idProfessional) {
 
         try {
 
@@ -157,11 +158,17 @@ public class ProfessionalController {
 
     }
 
+    /**
+     *
+     * @param professionalProbe Usado pelo Spring para fazer o bind das queries string nos
+     *                          atributos da classe.
+     * @return
+     */
     @RequestMapping(path = "/professionals", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalResponseBody> findLastest10() {
+    public HttpEntity<ProfessionalResponseBody> findAll(@ModelAttribute Professional professionalProbe) {
 
         try {
-            List<Professional> entitylist = service.find10Lastest();
+            List<Professional> entitylist = service.findAllBy(professionalProbe);
 
             ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
             responseBody.setProfessionalList(entitylist);
