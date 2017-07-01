@@ -47,7 +47,6 @@ public class User implements Serializable {
      */
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = javax.persistence.CascadeType.ALL)
-    @Cascade({ CascadeType.SAVE_UPDATE} )
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 
     @OneToOne
