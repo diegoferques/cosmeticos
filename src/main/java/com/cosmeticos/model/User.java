@@ -4,26 +4,17 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import org.hibernate.annotations.*;
-import org.hibernate.engine.internal.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -51,8 +42,12 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection")
     private Set<Role> roleCollection;
 
+    /*
+    Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
+     */
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = javax.persistence.CascadeType.ALL)
+    @Cascade({ CascadeType.SAVE_UPDATE} )
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 
     @OneToOne
@@ -71,10 +66,11 @@ public class User implements Serializable {
         this.email = email;
     }
 
-   // @JsonIgnore
-   // public Collection<CreditCard> getCreditCardCollection() {
-   //     return creditCardCollection;
-   // }
+   public void addCreditCard(CreditCard cc)
+   {
+       cc.setUser(this);
+       this.getCreditCardCollection().add(cc);
+   }
 
     @Override
     public int hashCode() {
