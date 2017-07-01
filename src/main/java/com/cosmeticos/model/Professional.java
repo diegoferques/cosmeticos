@@ -45,7 +45,7 @@ public class Professional  implements Serializable {
 
     private String cnpj;
 
-    private char genre;
+    private Character genre;
 
     private Date birthDate;
 

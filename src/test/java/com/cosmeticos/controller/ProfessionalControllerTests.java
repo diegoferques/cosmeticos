@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -65,9 +66,6 @@ public class ProfessionalControllerTests {
 	@Test
 	public void testCreateOK() throws IOException {
 
-
-		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
-
 		Address addres = createFakeAddress();
 		User user = createFakeUser();
 
@@ -77,8 +75,6 @@ public class ProfessionalControllerTests {
 
 		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
 		requestBody.setProfessional(professional);
-
-		ProfessionalResponseBody rsp = restTemplate.postForObject("/professionals", content, ProfessionalResponseBody.class);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //
@@ -140,6 +136,50 @@ public class ProfessionalControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+	}
+
+	@Test
+	public void testExampleApiFindByNameProfessional() throws ParseException {
+
+		Address addres = createFakeAddress();
+		User user = createFakeUser();
+
+		Professional professional = createFakeProfessional();
+		professional.setUser(user);
+		professional.setAddress(addres);
+		professional.setNameProfessional("MyName");
+
+		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
+		requestBody.setProfessional(professional);
+
+		final ResponseEntity<ProfessionalResponseBody> postExchange = //
+				restTemplate.exchange( //
+						"/professionals", //
+						HttpMethod.POST, //
+						new HttpEntity(requestBody), // Body
+						ProfessionalResponseBody.class);
+
+
+		final ResponseEntity<ProfessionalResponseBody> getExchange = //
+				restTemplate.exchange( //
+						"/professionals?nameProfessional=MyName", //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+
+		ProfessionalResponseBody response = getExchange.getBody();
+		List<Professional> professionals = response.getProfessionalList();
+
+		Assert.assertTrue("Nao foram retornados profissionais.", professionals.size() > 0);
+
+		for (int i = 0; i < professionals.size(); i++) {
+			Professional p =  professionals.get(i);
+			Assert.assertEquals("MyName", p.getNameProfessional());
+		}
+
 
 	}
 

@@ -102,10 +102,10 @@ public class ProfessionalServicesController {
     }*/
 
     @RequestMapping(path = "/professionalservices", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalServicesResponseBody> findAll() {
+    public HttpEntity<ProfessionalServicesResponseBody> findAll(@ModelAttribute ProfessionalServices professionalServices) {
 
         try {
-            List<ProfessionalServices> entitylist = service.findAll();
+            List<ProfessionalServices> entitylist = service.findAllBy(professionalServices);
 
             ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
             responseBody.setProfessionalServicesList(entitylist);
