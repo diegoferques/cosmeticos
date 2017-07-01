@@ -1,6 +1,7 @@
 package com.cosmeticos.config;
 
 import com.cosmeticos.model.Address;
+import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
+import java.util.Collection;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.

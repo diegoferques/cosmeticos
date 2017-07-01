@@ -79,6 +79,8 @@ public class Professional  implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     private  Set<Hability> habilityCollection = new HashSet<>();
 
+
+
     @Override
     public int hashCode() {
         int hash = 0;

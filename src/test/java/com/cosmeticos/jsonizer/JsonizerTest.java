@@ -38,6 +38,32 @@ public class JsonizerTest {
     }
 
     @Test
+    public void jsonizeUser() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+
+        CreditCard cc = new CreditCard();
+        cc.setToken("1234");
+        cc.setVendor("MasterCard");
+        cc.setStatus(CreditCard.Status.ACTIVE);
+
+        //User
+        User u1 = new User();
+        u1.getCreditCardCollection().add(cc);
+        u1.setUsername("KILLER");
+        u1.setPassword("109809876");
+        u1.setEmail("Killer@gmail.com");
+        u1.setSourceApp("facebook");
+
+        UserRequestBody body = new UserRequestBody();
+        body.setEntity(u1);
+
+        String json = om.writeValueAsString(body);
+
+        System.out.println(json);
+    }
+
+    @Test
     public void jsoniseCustomer() throws JsonProcessingException {
 
         om.enable(SerializationFeature.INDENT_OUTPUT);
