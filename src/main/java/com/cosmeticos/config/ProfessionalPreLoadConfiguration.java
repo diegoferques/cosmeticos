@@ -1,9 +1,8 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.CustomerWalletRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +10,8 @@ import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -23,13 +24,35 @@ public class ProfessionalPreLoadConfiguration {
     @Autowired
     private ProfessionalRepository repository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    /*@Autowired
+    private CustomerWalletRepository customerWalletRepository;
+    */
     @PostConstruct
     public void insertInitialH2Data()
     {
+
+        Customer c1 = customerRepository.findOne(1L);
+        Customer c2 = customerRepository.findOne(2L);
+
+
+        CustomerWallet cw1 = new CustomerWallet();
+        cw1.getCustomerCollection().add(c1);
+        cw1.getCustomerCollection().add(c2);
+
         Professional s1 = new Professional();
         s1.setNameProfessional("Garry");
         s1.setAddress(new Address());
         s1.setUser(new User("garry", "123qwe", "garry@bol"));
+        s1.setCustomerWallet(cw1);
+
+
+
+
+
+
 
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
@@ -40,6 +63,7 @@ public class ProfessionalPreLoadConfiguration {
         s3.setNameProfessional("Deivison");
         s3.setAddress(new Address());
         s3.setUser(new User("Deivison", "123qwe", "Deivison@bol"));
+
 
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");

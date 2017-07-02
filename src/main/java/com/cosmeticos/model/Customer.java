@@ -11,8 +11,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  *
@@ -59,6 +58,10 @@ public class Customer implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
     private Address idAddress;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idCustomerWallet")
+    private Set<CustomerWallet> customerWallets = new HashSet<>();
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
