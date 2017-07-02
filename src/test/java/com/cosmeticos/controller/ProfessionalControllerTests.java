@@ -139,6 +139,10 @@ public class ProfessionalControllerTests {
 
 	}
 
+	/**
+	 * Este teste na verdade testa duas coisas: o parametro ModelAttribute no metodo e o Example Api.
+	 * @throws ParseException
+	 */
 	@Test
 	public void testExampleApiFindByNameProfessional() throws ParseException {
 
