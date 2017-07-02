@@ -11,15 +11,12 @@ import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
-import com.cosmeticos.service.ProfessionalService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,10 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Optional;
 
 
@@ -342,7 +337,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setOrderCollection(null);
+		//c1.setServiceRequestCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(this.createFakeAddress());
 		c1.setUser(this.createFakeUser());
