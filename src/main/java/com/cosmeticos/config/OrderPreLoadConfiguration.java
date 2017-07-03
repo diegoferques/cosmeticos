@@ -42,6 +42,7 @@ public class OrderPreLoadConfiguration {
         Customer c1 = customerRepository.findOne(1L);
         Professional p1 = professionalRepository.findOne(1L);
         Schedule s1 = scheduleRepository.findOne(1L);
+        Schedule s2 = scheduleRepository.findOne(2L);
         ProfessionalServices ps1 = new ProfessionalServices(1L, 1L);
         //professionalServicesRepository.save(ps1);
 
@@ -56,7 +57,7 @@ public class OrderPreLoadConfiguration {
         o1.setIdCustomer(c1);
         //o1.setIdLocation();
         o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
-        o1.setScheduleId(s1);
+        //o1.setScheduleId(s1);
         orderRepository.save(o1);
 
         Sale o2 = new Sale();
@@ -65,7 +66,7 @@ public class OrderPreLoadConfiguration {
         o2.setIdCustomer(c1);
         //o2.setIdLocation();
         o2.setProfessionalServices(ps1);
-        o2.setScheduleId(s1);
+        //o2.setScheduleId(s1);
         orderRepository.save(o2);
 
         Sale o3 = new Sale();
@@ -74,7 +75,7 @@ public class OrderPreLoadConfiguration {
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
         o3.setProfessionalServices(ps1);
-        o3.setScheduleId(s1);
+        //o3.setScheduleId(s1);
         orderRepository.save(o3);
 
         Sale o4 = new Sale();
@@ -92,8 +93,28 @@ public class OrderPreLoadConfiguration {
         o5.setIdCustomer(c1);
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
-        o5.setScheduleId(s1);
+        o5.setScheduleId(s2);
         orderRepository.save(o5);
+
+        //Scheduled Order
+        Sale o6 = new Sale();
+        o6.setStatus(Sale.Status.CREATED.ordinal());
+        o6.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 40, 0)));
+        o6.setIdCustomer(c1);
+        //o6.setIdLocation();
+        o6.setProfessionalServices(ps1);
+        o6.setScheduleId(s1);
+        orderRepository.save(o6);
+
+        //Scheduled Order
+        Sale o7 = new Sale();
+        o7.setStatus(Sale.Status.CREATED.ordinal());
+        o7.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 50, 0)));
+        o7.setIdCustomer(c1);
+        //o5.setIdLocation();
+        o7.setProfessionalServices(ps1);
+        o7.setScheduleId(s2);
+        orderRepository.save(o7);
 
     }
 }

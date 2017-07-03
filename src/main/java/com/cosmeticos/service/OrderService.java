@@ -2,7 +2,6 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.Sale;
-import com.cosmeticos.model.Sale;
 import com.cosmeticos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,10 @@ public class OrderService {
 
         //O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
         //order.setIdOrder(orderRequest.getOrder().getIdOrder());
+
+        //Schedule schedule = new Schedule();
+        //orderRequest.getSale().getScheduleId()
+        //sale.setScheduleId();
 
         //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
         sale.setStatus(Sale.Status.CREATED.ordinal());
