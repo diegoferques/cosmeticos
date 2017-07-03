@@ -117,6 +117,7 @@ public class OrderControllerTests {
         Assert.assertEquals((int)Sale.Status.ABORTED.ordinal(), (int)exchange.getBody().getSaleList().get(0).getStatus());
     }
 
+    //TODO - FALTA FINALIZAR, PROVAVELMENTE SERÁ NECESSÁRIO ALTERAR A ENTIDADE
     @Test
     public void createScheduledOrderOk() {
         Customer c1 = customerRepository.findOne(1L);
