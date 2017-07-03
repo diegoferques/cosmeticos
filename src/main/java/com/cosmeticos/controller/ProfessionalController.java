@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.service.ProfessionalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.*;
@@ -30,10 +33,16 @@ public class ProfessionalController {
 
     @RequestMapping(path = "/professionals", method = RequestMethod.POST)
     public HttpEntity<ProfessionalResponseBody> create(@Valid @RequestBody ProfessionalRequestBody request,
-                                                   BindingResult bindingResult) {
+                                                       BindingResult bindingResult) {
         try {
-            if(bindingResult.hasErrors()) {
+            if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            }
+            // Tem que haver um servico associado ao profissional.
+            else if (!hasService(request)) {
+                log.error("BAD REQUEST: Nao foi identificado um Servico associado ao profissional ou o Service.ID " +
+                        "nao esta configurado");
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
                 Professional professional = service.create(request);
@@ -71,16 +80,13 @@ public class ProfessionalController {
     public HttpEntity<ProfessionalResponseBody> update(@Valid @RequestBody ProfessionalRequestBody request, BindingResult bindingResult) {
 
         try {
-            if(bindingResult.hasErrors()) {
+            if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
-            }
-            else if(request.getProfessional() == null || request.getProfessional().getIdProfessional() == null)
-            {
+            } else if (request.getProfessional() == null || request.getProfessional().getIdProfessional() == null) {
                 log.error("Entidade a ser alterada esta nula.");
                 return badRequest().body(buildErrorResponse(bindingResult));
-            }
-            else {
+            } else {
                 Optional<Professional> optional = service.update(request);
 
                 if (optional.isPresent()) {
@@ -91,9 +97,7 @@ public class ProfessionalController {
                             Professional,
                             new ObjectMapper().writeValueAsString(responseBody));
                     return ok(responseBody);
-                }
-                else
-                {
+                } else {
                     log.info("Professional inexistente:  [{}]",
                             request.getProfessional());
                     return ResponseEntity.notFound().build();
@@ -188,6 +192,24 @@ public class ProfessionalController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    /**
+     * Verifica se o Service recebido no request possui ID. Isso indica que o cliente primeiro listou os services
+     * e depois usou o Service desejado para o cadastro do Professional, que eh o fluxo correto.
+     * @param request
+     * @return
+     */
+    private boolean hasService(ProfessionalRequestBody request) {
+
+        Set<ProfessionalServices> psCollection = request.getProfessional().getProfessionalServicesCollection();
+
+        for (ProfessionalServices ps : psCollection) {
+            if (ps.getService().getIdService() == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private ProfessionalResponseBody buildErrorResponse(BindingResult bindingResult) {

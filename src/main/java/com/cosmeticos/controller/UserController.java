@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.*;
+import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Service;
 import com.cosmeticos.model.User;
 import com.cosmeticos.service.UserService;
@@ -8,13 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.*;
@@ -33,12 +34,20 @@ public class UserController {
     private UserService service;
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
-    public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult){
+    public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
 
         try {
+
             if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
+            } else if (!validateCreditCards(request.getEntity().getCreditCardCollection())) {
+
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("Nao e permitido cadastro de usuario associados a cartoes pre-existentes.");
+                log.error("Nao e permitido cadastro de usuario associados a cartoes pre-existentes.");
+                return badRequest().body(responseBody);
+
             } else {
                 User u = service.create(request);
                 log.info("User adicionado com sucesso:  [{}]", u);
@@ -50,7 +59,7 @@ public class UserController {
 
 
             }
-        }catch(Exception e){
+        } catch (Exception e) {
 
             log.error("Falha no cadastro: {}", e.getMessage(), e);
             UserResponseBody responseBody = new UserResponseBody();
@@ -74,7 +83,7 @@ public class UserController {
 
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("Entity ID must to be set!");
-                return badRequest().body(responseBody);
+                log.error("BAD REQUEST: Entity ID must to be set!");                return badRequest().body(responseBody);
 
             } else {
 
@@ -153,6 +162,23 @@ public class UserController {
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
+    }
+
+
+    private boolean validateCreditCards(Set<CreditCard> creditCardCollection) {
+        if(CollectionUtils.isEmpty(creditCardCollection))
+        {
+            return true;
+        }
+        else{
+            for (CreditCard cc : creditCardCollection ) {
+                if (cc.getIdCreditCard() != null)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private UserResponseBody buildErrorResponse(BindingResult bindingResult) {

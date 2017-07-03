@@ -342,6 +342,56 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(p.getUser().getIdLogin());
 	}
 
+
+	@Test
+	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
+		String jsonBody = "{\n" +
+				"\t\"professional\":\n" +
+				"\t{\n" +
+				"\t\t\"address\":null,\n" +
+				"\t\t\"birthDate\":350535600000,\n" +
+				"\t\t\"cellPhone\":null,\"dateRegister\":null,\n" +
+				"\t\t\"status\":null,\n" +
+				"\t\t\"user\":\n" +
+				"\t\t{\n" +
+				"\t\t\t\"email\":\"E-mail\",\n" +
+				"\t\t\t\"idLogin\":null,\n" +
+				"\t\t\t\"password\":\"123\",\n" +
+				"\t\t\t\"sourceApp\":null,\n" +
+				"\t\t\t\"username\":\"E-mail\"\n" +
+				"\t\t},\n" +
+				"\t\t\"genre\":\"\\u0000\",\n" +
+				"\t\t\"cnpj\":\"CNPJ\",\n" +
+				"\t\t\"idProfessional\":null,\n" +
+				"\t\t\"nameProfessional\":\"Name\",\n" +
+				"\t\t\"professionalServicesCollection\":\n" +
+				"\t\t[\n" +
+				"\t\t\t{\n" +
+				"\t\t\t\t\"professional\":null,\n" +
+				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t{\n" +
+				// id omitido. Se um request desse chega, ha risco de insercao em cascada, o q nao pode acontecer
+				// pq apenas o admin insere service
+				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\""+
+				"\t\t\t\t}\n" +
+				"\t\t\t}\n" +
+				"\t\t]\n" +
+				"\t}\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonBody);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+	}
+
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
 		User user = createFakeUser();

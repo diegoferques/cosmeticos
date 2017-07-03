@@ -18,7 +18,6 @@ import java.util.Collection;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-
 public class CreditCard implements Serializable {
 
     public enum Status
@@ -50,15 +49,6 @@ public class CreditCard implements Serializable {
     @ManyToOne
     private Customer customer;
     */
-
-    public CreditCard() {
-    }
-
-    public CreditCard(String token, String vendor, Status status) {
-        this.token = token;
-        this.vendor = vendor;
-        this.status = status;
-    }
 
     @Override
     public int hashCode() {

@@ -43,6 +43,7 @@ public class UserService {
             persistentUser.setEmail(userFromRequest.getEmail());
             persistentUser.setSourceApp(userFromRequest.getSourceApp());
             persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
+            persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
 
             repository.save(persistentUser);
         }
