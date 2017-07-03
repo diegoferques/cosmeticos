@@ -59,9 +59,10 @@ public class Customer implements Serializable {
     @JoinColumn(name = "idCustomer")
     private Address idAddress;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idCustomerWallet")
-    private Set<CustomerWallet> customerWallets = new HashSet<>();
+
+
+    @ManyToMany//(mappedBy = "idCustomer")
+    private Collection<CustomerWallet> customerWallets = new ArrayList<>();
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")

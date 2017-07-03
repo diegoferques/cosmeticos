@@ -6,9 +6,12 @@ import com.cosmeticos.repository.CustomerWalletRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,33 +30,37 @@ public class ProfessionalPreLoadConfiguration {
     @Autowired
     private CustomerRepository customerRepository;
 
-    /*@Autowired
+    @Autowired
     private CustomerWalletRepository customerWalletRepository;
-    */
+
     @PostConstruct
     public void insertInitialH2Data()
     {
+
 
         Customer c1 = customerRepository.findOne(1L);
         Customer c2 = customerRepository.findOne(2L);
 
 
         CustomerWallet cw1 = new CustomerWallet();
+
         cw1.getCustomerCollection().add(c1);
         cw1.getCustomerCollection().add(c2);
+
+        //customerWalletRepository.save(cw1);
 
         Professional s1 = new Professional();
         s1.setNameProfessional("Garry");
         s1.setAddress(new Address());
         s1.setUser(new User("garry", "123qwe", "garry@bol"));
+
         s1.setCustomerWallet(cw1);
 
+        repository.save(s1);
 
 
 
-
-
-
+        //
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
         s2.setAddress(new Address());
@@ -75,7 +82,7 @@ public class ProfessionalPreLoadConfiguration {
         s5.setAddress(new Address());
         s5.setUser(new User("Habib", "123qwe", "Habib@bol"));
 
-        repository.save(s1);
+
         repository.save(s2);
         repository.save(s3);
         repository.save(s4);

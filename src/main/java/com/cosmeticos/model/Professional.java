@@ -69,7 +69,7 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProfessional")
     private CustomerWallet customerWallet;
 

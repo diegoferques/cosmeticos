@@ -1,5 +1,6 @@
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -25,11 +26,14 @@ public class CustomerWallet implements Serializable {
     private Long idCustomerWallet;
 
     @OneToOne
+    //@JoinColumn(name = "idCustomerWallet")
     private Professional professional;
 
-    //@JoinColumn(name = "customerWallets", referencedColumnName = "customerWallets")
-    @ManyToMany
-    private Set<Customer> customerCollection = new HashSet<>();
+    @JoinTable(name = "WALLET", joinColumns = {
+            @JoinColumn(name = "id_customerwallet", referencedColumnName = "idCustomerWallet")}, inverseJoinColumns = {
+            @JoinColumn(name = "id_customer", referencedColumnName = "idCustomer")})
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Customer> customerCollection = new ArrayList<>();
 
 
 
