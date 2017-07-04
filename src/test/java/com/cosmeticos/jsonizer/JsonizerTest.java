@@ -1,24 +1,20 @@
 package com.cosmeticos.jsonizer;
 
 import com.cosmeticos.commons.*;
-
 import com.cosmeticos.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 
 /**
  * Created by Lulu on 30/05/2017.
  */
-@Ignore
 public class JsonizerTest {
     ObjectMapper om = new ObjectMapper();
 
@@ -164,6 +160,56 @@ public class JsonizerTest {
 
         String json = om.writeValueAsString(scheduleRequest);
 
+        System.out.println(json);
+    }
+
+    @Test
+    public void jsonizeOrderRequestBody() throws JsonProcessingException {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+        //User
+        User u1 = new User();
+        u1.setUsername("KILLER");
+        u1.setPassword("109809876");
+        u1.setEmail("Killer@gmail.com");
+        u1.setSourceApp("facebook");
+
+        Customer c1 = createFakeCustomer();
+        c1.setIdLogin(u1);
+
+        Professional p = new Professional();
+        p.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1991, 10, 21, 0, 0, 0)));
+        p.setCellPhone("(21) 99887-7665");
+        p.setDateRegister(Calendar.getInstance().getTime());
+        p.setGenre('F');
+        p.setNameProfessional("Fernanda Cavalcante");
+        p.setStatus(Professional.Status.INACTIVE);
+
+        Service srv1 = new Service();
+        srv1.setCategory("MASSAGISTA");
+
+        ProfessionalServices ps1 = new ProfessionalServices();
+        ps1.setProfessional(p);
+        ps1.setService(srv1);
+
+        p.getProfessionalServicesCollection().add(ps1);
+
+        //Schedule s1 = scheduleRepository.findOne(1L);
+        Schedule s1 = new Schedule();
+        s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 10, 14, 00, 0)));
+        s1.setStatus(Schedule.Status.ACTIVE);
+
+        Sale o1 = new Sale();
+        o1.setStatus(Sale.Status.CREATED.ordinal());
+        o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
+        o1.setIdCustomer(c1);
+        //o1.setIdLocation();
+        o1.setScheduleId(s1);
+
+        OrderRequestBody or = new OrderRequestBody();
+        or.setSale(o1);
+
+        String json = om.writeValueAsString(or);
         System.out.println(json);
     }
 

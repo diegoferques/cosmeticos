@@ -136,8 +136,6 @@ public class OrderControllerTests {
         //o1.setIdLocation();
         o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
         o1.setScheduleId(s1);
-        orderRepository.save(o1);
-
 
         OrderRequestBody or = new OrderRequestBody();
         or.setSale(o1);

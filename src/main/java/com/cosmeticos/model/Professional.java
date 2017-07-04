@@ -69,7 +69,6 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 

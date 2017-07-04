@@ -5,7 +5,6 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -40,7 +39,7 @@ public class Sale implements Serializable {
     private Integer status;
 
     @JoinColumn(name = "scheduleId", referencedColumnName = "scheduleId")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Schedule scheduleId;
 
     @JoinColumns({
