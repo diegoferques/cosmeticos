@@ -83,7 +83,10 @@ public class ProfessionalServicesControllerTests {
 		for (int i = 0; i < entityList.size(); i++) {
 			ProfessionalServices ps =  entityList.get(i);
 
+			Professional p = ps.getProfessional();
 			Service s = ps.getService();
+
+			Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
 			Assert.assertEquals("BRUSH", s.getCategory());
 		}
 

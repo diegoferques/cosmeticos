@@ -30,7 +30,6 @@ public class ProfessionalServices implements Serializable {
     @ManyToOne(optional = false)
     private Service service;
 
-    @JsonBackReference // Diz que Professional eh dono desta classe e professional nao eh serializado no json.
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Professional professional;

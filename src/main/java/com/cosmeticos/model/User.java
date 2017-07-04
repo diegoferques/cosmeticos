@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -70,6 +71,11 @@ public class User implements Serializable {
        cc.setUser(this);
        this.getCreditCardCollection().add(cc);
    }
+
+   @JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
+    public String getPassword() {
+        return password;
+    }
 
     @Override
     public int hashCode() {

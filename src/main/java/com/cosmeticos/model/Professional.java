@@ -4,10 +4,7 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -69,11 +66,21 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    /*
+    Nao precisamos retornar a carteira de clientes junto com o profissional no json.
+    Caso seja necessario, deve ser acessado endpoint wallets/?professional.idProfessional=123
+     */
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProfessional")
     private CustomerWallet customerWallet;
 
-    @JsonManagedReference
+    /**
+     * Professional nao deve retornar esta lista no json do endopoint professionals/.
+     * Se a client app deseja saber quais servicos todos os profissionais atendem, ele deve
+     * chamar o endpoint professionalservices/
+     */
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
