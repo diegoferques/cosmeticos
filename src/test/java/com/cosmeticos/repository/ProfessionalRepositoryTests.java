@@ -74,7 +74,7 @@ public class ProfessionalRepositoryTests {
         Customer c1 = customerRepository.findOne(1L);
         Customer c2 = customerRepository.findOne(2L);
 
-        CustomerWallet cw1 = new CustomerWallet();
+        Wallet cw1 = new Wallet();
         cw1.getCustomerCollection().add(c1);
         cw1.getCustomerCollection().add(c2);
 
@@ -82,29 +82,29 @@ public class ProfessionalRepositoryTests {
         p1.setNameProfessional("Garry");
         p1.setAddress(new Address());
         p1.setUser(new User("garry", "123qwe", "garry@bol"));
-        p1.setCustomerWallet(cw1);
+        p1.setWallet(cw1);
 
         repository.save(p1);
 
         // Se o idCustomerWallet nao for nulo, significa que o hibernate inseriu em cascata.
-        Assert.assertNotNull(p1.getCustomerWallet().getIdCustomerWallet());
+        Assert.assertNotNull(p1.getWallet().getIdCustomerWallet());
 
         // Conferindo se os customers estao associados ao wallet corretamente
-        Assert.assertEquals(1, c1.getCustomerWallets().size());
+        Assert.assertEquals(1, c1.getWallets().size());
         Assert.assertEquals(
                 // Inserido em cascata
-                p1.getCustomerWallet().getIdCustomerWallet(),
+                p1.getWallet().getIdCustomerWallet(),
 
                 // Conferindo se a alteracao refletiu no customer.
-                c1.getCustomerWallets().stream().findFirst().get().getIdCustomerWallet());
+                c1.getWallets().stream().findFirst().get().getIdCustomerWallet());
 
-        Assert.assertEquals(1, c2.getCustomerWallets().size());
+        Assert.assertEquals(1, c2.getWallets().size());
         Assert.assertEquals(
                 // Inserido em cascata
-                p1.getCustomerWallet().getIdCustomerWallet(),
+                p1.getWallet().getIdCustomerWallet(),
 
                 // Conferindo se a alteracao refletiu no customer.
-                c2.getCustomerWallets().stream().findFirst().get().getIdCustomerWallet());
+                c2.getWallets().stream().findFirst().get().getIdCustomerWallet());
 
     }
 }

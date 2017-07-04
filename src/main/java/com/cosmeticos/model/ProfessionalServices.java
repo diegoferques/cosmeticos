@@ -11,6 +11,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -71,7 +72,7 @@ public class ProfessionalServices implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.ProfessionalServices[ professionalServicesPK=" + professionalServicesPK + " ]";
+        return "javaapplication2.entity.ProfessionalServices[ professionalServicesPK=" + professionalServicesPK+ " ]";
     }
     
 }

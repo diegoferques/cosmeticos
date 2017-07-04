@@ -10,15 +10,11 @@ import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.UserRepository;
-import com.cosmeticos.service.CustomerService;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -27,14 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 
 
 @RunWith(SpringRunner.class)
@@ -56,6 +48,7 @@ public class CustomerControllerTests {
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
+	/*
 	@Before
 	public void setupTests() throws ParseException {
 
@@ -133,30 +126,30 @@ public class CustomerControllerTests {
 		customerRepository.save(c4);
 		customerRepository.save(c5);
 	}
-
+	*/
 	@Test
 	public void testCreateOK() throws IOException {
 
+		//String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
 
-		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
-
-		Customer customer = createFakeCustomer();
-		Address addres = createFakeAddress(customer);
-		User user = createFakeLogin(customer);
+		Customer customer = customerRepository.findOne(1L);
+		//Address address = addressRepository.findOne(1L);
+		//User user = userRepository.findOne(1L);
 
 		CustomerRequestBody requestBody = new CustomerRequestBody();
-		requestBody.setAddress(addres);
-		requestBody.setUser(user);
+		//requestBody.setAddress(address);
+		requestBody.setAddress(customer.getIdAddress());
+		//requestBody.setUser(user);
+		requestBody.setUser(customer.getIdLogin());
 		requestBody.setCustomer(customer);
 
-		CustomerResponseBody rsp = restTemplate.postForObject("/customers", content, CustomerResponseBody.class);
+		//CustomerResponseBody rsp = restTemplate.postForObject("/customers", content, CustomerResponseBody.class);
 
-		final ResponseEntity<ScheduleResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/customers", //
-						HttpMethod.POST, //
-						new HttpEntity(requestBody), // Body
-						ScheduleResponseBody.class);
+		final ResponseEntity<ScheduleResponseBody> exchange = restTemplate.exchange(
+				"/customers", //
+				HttpMethod.POST, //
+				new HttpEntity(requestBody), // Body
+				ScheduleResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());

@@ -3,13 +3,9 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
-import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.service.CustomerService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,14 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 
 
 @RunWith(SpringRunner.class)

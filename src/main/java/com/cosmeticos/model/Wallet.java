@@ -1,5 +1,6 @@
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-public class CustomerWallet implements Serializable {
+public class Wallet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,12 +25,14 @@ public class CustomerWallet implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCustomerWallet;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private Professional professional;
 
-    //@JoinColumn(name = "customerWallets", referencedColumnName = "customerWallets")
-    @ManyToMany
-    private Set<Customer> customerCollection = new HashSet<>();
+    @JoinTable(name = "CUSTOMER_WALLET", joinColumns = {
+            @JoinColumn(name = "id_customerwallet", referencedColumnName = "idCustomerWallet")}, inverseJoinColumns = {
+            @JoinColumn(name = "id_customer", referencedColumnName = "idCustomer")})
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Customer> customerCollection = new ArrayList<>();
 
 
 
@@ -43,10 +46,10 @@ public class CustomerWallet implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CustomerWallet)) {
+        if (!(object instanceof Wallet)) {
             return false;
         }
-        CustomerWallet other = (CustomerWallet) object;
+        Wallet other = (Wallet) object;
         if ((this.idCustomerWallet == null && other.idCustomerWallet != null) || (this.idCustomerWallet != null && !this.idCustomerWallet.equals(other.idCustomerWallet))) {
             return false;
         }

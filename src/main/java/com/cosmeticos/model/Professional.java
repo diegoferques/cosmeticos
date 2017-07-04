@@ -67,13 +67,13 @@ public class Professional  implements Serializable {
     private Address address;
 
     /*
-    Nao precisamos retornar a carteira de clientes junto com o profissional no json.
-    Caso seja necessario, deve ser acessado endpoint wallets/?professional.idProfessional=123
-     */
+       Nao precisamos retornar a carteira de clientes junto com o profissional no json.
+       Caso seja necessario, deve ser acessado endpoint wallets/?professional.idProfessional=123
+        */
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProfessional")
-    private CustomerWallet customerWallet;
+    private Wallet wallet;
 
     /**
      * Professional nao deve retornar esta lista no json do endopoint professionals/.
