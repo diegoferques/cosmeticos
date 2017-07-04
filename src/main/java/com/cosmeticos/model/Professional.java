@@ -71,7 +71,7 @@ public class Professional  implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProfessional")
-    private CustomerWallet customerWallet;
+    private Wallet wallet;
 
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")

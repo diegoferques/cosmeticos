@@ -42,7 +42,7 @@ public class ProfessionalPreLoadConfiguration {
         Customer c2 = customerRepository.findOne(2L);
 
 
-        CustomerWallet cw1 = new CustomerWallet();
+        Wallet cw1 = new Wallet();
 
         cw1.getCustomerCollection().add(c1);
         cw1.getCustomerCollection().add(c2);
@@ -54,7 +54,9 @@ public class ProfessionalPreLoadConfiguration {
         s1.setAddress(new Address());
         s1.setUser(new User("garry", "123qwe", "garry@bol"));
 
-        s1.setCustomerWallet(cw1);
+        s1.setWallet(cw1);
+
+        cw1.setProfessional(s1);
 
         repository.save(s1);
 
