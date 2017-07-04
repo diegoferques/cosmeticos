@@ -26,7 +26,6 @@ public class Wallet implements Serializable {
     private Long idCustomerWallet;
 
     @OneToOne(optional = false)
-    //@JoinColumn(name = "idCustomerWallet")
     private Professional professional;
 
     @JoinTable(name = "CUSTOMER_WALLET", joinColumns = {

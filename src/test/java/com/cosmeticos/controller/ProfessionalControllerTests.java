@@ -11,12 +11,15 @@ import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
+import com.cosmeticos.service.ProfessionalService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,8 +31,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -60,9 +66,6 @@ public class ProfessionalControllerTests {
 	@Test
 	public void testCreateOK() throws IOException {
 
-
-		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
-
 		Address addres = createFakeAddress();
 		User user = createFakeUser();
 
@@ -72,8 +75,6 @@ public class ProfessionalControllerTests {
 
 		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
 		requestBody.setProfessional(professional);
-
-		ProfessionalResponseBody rsp = restTemplate.postForObject("/professionals", content, ProfessionalResponseBody.class);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //
@@ -135,6 +136,54 @@ public class ProfessionalControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+	}
+
+	/**
+	 * Este teste na verdade testa duas coisas: o parametro ModelAttribute no metodo e o Example Api.
+	 * @throws ParseException
+	 */
+	@Test
+	public void testExampleApiFindByNameProfessional() throws ParseException {
+
+		Address addres = createFakeAddress();
+		User user = createFakeUser();
+
+		Professional professional = createFakeProfessional();
+		professional.setUser(user);
+		professional.setAddress(addres);
+		professional.setNameProfessional("MyName");
+
+		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
+		requestBody.setProfessional(professional);
+
+		final ResponseEntity<ProfessionalResponseBody> postExchange = //
+				restTemplate.exchange( //
+						"/professionals", //
+						HttpMethod.POST, //
+						new HttpEntity(requestBody), // Body
+						ProfessionalResponseBody.class);
+
+
+		final ResponseEntity<ProfessionalResponseBody> getExchange = //
+				restTemplate.exchange( //
+						"/professionals?nameProfessional=MyName", //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+
+		ProfessionalResponseBody response = getExchange.getBody();
+		List<Professional> professionals = response.getProfessionalList();
+
+		Assert.assertTrue("Nao foram retornados profissionais.", professionals.size() > 0);
+
+		for (int i = 0; i < professionals.size(); i++) {
+			Professional p =  professionals.get(i);
+			Assert.assertEquals("MyName", p.getNameProfessional());
+		}
+
 
 	}
 
@@ -293,6 +342,56 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(p.getUser().getIdLogin());
 	}
 
+
+	@Test
+	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
+		String jsonBody = "{\n" +
+				"\t\"professional\":\n" +
+				"\t{\n" +
+				"\t\t\"address\":null,\n" +
+				"\t\t\"birthDate\":350535600000,\n" +
+				"\t\t\"cellPhone\":null,\"dateRegister\":null,\n" +
+				"\t\t\"status\":null,\n" +
+				"\t\t\"user\":\n" +
+				"\t\t{\n" +
+				"\t\t\t\"email\":\"E-mail\",\n" +
+				"\t\t\t\"idLogin\":null,\n" +
+				"\t\t\t\"password\":\"123\",\n" +
+				"\t\t\t\"sourceApp\":null,\n" +
+				"\t\t\t\"username\":\"E-mail\"\n" +
+				"\t\t},\n" +
+				"\t\t\"genre\":\"\\u0000\",\n" +
+				"\t\t\"cnpj\":\"CNPJ\",\n" +
+				"\t\t\"idProfessional\":null,\n" +
+				"\t\t\"nameProfessional\":\"Name\",\n" +
+				"\t\t\"professionalServicesCollection\":\n" +
+				"\t\t[\n" +
+				"\t\t\t{\n" +
+				"\t\t\t\t\"professional\":null,\n" +
+				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t{\n" +
+				// id omitido. Se um request desse chega, ha risco de insercao em cascada, o q nao pode acontecer
+				// pq apenas o admin insere service
+				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\""+
+				"\t\t\t\t}\n" +
+				"\t\t\t}\n" +
+				"\t\t]\n" +
+				"\t}\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonBody);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+	}
+
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
 		User user = createFakeUser();
@@ -337,7 +436,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(this.createFakeAddress());
 		c1.setUser(this.createFakeUser());

@@ -36,14 +36,10 @@ public class ProfessionalPreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data()
     {
-
-
         Customer c1 = customerRepository.findOne(1L);
         Customer c2 = customerRepository.findOne(2L);
 
-
         Wallet cw1 = new Wallet();
-
         cw1.getCustomerCollection().add(c1);
         cw1.getCustomerCollection().add(c2);
 
@@ -53,7 +49,6 @@ public class ProfessionalPreLoadConfiguration {
         s1.setNameProfessional("Garry");
         s1.setAddress(new Address());
         s1.setUser(new User("garry", "123qwe", "garry@bol"));
-
         s1.setWallet(cw1);
 
         cw1.setProfessional(s1);

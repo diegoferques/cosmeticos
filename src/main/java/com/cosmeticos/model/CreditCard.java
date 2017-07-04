@@ -31,7 +31,6 @@ public class CreditCard implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCreditCard;
 
-
     private String token;
 
     private String vendor;
@@ -40,7 +39,7 @@ public class CreditCard implements Serializable {
     private Status status;
 
     @JsonBackReference
-    @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")
+    @JoinColumn(name = "id_user")
     @ManyToOne(optional = false)
     private User user;
 
