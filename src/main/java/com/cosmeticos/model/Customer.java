@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -11,8 +12,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  *
@@ -59,6 +59,11 @@ public class Customer implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
     private Address idAddress;
+
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "customerCollection")
+    private Collection<Wallet> wallets = new ArrayList<>();
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")

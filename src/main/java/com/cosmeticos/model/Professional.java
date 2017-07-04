@@ -4,18 +4,16 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.io.Serializable;
-import java.util.*;
+
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 /**
  *
  * @author magarrett.dias
@@ -45,7 +43,7 @@ public class Professional  implements Serializable {
 
     private String cnpj;
 
-    private char genre;
+    private Character genre;
 
     private Date birthDate;
 
@@ -69,6 +67,20 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Address address;
 
+    /*
+       Nao precisamos retornar a carteira de clientes junto com o profissional no json.
+       Caso seja necessario, deve ser acessado endpoint wallets/?professional.idProfessional=123
+        */
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idProfessional")
+    private Wallet wallet;
+
+    /**
+     * Professional nao deve retornar esta lista no json do endopoint professionals/.
+     * Se a client app deseja saber quais servicos todos os profissionais atendem, ele deve
+     * chamar o endpoint professionalservices/
+     */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 

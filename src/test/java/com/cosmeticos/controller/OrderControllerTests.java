@@ -3,7 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Sale;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -14,16 +14,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
@@ -119,8 +116,8 @@ public class OrderControllerTests {
 
     //TODO - FALTA FINALIZAR, PROVAVELMENTE SERÁ NECESSÁRIO ALTERAR A ENTIDADE
     @Test
-    public void createScheduledOrderOk() {
-        Customer c1 = customerRepository.findOne(1L);
+    public void createScheduledOrderOk() throws URISyntaxException {
+       /* Customer c1 = customerRepository.findOne(1L);
         Professional p1 = professionalRepository.findOne(1L);
         ProfessionalServices ps1 = new ProfessionalServices(1L, 1L);
 
@@ -139,13 +136,49 @@ public class OrderControllerTests {
 
         OrderRequestBody or = new OrderRequestBody();
         or.setSale(o1);
+*/
 
-        final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
-                        "/orders", //
-                        HttpMethod.POST, //
-                        new HttpEntity(or), // Body
-                        OrderResponseBody.class);
+       String json = "{\n" +
+               "  \"sale\" : {\n" +
+               "    \"idOrder\" : null,\n" +
+               "    \"date\" : 1498324200000,\n" +
+               "    \"status\" : 0,\n" +
+               "    \"scheduleId\" : {\n" +
+               "      \"scheduleId\" : null,\n" +
+               "      \"scheduleDate\" : 1499706000000,\n" +
+               "      \"status\" : \"ACTIVE\",\n" +
+               "      \"saleCollection\" : [ ]\n" +
+               "    },\n" +
+               "    \"professionalServices\" : null,\n" +
+               "    \"idLocation\" : null,\n" +
+               "    \"idCustomer\" : {\n" +
+               "      \"idCustomer\" : null,\n" +
+               "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
+               "      \"cpf\" : \"816.810.695-68\",\n" +
+               "      \"genre\" : \"F\",\n" +
+               "      \"birthDate\" : 688010400000,\n" +
+               "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+               "      \"dateRegister\" : 1499185403262,\n" +
+               "      \"status\" : 0,\n" +
+               "      \"idLogin\" : {\n" +
+               "        \"username\" : \"KILLER\",\n" +
+               "        \"email\" : \"Killer@gmail.com\",\n" +
+               "        \"sourceApp\" : \"facebook\"\n" +
+               "      },\n" +
+               "      \"idAddress\" : null,\n" +
+               "      \"saleCollection\" : null\n" +
+               "    }\n" +
+               "  }\n" +
+               "}";
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        ResponseEntity<OrderResponseBody> exchange = restTemplate
+                .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());

@@ -1,9 +1,7 @@
 package com.cosmeticos.repository;
 
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
+import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +24,10 @@ public class ProfessionalRepositoryTests {
     @Autowired
     private ProfessionalRepository repository;
  private  long id;
+
+ @Autowired
+    private CustomerRepository customerRepository;
+
     /**
      * Inicializa o H2 com dados iniciais.
      */
@@ -66,5 +68,43 @@ public class ProfessionalRepositoryTests {
 
     }
 
+    @Test
+    public void testWalletIncresing()
+    {
+        Customer c1 = customerRepository.findOne(1L);
+        Customer c2 = customerRepository.findOne(2L);
 
+        Wallet cw1 = new Wallet();
+        cw1.getCustomerCollection().add(c1);
+        cw1.getCustomerCollection().add(c2);
+
+        Professional p1 = new Professional();
+        p1.setNameProfessional("Garry");
+        p1.setAddress(new Address());
+        p1.setUser(new User("garry", "123qwe", "garry@bol"));
+        p1.setWallet(cw1);
+
+        repository.save(p1);
+
+        // Se o idCustomerWallet nao for nulo, significa que o hibernate inseriu em cascata.
+        Assert.assertNotNull(p1.getWallet().getIdCustomerWallet());
+
+        // Conferindo se os customers estao associados ao wallet corretamente
+        Assert.assertEquals(1, c1.getWallets().size());
+        Assert.assertEquals(
+                // Inserido em cascata
+                p1.getWallet().getIdCustomerWallet(),
+
+                // Conferindo se a alteracao refletiu no customer.
+                c1.getWallets().stream().findFirst().get().getIdCustomerWallet());
+
+        Assert.assertEquals(1, c2.getWallets().size());
+        Assert.assertEquals(
+                // Inserido em cascata
+                p1.getWallet().getIdCustomerWallet(),
+
+                // Conferindo se a alteracao refletiu no customer.
+                c2.getWallets().stream().findFirst().get().getIdCustomerWallet());
+
+    }
 }

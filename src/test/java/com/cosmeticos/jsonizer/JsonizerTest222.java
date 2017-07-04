@@ -15,7 +15,7 @@ import java.util.HashSet;
 /**
  * Created by Lulu on 30/05/2017.
  */
-public class JsonizerTest {
+public class JsonizerTest222 {
     ObjectMapper om = new ObjectMapper();
 
     @Test
@@ -163,8 +163,8 @@ public class JsonizerTest {
         System.out.println(json);
     }
 
-    @Test
-    public void jsonizeOrderRequestBody() throws JsonProcessingException {
+    public static void main(String args[]) throws Exception {
+        ObjectMapper om = new ObjectMapper();
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
         //User
@@ -173,7 +173,6 @@ public class JsonizerTest {
         u1.setPassword("109809876");
         u1.setEmail("Killer@gmail.com");
         u1.setSourceApp("facebook");
-
         Customer c1 = createFakeCustomer();
         c1.setIdLogin(u1);
 
@@ -213,7 +212,7 @@ public class JsonizerTest {
         System.out.println(json);
     }
 
-    private Customer createFakeCustomer() {
+    private static Customer createFakeCustomer() {
         Customer c4 = new Customer();
         c4.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1991, 10, 21, 0, 0, 0)));
         c4.setCellPhone("(21) 99887-7665");
