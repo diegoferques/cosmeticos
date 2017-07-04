@@ -60,7 +60,7 @@ public class ProfessionalControllerTests {
 	public void testCreateOK() throws IOException {
 
 		Address addres = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setUser(user);
@@ -140,7 +140,7 @@ public class ProfessionalControllerTests {
 	public void testExampleApiFindByNameProfessional() throws ParseException {
 
 		Address addres = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setUser(user);
@@ -387,7 +387,7 @@ public class ProfessionalControllerTests {
 
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setAddress(address);
@@ -399,17 +399,7 @@ public class ProfessionalControllerTests {
 		return requestBody;
 	}
 
-	public User createFakeUser() {
-		User u = new User();
-		u.setEmail("diego@bol.com");
-		u.setPassword("123qwe");
-		u.setSourceApp("google+");
-		u.setUsername("diegoferques");
-
-		return u;
-	}
-
-	private Address createFakeAddress() {
+	static Address createFakeAddress() {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
 		a.setCep("0000000");
@@ -421,7 +411,7 @@ public class ProfessionalControllerTests {
 		return a;
 	}
 
-	private Professional createFakeProfessional() {
+	static Professional createFakeProfessional() {
 		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -431,8 +421,8 @@ public class ProfessionalControllerTests {
 		c1.setNameProfessional("João da Silva");
 		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
-		c1.setAddress(this.createFakeAddress());
-		c1.setUser(this.createFakeUser());
+		c1.setAddress(createFakeAddress());
+		c1.setUser(UserControllerTest.createFakeUser());
 
 		return c1;
 	}

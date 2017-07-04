@@ -3,14 +3,9 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.ScheduleRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.model.Service;
-import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ScheduleRepository;
-import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +28,7 @@ public class ScheduleService {
     private ServiceBeanService serviceBeanService;
 
     /**
-     * @deprecated Criacao de agendamentos deve ser feita pelo endpoint de {@link Sale}.
+     * @deprecated Criacao de agendamentos deve ser feita pelo endpoint de {@link Order}.
      * @param request
      * @return
      */
@@ -56,10 +51,10 @@ public class ScheduleService {
         s.setScheduleDate(request.getScheduleDate());
         s.setStatus(Schedule.Status.ACTIVE);
 
-        Sale newSale = new Sale(customerOptional.get(), professionalServices, s);
-        newSale.setStatus(5); // Scheduled
+        Order newOrder = new Order(customerOptional.get(), professionalServices, s);
+        newOrder.setStatus(5); // Scheduled
 
-        s.getSaleCollection().add(newSale);
+        s.getOrderCollection().add(newOrder);
 
         return repository.save(s);
     }

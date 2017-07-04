@@ -24,7 +24,7 @@ public class Location implements Serializable {
     @Column(name = "coordinate")
     private String coordinate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLocation")
-    private Collection<Sale> saleCollection;
+    private Collection<Order> orderCollection;
 
     public Location() {
     }
@@ -55,12 +55,12 @@ public class Location implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Sale> getSaleCollection() {
-        return saleCollection;
+    public Collection<Order> getSaleCollection() {
+        return orderCollection;
     }
 
-    public void setSaleCollection(Collection<Sale> saleCollection) {
-        this.saleCollection = saleCollection;
+    public void setSaleCollection(Collection<Order> orderCollection) {
+        this.orderCollection = orderCollection;
     }
 
     @Override

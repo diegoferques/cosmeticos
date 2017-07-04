@@ -36,7 +36,7 @@ public class Schedule implements Serializable {
     private Status status;
 
     @OneToMany(mappedBy = "scheduleId")
-    private List<Sale> saleCollection = new ArrayList<>();
+    private List<Order> orderCollection = new ArrayList<>();
 
     @Override
     public int hashCode() {

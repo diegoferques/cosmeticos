@@ -223,7 +223,7 @@ public class CustomerControllerTests {
 
 	}
 
-	private CustomerRequestBody createFakeRequestBody() {
+	static CustomerRequestBody createFakeRequestBody() {
 		Customer customer = createFakeCustomer();
 		Address address = createFakeAddress(customer);
 		User user = createFakeLogin(customer);
@@ -236,7 +236,7 @@ public class CustomerControllerTests {
 		return requestBody;
 	}
 
-	public User createFakeLogin(Customer c) {
+	static User createFakeLogin(Customer c) {
 		User u = new User();
 		u.setEmail("diego@bol.com");
 		//u.setIdLogin(1234L);
@@ -247,7 +247,7 @@ public class CustomerControllerTests {
 		return u;
 	}
 
-	public Address createFakeAddress(Customer customer) {
+	static Address createFakeAddress(Customer customer) {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
 		a.setCep("0000000");
@@ -259,7 +259,7 @@ public class CustomerControllerTests {
 		return a;
 	}
 
-	public Customer createFakeCustomer() {
+	static Customer createFakeCustomer() {
 		Customer c1 = new Customer();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -269,10 +269,8 @@ public class CustomerControllerTests {
 		c1.setNameCustomer("João da Silva");
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
-		c1.setIdAddress(this.createFakeAddress(c1));
-		c1.setIdLogin(this.createFakeLogin(c1));
-
-		customerRepository.save(c1);
+		c1.setIdAddress(createFakeAddress(c1));
+		c1.setIdLogin(createFakeLogin(c1));
 
 		return c1;
 	}

@@ -5,7 +5,6 @@
 package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -65,9 +64,9 @@ public class Customer implements Serializable {
     @ManyToMany(mappedBy = "customerCollection")
     private Collection<Wallet> wallets = new ArrayList<>();
 
-    @JsonManagedReference
+    @JsonIgnore // Nao tem porque toda vez q retornar um usuario, retornar suas compras.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
-    private Collection<Sale> saleCollection;
+    private Collection<Order> orderCollection;
 
 
     @Override

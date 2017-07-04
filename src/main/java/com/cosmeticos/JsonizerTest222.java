@@ -44,22 +44,20 @@ public class JsonizerTest222 {
         ps1.setProfessional(p);
         ps1.setService(srv1);
 
-        p.getProfessionalServicesCollection().add(ps1);
-
         //Schedule s1 = scheduleRepository.findOne(1L);
         Schedule s1 = new Schedule();
         s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 10, 14, 00, 0)));
         s1.setStatus(Schedule.Status.ACTIVE);
 
-        Sale o1 = new Sale();
-        o1.setStatus(Sale.Status.CREATED.ordinal());
+        Order o1 = new Order();
+        o1.setStatus(Order.Status.CREATED.ordinal());
         o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
         o1.setIdCustomer(c1);
-        //o1.setIdLocation();
+        o1.setProfessionalServices(ps1);
         o1.setScheduleId(s1);
 
         OrderRequestBody or = new OrderRequestBody();
-        or.setSale(o1);
+        or.setOrder(o1);
 
         String json = om.writeValueAsString(or);
         System.out.println(json);
@@ -73,7 +71,7 @@ public class JsonizerTest222 {
         c4.setDateRegister(Calendar.getInstance().getTime());
         c4.setGenre('F');
         c4.setNameCustomer("Fernanda Cavalcante");
-        c4.setSaleCollection(null);
+        c4.setOrderCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
         return c4;
     }

@@ -77,10 +77,11 @@ public class Professional  implements Serializable {
     private Wallet wallet;
 
     /**
-     * Professional nao deve retornar esta lista no json do endopoint professionals/.
+     *  @JsonIgnore: Professional nao deve retornar esta lista no json do endopoint professionals/.
      * Se a client app deseja saber quais servicos todos os profissionais atendem, ele deve
      * chamar o endpoint professionalservices/
      */
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 

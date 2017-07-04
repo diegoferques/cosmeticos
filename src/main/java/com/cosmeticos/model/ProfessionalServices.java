@@ -4,15 +4,12 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -37,7 +34,7 @@ public class ProfessionalServices implements Serializable {
 
     @JsonIgnore // As vendas serao obtidas por endpoint especifico.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
-    private Collection<Sale> saleCollection;
+    private Collection<Order> orderCollection;
 
     public ProfessionalServices() {
     }
@@ -48,6 +45,15 @@ public class ProfessionalServices implements Serializable {
 
     public ProfessionalServices(long idProfessional, long idService) {
         this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idService);
+    }
+
+    public ProfessionalServices(Professional professional, Service service) {
+        this.professionalServicesPK = new ProfessionalServicesPK(
+                professional.getIdProfessional(),
+                service.getIdService());
+
+        this.professional = professional;
+        this.service = service;
     }
 
     @Override
