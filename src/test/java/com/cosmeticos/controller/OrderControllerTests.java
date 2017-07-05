@@ -116,7 +116,6 @@ public class OrderControllerTests {
         Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
     }
 
-    //TODO - FALTA FINALIZAR, PROVAVELMENTE SERÁ NECESSÁRIO ALTERAR A ENTIDADE
     @Test
     public void createScheduledOrderOk() throws URISyntaxException {
 
@@ -204,7 +203,30 @@ public class OrderControllerTests {
         Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
 
-
     }
 
+    @Test
+    public void updateScheduledOrder() throws URISyntaxException {
+
+        Order o1 = orderRepository.findOne(6L);
+        o1.getScheduleId().setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 22, 40, 0)));
+
+        //VERIFICAR PQ NAO POSSO PEGAR O SCHEDULE A PARTIR DE ORDER
+        OrderRequestBody or = new OrderRequestBody();
+        or.setOrder(o1);
+
+        final ResponseEntity<OrderResponseBody> exchange = //
+                restTemplate.exchange( //
+                        "/orders", //
+                        HttpMethod.PUT, //
+                        new HttpEntity(or), // Body
+                        OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+
+    }
 }
