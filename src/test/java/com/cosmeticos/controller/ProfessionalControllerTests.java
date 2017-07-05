@@ -11,15 +11,12 @@ import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
-import com.cosmeticos.service.ProfessionalService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -27,14 +24,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +60,7 @@ public class ProfessionalControllerTests {
 	public void testCreateOK() throws IOException {
 
 		Address addres = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setUser(user);
@@ -147,7 +140,7 @@ public class ProfessionalControllerTests {
 	public void testExampleApiFindByNameProfessional() throws ParseException {
 
 		Address addres = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setUser(user);
@@ -394,7 +387,7 @@ public class ProfessionalControllerTests {
 
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setAddress(address);
@@ -406,17 +399,7 @@ public class ProfessionalControllerTests {
 		return requestBody;
 	}
 
-	public User createFakeUser() {
-		User u = new User();
-		u.setEmail("diego@bol.com");
-		u.setPassword("123qwe");
-		u.setSourceApp("google+");
-		u.setUsername("diegoferques");
-
-		return u;
-	}
-
-	private Address createFakeAddress() {
+	static Address createFakeAddress() {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
 		a.setCep("0000000");
@@ -428,7 +411,7 @@ public class ProfessionalControllerTests {
 		return a;
 	}
 
-	private Professional createFakeProfessional() {
+	static Professional createFakeProfessional() {
 		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -438,8 +421,8 @@ public class ProfessionalControllerTests {
 		c1.setNameProfessional("João da Silva");
 		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
-		c1.setAddress(this.createFakeAddress());
-		c1.setUser(this.createFakeUser());
+		c1.setAddress(createFakeAddress());
+		c1.setUser(UserControllerTest.createFakeUser());
 
 		return c1;
 	}

@@ -34,6 +34,8 @@ public class CustomerRepositoryTests {
     @Autowired
     private UserRepository userRepository;
 
+    private Customer c1, c2, c3,  c4, c5;
+
     /**
      * Inicializa o H2 com dados iniciais.
      */
@@ -47,7 +49,7 @@ public class CustomerRepositoryTests {
         //c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
         //Date birthDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-20");
 
-        Customer c1 = new Customer();
+        c1 = new Customer();
         c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
         c1.setCellPhone("(21) 98877-6655");
         c1.setCpf("098.765.432-10");
@@ -67,7 +69,7 @@ public class CustomerRepositoryTests {
         Address address2 = new Address();
 
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
-        Customer c2 = new Customer();
+        c2 = new Customer();
         c2.setBirthDate(birthDate2);
         c2.setCellPhone("(21) 98807-2756");
         c2.setCpf("098.330.987-62");
@@ -90,7 +92,7 @@ public class CustomerRepositoryTests {
         Address address3 = new Address();
 
         Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
-        Customer c3 = new Customer();
+        c3 = new Customer();
         c3.setBirthDate(birthDate3);
         c3.setCellPhone("(21) 99988-7766");
         c3.setCpf("831.846.135-15");
@@ -112,7 +114,7 @@ public class CustomerRepositoryTests {
         Address address4 = new Address();
 
         Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
-        Customer c4 = new Customer();
+        c4 = new Customer();
         c4.setBirthDate(birthDate4);
         c4.setCellPhone("(21) 99887-7665");
         c4.setCpf("816.810.695-68");
@@ -133,7 +135,7 @@ public class CustomerRepositoryTests {
         User u5 = new  User("u5", "u5pass", "u5@gmail.com");
         Address address5 = new Address();
         Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
-        Customer c5 = new Customer();
+        c5 = new Customer();
         c5.setBirthDate(birthDate5);
         c5.setCellPhone("(21) 97766-5544");
         c5.setCpf("541.913.254-81");
@@ -156,7 +158,7 @@ public class CustomerRepositoryTests {
 
     @Test
     public void testCustomer1() {
-        Customer customer = repository.findOne(1L);
+        Customer customer = repository.findOne(c1.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
         Assert.assertNotNull(customer.getIdLogin());
@@ -167,13 +169,13 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("098.765.432-10", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
         Assert.assertEquals('M', customer.getGenre());
-        Assert.assertEquals("João da Silva", customer.getNameCustomer());
+        Assert.assertEquals("Test João da Silva", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
 
     @Test
     public void testCustomer2() {
-        Customer customer = repository.findOne(2L);
+        Customer customer = repository.findOne(c2.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
         Assert.assertNotNull(customer.getIdLogin());
@@ -184,13 +186,13 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("098.330.987-62", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
         Assert.assertEquals('M', customer.getGenre());
-        Assert.assertEquals("Diego Fernandes", customer.getNameCustomer());
+        Assert.assertEquals("Test Diego Fernandes", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
 
     @Test
     public void testCustomer3() {
-        Customer customer = repository.findOne(3L);
+        Customer customer = repository.findOne(c3.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
         Assert.assertNotNull(customer.getIdLogin());
@@ -201,13 +203,13 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("831.846.135-15", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
         Assert.assertEquals('F', customer.getGenre());
-        Assert.assertEquals("Maria das Dores", customer.getNameCustomer());
+        Assert.assertEquals("Test Maria das Dores", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
 
     @Test
     public void testCustomer4() {
-        Customer customer = repository.findOne(4L);
+        Customer customer = repository.findOne(c4.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
         Assert.assertNotNull(customer.getIdLogin());
@@ -218,13 +220,13 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("816.810.695-68", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
         Assert.assertEquals('F', customer.getGenre());
-        Assert.assertEquals("Fernanda Cavalcante", customer.getNameCustomer());
+        Assert.assertEquals("Test Fernanda Cavalcante", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.INACTIVE.ordinal(), (int)customer.getStatus());
     }
 
     @Test
     public void testCustomer5() {
-        Customer customer = repository.findOne(5L);
+        Customer customer = repository.findOne(c5.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
         Assert.assertNotNull(customer.getIdLogin());
@@ -235,7 +237,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("541.913.254-81", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
         Assert.assertEquals('M', customer.getGenre());
-        Assert.assertEquals("José das Couves", customer.getNameCustomer());
+        Assert.assertEquals("Test José das Couves", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
 

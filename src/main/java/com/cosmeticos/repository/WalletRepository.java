@@ -8,5 +8,5 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Vinicius on 01/07/2017.
  */
 @Transactional
-public interface CustomerWalletRepository extends CrudRepository<Wallet, Long> {
+public interface WalletRepository extends CrudRepository<Wallet, Long> {
 }

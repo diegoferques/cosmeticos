@@ -1,11 +1,15 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.Sale;
-import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
@@ -15,71 +19,122 @@ import java.util.Optional;
 /**
  * Created by matto on 17/06/2017.
  */
-@Service
+@org.springframework.stereotype.Service
 public class OrderService {
 
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
-    public Optional<Sale> find(Long idOrder) {
+    @Autowired
+    private CustomerRepository customerResponsitory;
+
+    @Autowired
+    private ProfessionalRepository professionalRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
+
+    public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
     }
 
-    public Sale create(OrderRequestBody orderRequest) {
-        Sale sale = new Sale();
+    public Order create(OrderRequestBody orderRequest) throws ValidationException {
 
-        sale.setScheduleId(orderRequest.getSale().getScheduleId());
-        sale.setProfessionalServices(orderRequest.getSale().getProfessionalServices());
-        sale.setIdLocation(orderRequest.getSale().getIdLocation());
-        sale.setIdCustomer(orderRequest.getSale().getIdCustomer());
-        sale.setDate(Calendar.getInstance().getTime());
+        ProfessionalServices receivedProfessionalServices = orderRequest.getOrder().getProfessionalServices();
 
-        //O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
-        //order.setIdOrder(orderRequest.getOrder().getIdOrder());
+        /*
+         Buscando o cliente que foi informado no request.
+         Do que chega no request, so preciso confiar no ID dessas entidades. Os outros atributos as vezes podem
+         nao vir preenchidos ou preenchidos de qualquer forma so pra nao ser barrado pelo @Valid, portanto
+         devemos buscar o objeto real no banco.
+          */
+        Customer customer = customerResponsitory.findOne(
+                orderRequest.getOrder().getIdCustomer().getIdCustomer()
+        );
 
-        //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-        sale.setStatus(Sale.Status.CREATED.ordinal());
+        Professional professional = professionalRepository.findOne(
+                receivedProfessionalServices.getProfessional().getIdProfessional()
+        );
 
-        return orderRepository.save(sale);
+        // Conferindo se o ProfessionalServices recebido realmente esta associado ao Profissional em nossa base.
+        Optional<ProfessionalServices> persistentProfessionalServices =
+                professional.getProfessionalServicesCollection()
+                .stream()
+                .filter(ps -> ps.getService().getIdService().equals(receivedProfessionalServices.getService().getIdService()))
+                .findFirst();
+
+        if(persistentProfessionalServices.isPresent()) {
+            Order order = new Order();
+            order.setScheduleId(orderRequest.getOrder().getScheduleId());
+            order.setIdLocation(orderRequest.getOrder().getIdLocation());
+            order.setIdCustomer(customer);
+            order.setDate(Calendar.getInstance().getTime());
+
+            // ProfessionalServices por ser uma tabela associativa necessita de um cuidado estra
+            order.setProfessionalServices(persistentProfessionalServices.get());
+
+            //O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
+            //order.setIdOrder(orderRequest.getOrder().getIdOrder());
+
+            //Schedule schedule = new Schedule();
+            //orderRequest.getOrder().getScheduleId()
+            //sale.setScheduleId();
+
+            //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
+            order.setStatus(Order.Status.CREATED.ordinal());
+
+            return orderRepository.save(order);
+        }
+        else
+        {
+            throw new OrderService.ValidationException("Service [id="+receivedProfessionalServices.getService().getIdService()+"] informado no requst nao esta associado ao profissional " +
+                    "id=["+professional.getIdProfessional()+"] em nosso banco de dados.");
+        }
     }
 
-    public Sale update(OrderRequestBody request) {
-        Sale saleRequest = request.getSale();
-        Sale sale = orderRepository.findOne(saleRequest.getIdOrder());
+    public Order update(OrderRequestBody request) {
+        Order orderRequest = request.getOrder();
+        Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(!StringUtils.isEmpty(saleRequest.getDate())) {
-            sale.setDate(saleRequest.getDate());
+        if(!StringUtils.isEmpty(orderRequest.getDate())) {
+            order.setDate(orderRequest.getDate());
         }
 
-        if(!StringUtils.isEmpty(saleRequest.getStatus())) {
-            sale.setStatus(saleRequest.getStatus());
+        if(!StringUtils.isEmpty(orderRequest.getStatus())) {
+            order.setStatus(orderRequest.getStatus());
         }
 
-        if(!StringUtils.isEmpty(saleRequest.getIdCustomer())) {
-            sale.setIdCustomer(saleRequest.getIdCustomer());
+        if(!StringUtils.isEmpty(orderRequest.getIdCustomer())) {
+            order.setIdCustomer(orderRequest.getIdCustomer());
         }
 
-        if(!StringUtils.isEmpty(saleRequest.getIdLocation())) {
-            sale.setIdLocation(saleRequest.getIdLocation());
+        if(!StringUtils.isEmpty(orderRequest.getIdLocation())) {
+            order.setIdLocation(orderRequest.getIdLocation());
         }
 
-        if(!StringUtils.isEmpty(saleRequest.getProfessionalServices())) {
-            sale.setProfessionalServices(saleRequest.getProfessionalServices());
+        if(!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
+            order.setProfessionalServices(orderRequest.getProfessionalServices());
         }
 
-        if(!StringUtils.isEmpty(saleRequest.getScheduleId())) {
-            sale.setScheduleId(saleRequest.getScheduleId());
+        if(!StringUtils.isEmpty(orderRequest.getScheduleId())) {
+            order.setScheduleId(orderRequest.getScheduleId());
         }
 
-        return orderRepository.save(sale);
+        return orderRepository.save(order);
     }
 
     public String delete() {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
 
-    public List<Sale> find10Lastest() {
+    public List<Order> find10Lastest() {
         return orderRepository.findTop10ByOrderByDateDesc();
         //return orderRepository.findAll();
+    }
+
+    public class ValidationException extends Exception {
+        public ValidationException(String s) {
+            super(s);
+        }
     }
 }

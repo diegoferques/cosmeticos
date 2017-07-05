@@ -2,7 +2,6 @@ package com.cosmeticos.repository;
 
 import com.cosmeticos.model.ProfessionalServices;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

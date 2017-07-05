@@ -1,16 +1,12 @@
 package com.cosmeticos.config;
 
 import com.cosmeticos.model.Role;
-import com.cosmeticos.model.Schedule;
 import com.cosmeticos.repository.RoleRepository;
-import com.cosmeticos.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.

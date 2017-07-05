@@ -1,8 +1,6 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.UserRequestBody;
-import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Schedule;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
