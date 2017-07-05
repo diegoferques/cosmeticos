@@ -132,15 +132,9 @@ public class CustomerControllerTests {
 
 		//String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
 
-		Customer customer = customerRepository.findOne(1L);
-		//Address address = addressRepository.findOne(1L);
-		//User user = userRepository.findOne(1L);
+		Customer customer = createFakeCustomer();
 
 		CustomerRequestBody requestBody = new CustomerRequestBody();
-		//requestBody.setAddress(address);
-		requestBody.setAddress(customer.getIdAddress());
-		//requestBody.setUser(user);
-		requestBody.setUser(customer.getIdLogin());
 		requestBody.setCustomer(customer);
 
 		//CustomerResponseBody rsp = restTemplate.postForObject("/customers", content, CustomerResponseBody.class);
@@ -221,19 +215,6 @@ public class CustomerControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
-	}
-
-	static CustomerRequestBody createFakeRequestBody() {
-		Customer customer = createFakeCustomer();
-		Address address = createFakeAddress(customer);
-		User user = createFakeLogin(customer);
-
-		CustomerRequestBody requestBody = new CustomerRequestBody();
-		requestBody.setAddress(address);
-		requestBody.setUser(user);
-		requestBody.setCustomer(customer);
-
-		return requestBody;
 	}
 
 	static User createFakeLogin(Customer c) {

@@ -1,7 +1,10 @@
 package com.cosmeticos.config;
 
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.*;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;

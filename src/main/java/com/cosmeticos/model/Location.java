@@ -4,10 +4,10 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  *

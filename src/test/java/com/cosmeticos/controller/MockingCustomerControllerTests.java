@@ -69,12 +69,8 @@ public class MockingCustomerControllerTests {
 
 	private CustomerRequestBody createFakeRequestBody() {
 		Customer customer = createFakeCustomer();
-		Address address = createFakeAddress(customer);
-		User user = createFakeLogin(customer);
 
 		CustomerRequestBody requestBody = new CustomerRequestBody();
-		requestBody.setAddress(address);
-		requestBody.setUser(user);
 		requestBody.setCustomer(customer);
 
 		return requestBody;

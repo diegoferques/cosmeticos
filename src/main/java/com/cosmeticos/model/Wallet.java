@@ -1,6 +1,5 @@
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -8,8 +7,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Vinicius on 30/06/2017.
@@ -23,23 +20,23 @@ public class Wallet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCustomerWallet;
+    private Long idWallet;
 
     @OneToOne(optional = false)
     private Professional professional;
 
     @JoinTable(name = "CUSTOMER_WALLET", joinColumns = {
-            @JoinColumn(name = "id_customerwallet", referencedColumnName = "idCustomerWallet")}, inverseJoinColumns = {
+            @JoinColumn(name = "id_wallet", referencedColumnName = "idWallet")}, inverseJoinColumns = {
             @JoinColumn(name = "id_customer", referencedColumnName = "idCustomer")})
     @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<Customer> customerCollection = new ArrayList<>();
+    private Collection<Customer> customers = new ArrayList<>();
 
 
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idCustomerWallet != null ? idCustomerWallet.hashCode() : 0);
+        hash += (idWallet != null ? idWallet.hashCode() : 0);
         return hash;
     }
 
@@ -50,7 +47,7 @@ public class Wallet implements Serializable {
             return false;
         }
         Wallet other = (Wallet) object;
-        if ((this.idCustomerWallet == null && other.idCustomerWallet != null) || (this.idCustomerWallet != null && !this.idCustomerWallet.equals(other.idCustomerWallet))) {
+        if ((this.idWallet == null && other.idWallet != null) || (this.idWallet != null && !this.idWallet.equals(other.idWallet))) {
             return false;
         }
         return true;
@@ -58,7 +55,7 @@ public class Wallet implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Address[ idCustomer=" + idCustomerWallet + " ]";
+        return "javaapplication2.entity.Wallet[ idWallet=" + idWallet + " ]";
     }
 
 }

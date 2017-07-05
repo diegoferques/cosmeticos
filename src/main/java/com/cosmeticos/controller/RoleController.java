@@ -3,10 +3,7 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.RoleRequestBody;
 import com.cosmeticos.commons.RoleResponseBody;
-import com.cosmeticos.commons.ScheduleRequestBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Role;
-import com.cosmeticos.model.Schedule;
 import com.cosmeticos.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 @Slf4j
 @RestController

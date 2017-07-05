@@ -1,8 +1,8 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.*;
+import com.cosmeticos.commons.UserRequestBody;
+import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Service;
 import com.cosmeticos.model.User;
 import com.cosmeticos.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +13,13 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.*;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
 
 
 /**

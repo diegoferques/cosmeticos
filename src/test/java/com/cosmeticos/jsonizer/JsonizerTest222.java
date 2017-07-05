@@ -65,12 +65,8 @@ public class JsonizerTest222 {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
         Customer customer = createFakeCustomer();
-        Address addres = new Address();
-        User user = new User();
 
         CustomerRequestBody requestBody = new CustomerRequestBody();
-        requestBody.setAddress(addres);
-        requestBody.setUser(user);
         requestBody.setCustomer(customer);
 
         String json = om.writeValueAsString(requestBody);

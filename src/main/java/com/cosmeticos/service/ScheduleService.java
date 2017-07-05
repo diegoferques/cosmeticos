@@ -2,7 +2,6 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ScheduleRequestBody;
 import com.cosmeticos.model.*;
-import com.cosmeticos.model.Service;
 import com.cosmeticos.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 

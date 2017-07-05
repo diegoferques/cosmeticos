@@ -4,9 +4,8 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  *

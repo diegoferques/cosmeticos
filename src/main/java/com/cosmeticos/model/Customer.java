@@ -11,7 +11,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  *
@@ -61,7 +63,7 @@ public class Customer implements Serializable {
 
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "customerCollection")
+    @ManyToMany(mappedBy = "customers")
     private Collection<Wallet> wallets = new ArrayList<>();
 
     @JsonIgnore // Nao tem porque toda vez q retornar um usuario, retornar suas compras.
