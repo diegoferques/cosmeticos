@@ -4,10 +4,8 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -40,6 +38,7 @@ public class Professional  implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfessional;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private String nameProfessional;
 
     private String cnpj;

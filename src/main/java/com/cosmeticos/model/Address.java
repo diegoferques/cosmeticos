@@ -7,10 +7,8 @@ package com.cosmeticos.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  *

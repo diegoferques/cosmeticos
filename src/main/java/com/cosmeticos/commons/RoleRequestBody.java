@@ -2,7 +2,6 @@ package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Role;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 

@@ -17,9 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 
 /**
  * Created by diego.MindTek on 26/06/2017.

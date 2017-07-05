@@ -6,21 +6,19 @@ import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.service.ProfessionalServicesBeanServices;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 /**
  * Created by Vinicius on 22/06/2017.
@@ -44,7 +42,7 @@ public class ProfessionalServicesController {
 
                 ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
 
-                responseBody.setDescription("Success", String.valueOf(s));
+                responseBody.setDescription("Success");
                 responseBody.getProfessionalServicesList().add(s);
 
                 return ok().body(responseBody);
@@ -60,48 +58,6 @@ public class ProfessionalServicesController {
             return ResponseEntity.status(500).body(responseBody);
         }
     }
-
-    /*@RequestMapping(path = "/professionalservices", method = RequestMethod.PUT)
-    public HttpEntity<ProfessionalServicesResponseBody> update(@Valid @RequestBody ProfessionalservicesRequestBody request, BindingResult bindingResult) {
-
-        try {
-            if (bindingResult.hasErrors()) {
-
-                log.error("Erros na requisicao: {}", bindingResult.toString());
-                return badRequest().body(buildErrorResponse(bindingResult));
-
-            } else if (request.getEntity().getProfessionalServicesPK() == null) {
-
-                ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
-                responseBody.setDescription("Entity ID must to be set!");
-                return badRequest().body(responseBody);
-
-            } else {
-                Optional<ProfessionalServices> optional = service.update(request);
-
-                if (optional.isPresent()) {
-                    ProfessionalServices updatedService = optional.get();
-
-                    ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
-                    responseBody.getProfessionalServicesList().add(updatedService);
-
-                    log.info("Service atualizado com sucesso:  [{}]", updatedService);
-                    return ok().body(responseBody);
-
-                } else {
-
-                    log.error("Service nao encontrada: idService[{}]", request.getEntity().getProfessionalServicesPK());
-                    return notFound().build();
-
-                }
-            }
-        } catch (Exception e) {
-            log.error("Falha na atualizacao: {}", e.getMessage(), e);
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
-            responseBody.setDescription(e.getMessage());
-            return ResponseEntity.status(500).body(responseBody);
-        }
-    }*/
 
     @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @RequestMapping(path = "/professionalservices", method = RequestMethod.GET)

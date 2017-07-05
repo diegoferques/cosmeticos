@@ -10,13 +10,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 /**
- *
  * Created by matto on 26/05/2017.
  */
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Vinicius on 29/06/2017.
@@ -73,6 +73,7 @@ public class UserRepositoryTests {
      * A solucao fonecida pelo site tambem nao funciona. Tvemos q apelar pra um creditCardRepository
      */
     @Test
+    @Transactional
     public void testInserirCartaoNovoEmUsuarioQueJaPossuiCartao() {
 
 
@@ -134,6 +135,7 @@ public class UserRepositoryTests {
     }
 
     @Test
+    @Transactional
     public void testAtualizarTokenDeCartaoJaExistente()
     {
 

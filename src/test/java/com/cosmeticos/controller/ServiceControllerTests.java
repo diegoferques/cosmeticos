@@ -1,8 +1,6 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ScheduleRequestBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.commons.ServiceRequestBody;
 import com.cosmeticos.commons.ServiceResponseBody;
 import com.cosmeticos.model.Service;
@@ -17,8 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Calendar;
 
 /**
  * Created by Vinicius on 31/05/2017.

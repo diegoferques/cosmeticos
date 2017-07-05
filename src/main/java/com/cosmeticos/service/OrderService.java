@@ -1,7 +1,10 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
