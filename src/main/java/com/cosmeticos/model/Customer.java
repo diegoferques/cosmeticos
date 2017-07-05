@@ -61,7 +61,7 @@ public class Customer implements Serializable {
 
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "customerCollection")
+    @ManyToMany(mappedBy = "customers")
     private Collection<Wallet> wallets = new ArrayList<>();
 
     @JsonIgnore // Nao tem porque toda vez q retornar um usuario, retornar suas compras.

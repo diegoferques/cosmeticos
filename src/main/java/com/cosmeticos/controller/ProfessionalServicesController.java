@@ -2,8 +2,10 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.commons.ProfessionalservicesRequestBody;
+import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.service.ProfessionalServicesBeanServices;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -101,6 +103,7 @@ public class ProfessionalServicesController {
         }
     }*/
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @RequestMapping(path = "/professionalservices", method = RequestMethod.GET)
     public HttpEntity<ProfessionalServicesResponseBody> findAll(@ModelAttribute ProfessionalServices professionalServices) {
 

@@ -47,7 +47,8 @@ public class User implements Serializable {
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = javax.persistence.CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 
     @OneToOne

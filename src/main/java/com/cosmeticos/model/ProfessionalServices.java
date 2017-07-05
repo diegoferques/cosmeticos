@@ -4,7 +4,10 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -24,10 +27,13 @@ public class ProfessionalServices implements Serializable {
     @EmbeddedId
     protected ProfessionalServicesPK professionalServicesPK;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @JoinColumn(name = "idService", referencedColumnName = "idService", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Service service;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonBackReference
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Professional professional;
@@ -80,5 +86,5 @@ public class ProfessionalServices implements Serializable {
     public String toString() {
         return "javaapplication2.entity.ProfessionalServices[ professionalServicesPK=" + professionalServicesPK+ " ]";
     }
-    
+
 }

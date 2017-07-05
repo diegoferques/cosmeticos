@@ -1,7 +1,6 @@
 package com.cosmeticos.repository;
 
 import com.cosmeticos.model.*;
-import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by matto on 26/05/2017.
@@ -25,8 +25,11 @@ public class ProfessionalRepositoryTests {
     private ProfessionalRepository repository;
  private  long id;
 
- @Autowired
+    @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private WalletRepository walletRepository;
 
     /**
      * Inicializa o H2 com dados iniciais.
@@ -75,36 +78,19 @@ public class ProfessionalRepositoryTests {
         Customer c2 = customerRepository.findOne(2L);
 
         Wallet cw1 = new Wallet();
-        cw1.getCustomerCollection().add(c1);
-        cw1.getCustomerCollection().add(c2);
+        cw1.getCustomers().add(c1);
+        cw1.getCustomers().add(c2);
 
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
         p1.setAddress(new Address());
         p1.setUser(new User("garry", "123qwe", "garry@bol"));
         p1.setWallet(cw1);
+        cw1.setProfessional(p1);
 
         repository.save(p1);
 
         // Se o idCustomerWallet nao for nulo, significa que o hibernate inseriu em cascata.
-        Assert.assertNotNull(p1.getWallet().getIdCustomerWallet());
-
-        // Conferindo se os customers estao associados ao wallet corretamente
-        Assert.assertEquals(1, c1.getWallets().size());
-        Assert.assertEquals(
-                // Inserido em cascata
-                p1.getWallet().getIdCustomerWallet(),
-
-                // Conferindo se a alteracao refletiu no customer.
-                c1.getWallets().stream().findFirst().get().getIdCustomerWallet());
-
-        Assert.assertEquals(1, c2.getWallets().size());
-        Assert.assertEquals(
-                // Inserido em cascata
-                p1.getWallet().getIdCustomerWallet(),
-
-                // Conferindo se a alteracao refletiu no customer.
-                c2.getWallets().stream().findFirst().get().getIdCustomerWallet());
-
+        Assert.assertNotNull(p1.getWallet().getIdWallet());
     }
 }

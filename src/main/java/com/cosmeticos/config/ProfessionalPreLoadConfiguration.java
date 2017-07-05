@@ -2,19 +2,13 @@ package com.cosmeticos.config;
 
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.CustomerWalletRepository;
+import com.cosmeticos.repository.WalletRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
-import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -31,7 +25,7 @@ public class ProfessionalPreLoadConfiguration {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private CustomerWalletRepository customerWalletRepository;
+    private WalletRepository customerWalletRepository;
 
     @PostConstruct
     public void insertInitialH2Data()
@@ -40,8 +34,8 @@ public class ProfessionalPreLoadConfiguration {
         Customer c2 = customerRepository.findOne(2L);
 
         Wallet cw1 = new Wallet();
-        cw1.getCustomerCollection().add(c1);
-        cw1.getCustomerCollection().add(c2);
+        cw1.getCustomers().add(c1);
+        cw1.getCustomers().add(c2);
 
         //customerWalletRepository.save(cw1);
 

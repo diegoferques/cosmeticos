@@ -36,8 +36,8 @@ public class CustomerWalletReposioryTests {
 
         Wallet cw1 = new Wallet();
 
-        cw1.getCustomerCollection().add(c1);
-        cw1.getCustomerCollection().add(c2);
+        cw1.getCustomers().add(c1);
+        cw1.getCustomers().add(c2);
 
         //customerWalletRepository.save(cw1);
 
