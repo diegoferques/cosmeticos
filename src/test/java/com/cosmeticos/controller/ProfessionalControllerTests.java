@@ -423,6 +423,7 @@ public class ProfessionalControllerTests {
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(createFakeAddress());
 		c1.setUser(UserControllerTest.createFakeUser());
+		c1.getUser().setProfessional(c1);
 
 		return c1;
 	}

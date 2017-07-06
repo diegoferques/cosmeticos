@@ -170,7 +170,7 @@ public class JsonizerTest222 {
         u1.setEmail("Killer@gmail.com");
         u1.setSourceApp("facebook");
         Customer c1 = createFakeCustomer();
-        c1.setIdLogin(u1);
+        c1.setUser(u1);
 
         Professional p = new Professional();
         p.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1991, 10, 21, 0, 0, 0)));

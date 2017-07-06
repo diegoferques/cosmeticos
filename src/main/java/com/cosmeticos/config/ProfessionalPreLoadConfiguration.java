@@ -37,47 +37,64 @@ public class ProfessionalPreLoadConfiguration {
         cw1.getCustomers().add(c1);
         cw1.getCustomers().add(c2);
 
-        //customerWalletRepository.save(cw1);
+        User user1 = new User("garry", "123qwe", "garry@bol");
 
-        Professional s1 = new Professional();
-        s1.setNameProfessional("Garry");
-        s1.setAddress(new Address());
-        s1.setUser(new User("garry", "123qwe", "garry@bol"));
-        s1.setWallet(cw1);
+        Professional p1 = new Professional();
+        p1.setNameProfessional("Garry");
+        p1.setAddress(new Address());
 
-        cw1.setProfessional(s1);
+        // bidirecional reference
+        p1.setUser(user1);
+        user1.setProfessional(p1);
 
-        repository.save(s1);
+        // bidirecional reference
+        p1.setWallet(cw1);
+        cw1.setProfessional(p1);
+
+        repository.save(p1);
 
 
 
         //
+        User user2 = new User("Diego", "123qwe", "Diego@bol");
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
         s2.setAddress(new Address());
-        s2.setUser(new User("Diego", "123qwe", "Diego@bol"));
+        s2.setUser(user2);
+        user2.setProfessional(s2);
 
+        User user3;
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
         s3.setAddress(new Address());
-        s3.setUser(new User("Deivison", "123qwe", "Deivison@bol"));
+        s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
+        user3.setProfessional(s3);
 
-
+        User user4;
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");
         s4.setAddress(new Address());
-        s4.setUser(new User("Vinicius", "123qwe", "Vinicius@bol"));
+        s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
+        user4.setProfessional(s4);
 
+        User user5;
         Professional s5 = new Professional();
         s5.setNameProfessional("Habib");
         s5.setAddress(new Address());
-        s5.setUser(new User("Habib", "123qwe", "Habib@bol"));
-
+        s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
+        user5.setProfessional(s5);
 
         repository.save(s2);
         repository.save(s3);
         repository.save(s4);
         repository.save(s5);
+
+
+
+
+
+
+
 
     }
 }

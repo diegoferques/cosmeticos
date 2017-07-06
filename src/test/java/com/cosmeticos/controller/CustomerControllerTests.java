@@ -66,7 +66,7 @@ public class CustomerControllerTests {
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setIdAddress(this.createFakeAddress(c1));
-		c1.setIdLogin(this.createFakeLogin(c1));
+		c1.setUser(this.createFakeLogin(c1));
 
 		Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
 		Customer c2 = new Customer();
@@ -79,7 +79,7 @@ public class CustomerControllerTests {
 		//c2.setOrderCollection(null);
 		c2.setStatus(Customer.Status.ACTIVE.ordinal());
 		c2.setIdAddress(this.createFakeAddress(c2));
-		c2.setIdLogin(this.createFakeLogin(c2));
+		c2.setUser(this.createFakeLogin(c2));
 
 		Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
 		Customer c3 = new Customer();
@@ -92,7 +92,7 @@ public class CustomerControllerTests {
 		//c3.setOrderCollection(null);
 		c3.setStatus(Customer.Status.ACTIVE.ordinal());
 		c3.setIdAddress(this.createFakeAddress(c3));
-		c3.setIdLogin(this.createFakeLogin(c3));
+		c3.setUser(this.createFakeLogin(c3));
 
 		Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
 		Customer c4 = new Customer();
@@ -105,7 +105,7 @@ public class CustomerControllerTests {
 		//c4.setOrderCollection(null);
 		c4.setStatus(Customer.Status.INACTIVE.ordinal());
 		c4.setIdAddress(this.createFakeAddress(c4));
-		c4.setIdLogin(this.createFakeLogin(c4));
+		c4.setUser(this.createFakeLogin(c4));
 
 		Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
 		Customer c5 = new Customer();
@@ -118,7 +118,7 @@ public class CustomerControllerTests {
 		//c5.setOrderCollection(null);
 		c5.setStatus(Customer.Status.ACTIVE.ordinal());
 		c5.setIdAddress(this.createFakeAddress(c5));
-		c5.setIdLogin(this.createFakeLogin(c5));
+		c5.setUser(this.createFakeLogin(c5));
 
 		customerRepository.save(c1);
 		customerRepository.save(c2);
@@ -220,7 +220,7 @@ public class CustomerControllerTests {
 	static User createFakeLogin(Customer c) {
 		User u = new User();
 		u.setEmail("diego@bol.com");
-		//u.setIdLogin(1234L);
+		//u.setUser(1234L);
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
@@ -251,7 +251,7 @@ public class CustomerControllerTests {
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setIdAddress(createFakeAddress(c1));
-		c1.setIdLogin(createFakeLogin(c1));
+		c1.setUser(createFakeLogin(c1));
 
 		return c1;
 	}
