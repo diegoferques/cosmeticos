@@ -51,6 +51,15 @@ public class ProfessionalServices implements Serializable {
         this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idService);
     }
 
+    public ProfessionalServices(Professional professional, Service service) {
+        this.professionalServicesPK = new ProfessionalServicesPK(
+                professional.getIdProfessional(),
+                service.getIdService());
+
+        this.professional = professional;
+        this.service = service;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface ServiceRepository extends CrudRepository<Service, Long> {
 
+    Service findByCategory(String category);
 }

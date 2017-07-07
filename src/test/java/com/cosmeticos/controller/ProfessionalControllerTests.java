@@ -307,7 +307,7 @@ public class ProfessionalControllerTests {
 		return requestBody;
 	}
 
-	public User createFakeUser() {
+	public static User createFakeUser() {
 		User u = new User();
 		u.setEmail("diego@bol.com");
 		u.setPassword("123qwe");
@@ -317,7 +317,7 @@ public class ProfessionalControllerTests {
 		return u;
 	}
 
-	private Address createFakeAddress() {
+	public static Address createFakeAddress() {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
 		a.setCep("0000000");
@@ -329,7 +329,7 @@ public class ProfessionalControllerTests {
 		return a;
 	}
 
-	private Professional createFakeProfessional() {
+	public static Professional createFakeProfessional() {
 		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -339,8 +339,8 @@ public class ProfessionalControllerTests {
 		c1.setNameProfessional("João da Silva");
 		//c1.setServiceRequestCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
-		c1.setAddress(this.createFakeAddress());
-		c1.setUser(this.createFakeUser());
+		c1.setAddress(createFakeAddress());
+		c1.setUser(createFakeUser());
 
 		return c1;
 	}

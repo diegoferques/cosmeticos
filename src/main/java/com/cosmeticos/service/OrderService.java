@@ -1,8 +1,9 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Sale;
-import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Wallet;
 import com.cosmeticos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,5 +82,19 @@ public class OrderService {
     public List<Sale> find10Lastest() {
         return orderRepository.findTop10ByOrderByDateDesc();
         //return orderRepository.findAll();
+    }
+
+    public boolean increaseCustomer(){
+
+        Wallet w1 = new Wallet();
+        Customer c1 = new Customer();
+
+        Sale s1 = new Sale();
+
+
+        if(s1.getIdCustomer().equals(c1.getIdCustomer() == 2)){
+            w1.getCustomerCollection();
+        }
+        return s1.equals(c1);
     }
 }

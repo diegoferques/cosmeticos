@@ -1,19 +1,27 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.commons.RoleRequestBody;
+import com.cosmeticos.commons.RoleResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Calendar;
+import java.util.*;
 
 /**
  * Created by matto on 24/06/2017.
@@ -38,6 +46,15 @@ public class SaleControllerTests {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
+
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private CustomerWalletRepository customerWalletRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     //@Autowired
     //private ProfessionalServices professionalServices;
@@ -103,6 +120,20 @@ public class SaleControllerTests {
         orderRepository.save(o5);
     }
 */
+
+@Before
+public void setup()
+{
+
+    Service service = serviceRepository.findByCategory("PEDICURE");
+
+    if(service == null) {
+        service = new Service();
+        service.setCategory("PEDICURE");
+        serviceRepository.save(service);
+    }
+}
+
     @Test
     public void testStartOk() {
         Assert.assertEquals(1L,1L);
@@ -177,4 +208,147 @@ public class SaleControllerTests {
 
         return p1;
     }
+
+    public Customer createCustomer() {
+        Customer c1 = new Customer();
+        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
+        c1.setCellPhone("(21) 98877-6655");
+        c1.setCpf("098.765.432-10");
+        c1.setDateRegister(Calendar.getInstance().getTime());
+        c1.setGenre('M');
+        c1.setNameCustomer("Adebaldo Massacote");
+        //c1.setOrderCollection(null);
+        c1.setStatus(Customer.Status.ACTIVE.ordinal());
+        //c1.setIdAddress(address);
+        //c1.setIdLogin(user);
+
+        customerRepository.save(c1);
+
+        return c1;
+    }
+    @Test
+    public void createScheduledOrderOk() throws URISyntaxException {
+
+        /*
+         Preparacao do teste:
+         Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
+         Salvamos tudo no banco.
+          */
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
+
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+
+        /*
+         O teste comeca aqui:
+         Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
+         um profissional associado a um servico que existirao no banco.
+          */
+        String json = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"status\" : \"ACTIVE\",\n" +
+                "      \"orderCollection\" : [ ]\n" +
+                "    },\n" +
+                "    \"professionalServices\" : {\n" +
+                "      \"service\" : {\n" +
+                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
+                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
+                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
+                "      \"cpf\" : \"816.810.695-68\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \"KILLER\",\n" +
+                "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                "      \"idAddress\" : null\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        ResponseEntity<OrderResponseBody> exchange = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals((int) Sale.Status.CREATED.ordinal(), (int)exchange.getBody().getSaleList().get(0).getStatus());
+        Assert.assertNotNull(exchange.getBody().getSaleList().get(0).getScheduleId());
+
+
+    }
+
+    @Test
+    public void naoPermitirInsercaoDeClienteNaPrimeiraTransacao(){
+
+        Customer customer = customerRepository.findOne(13L);//new Customer();
+
+        Wallet w1 = customerWalletRepository.findOne(1L);
+
+        Sale s1 = new Sale();
+        s1.setIdOrder(1L);
+        s1.setIdCustomer(customer);
+        s1.setStatus(1);
+        orderRepository.save(s1);
+        //Sale s2 = orderRepository.findOne(2L);
+        //s1.setIdCustomer(customer);
+
+
+        //Sale r =new Sale();
+        //r.setIdCustomer(customer);
+
+        OrderRequestBody request = new OrderRequestBody();
+        request.setSale(s1);
+
+
+        final ResponseEntity<OrderResponseBody> exchange = //
+                restTemplate.exchange( //
+                        "/orders", //
+                        HttpMethod.POST, //
+                        new HttpEntity(request), // Body
+                        OrderResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+
+    }
+
 }
