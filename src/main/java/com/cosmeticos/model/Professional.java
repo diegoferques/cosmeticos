@@ -60,6 +60,7 @@ public class Professional  implements Serializable {
     private Status status;
 
 	// TODO incluir @NotNull
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL, optional = false, mappedBy = "professional")
     private User user;
 

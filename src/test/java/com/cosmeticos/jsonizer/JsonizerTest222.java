@@ -1,6 +1,10 @@
 package com.cosmeticos.jsonizer;
 
 import com.cosmeticos.commons.*;
+import com.cosmeticos.controller.CustomerController;
+import com.cosmeticos.controller.CustomerControllerTests;
+import com.cosmeticos.controller.ProfessionalControllerTests;
+import com.cosmeticos.controller.UserControllerTest;
 import com.cosmeticos.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +68,7 @@ public class JsonizerTest222 {
 
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
-        Customer customer = createFakeCustomer();
+        Customer customer = CustomerControllerTests.createFakeCustomer();
 
         CustomerRequestBody requestBody = new CustomerRequestBody();
         requestBody.setCustomer(customer);
@@ -169,7 +173,7 @@ public class JsonizerTest222 {
         u1.setPassword("109809876");
         u1.setEmail("Killer@gmail.com");
         u1.setSourceApp("facebook");
-        Customer c1 = createFakeCustomer();
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.setUser(u1);
 
         Professional p = new Professional();
@@ -208,16 +212,4 @@ public class JsonizerTest222 {
         System.out.println(json);
     }
 
-    private static Customer createFakeCustomer() {
-        Customer c4 = new Customer();
-        c4.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1991, 10, 21, 0, 0, 0)));
-        c4.setCellPhone("(21) 99887-7665");
-        c4.setCpf("816.810.695-68");
-        c4.setDateRegister(Calendar.getInstance().getTime());
-        c4.setGenre('F');
-        c4.setNameCustomer("Fernanda Cavalcante");
-        c4.setOrderCollection(null);
-        c4.setStatus(Customer.Status.INACTIVE.ordinal());
-        return c4;
-    }
 }
