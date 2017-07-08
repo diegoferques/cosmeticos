@@ -100,9 +100,11 @@ public class UserRepositoryTests {
     /**
      * Ignorado ate recebermos resposta no post:
      * https://stackoverflow.com/questions/44915428/java-hibernate-spring-data-cascading-childs-not-working-when-parent-is-persis
+     *
+     * Recebemos resposta do post acima de descobrimos qual foi o problema.
      */
-    @Ignore
     @Test
+    @Transactional
     public void testInserirCartaoNovoEmUsuarioQueNaoPossuiCartao()
     {
 
@@ -123,9 +125,9 @@ public class UserRepositoryTests {
 
         u2.addCreditCard(ccNovo);
 
-        userRepository.save(u2);
+        userRepository.saveAndFlush(u2);
 
-        Assert.assertEquals("Usuario nao possui 2 carotes como deveria.",
+        Assert.assertEquals("Usuario nao possui 1 carotao como deveria.",
                 1, u2.getCreditCardCollection().size());
 
         Set<CreditCard> ccs = u2.getCreditCardCollection();

@@ -16,4 +16,8 @@ public class ResponseJsonView {
      * serializara no json.
      */
     public interface ProfessionalServicesFindAll {}
+    public interface WalletsFindAll {}
+
+    // Comecou a ficar complicado.
+    public interface OrderControllerCreate extends ProfessionalServicesFindAll {}
 }
