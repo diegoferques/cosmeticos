@@ -17,7 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
@@ -114,18 +116,20 @@ public class OrderControllerTests {
         Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
     }
 
+    private Order orderRestultFrom_createScheduledOrderOk= null;
+
     @Test
-    public void createScheduledOrderOk() throws URISyntaxException {
+    public  void createScheduledOrderOk() throws URISyntaxException {
 
         /*
-         Preparacao do teste:
+         PRE-CONDICOES para o teste:
          Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
          Salvamos tudo no banco.
           */
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         Service service = new Service();
-        service.setCategory("PEDICURE");
+        service.setCategory("MANICURE"); // AQUI CRIAMOS SERVICE E ADICIONAMOS A CATEGORIA MANICURE
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -138,17 +142,22 @@ public class OrderControllerTests {
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
 
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+
+
         /*
          O teste comeca aqui:
-         Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
-         um profissional associado a um servico que existirao no banco.
+         Fazemos um json com informacoes que batem com o que foi inserido acima. Nossa pre-condicao pede que 3
+         objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
+         producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
           */
         String json = "{\n" +
                "  \"order\" : {\n" +
                "    \"date\" : 1498324200000,\n" +
                "    \"status\" : 0,\n" +
                "    \"scheduleId\" : {\n" +
-               "      \"scheduleDate\" : 1499706000000,\n" +
+               "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
@@ -196,35 +205,51 @@ public class OrderControllerTests {
         ResponseEntity<OrderResponseBody> exchange = restTemplate
                 .exchange(entity, OrderResponseBody.class);
 
+
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals("MANICURE",
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
+
+        orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
     }
 
     @Test
     public void updateScheduledOrder() throws URISyntaxException {
 
-        Order o1 = orderRepository.findOne(6L);
-        o1.getScheduleId().setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 22, 40, 0)));
+        createScheduledOrderOk();
 
-        //VERIFICAR PQ NAO POSSO PEGAR O SCHEDULE A PARTIR DE ORDER
-        OrderRequestBody or = new OrderRequestBody();
-        or.setOrder(o1);
+        Order o1 = orderRestultFrom_createScheduledOrderOk;
 
-        final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
-                        "/orders", //
-                        HttpMethod.PUT, //
-                        new HttpEntity(or), // Body
-                        OrderResponseBody.class);
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" + //AQUI PEGO O SCHEDULE JA CRIADO
+                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime()  +"\"\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
 
         //TODO - FINALIZAR OS ASSERTS
-        Assert.assertNotNull(exchange);
-        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime(), exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getScheduleDate().getTime());
 
     }
 }

@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
@@ -14,15 +16,24 @@ import java.util.Collection;
  * @author magarrett.dias
  */
 @Entity
-@Table
+@Data
 public class Location implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /*
     @Basic(optional = false)
     @Column(name = "coordinate")
     private String coordinate;
+    */
+
+    private String latitude;
+
+    private String longitude;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLocation")
     private Collection<Order> orderCollection;
 
@@ -31,27 +42,6 @@ public class Location implements Serializable {
 
     public Location(Long id) {
         this.id = id;
-    }
-
-    public Location(Long id, String coordinate) {
-        this.id = id;
-        this.coordinate = coordinate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCoordinate() {
-        return coordinate;
-    }
-
-    public void setCoordinate(String coordinate) {
-        this.coordinate = coordinate;
     }
 
     @XmlTransient
