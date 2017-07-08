@@ -6,4 +6,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
+    Wallet findByProfessional_idProfessional(Long idProfessional);// aki muda alguma coisa?nao!
 }

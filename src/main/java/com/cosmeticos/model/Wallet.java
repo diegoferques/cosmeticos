@@ -35,8 +35,6 @@ public class Wallet implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Customer> customers = new ArrayList<>();
 
-
-
     @Override
     public int hashCode() {
         int hash = 0;
