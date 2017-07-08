@@ -4,15 +4,14 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -27,18 +26,19 @@ public class ProfessionalServices implements Serializable {
     @EmbeddedId
     protected ProfessionalServicesPK professionalServicesPK;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @JoinColumn(name = "idService", referencedColumnName = "idService", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Service service;
 
-    @JsonBackReference // Diz que Professional eh dono desta classe e professional nao eh serializado no json.
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Professional professional;
 
     @JsonIgnore // As vendas serao obtidas por endpoint especifico.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
-    private Collection<Sale> saleCollection;
+    private Collection<Order> orderCollection;
 
     public ProfessionalServices() {
     }
@@ -84,5 +84,5 @@ public class ProfessionalServices implements Serializable {
     public String toString() {
         return "javaapplication2.entity.ProfessionalServices[ professionalServicesPK=" + professionalServicesPK+ " ]";
     }
-    
+
 }

@@ -24,12 +24,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -60,11 +59,8 @@ public class ProfessionalControllerTests {
 	@Test
 	public void testCreateOK() throws IOException {
 
-
-		String content = new String(Files.readAllBytes(Paths.get("C:\\dev\\_freelas\\Deivison\\projetos\\cosmeticos\\src\\test\\resources\\custumerPostRequest.json")));
-
 		Address addres = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setUser(user);
@@ -72,8 +68,6 @@ public class ProfessionalControllerTests {
 
 		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
 		requestBody.setProfessional(professional);
-
-		ProfessionalResponseBody rsp = restTemplate.postForObject("/professionals", content, ProfessionalResponseBody.class);
 
 		final ResponseEntity<ScheduleResponseBody> exchange = //
 				restTemplate.exchange( //
@@ -135,6 +129,54 @@ public class ProfessionalControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+	}
+
+	/**
+	 * Este teste na verdade testa duas coisas: o parametro ModelAttribute no metodo e o Example Api.
+	 * @throws ParseException
+	 */
+	@Test
+	public void testExampleApiFindByNameProfessional() throws ParseException {
+
+		Address addres = createFakeAddress();
+		User user = UserControllerTest.createFakeUser();
+
+		Professional professional = createFakeProfessional();
+		professional.setUser(user);
+		professional.setAddress(addres);
+		professional.setNameProfessional("MyName");
+
+		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
+		requestBody.setProfessional(professional);
+
+		final ResponseEntity<ProfessionalResponseBody> postExchange = //
+				restTemplate.exchange( //
+						"/professionals", //
+						HttpMethod.POST, //
+						new HttpEntity(requestBody), // Body
+						ProfessionalResponseBody.class);
+
+
+		final ResponseEntity<ProfessionalResponseBody> getExchange = //
+				restTemplate.exchange( //
+						"/professionals?nameProfessional=MyName", //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+
+		ProfessionalResponseBody response = getExchange.getBody();
+		List<Professional> professionals = response.getProfessionalList();
+
+		Assert.assertTrue("Nao foram retornados profissionais.", professionals.size() > 0);
+
+		for (int i = 0; i < professionals.size(); i++) {
+			Professional p =  professionals.get(i);
+			Assert.assertEquals("MyName", p.getNameProfessional());
+		}
+
 
 	}
 
@@ -293,9 +335,59 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(p.getUser().getIdLogin());
 	}
 
+
+	@Test
+	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
+		String jsonBody = "{\n" +
+				"\t\"professional\":\n" +
+				"\t{\n" +
+				"\t\t\"address\":null,\n" +
+				"\t\t\"birthDate\":350535600000,\n" +
+				"\t\t\"cellPhone\":null,\"dateRegister\":null,\n" +
+				"\t\t\"status\":null,\n" +
+				"\t\t\"user\":\n" +
+				"\t\t{\n" +
+				"\t\t\t\"email\":\"E-mail\",\n" +
+				"\t\t\t\"idLogin\":null,\n" +
+				"\t\t\t\"password\":\"123\",\n" +
+				"\t\t\t\"sourceApp\":null,\n" +
+				"\t\t\t\"username\":\"E-mail\"\n" +
+				"\t\t},\n" +
+				"\t\t\"genre\":\"\\u0000\",\n" +
+				"\t\t\"cnpj\":\"CNPJ\",\n" +
+				"\t\t\"idProfessional\":null,\n" +
+				"\t\t\"nameProfessional\":\"Name\",\n" +
+				"\t\t\"professionalServicesCollection\":\n" +
+				"\t\t[\n" +
+				"\t\t\t{\n" +
+				"\t\t\t\t\"professional\":null,\n" +
+				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t{\n" +
+				// id omitido. Se um request desse chega, ha risco de insercao em cascada, o q nao pode acontecer
+				// pq apenas o admin insere service
+				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\""+
+				"\t\t\t\t}\n" +
+				"\t\t\t}\n" +
+				"\t\t]\n" +
+				"\t}\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonBody);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+	}
+
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
-		User user = createFakeUser();
+		User user = UserControllerTest.createFakeUser();
 
 		Professional professional = createFakeProfessional();
 		professional.setAddress(address);
@@ -307,17 +399,7 @@ public class ProfessionalControllerTests {
 		return requestBody;
 	}
 
-	public static User createFakeUser() {
-		User u = new User();
-		u.setEmail("diego@bol.com");
-		u.setPassword("123qwe");
-		u.setSourceApp("google+");
-		u.setUsername("diegoferques");
-
-		return u;
-	}
-
-	public static Address createFakeAddress() {
+	static Address createFakeAddress() {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
 		a.setCep("0000000");
@@ -329,7 +411,7 @@ public class ProfessionalControllerTests {
 		return a;
 	}
 
-	public static Professional createFakeProfessional() {
+	static Professional createFakeProfessional() {
 		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -337,10 +419,11 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(createFakeAddress());
-		c1.setUser(createFakeUser());
+		c1.setUser(UserControllerTest.createFakeUser());
+		c1.getUser().setProfessional(c1);
 
 		return c1;
 	}

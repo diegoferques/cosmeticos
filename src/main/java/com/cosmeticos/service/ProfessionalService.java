@@ -1,15 +1,17 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Hability;
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.ProfessionalServicesPK;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by matto on 27/05/2017.
@@ -97,8 +99,30 @@ public class ProfessionalService {
     }
 
 
-    public List<Professional> find10Lastest() {
+    public List<Professional> findAll() {
         return professionalRepository.findTop10ByOrderByDateRegisterDesc();
+    }
+
+	/**
+	 * Recebe uma instancia nova transiente de Professional e inclui os atributos preenchidos em uma clausula WHERE.
+	 Por exemplo: 
+	 
+	 (1)
+	 Professional p = new Professional();
+	 p.setNameProfessional("Joao");
+	 Vai gerar: SELECT * FROM Professional WHERE nameProfessional = 'Joao'
+	 
+	 
+	 (2)
+	 Professional p = new Professional();
+	 p.setNameProfessional("Joao");
+	 p.setCnpj("123456");
+	 Vai gerar: SELECT * FROM Professional WHERE nameProfessional = 'Joao' and cnpj = '123456'
+	 
+	 Fonte: http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#query-by-example
+	 */
+    public List<Professional> findAllBy(Professional professionalProbe) {
+        return professionalRepository.findAll(Example.of(professionalProbe));
     }
 
     private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {

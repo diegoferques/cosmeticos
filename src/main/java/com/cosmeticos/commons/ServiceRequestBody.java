@@ -3,7 +3,6 @@ package com.cosmeticos.commons;
 import com.cosmeticos.model.Service;
 import lombok.Data;
 
-import javax.persistence.Entity;
 import javax.validation.Valid;
 
 /**

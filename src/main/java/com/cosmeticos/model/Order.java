@@ -4,8 +4,8 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,31 +18,37 @@ import java.util.Date;
  */
 @Data
 @Entity
-@Table
-public class Sale implements Serializable {
+@Table(name = "[ORDER]")
+public class Order implements Serializable {
 
     public enum Status {
         CREATED, ABORTED, EXECUTED
     }
 
     private static final long serialVersionUID = 1L;
+
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOrder;
 
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     //@Basic(optional = false)
     //@Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @Basic(optional = false)
     @Column(name = "status")
     private Integer status;
 
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @JoinColumn(name = "scheduleId", referencedColumnName = "scheduleId")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Schedule scheduleId;
 
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @JoinColumns({
         @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional"),
         @JoinColumn(name = "idService", referencedColumnName = "idService")})
@@ -53,25 +59,25 @@ public class Sale implements Serializable {
     @ManyToOne(optional = true)
     private Location idLocation;
 
-    @JsonBackReference
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @JoinColumn(name = "idCustomer", referencedColumnName = "idCustomer")
     @ManyToOne(optional = false)
     private Customer idCustomer;
 
-    public Sale() {
+    public Order() {
     }
 
-    public Sale(Long idOrder) {
+    public Order(Long idOrder) {
         this.idOrder = idOrder;
     }
 
-    public Sale(Long idOrder, Date date, Integer status) {
+    public Order(Long idOrder, Date date, Integer status) {
         this.idOrder = idOrder;
         this.date = date;
         this.status = status;
     }
 
-    public Sale(Customer idCustomer, ProfessionalServices professionalServices, Schedule scheduleId) {
+    public Order(Customer idCustomer, ProfessionalServices professionalServices, Schedule scheduleId) {
         this.idCustomer = idCustomer;
         this.professionalServices = professionalServices;
         this.scheduleId = scheduleId;
@@ -88,10 +94,10 @@ public class Sale implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Sale)) {
+        if (!(object instanceof Order)) {
             return false;
         }
-        Sale other = (Sale) object;
+        Order other = (Order) object;
         if ((this.idOrder == null && other.idOrder != null) || (this.idOrder != null && !this.idOrder.equals(other.idOrder))) {
             return false;
         }

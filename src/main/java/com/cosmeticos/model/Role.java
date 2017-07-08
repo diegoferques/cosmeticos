@@ -7,11 +7,9 @@ package com.cosmeticos.model;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *

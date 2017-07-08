@@ -1,10 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ServiceRequestBody;
-import com.cosmeticos.commons.UserRequestBody;
-import com.cosmeticos.model.Role;
 import com.cosmeticos.model.Service;
-import com.cosmeticos.model.User;
 import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 

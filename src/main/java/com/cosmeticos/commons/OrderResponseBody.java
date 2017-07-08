@@ -1,7 +1,7 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Sale;
-import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Order;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -12,14 +12,16 @@ import java.util.List;
  */
 @Data
 public class OrderResponseBody {
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     private String description;
 
-    private List<Sale> saleList = new ArrayList<>(10);
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
+    private List<Order> orderList = new ArrayList<>(10);
 
     public OrderResponseBody() {
     }
 
-    public OrderResponseBody(Sale sale) {
-        this.saleList.add(sale);
+    public OrderResponseBody(Order order) {
+        this.orderList.add(order);
     }
 }

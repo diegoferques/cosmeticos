@@ -190,4 +190,14 @@ public class UserControllerTest {
         Assert.assertEquals("ALTERADOOOOOOOOOOOOO", updatedCC.getToken());
 
     }
+
+    static User createFakeUser() {
+        User u = new User();
+        u.setEmail("diego@bol.com");
+        u.setPassword("123qwe");
+        u.setSourceApp("google+");
+        u.setUsername("diegoferques");
+
+        return u;
+    }
 }

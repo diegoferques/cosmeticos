@@ -2,46 +2,45 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
-import com.cosmeticos.service.ProfessionalService;
+import com.cosmeticos.commons.ProfessionalServicesResponseBody;
+import com.cosmeticos.model.*;
+import com.cosmeticos.repository.AddressRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Optional;
+import java.util.List;
 
-/**
- * Classe exclusiva para trabalhar com Mockito pois mocar um bean numa classe de testes que tem testes nao mocados, pode
- * gerar resultados inesperados no teste nao mocado.
- */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class MockingProfessionalControllerTests {
+public class ProfessionalServicesControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@MockBean
-	private ProfessionalService mockedProfessionalService;
+	@Autowired
+	private ProfessionalRepository customerRepository;
+
+	@Autowired
+	private AddressRepository addressRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -51,42 +50,42 @@ public class MockingProfessionalControllerTests {
 
 	}
 
+	/**
+	 * Depende dos inserts feitos no ServicePreLoadConfiguration e ProfessionalServicesPreLoadConfiguration.
+	 * Ignore este teste se o profile de execucao usado nao for o default.
+	 * Este endopint testa o ModelAttribute do controller e a api Example do spring-data.
+	 * Ver card https://trello.com/c/OMGE90IV
+	 * TODO: indenpendentizar este teste.
+	 * @throws ParseException
+	 */
 	@Test
-	public void testCreateError500() throws IOException {
-		/**/
-		Mockito.when(
-				mockedProfessionalService.create(Mockito.anyObject())
-		).thenThrow(new RuntimeException());
+	public void testExampleApiFindByProfessionalServicesServiceCategoryMadeInPreLoads() throws ParseException {
 
-		ProfessionalRequestBody requestBody = createFakeRequestBody();
-
-		final ResponseEntity<ProfessionalResponseBody> exchange = //
+		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionals", //
-						HttpMethod.POST, //
-						new HttpEntity(requestBody), // Body
-						ProfessionalResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
-	}
-
-	@Test
-	public void testFindById() throws ParseException {
-
-		Mockito.when(
-				mockedProfessionalService.find(Long.valueOf(1))
-		).thenReturn(Optional.of(new Professional()));
-
-		final ResponseEntity<ProfessionalResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/professionals/1", //
+						"/professionalservices?service.category=BRUSH", //
 						HttpMethod.GET, //
 						null,
-						ProfessionalResponseBody.class);
+						ProfessionalServicesResponseBody.class);
 
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+
+		ProfessionalServicesResponseBody response = getExchange.getBody();
+
+		List<ProfessionalServices> entityList = response.getProfessionalServicesList();
+
+		Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
+
+		for (int i = 0; i < entityList.size(); i++) {
+			ProfessionalServices ps =  entityList.get(i);
+
+			Professional p = ps.getProfessional();
+			Service s = ps.getService();
+
+			Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
+			Assert.assertEquals("BRUSH", s.getCategory());
+		}
+
 
 	}
 
@@ -134,7 +133,7 @@ public class MockingProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional("João da Silva");
-		//c1.setServiceRequestCollection(null);
+		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(this.createFakeAddress());
 		c1.setUser(this.createFakeUser());

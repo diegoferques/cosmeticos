@@ -4,15 +4,18 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  *
@@ -27,10 +30,14 @@ public class Customer implements Serializable {
     }
 
     private static final long serialVersionUID = 1L;
+
+
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCustomer;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
 
@@ -45,6 +52,7 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthDate;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     private String cellPhone;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -52,22 +60,26 @@ public class Customer implements Serializable {
 
     private Integer status;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idCustomer")
-    private User idLogin;
+    private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
     private Address idAddress;
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "customerCollection")
+    @ManyToMany(mappedBy = "customers")
     private Collection<Wallet> wallets = new ArrayList<>();
 
-    @JsonManagedReference
+    @JsonIgnore // Nao tem porque toda vez q retornar um usuario, retornar suas compras.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
-    private Collection<Sale> saleCollection;
+    private Collection<Order> orderCollection;
 
 
     @Override

@@ -1,8 +1,6 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Schedule;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
