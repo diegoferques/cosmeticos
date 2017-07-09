@@ -4,16 +4,15 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  *
  * @author magarrett.dias
@@ -26,6 +25,7 @@ public class Service implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idService;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)
     private String category;

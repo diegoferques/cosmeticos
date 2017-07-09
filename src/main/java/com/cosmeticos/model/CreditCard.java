@@ -2,15 +2,10 @@ package com.cosmeticos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * Created by Vinicius on 23/06/2017.

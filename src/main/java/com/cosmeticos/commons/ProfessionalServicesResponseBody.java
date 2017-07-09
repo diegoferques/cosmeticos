@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.ProfessionalServices;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -12,11 +13,10 @@ import java.util.List;
 @Data
 public class ProfessionalServicesResponseBody {
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private String description;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private List<ProfessionalServices> professionalServicesList = new ArrayList<>(10);
 
-    public void setDescription(String description, String inf) {
-        this.description = description;
-    }
 }

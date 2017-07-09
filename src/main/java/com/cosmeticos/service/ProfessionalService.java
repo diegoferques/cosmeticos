@@ -1,8 +1,10 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Hability;
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.ProfessionalServicesPK;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by matto on 27/05/2017.

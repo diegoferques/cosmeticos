@@ -3,8 +3,6 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.RoleRequestBody;
 import com.cosmeticos.commons.RoleResponseBody;
-import com.cosmeticos.commons.ScheduleRequestBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Role;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,8 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Calendar;
 
 
 @RunWith(SpringRunner.class)

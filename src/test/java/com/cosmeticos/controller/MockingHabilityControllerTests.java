@@ -24,11 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Optional;
 
 /**
  * Classe exclusiva para trabalhar com Mockito pois mocar um bean numa classe de testes que tem testes nao mocados, pode

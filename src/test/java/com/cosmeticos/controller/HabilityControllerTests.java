@@ -1,27 +1,21 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.HabilityResponseBody;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Hability;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import com.cosmeticos.repository.UserRepository;
-import com.cosmeticos.service.ProfessionalService;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,15 +23,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)

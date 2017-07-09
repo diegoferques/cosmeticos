@@ -2,8 +2,7 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.Sale;
-import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 /**
  * Created by matto on 17/06/2017.
@@ -35,17 +32,26 @@ public class OrderController {
 
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
     public HttpEntity<OrderResponseBody> create(@Valid @RequestBody OrderRequestBody request,
-                                                   BindingResult bindingResult) {
+                                                BindingResult bindingResult) {
         try {
-            if(bindingResult.hasErrors()) {
+            if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                Sale sale = orderService.create(request);
-                log.info("Order adicionado com sucesso:  [{}]", sale);
+                Order order = orderService.create(request);
+                log.info("Order adicionado com sucesso:  [{}]", order);
                 //return ok().build();
-                return ok(new OrderResponseBody(sale));
+                return ok(new OrderResponseBody(order));
             }
+        } catch (OrderService.ValidationException e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody orderResponseBody = new OrderResponseBody();
+            orderResponseBody.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+            return badRequest().body(orderResponseBody);
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
@@ -62,16 +68,16 @@ public class OrderController {
     public HttpEntity<OrderResponseBody> update(@Valid @RequestBody OrderRequestBody request, BindingResult bindingResult) {
 
         try {
-            if(bindingResult.hasErrors()) {
+            if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
 
             } else {
-                Sale sale = orderService.update(request);
+                Order order = orderService.update(request);
 
-                OrderResponseBody responseBody = new OrderResponseBody(sale);
+                OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
-                        sale,
+                        order,
                         new ObjectMapper().writeValueAsString(responseBody));
                 return ok(responseBody);
             }
@@ -93,7 +99,7 @@ public class OrderController {
 
         try {
 
-            Optional<Sale> order = orderService.find(Long.valueOf(idOrder));
+            Optional<Order> order = orderService.find(Long.valueOf(idOrder));
 
             if (order.isPresent()) {
                 log.info("Busca de Order com exito: [{}]", order.get());
@@ -136,10 +142,10 @@ public class OrderController {
     public HttpEntity<OrderResponseBody> findLastest10() {
 
         try {
-            List<Sale> entitylist = orderService.find10Lastest();
+            List<Order> entitylist = orderService.find10Lastest();
 
             OrderResponseBody responseBody = new OrderResponseBody();
-            responseBody.setSaleList(entitylist);
+            responseBody.setOrderList(entitylist);
             responseBody.setDescription("TOP 10 successfully retrieved.");
 
             log.info("{} Orders successfully retrieved.", entitylist.size());

@@ -2,9 +2,7 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ProfessionalServicesResponseBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -16,18 +14,16 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)

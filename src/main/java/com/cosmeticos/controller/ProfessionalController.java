@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

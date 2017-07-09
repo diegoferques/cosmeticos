@@ -4,15 +4,15 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.io.Serializable;
-import java.util.*;
+
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 /**
  *
  * @author magarrett.dias
@@ -38,6 +38,7 @@ public class Professional  implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfessional;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private String nameProfessional;
 
     private String cnpj;
@@ -76,11 +77,11 @@ public class Professional  implements Serializable {
     private Wallet wallet;
 
     /**
-     * Professional nao deve retornar esta lista no json do endopoint professionals/.
+     *  @JsonBackReference: Professional deve receber mas nao deve retornar esta lista no json do endopoint professionals/.
      * Se a client app deseja saber quais servicos todos os profissionais atendem, ele deve
      * chamar o endpoint professionalservices/
      */
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
@@ -89,8 +90,6 @@ public class Professional  implements Serializable {
             @JoinColumn(name = "id_hability", referencedColumnName = "id")})
     @ManyToMany(fetch = FetchType.EAGER)
     private  Set<Hability> habilityCollection = new HashSet<>();
-
-
 
     @Override
     public int hashCode() {

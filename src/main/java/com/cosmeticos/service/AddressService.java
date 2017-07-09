@@ -17,13 +17,12 @@ public class AddressService {
 
     public Address createFromCustomer(CustomerRequestBody request) {
         Address a = new Address();
-        a.setAddress(request.getAddress().getAddress());
-        //a.setNumero(request.getAddress().getNumero());
-        a.setCep(request.getAddress().getCep());
-        a.setCity(request.getAddress().getCity());
-        a.setState(request.getAddress().getState());
-        a.setCountry(request.getAddress().getCountry());
-        a.setNeighborhood(request.getAddress().getNeighborhood());
+        a.setAddress(request.getCustomer().getIdAddress().getAddress());
+        a.setCep(request.getCustomer().getIdAddress().getCep());
+        a.setCity(request.getCustomer().getIdAddress().getCity());
+        a.setState(request.getCustomer().getIdAddress().getState());
+        a.setCountry(request.getCustomer().getIdAddress().getCountry());
+        a.setNeighborhood(request.getCustomer().getIdAddress().getNeighborhood());
 
         return addressRepository.save(a);
     }

@@ -1,6 +1,8 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.Service;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.repository.ServiceRepository;

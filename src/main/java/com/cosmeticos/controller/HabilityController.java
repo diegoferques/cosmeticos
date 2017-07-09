@@ -4,7 +4,6 @@ import com.cosmeticos.commons.HabilityRequestBody;
 import com.cosmeticos.commons.HabilityResponseBody;
 import com.cosmeticos.model.Hability;
 import com.cosmeticos.service.HabilityService;
-import com.cosmeticos.service.HabilityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

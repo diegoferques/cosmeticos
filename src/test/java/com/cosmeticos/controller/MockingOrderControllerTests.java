@@ -7,7 +7,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.Sale;
+import com.cosmeticos.model.Order;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -53,18 +53,18 @@ public class MockingOrderControllerTests {
 
 
     @Test
-    public void testCreateError500() throws IOException {
+    public void testCreateError500() throws IOException, OrderService.ValidationException {
         /**/
         Mockito.when(
                 orderService.create(Mockito.anyObject())
         ).thenThrow(new RuntimeException());
 
-        Sale s1 = new Sale();
+        Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Sale.Status.ABORTED.ordinal());
+        s1.setStatus(Order.Status.ABORTED.ordinal());
 
         OrderRequestBody or = new OrderRequestBody();
-        or.setSale(s1);
+        or.setOrder(s1);
 
         final ResponseEntity<OrderResponseBody> exchange = //
         restTemplate.exchange( //
@@ -84,12 +84,12 @@ public class MockingOrderControllerTests {
                 orderService.update(Mockito.anyObject())
         ).thenThrow(new RuntimeException());
 
-        Sale s1 = new Sale();
+        Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Sale.Status.ABORTED.ordinal());
+        s1.setStatus(Order.Status.ABORTED.ordinal());
 
         OrderRequestBody or = new OrderRequestBody();
-        or.setSale(s1);
+        or.setOrder(s1);
 
         final ResponseEntity<OrderResponseBody> exchange = //
                 restTemplate.exchange( //
