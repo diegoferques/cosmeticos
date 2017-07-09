@@ -12,4 +12,6 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findTop10ByOrderByDateDesc();
 
     List<Order> findAll();
+
+    List<Order> findByIdCustomer_idCustomer(Long idCustomer);
 }

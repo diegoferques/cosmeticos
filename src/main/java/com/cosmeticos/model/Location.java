@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -34,6 +35,7 @@ public class Location implements Serializable {
 
     private String longitude;
 
+    @Ignore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idLocation")
     private Collection<Order> orderCollection;
 

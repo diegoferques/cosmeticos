@@ -1,6 +1,8 @@
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,6 +20,7 @@ public class Wallet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idWallet;
@@ -25,13 +28,12 @@ public class Wallet implements Serializable {
     @OneToOne(optional = false)
     private Professional professional;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @JoinTable(name = "CUSTOMER_WALLET", joinColumns = {
             @JoinColumn(name = "id_wallet", referencedColumnName = "idWallet")}, inverseJoinColumns = {
             @JoinColumn(name = "id_customer", referencedColumnName = "idCustomer")})
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Customer> customers = new ArrayList<>();
-
-
 
     @Override
     public int hashCode() {

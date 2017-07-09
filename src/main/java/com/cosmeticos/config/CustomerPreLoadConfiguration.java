@@ -40,7 +40,7 @@ public class CustomerPreLoadConfiguration {
             //c1.setOrderCollection(null);
             c1.setStatus(Customer.Status.ACTIVE.ordinal());
             c1.setIdAddress(this.createFakeAddress());
-            c1.setIdLogin(this.createFakeLogin());
+            c1.setUser(this.createFakeLogin());
 
             Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
             Customer c2 = new Customer();
@@ -53,7 +53,7 @@ public class CustomerPreLoadConfiguration {
             //c2.setOrderCollection(null);
             c2.setStatus(Customer.Status.ACTIVE.ordinal());
             c2.setIdAddress(this.createFakeAddress());
-            c2.setIdLogin(this.createFakeLogin());
+            c2.setUser(this.createFakeLogin());
 
             Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
             Customer c3 = new Customer();
@@ -66,7 +66,7 @@ public class CustomerPreLoadConfiguration {
             //c3.setOrderCollection(null);
             c3.setStatus(Customer.Status.ACTIVE.ordinal());
             c3.setIdAddress(this.createFakeAddress());
-            c3.setIdLogin(this.createFakeLogin());
+            c3.setUser(this.createFakeLogin());
 
             Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
             Customer c4 = new Customer();
@@ -79,7 +79,7 @@ public class CustomerPreLoadConfiguration {
             //c4.setOrderCollection(null);
             c4.setStatus(Customer.Status.INACTIVE.ordinal());
             c4.setIdAddress(this.createFakeAddress());
-            c4.setIdLogin(this.createFakeLogin());
+            c4.setUser(this.createFakeLogin());
 
             Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
             Customer c5 = new Customer();
@@ -92,7 +92,7 @@ public class CustomerPreLoadConfiguration {
             //c5.setOrderCollection(null);
             c5.setStatus(Customer.Status.ACTIVE.ordinal());
             c5.setIdAddress(this.createFakeAddress());
-            c5.setIdLogin(this.createFakeLogin());
+            c5.setUser(this.createFakeLogin());
 
             customerRepository.save(c1);
             customerRepository.save(c2);
@@ -107,7 +107,7 @@ public class CustomerPreLoadConfiguration {
     private User createFakeLogin() {
         User u = new User();
         u.setEmail("diego@bol.com");
-        //u.setIdLogin(1234L);
+        //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
         u.setUsername("diegoferques");

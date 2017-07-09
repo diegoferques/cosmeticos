@@ -4,7 +4,9 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -28,10 +30,14 @@ public class Customer implements Serializable {
     }
 
     private static final long serialVersionUID = 1L;
+
+
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCustomer;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
 
@@ -46,6 +52,7 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthDate;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     private String cellPhone;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,14 +60,18 @@ public class Customer implements Serializable {
 
     private Integer status;
 
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "idCustomer")
-    private User idLogin;
+    private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
     private Address idAddress;
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @JsonIgnore
     @ManyToMany(mappedBy = "customers")

@@ -112,7 +112,7 @@ public class UserControllerTest {
         Assert.assertEquals(HttpStatus.BAD_REQUEST, rsp.getStatusCode());
 
     }
-    @Ignore
+    
     @Test
     public void inativarUmDosCartoesDeUsuarioCom2Cartoes() throws URISyntaxException {
 

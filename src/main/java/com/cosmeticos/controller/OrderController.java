@@ -2,8 +2,10 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
     public HttpEntity<OrderResponseBody> create(@Valid @RequestBody OrderRequestBody request,
                                                 BindingResult bindingResult) {
@@ -64,6 +67,7 @@ public class OrderController {
         }
     }
 
+    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.PUT)
     public HttpEntity<OrderResponseBody> update(@Valid @RequestBody OrderRequestBody request, BindingResult bindingResult) {
 
@@ -94,6 +98,7 @@ public class OrderController {
 
     }
 
+    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders/{idOrder}", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findById(@PathVariable String idOrder) {
 
@@ -138,6 +143,7 @@ public class OrderController {
 
     }
 
+    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findLastest10() {
 

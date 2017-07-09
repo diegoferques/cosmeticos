@@ -1,10 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -83,7 +80,33 @@ public class OrderService {
             //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
             order.setStatus(Order.Status.CREATED.ordinal());
 
-            return orderRepository.save(order);
+            Order newOrder = orderRepository.save(order);
+
+            // Pra ter dado erro la em baixo significa que essa parte aki funcionu ne? isso
+            List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
+
+            int totalOrders = 0;
+
+            for (int i = 0; i < savedOrders.size(); i++) {
+                Order o =  savedOrders.get(i);
+                if(o.getProfessionalServices().getProfessional().getIdProfessional() == professional.getIdProfessional())
+                {
+                    totalOrders ++;
+                }
+            }
+
+            if(totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho. pode debugar.
+            {
+                if( professional.getWallet() == null)
+                {
+                    professional.setWallet(new Wallet());
+                    professional.getWallet().setProfessional(professional);
+                }
+                 professional.getWallet().getCustomers().add(customer);
+                 professionalRepository.save(professional);
+            }
+
+            return newOrder;
         }
         else
         {
