@@ -79,7 +79,7 @@ public class MockingCustomerControllerTests {
 	public User createFakeLogin(Customer c) {
 		User u = new User();
 		u.setEmail("diego@bol.com");
-		//u.setIdLogin(1234L);
+		//u.setUser(1234L);
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
@@ -110,7 +110,7 @@ public class MockingCustomerControllerTests {
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setIdAddress(this.createFakeAddress(c1));
-		c1.setIdLogin(this.createFakeLogin(c1));
+		c1.setUser(this.createFakeLogin(c1));
 
 		return c1;
 	}

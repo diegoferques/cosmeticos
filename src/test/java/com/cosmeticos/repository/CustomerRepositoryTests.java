@@ -58,7 +58,7 @@ public class CustomerRepositoryTests {
         c1.setNameCustomer("Test João da Silva");
         //c1.setOrderCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
-        c1.setIdLogin(u1);
+        c1.setUser(u1);
         c1.setIdAddress(address);
 
         u1.setCustomer(c1);
@@ -81,7 +81,7 @@ public class CustomerRepositoryTests {
 
 
         c2.setIdAddress(address2);
-        c2.setIdLogin(u2);
+        c2.setUser(u2);
 
         u2.setCustomer(c2);
         address2.setCustomer(c2);
@@ -104,7 +104,7 @@ public class CustomerRepositoryTests {
 
 
         c3.setIdAddress(address3);
-        c3.setIdLogin(u3);
+        c3.setUser(u3);
 
         u3.setCustomer(c3);
         address3.setCustomer(c3);
@@ -125,7 +125,7 @@ public class CustomerRepositoryTests {
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
 
         c4.setIdAddress(address4);
-        c4.setIdLogin(u4);
+        c4.setUser(u4);
 
         u4.setCustomer(c4);
         address4.setCustomer(c4);
@@ -144,7 +144,7 @@ public class CustomerRepositoryTests {
         c5.setNameCustomer("Test José das Couves");
         c5.setStatus(Customer.Status.ACTIVE.ordinal());
         c5.setIdAddress(address5);
-        c5.setIdLogin(u5);
+        c5.setUser(u5);
 
         u5.setCustomer(c5);
         address5.setCustomer(c5);
@@ -161,7 +161,7 @@ public class CustomerRepositoryTests {
         Customer customer = repository.findOne(c1.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
-        Assert.assertNotNull(customer.getIdLogin());
+        Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("1980-01-20 00:00:00.0", customer.getBirthDate().toString());
@@ -178,7 +178,7 @@ public class CustomerRepositoryTests {
         Customer customer = repository.findOne(c2.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
-        Assert.assertNotNull(customer.getIdLogin());
+        Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("1981-01-20 00:00:00.0", customer.getBirthDate().toString());
@@ -195,7 +195,7 @@ public class CustomerRepositoryTests {
         Customer customer = repository.findOne(c3.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
-        Assert.assertNotNull(customer.getIdLogin());
+        Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("1982-01-20 00:00:00.0", customer.getBirthDate().toString());
@@ -212,7 +212,7 @@ public class CustomerRepositoryTests {
         Customer customer = repository.findOne(c4.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
-        Assert.assertNotNull(customer.getIdLogin());
+        Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("1983-01-20 00:00:00.0", customer.getBirthDate().toString());
@@ -229,7 +229,7 @@ public class CustomerRepositoryTests {
         Customer customer = repository.findOne(c5.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getIdAddress());
-        Assert.assertNotNull(customer.getIdLogin());
+        Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
         Assert.assertEquals("1984-01-20 00:00:00.0", customer.getBirthDate().toString());
@@ -257,7 +257,7 @@ public class CustomerRepositoryTests {
     public User createFakeLogin(Customer c) {
         User u = new User();
         u.setEmail("diego@bol.com");
-        //u.setIdLogin(1234L);
+        //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
         u.setUsername("diegoferques");

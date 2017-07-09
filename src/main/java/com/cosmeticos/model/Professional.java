@@ -34,6 +34,7 @@ public class Professional  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfessional;
@@ -59,8 +60,8 @@ public class Professional  implements Serializable {
     private Status status;
 
 	// TODO incluir @NotNull
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "idProfessional")
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL, optional = false, mappedBy = "professional")
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -90,6 +91,14 @@ public class Professional  implements Serializable {
             @JoinColumn(name = "id_hability", referencedColumnName = "id")})
     @ManyToMany(fetch = FetchType.EAGER)
     private  Set<Hability> habilityCollection = new HashSet<>();
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @Override
     public int hashCode() {

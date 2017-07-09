@@ -191,13 +191,15 @@ public class UserControllerTest {
 
     }
 
-    static User createFakeUser() {
+    public static User createFakeUser(String username, String email) {
         User u = new User();
-        u.setEmail("diego@bol.com");
+        u.setEmail(email);
+        //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
-        u.setUsername("diegoferques");
-
+        u.setUsername(username);
+        //u.getCustomerCollection().add(c);
+        //userRepository.save(u);
         return u;
     }
 }

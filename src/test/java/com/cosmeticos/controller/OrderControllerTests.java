@@ -6,6 +6,7 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,18 @@ public class OrderControllerTests {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Before
+    public void setup()
+    {
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        if(service == null) {
+            service = new Service();
+            service.setCategory("PEDICURE");
+            serviceRepository.save(service);
+        }
+    }
 
     //TESTANDO O RETORNO DE ORDER PELO ID
     @Test
@@ -123,14 +136,13 @@ public class OrderControllerTests {
          Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
          Salvamos tudo no banco.
           */
+
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        Service service = new Service();
-        service.setCategory("PEDICURE");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
-        serviceRepository.save(service);
+        Service service = serviceRepository.findByCategory("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -205,4 +217,12 @@ public class OrderControllerTests {
 
     }
 
+
+    @Test public void testaddwallet() throws URISyntaxException {
+
+        createScheduledOrderOk();
+        createScheduledOrderOk();
+
+        // TODO: Vinicius, seus asserts entram aqui...
+    }
 }

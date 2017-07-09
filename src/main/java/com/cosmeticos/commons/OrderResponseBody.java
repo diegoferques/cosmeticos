@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Order;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -11,8 +12,10 @@ import java.util.List;
  */
 @Data
 public class OrderResponseBody {
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     private String description;
 
+    @JsonView(ResponseJsonView.OrderControllerCreate.class)
     private List<Order> orderList = new ArrayList<>(10);
 
     public OrderResponseBody() {

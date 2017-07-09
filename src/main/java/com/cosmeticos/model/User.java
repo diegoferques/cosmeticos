@@ -4,9 +4,8 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -32,10 +31,13 @@ public class User implements Serializable {
     private Long idLogin;
 
     @NotEmpty(message = "UserName cannot be empty")
+    @Column(unique = true)
     private String username;
 
     private String password;
 
+    @Column(unique = true)
+    @JsonView(ResponseJsonView.WalletsFindAll.class)
     private String email;
 
     private String sourceApp;
@@ -54,6 +56,7 @@ public class User implements Serializable {
     @OneToOne
     private Customer customer;
 
+    @JsonBackReference
     @OneToOne
     private Professional professional;
 
