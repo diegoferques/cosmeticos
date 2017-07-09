@@ -67,6 +67,7 @@ public class OrderController {
         }
     }
 
+    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.PUT)
     public HttpEntity<OrderResponseBody> update(@Valid @RequestBody OrderRequestBody request, BindingResult bindingResult) {
 
@@ -77,6 +78,9 @@ public class OrderController {
 
             } else {
                 Order order = orderService.update(request);
+
+                order.setProfessionalServices(null);
+                order.setIdCustomer(null);
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
@@ -97,6 +101,7 @@ public class OrderController {
 
     }
 
+    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders/{idOrder}", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findById(@PathVariable String idOrder) {
 
@@ -141,6 +146,7 @@ public class OrderController {
 
     }
 
+    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findLastest10() {
 

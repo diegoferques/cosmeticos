@@ -20,4 +20,6 @@ public class ResponseJsonView {
 
     // Comecou a ficar complicado.
     public interface OrderControllerCreate extends ProfessionalServicesFindAll {}
+    public interface OrderControllerUpdate {}
+
 }
