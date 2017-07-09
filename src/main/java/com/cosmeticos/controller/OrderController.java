@@ -79,6 +79,9 @@ public class OrderController {
             } else {
                 Order order = orderService.update(request);
 
+                order.setProfessionalServices(null);
+                order.setIdCustomer(null);
+
                 OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
                         order,

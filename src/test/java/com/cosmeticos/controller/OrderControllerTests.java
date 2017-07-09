@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
@@ -118,6 +119,7 @@ public class OrderControllerTests {
     @Test
     public void testUpdateOK() throws IOException, URISyntaxException {
 
+        /*
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : 1,\n" +
@@ -144,7 +146,9 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
-        /*
+
+        */
+
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
@@ -163,7 +167,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
-        */
+
     }
 
     @Test

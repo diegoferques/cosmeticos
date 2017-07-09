@@ -57,7 +57,6 @@ public class User implements Serializable {
     @OneToOne
     private Customer customer;
 
-    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @OneToOne
     private Professional professional;
 
