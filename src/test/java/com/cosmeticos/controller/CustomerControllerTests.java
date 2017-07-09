@@ -240,7 +240,7 @@ public class CustomerControllerTests {
 		return a;
 	}
 
-	static Customer createFakeCustomer() {
+	public static Customer createFakeCustomer() {
 		Customer c1 = new Customer();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");

@@ -51,9 +51,13 @@ public class OrderControllerTests {
     @Before
     public void setup()
     {
-        Service service = new Service();
-        service.setCategory("PEDICURE");
-        serviceRepository.save(service);
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        if(service == null) {
+            service = new Service();
+            service.setCategory("PEDICURE");
+            serviceRepository.save(service);
+        }
     }
 
     //TESTANDO O RETORNO DE ORDER PELO ID
@@ -135,12 +139,12 @@ public class OrderControllerTests {
          Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
          Salvamos tudo no banco.
           */
+
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
-
         Service service = serviceRepository.findByCategory("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);

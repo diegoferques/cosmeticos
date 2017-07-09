@@ -42,7 +42,8 @@ public class ProfessionalService {
         newProfessional.setDateRegister(Calendar.getInstance().getTime());
         newProfessional.setAddress(request.getProfessional().getAddress());
         newProfessional.setUser(request.getProfessional().getUser());
-
+		newProfessional.getUser().setProfessional(newProfessional);
+		
         professionalRepository.save(newProfessional);
 
         configureHability(request.getProfessional(), newProfessional);
