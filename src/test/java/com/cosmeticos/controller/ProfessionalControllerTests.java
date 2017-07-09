@@ -57,25 +57,49 @@ public class ProfessionalControllerTests {
 	}
 
 	@Test
-	public void testCreateOK() throws IOException {
+	public void testCreateOK() throws IOException, URISyntaxException {
 
-		Address addres = createFakeAddress();
-		User user = UserControllerTest.createFakeUser();
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": null,\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"user\": {\n" +
+				"      \"email\": \"a@a.com\",\n" +
+				"      \"idLogin\": null,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \"a@a.com\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaa\",\n" +
+				"    \"professionalServicesCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"service\": {\n" +
+				"          \"category\": \"HYDRATION\",\n" +
+				"          \"idService\": 2\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
 
-		Professional professional = createFakeProfessional();
-		professional.setUser(user);
-		professional.setAddress(addres);
+		
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
 
-		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
-		requestBody.setProfessional(professional);
-
-		final ResponseEntity<ScheduleResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/professionals", //
-						HttpMethod.POST, //
-						new HttpEntity(requestBody), // Body
-						ScheduleResponseBody.class);
-
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+				
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 	}
@@ -140,7 +164,7 @@ public class ProfessionalControllerTests {
 	public void testExampleApiFindByNameProfessional() throws ParseException {
 
 		Address addres = createFakeAddress();
-		User user = UserControllerTest.createFakeUser();
+		User user = UserControllerTest.createFakeUser("111", "111@gmail");
 
 		Professional professional = createFakeProfessional();
 		professional.setUser(user);
@@ -385,20 +409,6 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
 	}
 
-	private ProfessionalRequestBody createFakeRequestBody() {
-		Address address = createFakeAddress();
-		User user = UserControllerTest.createFakeUser();
-
-		Professional professional = createFakeProfessional();
-		professional.setAddress(address);
-		professional.setUser(user);
-
-		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
-		requestBody.setProfessional(professional);
-
-		return requestBody;
-	}
-
 	static Address createFakeAddress() {
 		Address a = new Address();
 		a.setAddress("Rua Perlita");
@@ -411,7 +421,7 @@ public class ProfessionalControllerTests {
 		return a;
 	}
 
-	static Professional createFakeProfessional() {
+	public static Professional createFakeProfessional() {
 		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -422,7 +432,7 @@ public class ProfessionalControllerTests {
 		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(createFakeAddress());
-		c1.setUser(UserControllerTest.createFakeUser());
+		c1.setUser(UserControllerTest.createFakeUser("222", "222@2.com"));
 		c1.getUser().setProfessional(c1);
 
 		return c1;
