@@ -53,11 +53,13 @@ public class User implements Serializable {
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "idUser")
     private Customer customer;
 
     @JsonBackReference
-    @OneToOne
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "idUser")
     private Professional professional;
 
 

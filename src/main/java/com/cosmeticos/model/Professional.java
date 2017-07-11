@@ -61,7 +61,7 @@ public class Professional  implements Serializable {
 
 	// TODO incluir @NotNull
     @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, optional = false, mappedBy = "professional")
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)

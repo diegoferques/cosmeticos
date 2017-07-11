@@ -39,7 +39,7 @@ public class CustomerPreLoadConfiguration {
             c1.setNameCustomer("João da Silva");
             //c1.setOrderCollection(null);
             c1.setStatus(Customer.Status.ACTIVE.ordinal());
-            c1.setIdAddress(this.createFakeAddress());
+            c1.setAddress(this.createFakeAddress());
             c1.setUser(this.createFakeLogin("josilva","josilva@bol.com"));
 
             Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
@@ -52,7 +52,7 @@ public class CustomerPreLoadConfiguration {
             c2.setNameCustomer("Diego Fernandes");
             //c2.setOrderCollection(null);
             c2.setStatus(Customer.Status.ACTIVE.ordinal());
-            c2.setIdAddress(this.createFakeAddress());
+            c2.setAddress(this.createFakeAddress());
             c2.setUser(this.createFakeLogin("loverboy", "diegoferques33@bol.com"));
 
             Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
@@ -65,7 +65,7 @@ public class CustomerPreLoadConfiguration {
             c3.setNameCustomer("Maria das Dores");
             //c3.setOrderCollection(null);
             c3.setStatus(Customer.Status.ACTIVE.ordinal());
-            c3.setIdAddress(this.createFakeAddress());
+            c3.setAddress(this.createFakeAddress());
             c3.setUser(this.createFakeLogin("madores", "madores@bol.com"));
 
             Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
@@ -78,7 +78,7 @@ public class CustomerPreLoadConfiguration {
             c4.setNameCustomer("Fernanda Cavalcante");
             //c4.setOrderCollection(null);
             c4.setStatus(Customer.Status.INACTIVE.ordinal());
-            c4.setIdAddress(this.createFakeAddress());
+            c4.setAddress(this.createFakeAddress());
             c4.setUser(this.createFakeLogin("fernandacal", "fecal@bol2.com"));
 
             Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
@@ -91,7 +91,7 @@ public class CustomerPreLoadConfiguration {
             c5.setNameCustomer("José das Couves");
             //c5.setOrderCollection(null);
             c5.setStatus(Customer.Status.ACTIVE.ordinal());
-            c5.setIdAddress(this.createFakeAddress());
+            c5.setAddress(this.createFakeAddress());
             c5.setUser(this.createFakeLogin("diegoferequest","diegoferques@bol.com"));
 
             customerRepository.save(c1);

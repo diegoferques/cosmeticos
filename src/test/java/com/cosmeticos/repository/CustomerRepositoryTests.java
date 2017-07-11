@@ -59,7 +59,7 @@ public class CustomerRepositoryTests {
         //c1.setOrderCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
         c1.setUser(u1);
-        c1.setIdAddress(address);
+        c1.setAddress(address);
 
         u1.setCustomer(c1);
         address.setCustomer(c1);
@@ -80,7 +80,7 @@ public class CustomerRepositoryTests {
         c2.setStatus(Customer.Status.ACTIVE.ordinal());
 
 
-        c2.setIdAddress(address2);
+        c2.setAddress(address2);
         c2.setUser(u2);
 
         u2.setCustomer(c2);
@@ -103,7 +103,7 @@ public class CustomerRepositoryTests {
         c3.setStatus(Customer.Status.ACTIVE.ordinal());
 
 
-        c3.setIdAddress(address3);
+        c3.setAddress(address3);
         c3.setUser(u3);
 
         u3.setCustomer(c3);
@@ -124,7 +124,7 @@ public class CustomerRepositoryTests {
         //c4.setOrderCollection(null);
         c4.setStatus(Customer.Status.INACTIVE.ordinal());
 
-        c4.setIdAddress(address4);
+        c4.setAddress(address4);
         c4.setUser(u4);
 
         u4.setCustomer(c4);
@@ -143,7 +143,7 @@ public class CustomerRepositoryTests {
         c5.setGenre('M');
         c5.setNameCustomer("Test José das Couves");
         c5.setStatus(Customer.Status.ACTIVE.ordinal());
-        c5.setIdAddress(address5);
+        c5.setAddress(address5);
         c5.setUser(u5);
 
         u5.setCustomer(c5);
@@ -160,7 +160,7 @@ public class CustomerRepositoryTests {
     public void testCustomer1() {
         Customer customer = repository.findOne(c1.getIdCustomer());
         Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
@@ -177,7 +177,7 @@ public class CustomerRepositoryTests {
     public void testCustomer2() {
         Customer customer = repository.findOne(c2.getIdCustomer());
         Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
@@ -194,7 +194,7 @@ public class CustomerRepositoryTests {
     public void testCustomer3() {
         Customer customer = repository.findOne(c3.getIdCustomer());
         Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
@@ -211,7 +211,7 @@ public class CustomerRepositoryTests {
     public void testCustomer4() {
         Customer customer = repository.findOne(c4.getIdCustomer());
         Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
@@ -228,7 +228,7 @@ public class CustomerRepositoryTests {
     public void testCustomer5() {
         Customer customer = repository.findOne(c5.getIdCustomer());
         Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getIdAddress());
+        Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
 
         // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.

@@ -54,7 +54,7 @@ public class CustomerService {
         //c.setOrderCollection(null);
         c.setStatus(Customer.Status.ACTIVE.ordinal());
 
-        c.setIdAddress(addressService.createFromCustomer(request));
+        c.setAddress(addressService.createFromCustomer(request));
         c.setUser(request.getCustomer().getUser());
 
         return repository.save(c);
