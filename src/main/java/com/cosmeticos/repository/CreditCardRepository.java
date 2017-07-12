@@ -13,6 +13,6 @@ import java.util.List;
 @Transactional
 public interface CreditCardRepository extends JpaRepository<CreditCard, Long> {
 
-    List<CreditCard> findByUserEmail(User email);
+    List<CreditCard> findByUserEmail(String email);
 
 }

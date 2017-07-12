@@ -65,9 +65,4 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public boolean isValid(String email) {
-        User u = new User();
-        u.getEmail();
-        return true;
-    }
 }
