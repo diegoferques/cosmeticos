@@ -4,9 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.*;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -60,6 +59,7 @@ public class Customer implements Serializable {
 
     private Integer status;
 
+    @JsonManagedReference(value="user-customer")
     @JsonView(ResponseJsonView.WalletsFindAll.class)
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;

@@ -51,13 +51,4 @@ public class OrderRepositoryTests {
 
     }
 
-    @Test
-    public void naoPermitirInsercaoDeClienteNaPrimeiraTransacao(){
-
-
-
-
-
-
-    }
 }

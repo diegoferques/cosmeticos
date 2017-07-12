@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -114,6 +115,7 @@ public class UserControllerTest {
     }
     
     @Test
+    @Transactional
     public void inativarUmDosCartoesDeUsuarioCom2Cartoes() throws URISyntaxException {
 
         // Configurcao do usuario q vai ter o cartao alterado
@@ -136,7 +138,7 @@ public class UserControllerTest {
         u1.addCreditCard(cc1);
         u1.addCreditCard(cc2);
 
-        userRepository.save(u1);
+        userRepository.saveAndFlush(u1);
 
         Long idToken1234 = u1.getCreditCardCollection()
                 .stream()
@@ -151,9 +153,9 @@ public class UserControllerTest {
                 "\t\"entity\": \n" +
                 "\t{\n" +
                 "\t\t\"idLogin\": "+u1.getIdLogin()+",\n" +
-                "\t\t\"username\": \"KILLER7\",\n" +
+                "\t\t\"username\": \"KILLER337\",\n" +
                 "\t    \"password\": \"109809876\",\n" +
-                "\t    \"email\": \"Killer@gmail.com\",\n" +
+                "\t    \"email\": \"Killer33@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
                 "\t    \"creditCardCollection\": [\n" +
                 "\t\t    {\n" +

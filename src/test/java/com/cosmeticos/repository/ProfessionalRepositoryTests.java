@@ -36,6 +36,11 @@ public class ProfessionalRepositoryTests {
     @Before
     public void setupTests() {
 
+    }
+
+    @Test
+    public void testFindByNameEqualJoaoDaSilva123() {
+
         Address address = new Address();
         User u1 = new User("username123","654321","username123@gmail" );
 
@@ -57,10 +62,7 @@ public class ProfessionalRepositoryTests {
         repository.save(p1);
 
         id = p1.getIdProfessional();
-    }
 
-    @Test
-    public void testFindByNameEqualJoaoDaSilva123() {
         Professional customer = repository.findOne(id);
 
         Assert.assertNotNull(customer);
@@ -83,7 +85,7 @@ public class ProfessionalRepositoryTests {
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
         p1.setAddress(new Address());
-        p1.setUser(new User("garry", "123qwe", "garry@bol"));
+        p1.setUser(new User("garrydias", "123qwe", "garrydias@bol"));
         p1.setWallet(cw1);
         cw1.setProfessional(p1);
 

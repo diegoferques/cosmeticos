@@ -42,7 +42,12 @@ public class CustomerRepositoryTests {
     @Before
     public void setupTests() throws ParseException {
 
-        User u1 = new  User("u1", "u1pass", "u1@gmail.com");
+    }
+
+    @Test
+    public void testCustomer1() {
+
+        User u1 = new  User("uu1", "u1pass", "uu1@gmail.com");
         Address address = new Address();
 
         //TODO: pesquisar como gravar apenas dia mes e ano.
@@ -64,8 +69,27 @@ public class CustomerRepositoryTests {
         u1.setCustomer(c1);
         address.setCustomer(c1);
 
+        repository.save(c1);
 
-        User u2 = new  User("u2", "u2pass", "u2@gmail.com");
+        Customer customer = repository.findOne(c1.getIdCustomer());
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getAddress());
+        Assert.assertNotNull(customer.getUser());
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1980-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 98877-6655", customer.getCellPhone());
+        Assert.assertEquals("098.765.432-10", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals("Test João da Silva", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer2() throws ParseException {
+
+        User u2 = new  User("uu2", "u2pass", "uu2@gmail.com");
         Address address2 = new Address();
 
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
@@ -86,9 +110,27 @@ public class CustomerRepositoryTests {
         u2.setCustomer(c2);
         address2.setCustomer(c2);
 
+        repository.save(c2);
 
+        Customer customer = repository.findOne(c2.getIdCustomer());
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getAddress());
+        Assert.assertNotNull(customer.getUser());
 
-        User u3 = new  User("u3", "u3pass", "u3@gmail.com");
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1981-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 98807-2756", customer.getCellPhone());
+        Assert.assertEquals("098.330.987-62", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals("Test Diego Fernandes", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer3() throws ParseException {
+
+        User u3 = new  User("uu3", "u3pass", "uu3@gmail.com");
         Address address3 = new Address();
 
         Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
@@ -109,8 +151,28 @@ public class CustomerRepositoryTests {
         u3.setCustomer(c3);
         address3.setCustomer(c3);
 
+        repository.save(c3);
 
-        User u4 = new  User("u4", "u4pass", "u4@gmail.com");
+
+        Customer customer = repository.findOne(c3.getIdCustomer());
+        Assert.assertNotNull(customer);
+        Assert.assertNotNull(customer.getAddress());
+        Assert.assertNotNull(customer.getUser());
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("1982-01-20 00:00:00.0", customer.getBirthDate().toString());
+        Assert.assertEquals("(21) 99988-7766", customer.getCellPhone());
+        Assert.assertEquals("831.846.135-15", customer.getCpf());
+        //Assert.assertEquals("", customer.getDateRegister());
+        Assert.assertEquals('F', customer.getGenre());
+        Assert.assertEquals("Test Maria das Dores", customer.getNameCustomer());
+        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
+    }
+
+    @Test
+    public void testCustomer4() throws ParseException {
+
+        User u4 = new  User("uu4", "u4pass", "uu4@gmail.com");
         Address address4 = new Address();
 
         Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
@@ -130,85 +192,10 @@ public class CustomerRepositoryTests {
         u4.setCustomer(c4);
         address4.setCustomer(c4);
 
-
-
-        User u5 = new  User("u5", "u5pass", "u5@gmail.com");
-        Address address5 = new Address();
-        Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
-        c5 = new Customer();
-        c5.setBirthDate(birthDate5);
-        c5.setCellPhone("(21) 97766-5544");
-        c5.setCpf("541.913.254-81");
-        c5.setDateRegister(Calendar.getInstance().getTime());
-        c5.setGenre('M');
-        c5.setNameCustomer("Test José das Couves");
-        c5.setStatus(Customer.Status.ACTIVE.ordinal());
-        c5.setAddress(address5);
-        c5.setUser(u5);
-
-        u5.setCustomer(c5);
-        address5.setCustomer(c5);
-
-        repository.save(c1);
-        repository.save(c2);
-        repository.save(c3);
         repository.save(c4);
-        repository.save(c5);
-    }
 
-    @Test
-    public void testCustomer1() {
-        Customer customer = repository.findOne(c1.getIdCustomer());
-        Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getAddress());
-        Assert.assertNotNull(customer.getUser());
 
-        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
-        Assert.assertEquals("1980-01-20 00:00:00.0", customer.getBirthDate().toString());
-        Assert.assertEquals("(21) 98877-6655", customer.getCellPhone());
-        Assert.assertEquals("098.765.432-10", customer.getCpf());
-        //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('M', customer.getGenre());
-        Assert.assertEquals("Test João da Silva", customer.getNameCustomer());
-        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-    }
 
-    @Test
-    public void testCustomer2() {
-        Customer customer = repository.findOne(c2.getIdCustomer());
-        Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getAddress());
-        Assert.assertNotNull(customer.getUser());
-
-        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
-        Assert.assertEquals("1981-01-20 00:00:00.0", customer.getBirthDate().toString());
-        Assert.assertEquals("(21) 98807-2756", customer.getCellPhone());
-        Assert.assertEquals("098.330.987-62", customer.getCpf());
-        //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('M', customer.getGenre());
-        Assert.assertEquals("Test Diego Fernandes", customer.getNameCustomer());
-        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-    }
-
-    @Test
-    public void testCustomer3() {
-        Customer customer = repository.findOne(c3.getIdCustomer());
-        Assert.assertNotNull(customer);
-        Assert.assertNotNull(customer.getAddress());
-        Assert.assertNotNull(customer.getUser());
-
-        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
-        Assert.assertEquals("1982-01-20 00:00:00.0", customer.getBirthDate().toString());
-        Assert.assertEquals("(21) 99988-7766", customer.getCellPhone());
-        Assert.assertEquals("831.846.135-15", customer.getCpf());
-        //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('F', customer.getGenre());
-        Assert.assertEquals("Test Maria das Dores", customer.getNameCustomer());
-        Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-    }
-
-    @Test
-    public void testCustomer4() {
         Customer customer = repository.findOne(c4.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());
@@ -225,7 +212,28 @@ public class CustomerRepositoryTests {
     }
 
     @Test
-    public void testCustomer5() {
+    public void testCustomer5() throws ParseException {
+
+        User u5 = new  User("uu5", "u5pass", "uu5@gmail.com");
+        Address address5 = new Address();
+        Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
+        c5 = new Customer();
+        c5.setBirthDate(birthDate5);
+        c5.setCellPhone("(21) 97766-5544");
+        c5.setCpf("541.913.254-81");
+        c5.setDateRegister(Calendar.getInstance().getTime());
+        c5.setGenre('M');
+        c5.setNameCustomer("Test José das Couves");
+        c5.setStatus(Customer.Status.ACTIVE.ordinal());
+        c5.setAddress(address5);
+        c5.setUser(u5);
+
+        u5.setCustomer(c5);
+        address5.setCustomer(c5);
+
+        repository.save(c5);
+
+
         Customer customer = repository.findOne(c5.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());

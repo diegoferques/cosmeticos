@@ -2,6 +2,7 @@ package com.cosmeticos.gpstest;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
  * Created by Lulu on 04/07/2017.
  */
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class GpsCoordinateCalcTEst {

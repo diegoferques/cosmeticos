@@ -79,7 +79,7 @@ public class UserRepositoryTests {
 
         CreditCard newCC = new CreditCard();
         newCC.setToken("4321");
-        newCC.setVendor("Visa");
+        newCC.setVendor("Visa");it
         newCC.setStatus(CreditCard.Status.ACTIVE);
 
         /*
