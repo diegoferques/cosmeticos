@@ -63,7 +63,7 @@ public class ProfessionalServicesControllerTests {
 
 		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionalservices?service.category=BRUSH", //
+						"/professionalservices?service.category=BRUSH",
 						HttpMethod.GET, //
 						null,
 						ProfessionalServicesResponseBody.class);
@@ -84,6 +84,7 @@ public class ProfessionalServicesControllerTests {
 
 			Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
 			Assert.assertEquals("BRUSH", s.getCategory());
+
 		}
 
 

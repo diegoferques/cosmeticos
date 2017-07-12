@@ -107,5 +107,4 @@ public class User implements Serializable {
         return "javaapplication2.entity.User[ idLogin=" + idLogin + " ]";
     }
 
-
 }
