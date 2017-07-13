@@ -202,6 +202,74 @@ public class ProfessionalControllerTests {
 	}
 
 	@Test
+	public void testBadRequestOnUpdateAddressFromCreateOKWithAddress() throws IOException, URISyntaxException {
+		testCreateOKWithAddress();
+
+		Professional professional = returnOfCreateOKWithAddress;
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": "+ professional.getIdProfessional() +",\n" +
+				"    \"address\": { \n" +
+				"	    \"address\": \"Rua José Paulino, 152\",\n" +
+				"	    \"cep\": \"26083-485\",\n" +
+				"	    \"neighborhood\": \"Rodilândia\",\n" +
+				"	    \"city\": \"Nova Iguaçu\",\n" +
+				"	    \"state\": \"RJ\",,\n" + //DEVE DAR ERRO POR TER UMA VIRGULA A MAIS
+				"	    \"country\": \"BR\" \n" +
+				"    }\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+
+	}
+
+	@Test
+	public void testNotFoundOnUpdate() throws IOException, URISyntaxException {
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": 45362,\n" + //DEVE DAR ERRO POR TER INFORMADO UM ID INEXISTENTE
+				"    \"address\": { \n" +
+				"	    \"address\": \"Rua José Paulino, 152\",\n" +
+				"	    \"cep\": \"26083-485\",\n" +
+				"	    \"neighborhood\": \"Rodilândia\",\n" +
+				"	    \"city\": \"Nova Iguaçu\",\n" +
+				"	    \"state\": \"RJ\",\n" +
+				"	    \"country\": \"BR\" \n" +
+				"    }\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.NOT_FOUND, exchange.getStatusCode());
+
+	}
+
+	@Test
 	public void testUpdateOK() throws IOException {
 
 		Professional c1 = new Professional();
@@ -474,7 +542,6 @@ public class ProfessionalControllerTests {
 		// Assegura que foi gerado ID para o User do profissional
 		Assert.assertNotNull(p.getUser().getIdLogin());
 	}
-
 
 	@Test
 	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
