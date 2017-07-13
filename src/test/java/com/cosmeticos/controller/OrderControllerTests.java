@@ -9,22 +9,31 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Component
 public class OrderControllerTests {
 
     @Autowired
@@ -47,6 +56,11 @@ public class OrderControllerTests {
 
     @Autowired
     private WalletRepository walletRepository;
+
+    //Scheduled Tasks
+    private static final Logger log = LoggerFactory.getLogger(OrderControllerTests.class);
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Before
     public void setup()
@@ -123,7 +137,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.ABORTED.ordinal(), java.util.Optional.of((exchange.getBody().getOrderList().get(0).getStatus())));
     }
 
     //TODO - FALTA FINALIZAR, PROVAVELMENTE SERÁ NECESSÁRIO ALTERAR A ENTIDADE
@@ -359,4 +373,5 @@ public class OrderControllerTests {
         Assert.assertEquals(1, wallet.getCustomers().size());
 
     }
+
 }

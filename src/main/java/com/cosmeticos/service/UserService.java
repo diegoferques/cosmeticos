@@ -64,10 +64,4 @@ public class UserService {
         return StreamSupport.stream(result.spliterator(), false)
                 .collect(Collectors.toList());
     }
-
-    public boolean isValid(String email) {
-        User u = new User();
-        u.getEmail();
-        return true;
-    }
 }

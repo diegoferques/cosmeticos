@@ -30,7 +30,7 @@ public class CreditCardService {
         User u = userRepository.findOne(1L);
 
         //Iterable<CreditCard> result = repository.findAll();
-        List<CreditCard> savedOrders = repository.findByUserEmail(u);
+        List<CreditCard> savedOrders = repository.findByUserEmail(u.getEmail());
 
         return StreamSupport.stream(savedOrders.spliterator(), false)
                 .collect(Collectors.toList());

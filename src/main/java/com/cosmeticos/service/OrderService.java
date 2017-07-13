@@ -6,16 +6,23 @@ import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by matto on 17/06/2017.
  */
+@EnableScheduling
 @org.springframework.stereotype.Service
 public class OrderService {
 
@@ -30,6 +37,10 @@ public class OrderService {
 
     @Autowired
     private ServiceRepository serviceRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -160,4 +171,22 @@ public class OrderService {
             super(s);
         }
     }
+
+    /*@Scheduled(cron = "* 2 * * * *")
+    public Order updateStatus(OrderRequestBody request) {
+
+        log.info("The time is now {}", dateFormat.format(new Date()));
+        Order orderRequest = request.getOrder();
+        Order order = orderRepository.findOne(orderRequest.getIdOrder());
+
+        if(!StringUtils.isEmpty(orderRequest.getStatus())) {
+            order.setStatus(orderRequest.getStatus());
+        }
+
+
+
+        return orderRepository.save(order);
+
+    }
+    */
 }
