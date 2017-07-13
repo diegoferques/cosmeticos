@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -39,9 +40,11 @@ public class Address implements Serializable {
 
     private String longitude;
 
+    @JsonIgnore
     @OneToOne
     private Customer customer;
 
+    @JsonIgnore
     @OneToOne
     private Professional professional;
 

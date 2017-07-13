@@ -78,7 +78,6 @@ public class ProfessionalController {
     @RequestMapping(path = "/professionals", method = RequestMethod.PUT)
     public HttpEntity<ProfessionalResponseBody> update(@Valid @RequestBody ProfessionalRequestBody request, BindingResult bindingResult) {
 
-        String start = null;
         try {
             if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());

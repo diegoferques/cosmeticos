@@ -60,7 +60,7 @@ public class ProfessionalService {
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
         Professional cr = request.getProfessional();
-        //ABAIXO O ADDRESS ESTÁ VINDO NULO DO BANCO APOS PESQUISAR PELO ID DO PROFESSIONAL
+
         Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(cr.getIdProfessional()));
 
         if(optional.isPresent()) {
@@ -93,8 +93,8 @@ public class ProfessionalService {
 
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
             if (cr.getAddress() != null) {
-                //addressService.updateGeocodeFromProfessional(cr.getAddress());
-                addressService.updateGeocodeFromProfessional(professional);
+                addressService.updateGeocodeFromProfessionalUpdate(cr);
+                //addressService.updateGeocodeFromProfessional(professional);
             }
 
             professionalRepository.save(professional);

@@ -5,8 +5,11 @@ import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.repository.AddressRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * Created by matto on 10/06/2017.
@@ -19,6 +22,9 @@ public class AddressService {
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private ProfessionalRepository professionalRepository;
 
     public Address createFromCustomer(CustomerRequestBody request) {
         Address a = new Address();
@@ -53,6 +59,36 @@ public class AddressService {
             address.setLatitude(geocode.getLat().toString());
             address.setLongitude(geocode.getLng().toString());
             address.setProfessional(professional);
+        } else {
+            address.setLatitude("");
+            address.setLongitude("");
+        }
+
+        addressRepository.save(address);
+    }
+
+    public void updateGeocodeFromProfessionalUpdate(Professional professionalRequest) {
+
+        Optional<Professional> professionalOptional = Optional.ofNullable(professionalRepository.findOne(professionalRequest.getIdProfessional()));
+        Address address = professionalOptional.get().getAddress();
+        //Address address = professionalRequest.getAddress();
+
+        Address addressRequest = professionalRequest.getAddress();
+
+        if(address != null) {
+
+            address.setAddress(addressRequest.getAddress());
+            address.setNeighborhood(addressRequest.getNeighborhood());
+            address.setCep(addressRequest.getCep());
+            address.setCity(addressRequest.getCity());
+            address.setState(addressRequest.getState());
+            address.setCountry(addressRequest.getCountry());
+
+            LocationGoogle geocode = locationService.getGeoCode(address);
+
+            address.setLatitude(geocode.getLat().toString());
+            address.setLongitude(geocode.getLng().toString());
+            //address.setProfessional(professional);
         } else {
             address.setLatitude("");
             address.setLongitude("");

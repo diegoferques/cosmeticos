@@ -181,33 +181,6 @@ public class ProfessionalControllerTests {
 				"	    \"state\": \"RJ\",\n" +
 				"	    \"country\": \"BR\" \n" +
 				"    }\n" +
-				/*
-				"    \"birthDate\": 1120705200000,\n" +
-				"    \"cellPhone\": null,\n" +
-				"    \"dateRegister\": null,\n" +
-				"    \"genre\": null,\n" +
-				"    \"status\": null,\n" +
-				"    \"user\": {\n" +
-				"      \"email\": \"a@a.com\",\n" +
-				"      \"idLogin\": null,\n" +
-				"      \"password\": \"123\",\n" +
-				"      \"sourceApp\": null,\n" +
-				"      \"username\": \"a@a.com\"\n" +
-				"    },\n" +
-				"    \"cnpj\": \"05404277726\",\n" +
-				"    \"idProfessional\": null,\n" +
-				"    \"location\": 506592589,\n" +
-				"    \"nameProfessional\": \"aaa\",\n" +
-				"    \"professionalServicesCollection\": [\n" +
-				"      {\n" +
-				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
-				"        }\n" +
-				"      }\n" +
-				"    ]\n" +
-				*/
 				"  }\n" +
 				"}";
 
