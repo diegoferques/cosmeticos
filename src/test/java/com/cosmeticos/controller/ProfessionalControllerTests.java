@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,6 +50,8 @@ public class ProfessionalControllerTests {
 	private UserRepository userRepository;
 
 	private Professional returnOfCreateOKWithAddress = null;
+
+	private String emailUsuario = null;
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -109,6 +112,10 @@ public class ProfessionalControllerTests {
 	@Test
 	public void testCreateOKWithAddress() throws IOException, URISyntaxException {
 
+		if(StringUtils.isEmpty(emailUsuario)) {
+			emailUsuario = "b@a.com";
+		}
+
 		String json = "{\n" +
 				"  \"professional\": {\n" +
 				"    \"address\": { \n" +
@@ -125,11 +132,11 @@ public class ProfessionalControllerTests {
 				"    \"genre\": null,\n" +
 				"    \"status\": null,\n" +
 				"    \"user\": {\n" +
-				"      \"email\": \"a@a.com\",\n" +
+				"      \"email\": \""+ emailUsuario +"\",\n" +
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"      \"username\": \"a@a.com\"\n" +
+				"      \"username\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
 				"    \"idProfessional\": null,\n" +
@@ -167,6 +174,8 @@ public class ProfessionalControllerTests {
 
 	@Test
 	public void testUpdateAddressFromCreateOKWithAddress() throws IOException, URISyntaxException {
+		emailUsuario = "c@c.com";
+
 		testCreateOKWithAddress();
 
 		Professional professional = returnOfCreateOKWithAddress;
@@ -203,6 +212,7 @@ public class ProfessionalControllerTests {
 
 	@Test
 	public void testBadRequestOnUpdateAddressFromCreateOKWithAddress() throws IOException, URISyntaxException {
+		emailUsuario = "d@d.com";
 		testCreateOKWithAddress();
 
 		Professional professional = returnOfCreateOKWithAddress;
@@ -307,7 +317,7 @@ public class ProfessionalControllerTests {
 
 	@Test
 	public void tesFindById() throws ParseException, IOException, URISyntaxException {
-
+		emailUsuario = "e@e.com";
 		testCreateOKWithAddress();
 
 		Professional professional = returnOfCreateOKWithAddress;
@@ -322,6 +332,7 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 		Assert.assertEquals("aaa", exchange.getBody().getProfessionalList().get(0).getNameProfessional());
+		Assert.assertEquals("e@e.com", exchange.getBody().getProfessionalList().get(0).getUser().getEmail());
 
 	}
 

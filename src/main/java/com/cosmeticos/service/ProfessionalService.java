@@ -49,7 +49,7 @@ public class ProfessionalService {
         //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
         //Address address = newProfessional.getAddress();
         //addressService.updateGeocodeFromProfessional(address);
-        addressService.updateGeocodeFromProfessional(newProfessional);
+        addressService.updateGeocodeFromProfessionalCreate(newProfessional);
 
         configureHability(request.getProfessional(), newProfessional);
         configureProfessionalServices(request.getProfessional(), newProfessional);
