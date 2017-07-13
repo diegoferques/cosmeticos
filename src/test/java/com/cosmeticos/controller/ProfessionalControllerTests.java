@@ -48,6 +48,8 @@ public class ProfessionalControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
+	private Professional returnOfCreateOKWithAddress = null;
+
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
@@ -105,6 +107,128 @@ public class ProfessionalControllerTests {
 	}
 
 	@Test
+	public void testCreateOKWithAddress() throws IOException, URISyntaxException {
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": { \n" +
+				"	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
+				"	    \"cep\": \"26083-275\",\n" +
+				"	    \"neighborhood\": \"Rodilândia\",\n" +
+				"	    \"city\": \"Nova Iguaçu\",\n" +
+				"	    \"state\": \"RJ\",\n" +
+				"	    \"country\": \"BR\" \n" +
+				"    },\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"user\": {\n" +
+				"      \"email\": \"a@a.com\",\n" +
+				"      \"idLogin\": null,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \"a@a.com\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaa\",\n" +
+				"    \"professionalServicesCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"service\": {\n" +
+				"          \"category\": \"HYDRATION\",\n" +
+				"          \"idService\": 2\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+		returnOfCreateOKWithAddress = exchange.getBody().getProfessionalList().get(0);
+	}
+
+	@Test
+	public void testUpdateAddressFromCreateOKWithAddress() throws IOException, URISyntaxException {
+		testCreateOKWithAddress();
+
+		Professional professional = returnOfCreateOKWithAddress;
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": "+ professional.getIdProfessional() +",\n" +
+				"    \"address\": { \n" +
+				"	    \"address\": \"Rua José Paulino, 152\",\n" +
+				"	    \"cep\": \"26083-485\",\n" +
+				"	    \"neighborhood\": \"Rodilândia\",\n" +
+				"	    \"city\": \"Nova Iguaçu\",\n" +
+				"	    \"state\": \"RJ\",\n" +
+				"	    \"country\": \"BR\" \n" +
+				"    }\n" +
+				/*
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"user\": {\n" +
+				"      \"email\": \"a@a.com\",\n" +
+				"      \"idLogin\": null,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \"a@a.com\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaa\",\n" +
+				"    \"professionalServicesCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"service\": {\n" +
+				"          \"category\": \"HYDRATION\",\n" +
+				"          \"idService\": 2\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				*/
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+		Assert.assertEquals("26083-485", exchange.getBody().getProfessionalList().get(0).getAddress().getCep());
+
+	}
+
+	@Test
 	public void testUpdateOK() throws IOException {
 
 		Professional c1 = new Professional();
@@ -140,7 +264,26 @@ public class ProfessionalControllerTests {
 
 	}
 
-	// TODO - Aparentemente o erro é por conta do retorno infinito de ProfessionalCollection, o mesmo erro de testFindById
+	@Test
+	public void tesFindById() throws ParseException, IOException, URISyntaxException {
+
+		testCreateOKWithAddress();
+
+		Professional professional = returnOfCreateOKWithAddress;
+
+		final ResponseEntity<ProfessionalResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/professionals/" + professional.getIdProfessional(), //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+		Assert.assertEquals("aaa", exchange.getBody().getProfessionalList().get(0).getNameProfessional());
+
+	}
+
 	@Test
 	public void testLastest10OK() throws ParseException {
 

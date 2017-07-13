@@ -35,6 +35,10 @@ public class Address implements Serializable {
 
     private String country;
 
+    private String latitude;
+
+    private String longitude;
+
     @OneToOne
     private Customer customer;
 

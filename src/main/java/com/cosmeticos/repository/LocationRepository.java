@@ -11,5 +11,6 @@ import java.util.List;
 public interface LocationRepository extends CrudRepository<Location, Long> {
     List<Location> findAll();
 
-    List<Location> findTop10();
+    List<Location> findTop10ByOrderById();
+
 }

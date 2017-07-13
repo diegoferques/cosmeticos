@@ -67,7 +67,7 @@ public class Location implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Location[ id=" + id + " ]";
+        return "javaapplication2.entity.LocationGoogle[ id=" + id + " ]";
     }
     
 }

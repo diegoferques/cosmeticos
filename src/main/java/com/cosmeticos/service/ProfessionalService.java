@@ -1,10 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.model.Hability;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.ProfessionalServicesPK;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -25,6 +22,9 @@ public class ProfessionalService {
     @Autowired
     private HabilityService habilityService;
 
+    @Autowired
+    private AddressService addressService;
+
     public Optional<Professional> find(Long idProfessional) {
         return Optional.ofNullable(professionalRepository.findOne(idProfessional));
     }
@@ -40,55 +40,66 @@ public class ProfessionalService {
         newProfessional.setNameProfessional(request.getProfessional().getNameProfessional());
         newProfessional.setStatus(Professional.Status.ACTIVE);
         newProfessional.setDateRegister(Calendar.getInstance().getTime());
-        newProfessional.setAddress(request.getProfessional().getAddress());
         newProfessional.setUser(request.getProfessional().getUser());
 		newProfessional.getUser().setProfessional(newProfessional);
+        newProfessional.setAddress(request.getProfessional().getAddress());
 		
         professionalRepository.save(newProfessional);
 
+        //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
+        //Address address = newProfessional.getAddress();
+        //addressService.updateGeocodeFromProfessional(address);
+        addressService.updateGeocodeFromProfessional(newProfessional);
+
         configureHability(request.getProfessional(), newProfessional);
         configureProfessionalServices(request.getProfessional(), newProfessional);
-
+        //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
     }
 
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
         Professional cr = request.getProfessional();
-
+        //ABAIXO O ADDRESS ESTÁ VINDO NULO DO BANCO APOS PESQUISAR PELO ID DO PROFESSIONAL
         Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(cr.getIdProfessional()));
 
         if(optional.isPresent()) {
 
-            Professional customer = optional.get();
+            Professional professional = optional.get();
 
             if (!StringUtils.isEmpty(cr.getBirthDate())) {
-                customer.setBirthDate(cr.getBirthDate());
+                professional.setBirthDate(cr.getBirthDate());
             }
 
             if (!StringUtils.isEmpty(cr.getCellPhone())) {
-                customer.setCellPhone(cr.getCellPhone());
+                professional.setCellPhone(cr.getCellPhone());
             }
 
             if (!StringUtils.isEmpty(cr.getCnpj())) {
-                customer.setCnpj(cr.getCnpj());
+                professional.setCnpj(cr.getCnpj());
             }
 
             if (!StringUtils.isEmpty(cr.getGenre())) {
-                customer.setGenre(cr.getGenre());
+                professional.setGenre(cr.getGenre());
             }
 
             if (!StringUtils.isEmpty(cr.getNameProfessional())) {
-                customer.setNameProfessional(cr.getNameProfessional());
+                professional.setNameProfessional(cr.getNameProfessional());
             }
 
             if (!StringUtils.isEmpty(cr.getStatus())) {
-                customer.setStatus(cr.getStatus());
+                professional.setStatus(cr.getStatus());
             }
 
-            professionalRepository.save(customer);
+            //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
+            if (cr.getAddress() != null) {
+                //addressService.updateGeocodeFromProfessional(cr.getAddress());
+                addressService.updateGeocodeFromProfessional(professional);
+            }
 
-            return Optional.of(customer);
+            professionalRepository.save(professional);
+
+            return Optional.of(professional);
         }
         else{
             return optional;

@@ -65,7 +65,7 @@ public class LocationController {
             Optional<Location> location = locationService.find(Long.valueOf(idLocation));
 
             if (location.isPresent()) {
-                log.info("Busca de Location com exito: [{}]", location.get());
+                log.info("Busca de LocationGoogle com exito: [{}]", location.get());
                 LocationResponseBody response = new LocationResponseBody(location.get());
 
                 //return ok().body(response);
@@ -81,7 +81,7 @@ public class LocationController {
             LocationResponseBody response = new LocationResponseBody();
             response.setDescription("Erro interno: " + errorCode);
 
-            log.error("Erro na exibição de Location: {} - {}", errorCode, e.getMessage(), e);
+            log.error("Erro na exibição de LocationGoogle: {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
@@ -124,7 +124,7 @@ public class LocationController {
                 Location location = locationService.update(request);
 
                 LocationResponseBody responseBody = new LocationResponseBody(location);
-                log.info("Location atualizado com sucesso:  [{}] responseJson[{}]",
+                log.info("LocationGoogle atualizado com sucesso:  [{}] responseJson[{}]",
                         location,
                         new ObjectMapper().writeValueAsString(responseBody));
                 return ok(responseBody);
@@ -135,7 +135,7 @@ public class LocationController {
             LocationResponseBody response = new LocationResponseBody();
             response.setDescription("Erro interno: " + errorCode);
 
-            log.error("Erro na atualização do Location: {} - {}", errorCode, e.getMessage(), e);
+            log.error("Erro na atualização do LocationGoogle: {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
@@ -150,7 +150,7 @@ public class LocationController {
         LocationResponseBody response = new LocationResponseBody();
         response.setDescription("Ação não permitida: Não deletamos registros: " + errorCode);
 
-        log.warn("Ação não permitida para deletar o Location: {}. - {}", idLocation, errorCode);
+        log.warn("Ação não permitida para deletar o LocationGoogle: {}. - {}", idLocation, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
