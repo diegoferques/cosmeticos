@@ -30,7 +30,7 @@ public class UserService {
 
         // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdLogin = userFromRequest.getIdLogin();
-
+        repository.findAll();
         Optional<User> optional = Optional.ofNullable(repository.findOne(requestedIdLogin));
 
         if (optional.isPresent()) {

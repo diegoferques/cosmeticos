@@ -227,6 +227,8 @@ public class OrderControllerTests {
         c1.getUser().setUsername("testaddwallet");
         c1.getUser().setEmail("testaddwallet@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setEmail("testaddwalletprofessional@bol");
+        professional.getUser().setUsername("testaddwalletprofessional");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);

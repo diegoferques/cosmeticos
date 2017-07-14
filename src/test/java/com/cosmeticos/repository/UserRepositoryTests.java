@@ -9,9 +9,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 /**
@@ -32,6 +38,9 @@ public class UserRepositoryTests {
     @Autowired
     private CreditCardRepository creditCardRepository;
 
+    @Autowired
+    private CreditCardRepository ccRepository;
+
     private Long userId;
     /**
      * Inicializa o H2 com dados iniciais.
@@ -46,9 +55,9 @@ public class UserRepositoryTests {
 
         //User
         User u1 = new User();
-        u1.setUsername("KILLER");
+        u1.setUsername("KillerUserrepositorytest");
         u1.setPassword("109809876");
-        u1.setEmail("Killer@gmail.com");
+        u1.setEmail("KillerUserrepositorytest@gmail.com");
         u1.setSourceApp("facebook");
         u1.addCreditCard(cc);
 
@@ -79,7 +88,7 @@ public class UserRepositoryTests {
 
         CreditCard newCC = new CreditCard();
         newCC.setToken("4321");
-        newCC.setVendor("Visa");it
+        newCC.setVendor("Visa");
         newCC.setStatus(CreditCard.Status.ACTIVE);
 
         /*
@@ -125,7 +134,7 @@ public class UserRepositoryTests {
 
         u2.addCreditCard(ccNovo);
 
-        userRepository.saveAndFlush(u2);
+        userRepository.save(u2);
 
         Assert.assertEquals("Usuario nao possui 1 carotao como deveria.",
                 1, u2.getCreditCardCollection().size());
@@ -153,4 +162,54 @@ public class UserRepositoryTests {
         }
     }
 
+    @Test
+    @Transactional
+    public void inativarUmDosCartoesDeUsuarioCom2Cartoes() throws URISyntaxException {
+
+        // Configurcao do usuario q vai ter o cartao alterado
+        CreditCard cc1 = new CreditCard();
+        cc1.setToken("4321");
+        cc1.setVendor("MasterCard");
+        cc1.setStatus(CreditCard.Status.ACTIVE);
+
+        CreditCard cc2 = new CreditCard();
+        cc2.setToken("1234");
+        cc2.setVendor("visa");
+        cc2.setStatus(CreditCard.Status.ACTIVE);
+
+        User u1 = new User();
+        u1.setUsername("KILLER card 22 maluco");
+        u1.setPassword("109809876");
+        u1.setEmail("Killercard22@gmail.com");
+        u1.setSourceApp("facebook");
+        u1.addCreditCard(cc1);
+        u1.addCreditCard(cc2);
+
+        cc1.setUser(u1);
+        cc2.setUser(u1);
+
+        userRepository.saveAndFlush(u1);
+
+        CreditCard ccToBeChanged = u1.getCreditCardCollection()
+                .stream()
+                .filter(cc -> cc.getToken().equals("1234"))
+                .findFirst()
+                .get();
+
+        ccToBeChanged.setToken("ALTERADOOOOOOOOOOOOO");
+        ccToBeChanged.setStatus(CreditCard.Status.INACTIVE);
+
+        userRepository.saveAndFlush(u1);
+
+        // Conferindo se o usuario ainda possui 2 cartoes apos eu mandar atualizar apenas 1.
+        User updatedUser = userRepository.findOne(u1.getIdLogin());
+        Assert.assertEquals(2, updatedUser.getCreditCardCollection().size());
+
+        // Verficando se o cartao que mandamos o controller atualizar foi realmente atualizado no banco.
+        CreditCard updatedCC = ccRepository.findOne(ccToBeChanged.getIdCreditCard());
+        Assert.assertNotNull(updatedCC);
+        Assert.assertEquals("ALTERADOOOOOOOOOOOOO", updatedCC.getToken());
+        Assert.assertEquals(CreditCard.Status.INACTIVE, updatedCC.getStatus());
+
+    }
 }

@@ -71,6 +71,8 @@ public class WalletControllerTests {
 		c1.getUser().setEmail("abcqwe@c.com");
 		c1.getUser().setUsername("abcqwe");
 		Customer c2 = CustomerControllerTests.createFakeCustomer();
+		c2.getUser().setUsername("hannabarbera");
+		c2.getUser().setEmail("hannabarbera@bol");
 		c2.setNameCustomer("c2");
 		c1.getUser().setEmail("2a@a.com");
 		c1.getUser().setUsername("a2");

@@ -3,6 +3,7 @@ package com.cosmeticos.repository;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.model.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.Collection;
 /**
  * Created by matto on 25/06/2017.
  */
+@Ignore // Nao tem nenhum teste implementado aqui
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class OrderRepositoryTests {
