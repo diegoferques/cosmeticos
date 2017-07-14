@@ -110,6 +110,37 @@ public class ProfessionalServicesController {
         }
     }
 
+    @RequestMapping(path = "/professionalservices/nearby/", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalServicesResponseBody> nearby(
+            @ModelAttribute ProfessionalServices bindableQueryObject,
+            @RequestParam("latitude") String latitude,
+            @RequestParam("longitude") String longitude,
+            @RequestParam("radius") String searchRadius
+            ) {
+
+        try {
+            //List<ProfessionalServices> entitylist = service.getNearby();
+            List<ProfessionalServices> entitylist = service.findAll();
+
+            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+            responseBody.setProfessionalServicesList(entitylist);
+            responseBody.setDescription("All Services retrieved.");
+
+            log.info("{} ProfessionalServices successfully retrieved.", entitylist.size());
+
+            return ok().body(responseBody);
+
+        } catch (Exception e) {
+            log.error("Failed to retrieve ProfessionalServices: {}", e.getMessage(), e);
+
+            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+            responseBody.setDescription(e.getMessage());
+
+            return ResponseEntity.status(500).body(responseBody);
+        }
+
+    }
+
     private ProfessionalServicesResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()

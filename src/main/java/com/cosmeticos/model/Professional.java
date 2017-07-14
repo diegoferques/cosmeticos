@@ -92,6 +92,9 @@ public class Professional  implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     private  Set<Hability> habilityCollection = new HashSet<>();
 
+    @Transient
+    private Long distance;
+
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
     }
