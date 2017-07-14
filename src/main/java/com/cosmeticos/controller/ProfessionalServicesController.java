@@ -119,8 +119,7 @@ public class ProfessionalServicesController {
             ) {
 
         try {
-            //List<ProfessionalServices> entitylist = service.getNearby();
-            List<ProfessionalServices> entitylist = service.findAll();
+            List<ProfessionalServices> entitylist = service.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
 
             ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
             responseBody.setProfessionalServicesList(entitylist);

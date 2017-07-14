@@ -90,6 +90,38 @@ public class ProfessionalServicesControllerTests {
 
 	}
 
+	@Test
+	public void testNearby() throws ParseException {
+
+		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
+				restTemplate.exchange( //
+						"/professionalservices/nearby?service.category=teste&sourceCoord=1235,-65422&radius=6000",
+						HttpMethod.GET, //
+						null,
+						ProfessionalServicesResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+
+		ProfessionalServicesResponseBody response = getExchange.getBody();
+
+		List<ProfessionalServices> entityList = response.getProfessionalServicesList();
+
+		Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
+
+		for (int i = 0; i < entityList.size(); i++) {
+			ProfessionalServices ps =  entityList.get(i);
+
+			Professional p = ps.getProfessional();
+			Service s = ps.getService();
+
+			Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
+			Assert.assertEquals("BRUSH", s.getCategory());
+
+		}
+
+
+	}
+
 	private ProfessionalRequestBody createFakeRequestBody() {
 		Address address = createFakeAddress();
 		User user = createFakeUser();
