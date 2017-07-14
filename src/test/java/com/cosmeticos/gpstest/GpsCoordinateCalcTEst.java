@@ -1,6 +1,5 @@
 package com.cosmeticos.gpstest;
 
-import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,8 @@ public class GpsCoordinateCalcTEst {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
-    @Test public void calculaDistanciaEmMetrosDaMinhaCasaAtualAteMinhaAntigaCasa()
+    @Test
+    public void calculaDistanciaEmMetrosDaMinhaCasaAtualAteMinhaAntigaCasa()
     {
         System.out.println(getDistancia(
                 /*
@@ -39,7 +39,8 @@ public class GpsCoordinateCalcTEst {
         ));
     }
 
-    @Test public void aceesaGoogleMapsApiPraBuscarDoisEnderecoseCalcularDistancia()
+    @Test
+    public void aceesaGoogleMapsApiPraBuscarDoisEnderecoseCalcularDistancia()
     {
         String urlSource = "https://maps.googleapis.com/maps/api/geocode/json?address=Rua+da+Abolicao,+5,+Austin,+Nova+Iguacu,+RJ&key=AIzaSyDdNCXGRO5OxTcBkpzgURHceKgbZyj1g9w";
         String urlDestiny = "https://maps.googleapis.com/maps/api/geocode/json?address=Rua%20Perlita,%2042,%20Austin,%20Nova%20Iguacu,%20RJ&key=AIzaSyDdNCXGRO5OxTcBkpzgURHceKgbZyj1g9w";
