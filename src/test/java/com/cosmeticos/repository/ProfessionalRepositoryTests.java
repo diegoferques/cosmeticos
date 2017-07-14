@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by matto on 26/05/2017.
@@ -94,4 +95,92 @@ public class ProfessionalRepositoryTests {
         // Se o idCustomerWallet nao for nulo, significa que o hibernate inseriu em cascata.
         Assert.assertNotNull(p1.getWallet().getIdWallet());
     }
+
+    //LOCALIZANDO OS DOIS PROFESSIONAIS INSERIDOS NO ITEM 1 DO CARD 39
+    @Test
+    public void testFindByNameEqualFubanga() {
+
+        User user6 = new User("fubangamaloca", "123abc", "joana6@bol");
+        Address address6 = new Address();
+        address6.setAddress("Travessa Tuviassuiara, 32");
+        address6.setNeighborhood("Rodilândia");
+        address6.setCity("Nova Iguaçu");
+        address6.setState("Rio de Janeiro");
+        address6.setCountry("Brazil");
+        address6.setCep("26083-285");
+
+        Professional s6 = new Professional();
+        s6.setNameProfessional("fubangamaloca");
+        s6.setAddress(address6);
+        s6.setUser(user6);
+
+        address6.setProfessional(s6);
+        user6.setProfessional(s6);
+
+        repository.save(s6);
+
+        User user7 = new User("bocada", "123abc", "joao7@bol");
+        Address address7 = new Address();
+        address7.setAddress("Avenida Marechal Floriano, 46");
+        address7.setNeighborhood("Centro ");
+        address7.setCity("Rio de Janeiro/");
+        address7.setState("Rio de Janeiro");
+        address7.setCountry("Brazil");
+        address7.setCep("20080-001");
+
+        Professional s7 = new Professional();
+        s7.setNameProfessional("bocada");
+        s7.setAddress(address7);
+        s7.setUser(user7);
+
+        address7.setProfessional(s7);
+        user7.setProfessional(s7);
+
+        repository.save(s7);
+
+        List<Professional> p1 = repository.findByNameProfessional("fubangamaloca");
+        List<Professional> p2 = repository.findByNameProfessional("bocada");
+
+        Assert.assertEquals(
+                "IDs de endereco divergentes",
+                address6.getIdAddress(),
+                p1.get(0).getAddress().getIdAddress()
+        );
+
+        Assert.assertEquals(
+                "IDs de endereco divergentes",
+                address7.getIdAddress(),
+                p2.get(0).getAddress().getIdAddress()
+        );
+
+        Assert.assertNotNull(p1.get(0));
+        Assert.assertNotNull(p2.get(0));
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("fubangamaloca", p1.get(0).getNameProfessional());
+        Assert.assertEquals("bocada", p2.get(0).getNameProfessional());
+
+        Assert.assertEquals("26083-285", p1.get(0).getAddress().getCep());
+        Assert.assertEquals("20080-001", p2.get(0).getAddress().getCep());
+
+    }
+
+    /*
+    @Test
+    public void testFindByNameEqualKdoba() {
+
+        List<Professional> p1 = repository.findByNameProfessional("Kelly");
+        List<Professional> p2 = repository.findByNameProfessional("Kdoba");
+
+        Assert.assertNotNull(p1.get(0));
+        Assert.assertNotNull(p2.get(0));
+
+        // Confere se o Customer que retornou foi o mesmo que foi inserido com id 1.
+        Assert.assertEquals("Kelly", p1.get(0).getNameProfessional());
+        Assert.assertEquals("Kdoba", p2.get(0).getNameProfessional());
+
+        Assert.assertEquals("26083-285", p1.get(0).getAddress().getCep());
+        Assert.assertEquals("20080-001", p2.get(0).getAddress().getCep());
+    }
+    */
 }

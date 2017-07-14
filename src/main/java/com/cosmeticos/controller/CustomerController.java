@@ -93,6 +93,7 @@ public class CustomerController {
             Optional<Customer> customer = service.find(Long.valueOf(idCustomer));
 
             if (customer.isPresent()) {
+
                 log.info("Busca de Customer com exito: [{}]", customer.get());
                 CustomerResponseBody response = new CustomerResponseBody(customer.get());
 

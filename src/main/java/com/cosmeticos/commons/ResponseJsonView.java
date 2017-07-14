@@ -17,7 +17,10 @@ public class ResponseJsonView {
      */
     public interface ProfessionalServicesFindAll {}
     public interface WalletsFindAll {}
+    public interface CreditCardFindAll{}
 
     // Comecou a ficar complicado.
     public interface OrderControllerCreate extends ProfessionalServicesFindAll {}
+    public interface OrderControllerUpdate {}
+
 }

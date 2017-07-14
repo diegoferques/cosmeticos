@@ -68,7 +68,7 @@ public class Professional  implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "professional")
     @JoinColumn(name = "idProfessional")
     private Address address;
 

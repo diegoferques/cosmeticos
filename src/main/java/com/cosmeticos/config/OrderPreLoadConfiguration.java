@@ -1,16 +1,14 @@
 package com.cosmeticos.config;
 
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ScheduleRepository;
+import com.cosmeticos.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -34,25 +32,40 @@ public class OrderPreLoadConfiguration {
     @Autowired
     private CustomerRepository customerRepository;
 
-    //@Autowired
-    // ProfessionalServicesRepository professionalServicesRepository;
+    @Autowired
+    ProfessionalServicesRepository professionalServicesRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     @PostConstruct
-    public void insertInitialH2Data(){
+    public void insertInitialH2Data() throws URISyntaxException {
 
         //User u1 = userRepository.findOne(1L);
         //Address a1 = addressRepository.findOne(1L);
         Customer c1 = customerRepository.findOne(1L);
         Professional p1 = professionalRepository.findOne(1L);
-        Schedule s1 = scheduleRepository.findOne(1L);
-        Schedule s2 = scheduleRepository.findOne(2L);
-        ProfessionalServices ps1 = new ProfessionalServices(1L, 1L);
-        //professionalServicesRepository.save(ps1);
+        //Schedule s1 = scheduleRepository.findOne(1L);
+        //Schedule s2 = scheduleRepository.findOne(2L);
 
-        //ps1.setProfessional(p1);
+        Service service = new Service();
+        service.setCategory("PEDICURE");
+        serviceRepository.save(service);
 
-        //u1.setProfessional(p1);
-        //userRepository.save(u1);
+        ProfessionalServices ps1 = new ProfessionalServices(p1, service);
+
+        p1.getProfessionalServicesCollection().add(ps1);
+
+        //Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(p1);
+
+        Schedule s1 = new Schedule();
+        s1.setStatus(Schedule.Status.ACTIVE);
+        s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 03, 10, 0, 0)));
+
+        Schedule s2 = new Schedule();
+        s2.setStatus(Schedule.Status.ACTIVE);
+        s2.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 04, 11, 0, 0)));
 
         Order o1 = new Order();
         o1.setStatus(Order.Status.CREATED.ordinal());
@@ -87,7 +100,7 @@ public class OrderPreLoadConfiguration {
         o4.setIdCustomer(c1);
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
-        o4.setScheduleId(s1);
+        //o4.setScheduleId(s1);
         orderRepository.save(o4);
 
         Order o5 = new Order();
@@ -96,7 +109,7 @@ public class OrderPreLoadConfiguration {
         o5.setIdCustomer(c1);
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
-        o5.setScheduleId(s2);
+        //o5.setScheduleId(s2);
         orderRepository.save(o5);
 
         //Scheduled Order

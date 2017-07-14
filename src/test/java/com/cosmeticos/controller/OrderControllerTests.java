@@ -18,7 +18,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
@@ -26,6 +28,12 @@ import java.text.ParseException;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OrderControllerTests {
+
+    private Order orderRestultFrom_createScheduledOrderOk = null;
+    private Order orderRestultFrom_createOrderOk = null;
+    private Order orderRestultFrom_updateOrderOkToScheduled = null;
+    private Order orderRestultFrom_updateScheduledOrderOkToScheduled = null;
+    private Order orderRestultFrom_updateScheduledOrderToInactive = null;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -109,7 +117,38 @@ public class OrderControllerTests {
     }
 
     @Test
-    public void testUpdateOK() throws IOException {
+    public void testUpdateOK() throws IOException, URISyntaxException {
+
+        /*
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : 1,\n" +
+                "    \"status\" : "+ Order.Status.ABORTED.ordinal() +"\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
+                //"      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
+                //"    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+
+        */
+
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
@@ -128,14 +167,14 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+
     }
 
-    //TODO - FALTA FINALIZAR, PROVAVELMENTE SERÁ NECESSÁRIO ALTERAR A ENTIDADE
     @Test
     public void createScheduledOrderOk() throws URISyntaxException {
 
         /*
-         Preparacao do teste:
+         PRE-CONDICOES para o teste:
          Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
          Salvamos tudo no banco.
           */
@@ -154,17 +193,22 @@ public class OrderControllerTests {
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
 
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+
+
         /*
          O teste comeca aqui:
-         Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
-         um profissional associado a um servico que existirao no banco.
+         Fazemos um json com informacoes que batem com o que foi inserido acima. Nossa pre-condicao pede que 3
+         objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
+         producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
           */
         String json = "{\n" +
                "  \"order\" : {\n" +
                "    \"date\" : 1498324200000,\n" +
                "    \"status\" : 0,\n" +
                "    \"scheduleId\" : {\n" +
-               "      \"scheduleDate\" : 1499706000000,\n" +
+               "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
@@ -216,10 +260,12 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals("PEDICURE",
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
 
+        orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
     }
-
 
     @Test public void testaddwallet() throws URISyntaxException {
 
@@ -352,13 +398,13 @@ public class OrderControllerTests {
                 "  }\n" +
                 "}";
 
-         entity =  RequestEntity
+        entity =  RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-         exchange = restTemplate
+        exchange = restTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Wallet wallet = walletRepository.findByProfessional_idProfessional(professional.getIdProfessional());//
@@ -367,4 +413,307 @@ public class OrderControllerTests {
         Assert.assertEquals(1, wallet.getCustomers().size());
 
     }
+
+    @Test
+    public void updateScheduledOrder() throws URISyntaxException {
+
+        createScheduledOrderOk();
+
+        Order o1 = orderRestultFrom_createScheduledOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" + //AQUI PEGO O SCHEDULE JA CRIADO
+                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime()  +"\"\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime(), exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getScheduleDate().getTime());
+
+    }
+
+    @Test
+    public void updateScheduledOrderToInactive() throws URISyntaxException {
+
+        createScheduledOrderOk();
+
+        Order o1 = orderRestultFrom_createScheduledOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"status\" : \""+ Schedule.Status.INACTIVE +"\"\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Schedule.Status.INACTIVE, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
+
+        orderRestultFrom_updateScheduledOrderToInactive = exchangeUpdate.getBody().getOrderList().get(0);
+    }
+
+    @Test
+    public void createOrderOk() throws URISyntaxException {
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
+
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+
+        String json = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"professionalServices\" : {\n" +
+                "      \"service\" : {\n" +
+                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
+                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
+                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
+                "      \"cpf\" : \"816.810.695-68\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \"KILLER\",\n" +
+                "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                "      \"idAddress\" : null\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        ResponseEntity<OrderResponseBody> exchange = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+
+
+        orderRestultFrom_createOrderOk = exchange.getBody().getOrderList().get(0);
+    }
+
+    @Test
+    public void updateOrderOkToScheduled() throws URISyntaxException {
+
+        createOrderOk();
+
+        Order o1 = orderRestultFrom_createOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"scheduleId\" : {\n" +
+                //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
+                "      \"status\" : \""+ Schedule.Status.ACTIVE +"\"\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Schedule.Status.ACTIVE, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
+
+        orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
+
+    }
+
+    @Test
+    public void updateScheduledOrderOkToScheduledStatusDenied() throws URISyntaxException {
+
+        updateOrderOkToScheduled();
+
+        Order o1 = orderRestultFrom_updateOrderOkToScheduled;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
+                "      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Schedule.Status.DENIED, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
+
+        //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
+
+    }
+
+    @Test
+    public void updateScheduledOrderOkToOrderStatusScheduled() throws URISyntaxException {
+
+        createScheduledOrderOk();
+        Order o1 = orderRestultFrom_createScheduledOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"status\" : "+ Order.Status.SCHEDULED.ordinal() +"\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
+                //"      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
+                //"    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        //Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Order.Status.SCHEDULED.ordinal(),(int) exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+
+        orderRestultFrom_updateScheduledOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
+    }
+
+    @Test
+    public void updateCreatedOrderOkToStatusFinished() throws URISyntaxException {
+
+        updateScheduledOrderOkToOrderStatusScheduled();
+
+        Order o1 = orderRestultFrom_updateScheduledOrderOkToScheduled;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"status\" : "+ Order.Status.EXECUTED.ordinal() +"\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
+                //"      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
+                //"    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertEquals(Order.Status.EXECUTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+
+        //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
+    }
+
 }
