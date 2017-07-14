@@ -139,7 +139,7 @@ go
 ALTER TABLE [Address] ADD CONSTRAINT [Key3] PRIMARY KEY ([idAddress])
 go
 
--- Table Location
+-- Table LocationGoogle
 
 CREATE TABLE [Location]
 (
@@ -148,7 +148,7 @@ CREATE TABLE [Location]
 )
 go
 
--- Add keys for table Location
+-- Add keys for table LocationGoogle
 
 ALTER TABLE [Location] ADD CONSTRAINT [Key4] PRIMARY KEY ([id])
 go

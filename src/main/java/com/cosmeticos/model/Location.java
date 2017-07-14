@@ -8,7 +8,6 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -46,15 +45,6 @@ public class Location implements Serializable {
         this.id = id;
     }
 
-    @XmlTransient
-    public Collection<Order> getSaleCollection() {
-        return orderCollection;
-    }
-
-    public void setSaleCollection(Collection<Order> orderCollection) {
-        this.orderCollection = orderCollection;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -77,7 +67,7 @@ public class Location implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Location[ id=" + id + " ]";
+        return "javaapplication2.entity.LocationGoogle[ id=" + id + " ]";
     }
     
 }

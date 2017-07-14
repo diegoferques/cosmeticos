@@ -89,11 +89,47 @@ public class ProfessionalPreLoadConfiguration {
         repository.save(s4);
         repository.save(s5);
 
+        //SEGUE ABAIXO O ITEM 1 DO CARD 39
+        //Alterar ProfessionalPreLoadConfiguration, de modo a incluir + 2 profissionais
+        //com endereços e Locations fictícios.
 
+        User user6 = new User("kelly", "123abc", "joana@bol");
+        Address address6 = new Address();
+        address6.setAddress("Travessa Tuviassuiara, 32");
+        address6.setNeighborhood("Rodilândia");
+        address6.setCity("Nova Iguaçu");
+        address6.setState("Rio de Janeiro");
+        address6.setCountry("Brazil");
+        address6.setCep("26083-285");
 
+        Professional s6 = new Professional();
+        s6.setNameProfessional("Kelly");
+        s6.setAddress(address6);
+        s6.setUser(user6);
 
+        address6.setProfessional(s6);
+        user6.setProfessional(s6);
 
+        repository.save(s6);
 
+        User user7 = new User("kdoba", "123abc", "joao@bol");
+        Address address7 = new Address();
+        address7.setAddress("Avenida Marechal Floriano, 46");
+        address7.setNeighborhood("Centro ");
+        address7.setCity("Rio de Janeiro/");
+        address7.setState("Rio de Janeiro");
+        address7.setCountry("Brazil");
+        address7.setCep("20080-001");
+
+        Professional s7 = new Professional();
+        s7.setNameProfessional("Kdoba");
+        s7.setAddress(address7);
+        s7.setUser(user7);
+
+        address7.setProfessional(s7);
+        user7.setProfessional(s7);
+
+        repository.save(s7);
 
 
     }

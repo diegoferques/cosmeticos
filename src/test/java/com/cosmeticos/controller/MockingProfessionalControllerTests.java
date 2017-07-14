@@ -71,6 +71,7 @@ public class MockingProfessionalControllerTests {
 		Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
 	}
 
+
 	@Test
 	public void testFindById() throws ParseException {
 
