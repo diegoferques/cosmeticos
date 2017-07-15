@@ -8,6 +8,7 @@ import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -101,8 +102,8 @@ public class ProfessionalServicesBeanServices {
     //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
     public List<ProfessionalServices> getNearby(ProfessionalServices Service, String latitude, String longitude, String radius) {
 
-        List<ProfessionalServices> professionalServicesList = repository.findAll();
-        List<ProfessionalServices> professionalServices = null;
+        List<ProfessionalServices> professionalServicesList = repository.findAll(Example.of(Service));
+        List<ProfessionalServices> professionalServices = new ArrayList<>();
 
         //ACHEI MELHOR PARSEAR SOMENTE UMA VEZ, POR ISSO CRIEI ESSA VARIAVEL
         Double distanciaLimite = Double.parseDouble(radius);
