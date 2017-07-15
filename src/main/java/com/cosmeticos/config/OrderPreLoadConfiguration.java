@@ -101,6 +101,8 @@ public class OrderPreLoadConfiguration {
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
         //o4.setScheduleId(s1);
+        o4.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+
         orderRepository.save(o4);
 
         Order o5 = new Order();
@@ -110,6 +112,7 @@ public class OrderPreLoadConfiguration {
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
         //o5.setScheduleId(s2);
+        o5.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
         orderRepository.save(o5);
 
         //Scheduled Order

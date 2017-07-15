@@ -6,10 +6,17 @@ import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
+import org.hibernate.Criteria;
+import org.hibernate.SharedSessionContract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.data.domain.Example;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -120,7 +127,11 @@ public class OrderService {
         Order orderRequest = request.getOrder();
         Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(!StringUtils.isEmpty(orderRequest.getDate())) {
+        if(Order.Status.FINISHED_BY_CUSTOMER.ordinal() == order.getStatus()){
+            throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
+        }
+
+        if (!StringUtils.isEmpty(orderRequest.getDate())) {
             order.setDate(orderRequest.getDate());
         }
 
@@ -144,6 +155,8 @@ public class OrderService {
             order.setScheduleId(orderRequest.getScheduleId());
         }
 
+
+
         return orderRepository.save(order);
     }
 
@@ -156,9 +169,27 @@ public class OrderService {
         return orderRepository.findAll(Example.of(bindableQueryObject));
     }
 
+
     public class ValidationException extends Exception {
         public ValidationException(String s) {
             super(s);
         }
     }
+
+    @Scheduled(cron = "${order.unfinished.cron}")
+    public void updateStatus() {
+
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+
+        int count = onlyOrsersFinishedByProfessionals.size();
+
+        for (Order o : onlyOrsersFinishedByProfessionals) {
+
+            o.setStatus(Order.Status.FINISHED_BY_CUSTOMER_AUTO.ordinal());
+
+            orderRepository.save(o);
+        }
+        log.info("{} orders foram atualizada para {}.", count, Order.Status.FINISHED_BY_CUSTOMER_AUTO.toString());
+    }
+
 }

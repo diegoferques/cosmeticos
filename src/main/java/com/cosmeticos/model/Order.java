@@ -22,7 +22,7 @@ import java.util.Date;
 public class Order implements Serializable {
 
     public enum Status {
-        CREATED, ABORTED, EXECUTED, SCHEDULED,
+        CREATED, ABORTED, EXECUTED, FINISHED_BY_PROFESSIONAL, FINISHED_BY_CUSTOMER_AUTO, FINISHED_BY_CUSTOMER;
     }
 
     private static final long serialVersionUID = 1L;
