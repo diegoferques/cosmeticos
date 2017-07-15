@@ -6,6 +6,7 @@ import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Criteria;
 import org.hibernate.SharedSessionContract;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import java.util.Optional;
 /**
  * Created by matto on 17/06/2017.
  */
+@Slf4j
 @org.springframework.stereotype.Service
 public class OrderService {
 

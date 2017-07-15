@@ -28,7 +28,7 @@ public class OrderServiceTest {
 
         // TODO: insere umas orders com finished by professional e nao confiar no OrderPreLoad
 
-        List<Order> preUpdateallOrders = orderService.find10Lastest();
+        List<Order> preUpdateallOrders = orderService.findBy(new Order());
         int c = 0;
 
         for (Order o: preUpdateallOrders) {
@@ -42,7 +42,7 @@ public class OrderServiceTest {
         orderService.updateStatus();
 
         // assert: nenhuma order do banco pode estar finished_by_professional
-        List<Order> allOrders = orderService.find10Lastest();
+        List<Order> allOrders = orderService.findBy(new Order());
 
         for (Order o: allOrders) {
             Assert.assertNotEquals(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal(), o.getStatus().intValue());
