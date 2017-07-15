@@ -29,16 +29,15 @@ public class AddressService {
     public Address createFromCustomer(CustomerRequestBody request) {
         Address a = new Address();
 
-        a.setAddress(request.getCustomer().getIdAddress().getAddress());
-        a.setCep(request.getCustomer().getIdAddress().getCep());
-        a.setCity(request.getCustomer().getIdAddress().getCity());
-        a.setState(request.getCustomer().getIdAddress().getState());
-        a.setCountry(request.getCustomer().getIdAddress().getCountry());
-        a.setNeighborhood(request.getCustomer().getIdAddress().getNeighborhood());
+        a.setAddress(request.getCustomer().getAddress().getAddress());
+        a.setCep(request.getCustomer().getAddress().getCep());
+        a.setCity(request.getCustomer().getAddress().getCity());
+        a.setState(request.getCustomer().getAddress().getState());
+        a.setCountry(request.getCustomer().getAddress().getCountry());
+        a.setNeighborhood(request.getCustomer().getAddress().getNeighborhood());
 
-        if(a != null) {
-            LocationGoogle geocode = locationService.getGeoCode(a);
-
+        LocationGoogle geocode = locationService.getGeoCode(a);
+        if(geocode  != null) {
             a.setLatitude(geocode.getLat().toString());
             a.setLongitude(geocode.getLng().toString());
         } else {

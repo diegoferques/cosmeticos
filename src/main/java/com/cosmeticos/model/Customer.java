@@ -4,9 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.*;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -60,14 +59,14 @@ public class Customer implements Serializable {
 
     private Integer status;
 
+    @JsonManagedReference(value="user-customer")
     @JsonView(ResponseJsonView.WalletsFindAll.class)
     @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "idCustomer")
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
-    private Address idAddress;
+    private Address address;
 
     public void setUser(User user) {
         this.user = user;
@@ -80,7 +79,6 @@ public class Customer implements Serializable {
     @JsonIgnore // Nao tem porque toda vez q retornar um usuario, retornar suas compras.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
     private Collection<Order> orderCollection;
-
 
     @Override
     public int hashCode() {

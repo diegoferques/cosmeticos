@@ -7,6 +7,7 @@ import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
@@ -150,9 +151,9 @@ public class OrderService {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
 
-    public List<Order> find10Lastest() {
-        return orderRepository.findTop10ByOrderByDateDesc();
-        //return orderRepository.findAll();
+    public List<Order> findBy(Order bindableQueryObject) {
+        //return orderRepository.findTop10ByOrderByDateDesc();
+        return orderRepository.findAll(Example.of(bindableQueryObject));
     }
 
     public class ValidationException extends Exception {

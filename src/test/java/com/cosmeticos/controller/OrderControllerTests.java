@@ -270,7 +270,11 @@ public class OrderControllerTests {
     @Test public void testaddwallet() throws URISyntaxException {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testaddwallet");
+        c1.getUser().setEmail("testaddwallet@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setEmail("testaddwalletprofessional@bol");
+        professional.getUser().setUsername("testaddwalletprofessional");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
