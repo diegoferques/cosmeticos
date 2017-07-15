@@ -6,6 +6,8 @@ import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
+import org.hibernate.Criteria;
+import org.hibernate.SharedSessionContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,12 @@ import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by matto on 17/06/2017.
  */
-@EnableScheduling
 @org.springframework.stereotype.Service
 public class OrderService {
 
@@ -67,11 +67,11 @@ public class OrderService {
         // Conferindo se o ProfessionalServices recebido realmente esta associado ao Profissional em nossa base.
         Optional<ProfessionalServices> persistentProfessionalServices =
                 professional.getProfessionalServicesCollection()
-                .stream()
-                .filter(ps -> ps.getService().getIdService().equals(receivedProfessionalServices.getService().getIdService()))
-                .findFirst();
+                        .stream()
+                        .filter(ps -> ps.getService().getIdService().equals(receivedProfessionalServices.getService().getIdService()))
+                        .findFirst();
 
-        if(persistentProfessionalServices.isPresent()) {
+        if (persistentProfessionalServices.isPresent()) {
             Order order = new Order();
             order.setScheduleId(orderRequest.getOrder().getScheduleId());
             order.setIdLocation(orderRequest.getOrder().getIdLocation());
@@ -99,30 +99,26 @@ public class OrderService {
             int totalOrders = 0;
 
             for (int i = 0; i < savedOrders.size(); i++) {
-                Order o =  savedOrders.get(i);
-                if(o.getProfessionalServices().getProfessional().getIdProfessional() == professional.getIdProfessional())
-                {
-                    totalOrders ++;
+                Order o = savedOrders.get(i);
+                if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional.getIdProfessional()) {
+                    totalOrders++;
                 }
             }
 
-            if(totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho. pode debugar.
+            if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho. pode debugar.
             {
-                if( professional.getWallet() == null)
-                {
+                if (professional.getWallet() == null) {
                     professional.setWallet(new Wallet());
                     professional.getWallet().setProfessional(professional);
                 }
-                 professional.getWallet().getCustomers().add(customer);
-                 professionalRepository.save(professional);
+                professional.getWallet().getCustomers().add(customer);
+                professionalRepository.save(professional);
             }
 
             return newOrder;
-        }
-        else
-        {
-            throw new OrderService.ValidationException("Service [id="+receivedProfessionalServices.getService().getIdService()+"] informado no requst nao esta associado ao profissional " +
-                    "id=["+professional.getIdProfessional()+"] em nosso banco de dados.");
+        } else {
+            throw new OrderService.ValidationException("Service [id=" + receivedProfessionalServices.getService().getIdService() + "] informado no requst nao esta associado ao profissional " +
+                    "id=[" + professional.getIdProfessional() + "] em nosso banco de dados.");
         }
     }
 
@@ -130,29 +126,35 @@ public class OrderService {
         Order orderRequest = request.getOrder();
         Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(!StringUtils.isEmpty(orderRequest.getDate())) {
+        if(Order.Status.FINISHED_BY_CUSTOMER.ordinal() == order.getStatus()){
+            throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
+        }
+
+        if (!StringUtils.isEmpty(orderRequest.getDate())) {
             order.setDate(orderRequest.getDate());
         }
 
-        if(!StringUtils.isEmpty(orderRequest.getStatus())) {
+        if (!StringUtils.isEmpty(orderRequest.getStatus())) {
             order.setStatus(orderRequest.getStatus());
         }
 
-        if(!StringUtils.isEmpty(orderRequest.getIdCustomer())) {
+        if (!StringUtils.isEmpty(orderRequest.getIdCustomer())) {
             order.setIdCustomer(orderRequest.getIdCustomer());
         }
 
-        if(!StringUtils.isEmpty(orderRequest.getIdLocation())) {
+        if (!StringUtils.isEmpty(orderRequest.getIdLocation())) {
             order.setIdLocation(orderRequest.getIdLocation());
         }
 
-        if(!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
+        if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
             order.setProfessionalServices(orderRequest.getProfessionalServices());
         }
 
-        if(!StringUtils.isEmpty(orderRequest.getScheduleId())) {
+        if (!StringUtils.isEmpty(orderRequest.getScheduleId())) {
             order.setScheduleId(orderRequest.getScheduleId());
         }
+
+
 
         return orderRepository.save(order);
     }
@@ -166,27 +168,27 @@ public class OrderService {
         //return orderRepository.findAll();
     }
 
+
     public class ValidationException extends Exception {
         public ValidationException(String s) {
             super(s);
         }
     }
 
-    /*@Scheduled(cron = "* 2 * * * *")
-    public Order updateStatus(OrderRequestBody request) {
+    @Scheduled(cron = "${order.unfinished.cron}")
+    public void updateStatus() {
 
-        log.info("The time is now {}", dateFormat.format(new Date()));
-        Order orderRequest = request.getOrder();
-        Order order = orderRepository.findOne(orderRequest.getIdOrder());
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
 
-        if(!StringUtils.isEmpty(orderRequest.getStatus())) {
-            order.setStatus(orderRequest.getStatus());
+        int count = onlyOrsersFinishedByProfessionals.size();
+
+        for (Order o : onlyOrsersFinishedByProfessionals) {
+
+            o.setStatus(Order.Status.FINISHED_BY_CUSTOMER_AUTO.ordinal());
+
+            orderRepository.save(o);
         }
-
-
-
-        return orderRepository.save(order);
-
+        log.info("{} orders foram atualizada para {}.", count, Order.Status.FINISHED_BY_CUSTOMER_AUTO.toString());
     }
-    */
+
 }

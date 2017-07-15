@@ -4,6 +4,7 @@
  */
 package com.cosmeticos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -37,6 +38,7 @@ public class Schedule implements Serializable {
     @Enumerated
     private Status status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "scheduleId")
     private List<Order> orderCollection = new ArrayList<>();
 

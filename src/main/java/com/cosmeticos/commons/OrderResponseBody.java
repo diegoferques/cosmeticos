@@ -12,10 +12,16 @@ import java.util.List;
  */
 @Data
 public class OrderResponseBody {
-    @JsonView(ResponseJsonView.OrderControllerCreate.class)
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerCreate.class
+    })
     private String description;
 
-    @JsonView(ResponseJsonView.OrderControllerCreate.class)
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerCreate.class
+    })
     private List<Order> orderList = new ArrayList<>(10);
 
     public OrderResponseBody() {

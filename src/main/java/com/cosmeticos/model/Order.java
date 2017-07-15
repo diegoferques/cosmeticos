@@ -22,12 +22,15 @@ import java.util.Date;
 public class Order implements Serializable {
 
     public enum Status {
-        CREATED, ABORTED, EXECUTED
+        CREATED, ABORTED, EXECUTED, FINISHED_BY_PROFESSIONAL, FINISHED_BY_CUSTOMER_AUTO, FINISHED_BY_CUSTOMER;
     }
 
     private static final long serialVersionUID = 1L;
 
-    @JsonView(ResponseJsonView.OrderControllerCreate.class)
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerCreate.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOrder;
@@ -38,7 +41,10 @@ public class Order implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    @JsonView(ResponseJsonView.OrderControllerCreate.class)
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerCreate.class
+    })
     @Basic(optional = false)
     @Column(name = "status")
     private Integer status;
