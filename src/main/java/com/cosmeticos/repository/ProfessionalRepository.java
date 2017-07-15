@@ -14,4 +14,6 @@ public interface ProfessionalRepository extends
         JpaRepository<Professional, Long>
 {
     List<Professional> findTop10ByOrderByDateRegisterDesc();
+    List<Professional> findByNameProfessional(String nameProfessional);
+
 }

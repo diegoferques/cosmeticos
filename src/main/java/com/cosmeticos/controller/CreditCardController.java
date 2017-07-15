@@ -52,7 +52,7 @@ public class CreditCardController {
                 } else {
                     //CreditCardResponseBody responseBody = new CreditCardResponseBody();
                     responseBody.setCreditCardList(entitylist);
-                    responseBody.setDescription("All CreditCard retrieved.");
+                    responseBody.setDescription("Success");
 
                     log.info("{} CreditCard successfully retrieved.", entitylist.size());
 

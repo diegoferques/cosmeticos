@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
@@ -16,13 +17,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -65,7 +65,7 @@ public class CustomerControllerTests {
 		c1.setNameCustomer("João da Silva");
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
-		c1.setIdAddress(this.createFakeAddress(c1));
+		c1.setAddress(this.createFakeAddress(c1));
 		c1.setUser(this.createFakeLogin(c1));
 
 		Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
@@ -78,7 +78,7 @@ public class CustomerControllerTests {
 		c2.setNameCustomer("Diego Fernandes");
 		//c2.setOrderCollection(null);
 		c2.setStatus(Customer.Status.ACTIVE.ordinal());
-		c2.setIdAddress(this.createFakeAddress(c2));
+		c2.setAddress(this.createFakeAddress(c2));
 		c2.setUser(this.createFakeLogin(c2));
 
 		Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
@@ -91,7 +91,7 @@ public class CustomerControllerTests {
 		c3.setNameCustomer("Maria das Dores");
 		//c3.setOrderCollection(null);
 		c3.setStatus(Customer.Status.ACTIVE.ordinal());
-		c3.setIdAddress(this.createFakeAddress(c3));
+		c3.setAddress(this.createFakeAddress(c3));
 		c3.setUser(this.createFakeLogin(c3));
 
 		Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
@@ -104,7 +104,7 @@ public class CustomerControllerTests {
 		c4.setNameCustomer("Fernanda Cavalcante");
 		//c4.setOrderCollection(null);
 		c4.setStatus(Customer.Status.INACTIVE.ordinal());
-		c4.setIdAddress(this.createFakeAddress(c4));
+		c4.setAddress(this.createFakeAddress(c4));
 		c4.setUser(this.createFakeLogin(c4));
 
 		Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
@@ -117,7 +117,7 @@ public class CustomerControllerTests {
 		c5.setNameCustomer("José das Couves");
 		//c5.setOrderCollection(null);
 		c5.setStatus(Customer.Status.ACTIVE.ordinal());
-		c5.setIdAddress(this.createFakeAddress(c5));
+		c5.setAddress(this.createFakeAddress(c5));
 		c5.setUser(this.createFakeLogin(c5));
 
 		customerRepository.save(c1);
@@ -127,6 +127,7 @@ public class CustomerControllerTests {
 		customerRepository.save(c5);
 	}
 	*/
+	/*
 	@Test
 	public void testCreateOK() throws IOException {
 
@@ -144,6 +145,53 @@ public class CustomerControllerTests {
 				HttpMethod.POST, //
 				new HttpEntity(requestBody), // Body
 				ScheduleResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+	}
+	*/
+	@Test
+	public void testCreateOK() throws IOException, URISyntaxException {
+
+		String content = "{\n" +
+				"   \"customer\":{\n" +
+				"      \"address\":{\n" +
+				"         \"address\":null,\n" +
+				"         \"cep\":null,\n" +
+				"         \"city\":null,\n" +
+				"         \"country\":null,\n" +
+				"         \"idAddress\":null,\n" +
+				"         \"neighborhood\":null,\n" +
+				"         \"state\":null\n" +
+				"      },\n" +
+				"      \"birthDate\":1310353200000,\n" +
+				"      \"cellPhone\":null,\n" +
+				"      \"dateRegister\":null,\n" +
+				"      \"genre\":null,\n" +
+				"      \"status\":null,\n" +
+				"      \"user\":{\n" +
+				"         \"email\":\"b@b.com\",\n" +
+				"         \"idLogin\":null,\n" +
+				"         \"password\":\"123\",\n" +
+				"         \"sourceApp\":null,\n" +
+				"         \"username\":\"b@b.com\"\n" +
+				"      },\n" +
+				"      \"cpf\":\"05404577726\",\n" +
+				"      \"idAddress\":null,\n" +
+				"      \"idCustomer\":null,\n" +
+				"      \"idLogin\":null,\n" +
+				"      \"nameCustomer\":\"b\"\n" +
+				"   }\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/customers"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(content);
+
+		ResponseEntity<CustomerResponseBody> exchange = restTemplate
+				.exchange(entity, CustomerResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -240,7 +288,7 @@ public class CustomerControllerTests {
 		return a;
 	}
 
-	static Customer createFakeCustomer() {
+	public static Customer createFakeCustomer() {
 		Customer c1 = new Customer();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
 		c1.setCellPhone("(21) 98877-6655");
@@ -250,7 +298,7 @@ public class CustomerControllerTests {
 		c1.setNameCustomer("João da Silva");
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
-		c1.setIdAddress(createFakeAddress(c1));
+		c1.setAddress(createFakeAddress(c1));
 		c1.setUser(createFakeLogin(c1));
 
 		return c1;

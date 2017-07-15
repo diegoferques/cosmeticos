@@ -109,7 +109,7 @@ public class MockingCustomerControllerTests {
 		c1.setNameCustomer("João da Silva");
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
-		c1.setIdAddress(this.createFakeAddress(c1));
+		c1.setAddress(this.createFakeAddress(c1));
 		c1.setUser(this.createFakeLogin(c1));
 
 		return c1;

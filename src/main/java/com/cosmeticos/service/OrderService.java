@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.domain.Example;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -37,10 +38,6 @@ public class OrderService {
 
     @Autowired
     private ServiceRepository serviceRepository;
-
-    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -67,11 +64,11 @@ public class OrderService {
         // Conferindo se o ProfessionalServices recebido realmente esta associado ao Profissional em nossa base.
         Optional<ProfessionalServices> persistentProfessionalServices =
                 professional.getProfessionalServicesCollection()
-                        .stream()
-                        .filter(ps -> ps.getService().getIdService().equals(receivedProfessionalServices.getService().getIdService()))
-                        .findFirst();
+                .stream()
+                .filter(ps -> ps.getService().getIdService().equals(receivedProfessionalServices.getService().getIdService()))
+                .findFirst();
 
-        if (persistentProfessionalServices.isPresent()) {
+        if(persistentProfessionalServices.isPresent()) {
             Order order = new Order();
             order.setScheduleId(orderRequest.getOrder().getScheduleId());
             order.setIdLocation(orderRequest.getOrder().getIdLocation());
@@ -99,26 +96,30 @@ public class OrderService {
             int totalOrders = 0;
 
             for (int i = 0; i < savedOrders.size(); i++) {
-                Order o = savedOrders.get(i);
-                if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional.getIdProfessional()) {
-                    totalOrders++;
+                Order o =  savedOrders.get(i);
+                if(o.getProfessionalServices().getProfessional().getIdProfessional() == professional.getIdProfessional())
+                {
+                    totalOrders ++;
                 }
             }
 
-            if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho. pode debugar.
+            if(totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho. pode debugar.
             {
-                if (professional.getWallet() == null) {
+                if( professional.getWallet() == null)
+                {
                     professional.setWallet(new Wallet());
                     professional.getWallet().setProfessional(professional);
                 }
-                professional.getWallet().getCustomers().add(customer);
-                professionalRepository.save(professional);
+                 professional.getWallet().getCustomers().add(customer);
+                 professionalRepository.save(professional);
             }
 
             return newOrder;
-        } else {
-            throw new OrderService.ValidationException("Service [id=" + receivedProfessionalServices.getService().getIdService() + "] informado no requst nao esta associado ao profissional " +
-                    "id=[" + professional.getIdProfessional() + "] em nosso banco de dados.");
+        }
+        else
+        {
+            throw new OrderService.ValidationException("Service [id="+receivedProfessionalServices.getService().getIdService()+"] informado no requst nao esta associado ao profissional " +
+                    "id=["+professional.getIdProfessional()+"] em nosso banco de dados.");
         }
     }
 
@@ -134,23 +135,23 @@ public class OrderService {
             order.setDate(orderRequest.getDate());
         }
 
-        if (!StringUtils.isEmpty(orderRequest.getStatus())) {
+        if(!StringUtils.isEmpty(orderRequest.getStatus())) {
             order.setStatus(orderRequest.getStatus());
         }
 
-        if (!StringUtils.isEmpty(orderRequest.getIdCustomer())) {
+        if(!StringUtils.isEmpty(orderRequest.getIdCustomer())) {
             order.setIdCustomer(orderRequest.getIdCustomer());
         }
 
-        if (!StringUtils.isEmpty(orderRequest.getIdLocation())) {
+        if(!StringUtils.isEmpty(orderRequest.getIdLocation())) {
             order.setIdLocation(orderRequest.getIdLocation());
         }
 
-        if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
+        if(!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
             order.setProfessionalServices(orderRequest.getProfessionalServices());
         }
 
-        if (!StringUtils.isEmpty(orderRequest.getScheduleId())) {
+        if(!StringUtils.isEmpty(orderRequest.getScheduleId())) {
             order.setScheduleId(orderRequest.getScheduleId());
         }
 
@@ -163,9 +164,9 @@ public class OrderService {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
 
-    public List<Order> find10Lastest() {
-        return orderRepository.findTop10ByOrderByDateDesc();
-        //return orderRepository.findAll();
+    public List<Order> findBy(Order bindableQueryObject) {
+        //return orderRepository.findTop10ByOrderByDateDesc();
+        return orderRepository.findAll(Example.of(bindableQueryObject));
     }
 
 
