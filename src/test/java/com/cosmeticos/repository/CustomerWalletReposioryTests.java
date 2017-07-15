@@ -44,7 +44,7 @@ public class CustomerWalletReposioryTests {
         Professional s1 = new Professional();
         s1.setNameProfessional("Garry");
         s1.setAddress(new Address());
-        s1.setUser(new User("garry", "123qwe", "garry@bol"));
+        s1.setUser(new User("garry12", "123qwe", "garry12@bol"));
 
         s1.setWallet(cw1);
 

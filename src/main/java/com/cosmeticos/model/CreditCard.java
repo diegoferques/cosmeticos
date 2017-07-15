@@ -33,7 +33,7 @@ public class CreditCard implements Serializable {
     @Enumerated
     private Status status;
 
-    @JsonBackReference
+    @JsonBackReference(value="user-cc")
     @JoinColumn(name = "id_user")
     @ManyToOne(optional = false)
     private User user;

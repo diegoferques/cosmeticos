@@ -68,8 +68,14 @@ public class WalletControllerTests {
 		// Clientes existentes procuram o profissional pela segunda vez
 		Customer c1 = CustomerControllerTests.createFakeCustomer();
 		c1.setNameCustomer("c1");
+		c1.getUser().setEmail("abcqwe@c.com");
+		c1.getUser().setUsername("abcqwe");
 		Customer c2 = CustomerControllerTests.createFakeCustomer();
+		c2.getUser().setUsername("hannabarbera");
+		c2.getUser().setEmail("hannabarbera@bol");
 		c2.setNameCustomer("c2");
+		c1.getUser().setEmail("2a@a.com");
+		c1.getUser().setUsername("a2");
 
 		customerRepository.save(c1);
 		customerRepository.save(c2);
@@ -79,7 +85,7 @@ public class WalletControllerTests {
 		Professional s5 = new Professional();
 		s5.setNameProfessional("Habib");
 		s5.setAddress(new Address());
-		s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
+		s5.setUser(user5 = new User("Habib12345", "123qwe", "Habib12345@bol"));
 		user5.setProfessional(s5);
 
 		// apagueme
@@ -103,7 +109,7 @@ public class WalletControllerTests {
 
 		final ResponseEntity<WalletResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/wallets?professional.user.username=Habib", //
+						"/wallets?professional.user.email=Habib12345@bol", //
 						HttpMethod.GET, //
 						null,
 						WalletResponseBody.class);

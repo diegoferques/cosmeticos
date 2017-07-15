@@ -148,10 +148,10 @@ public class OrderController {
 
     @JsonView(ResponseJsonView.OrderControllerUpdate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
-    public HttpEntity<OrderResponseBody> findLastest10() {
+    public HttpEntity<OrderResponseBody> findBy(@ModelAttribute Order bindableQueryObject) {
 
         try {
-            List<Order> entitylist = orderService.find10Lastest();
+            List<Order> entitylist = orderService.findBy(bindableQueryObject);
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);

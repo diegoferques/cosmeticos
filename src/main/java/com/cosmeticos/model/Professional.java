@@ -44,24 +44,28 @@ public class Professional  implements Serializable {
 
     private String cnpj;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private Character genre;
 
     private Date birthDate;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private String cellPhone;
 
     private String specialization;
 
     private String typeService;
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private Date dateRegister;
 	
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
 	// TODO incluir @NotNull
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, optional = false, mappedBy = "professional")
+    @JsonManagedReference(value="user-professional")
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "professional")
@@ -82,7 +86,7 @@ public class Professional  implements Serializable {
      * Se a client app deseja saber quais servicos todos os profissionais atendem, ele deve
      * chamar o endpoint professionalservices/
      */
-    @JsonBackReference
+    @JsonBackReference(value="professional-professionalservices")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 

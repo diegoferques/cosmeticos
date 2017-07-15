@@ -48,16 +48,19 @@ public class User implements Serializable {
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
-    @JsonManagedReference
+    @JsonManagedReference(value="user-cc")
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 
-    @OneToOne
+    @JsonBackReference(value="user-customer")
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "idUser")
     private Customer customer;
 
-    @JsonBackReference
-    @OneToOne
+    @JsonBackReference(value="user-professional")
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "idUser")
     private Professional professional;
 
 

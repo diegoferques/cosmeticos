@@ -399,6 +399,55 @@ public class ProfessionalControllerTests {
 
 	}
 
+	/**
+	 * Este teste na verdade testa duas coisas: o parametro ModelAttribute no metodo e o Example Api.
+	 * @throws ParseException
+	 */
+	@Test
+	public void testExampleApiFindByUser_EmailAndPassword() throws ParseException {
+
+		Address addres = createFakeAddress();
+		User user = UserControllerTest.createFakeUser("111", "111@gmail");
+		user.setPassword("123");
+
+		Professional professional = createFakeProfessional();
+		professional.setUser(user);
+		professional.setAddress(addres);
+		professional.setNameProfessional("MyName");
+
+		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
+		requestBody.setProfessional(professional);
+
+		final ResponseEntity<ProfessionalResponseBody> postExchange = //
+				restTemplate.exchange( //
+						"/professionals", //
+						HttpMethod.POST, //
+						new HttpEntity(requestBody), // Body
+						ProfessionalResponseBody.class);
+
+
+		final ResponseEntity<ProfessionalResponseBody> getExchange = //
+				restTemplate.exchange( //
+						"/professionals?nameProfessional=MyName", //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+
+		ProfessionalResponseBody response = getExchange.getBody();
+		List<Professional> professionals = response.getProfessionalList();
+
+		Assert.assertTrue("Nao foram retornados profissionais.", professionals.size() > 0);
+
+		for (int i = 0; i < professionals.size(); i++) {
+			Professional p =  professionals.get(i);
+			Assert.assertEquals("MyName", p.getNameProfessional());
+		}
+
+
+	}
+
 	@Test
 	public void testInsertNewHAbilityInCreateProfessionalRequest() throws ParseException, URISyntaxException {
 
