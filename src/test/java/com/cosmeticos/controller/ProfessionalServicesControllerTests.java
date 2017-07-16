@@ -10,6 +10,7 @@ import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,7 @@ public class ProfessionalServicesControllerTests {
 
 	}
 
+	@Ignore
 	@Test
 	public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 

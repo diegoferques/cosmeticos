@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.data.domain.Example;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Optional;
 /**
  * Created by matto on 17/06/2017.
  */
+ @Slf4j
 @org.springframework.stereotype.Service
 public class OrderService {
 

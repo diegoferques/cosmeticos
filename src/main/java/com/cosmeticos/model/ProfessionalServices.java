@@ -26,7 +26,10 @@ public class ProfessionalServices implements Serializable {
     @EmbeddedId
     protected ProfessionalServicesPK professionalServicesPK;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class
+    })
     @JoinColumn(name = "idService", referencedColumnName = "idService", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Service service;

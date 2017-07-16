@@ -53,8 +53,7 @@ public class CustomerController {
     }
 
     @RequestMapping(path = "/customers", method = RequestMethod.PUT)
-    public HttpEntity<CustomerResponseBody> update(@Valid @RequestBody CustomerRequestBody request,
-                                                   @RequestParam
+    public HttpEntity<CustomerResponseBody> update(CustomerRequestBody request,
                                                    BindingResult bindingResult) {
 
         try {

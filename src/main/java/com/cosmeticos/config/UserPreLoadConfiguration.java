@@ -57,7 +57,7 @@ public class UserPreLoadConfiguration {
         u2.getCreditCardCollection().add(cc2);
         u2.setUsername("NAMEK");
         u2.setPassword("1234098765");
-        //u2.setEmail("namek@gmail.com");
+        u2.setEmail("namek@gmail.com");
         u2.setSourceApp("google+");
 
         cc2.setUser(u2);
