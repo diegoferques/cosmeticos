@@ -1,9 +1,8 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.service.OrderService;
+import com.cosmeticos.penalty.PenaltyService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,9 @@ public class OrderServiceTest {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private PenaltyService penaltyService;
 
     @Test
     public void testUpdateStatus(){
@@ -47,5 +49,9 @@ public class OrderServiceTest {
         for (Order o: allOrders) {
             Assert.assertNotEquals(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal(), o.getStatus().intValue());
         }
+    }
+
+    public void abort(){
+
     }
 }

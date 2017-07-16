@@ -2,6 +2,8 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.penalty.PenaltyType;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -40,6 +42,9 @@ public class OrderService {
 
     @Autowired
     private ServiceRepository serviceRepository;
+
+    @Autowired
+    private PenaltyService penaltyService;
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -192,6 +197,11 @@ public class OrderService {
             orderRepository.save(o);
         }
         log.info("{} orders foram atualizada para {}.", count, Order.Status.FINISHED_BY_CUSTOMER_AUTO.toString());
+    }
+    public void abort(Order order){
+        Order o = orderRepository.findOne(order.getIdOrder());
+
+        penaltyService.apply(o.getIdCustomer().getUser(), PenaltyType.Value.NONE);
     }
 
 }
