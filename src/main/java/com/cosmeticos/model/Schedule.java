@@ -33,19 +33,22 @@ public class Schedule implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
     @JsonView({
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private Date scheduleDate;
 
     @JsonView({
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Enumerated
     private Status status;

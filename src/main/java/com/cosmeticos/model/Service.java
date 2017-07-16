@@ -24,7 +24,8 @@ public class Service implements Serializable {
 	
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
-            ResponseJsonView.OrderControllerCreate.class
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +33,8 @@ public class Service implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
-            ResponseJsonView.OrderControllerCreate.class
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)

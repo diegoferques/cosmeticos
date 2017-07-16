@@ -34,12 +34,18 @@ public class Professional  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfessional;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     private String nameProfessional;
 
     private String cnpj;
@@ -59,7 +65,10 @@ public class Professional  implements Serializable {
     @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     private Date dateRegister;
 	
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
