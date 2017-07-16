@@ -159,7 +159,7 @@ public class OrderController {
 
     }
 
-    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
+    @JsonView(ResponseJsonView.OrderControllerFindBy.class)
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findBy(@ModelAttribute Order bindableQueryObject) {
 
