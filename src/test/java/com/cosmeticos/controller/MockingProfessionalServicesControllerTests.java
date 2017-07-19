@@ -4,7 +4,6 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.commons.google.LocationGoogle;
-import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.model.Service;
@@ -15,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,7 +34,7 @@ public class MockingProfessionalServicesControllerTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
+    @MockBean
     private LocationService locationService;
 
     @Test
@@ -45,7 +45,7 @@ public class MockingProfessionalServicesControllerTests {
         sourceLocation.setLng(-43.5109277);
 
         Mockito.when(
-                locationService.getGeoCode(Mockito.notNull(Address.class))
+                locationService.getGeoCode(Mockito.any())
         ).thenReturn(sourceLocation);
 
         String emailUsuario = "nearby@email.com";
