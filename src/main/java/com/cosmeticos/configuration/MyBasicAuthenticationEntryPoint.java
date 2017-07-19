@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Created by matto on 15/07/2017.
+ * Created by matto on 19/07/2017.
  */
 @Component
 public class MyBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
@@ -28,7 +28,7 @@ public class MyBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoi
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        setRealmName("Baeldung");
+        setRealmName("Cosmeticos");
         super.afterPropertiesSet();
     }
 }
