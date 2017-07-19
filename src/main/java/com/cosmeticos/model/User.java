@@ -37,7 +37,10 @@ public class User implements Serializable {
     private String password;
 
     @Column(unique = true)
-    @JsonView(ResponseJsonView.WalletsFindAll.class)
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     private String email;
 
     private String sourceApp;

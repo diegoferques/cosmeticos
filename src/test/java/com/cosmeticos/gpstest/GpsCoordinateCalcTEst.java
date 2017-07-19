@@ -1,5 +1,7 @@
 package com.cosmeticos.gpstest;
 
+import com.cosmeticos.commons.google.GoogleMapsResponseBody;
+import com.cosmeticos.commons.google.LocationGoogle;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,11 +57,11 @@ public class GpsCoordinateCalcTEst {
         ResponseEntity<GoogleMapsResponseBody> destinyResponse =
                 restTemplate.getForEntity(urlDestiny, GoogleMapsResponseBody.class);
 
-        Location sourceLocation = sourceResponse.getBody().getResults()
+        LocationGoogle sourceLocation = sourceResponse.getBody().getResults()
                 .stream().findFirst().get()
                 .getGeometry().getLocation();
 
-        Location destinyLocation = destinyResponse.getBody().getResults()
+        LocationGoogle destinyLocation = destinyResponse.getBody().getResults()
                 .stream().findFirst().get()
                 .getGeometry().getLocation();
 

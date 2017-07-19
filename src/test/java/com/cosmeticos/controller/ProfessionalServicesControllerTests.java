@@ -91,6 +91,7 @@ public class ProfessionalServicesControllerTests {
 
 	}
 
+	//@Ignore
 	@Test
 	public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 

@@ -78,6 +78,8 @@ public class OrderController {
 
             } else {
                 Order order = orderService.update(request);
+                order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
+                order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
 
                 order.setProfessionalServices(null);
                 order.setIdCustomer(null);
@@ -88,6 +90,17 @@ public class OrderController {
                         new ObjectMapper().writeValueAsString(responseBody));
                 return ok(responseBody);
             }
+        } catch (IllegalStateException e) {
+
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody response = new OrderResponseBody();
+            response.setDescription(e.getMessage());
+
+            log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
@@ -146,7 +159,7 @@ public class OrderController {
 
     }
 
-    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
+    @JsonView(ResponseJsonView.OrderControllerFindBy.class)
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findBy(@ModelAttribute Order bindableQueryObject) {
 

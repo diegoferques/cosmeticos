@@ -22,12 +22,20 @@ import java.util.Collection;
 public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
 	
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idService;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)
     private String category;

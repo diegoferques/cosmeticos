@@ -31,12 +31,18 @@ public class Customer implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    @JsonView(ResponseJsonView.WalletsFindAll.class)
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCustomer;
 
-    @JsonView(ResponseJsonView.WalletsFindAll.class)
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
 
@@ -51,7 +57,10 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthDate;
 
-    @JsonView(ResponseJsonView.WalletsFindAll.class)
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     private String cellPhone;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -60,7 +69,10 @@ public class Customer implements Serializable {
     private Integer status;
 
     @JsonManagedReference(value="user-customer")
-    @JsonView(ResponseJsonView.WalletsFindAll.class)
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
