@@ -2,7 +2,6 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.AddressRepository;
@@ -10,17 +9,16 @@ import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -90,94 +88,6 @@ public class ProfessionalServicesControllerTests {
 		}
 
 
-	}
-
-	@Ignore
-	@Test
-	public void testNearbyWithDistance() throws ParseException, URISyntaxException {
-
-		String emailUsuario = "nearby@email.com";
-
-
-		String json = "{\n" +
-				"  \"professional\": {\n" +
-				"    \"address\": { \n" +
-				"	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
-				"	    \"cep\": \"26083-275\",\n" +
-				"	    \"neighborhood\": \"Rodilândia\",\n" +
-				"	    \"city\": \"Nova Iguaçu\",\n" +
-				"	    \"state\": \"RJ\",\n" +
-				"	    \"country\": \"BR\" \n" +
-				"    },\n" +
-				"    \"birthDate\": 1120705200000,\n" +
-				"    \"cellPhone\": null,\n" +
-				"    \"dateRegister\": null,\n" +
-				"    \"genre\": null,\n" +
-				"    \"status\": null,\n" +
-				"    \"user\": {\n" +
-				"      \"email\": \""+ emailUsuario +"\",\n" +
-				"      \"idLogin\": null,\n" +
-				"      \"password\": \"123\",\n" +
-				"      \"sourceApp\": null,\n" +
-				"      \"username\": \""+ emailUsuario +"\"\n" +
-				"    },\n" +
-				"    \"cnpj\": \"05404277726\",\n" +
-				"    \"idProfessional\": null,\n" +
-				"    \"location\": 506592589,\n" +
-				"    \"nameProfessional\": \"aaa\",\n" +
-				"    \"professionalServicesCollection\": [\n" +
-				"      {\n" +
-				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
-				"        }\n" +
-				"      }\n" +
-				"    ]\n" +
-				"  }\n" +
-				"}";
-
-		System.out.println(json);
-
-
-		RequestEntity<String> entity =  RequestEntity
-				.post(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(json);
-
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
-				.exchange(entity, ProfessionalResponseBody.class);
-
-		Professional professional = exchange.getBody().getProfessionalList().get(0);
-
-		Assert.assertNotNull(professional);
-		Assert.assertNotNull(professional.getAddress());
-		Assert.assertNotNull(professional.getAddress().getLatitude());
-		Assert.assertNotNull(professional.getAddress().getLongitude());
-
-		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
-				restTemplate.exchange( //
-						"/professionalservices/nearby/?service.category=HYDRATION&latitude=-22.7386053&longitude=-43.5108277&radius=6000",
-						HttpMethod.GET, //
-						null,
-						ProfessionalServicesResponseBody.class);
-
-		List<ProfessionalServices> entityList = getExchange.getBody().getProfessionalServicesList();
-
-		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
-		Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
-
-		for (int i = 0; i < entityList.size(); i++) {
-			ProfessionalServices ps =  entityList.get(i);
-
-			Professional p = ps.getProfessional();
-			Service s = ps.getService();
-
-			Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
-			Assert.assertEquals("HYDRATION", s.getCategory());
-			Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
-		}
 	}
 
 	private ProfessionalRequestBody createFakeRequestBody() {
