@@ -20,4 +20,5 @@ public class ResponseJsonView {
     public interface CreditCardFindAll{}
     public interface OrderControllerCreate {}
     public interface OrderControllerUpdate {}
+    public interface OrderControllerFindBy {}
 }

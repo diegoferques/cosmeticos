@@ -184,10 +184,16 @@ public class OrderControllerTests {
           */
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername(System.nanoTime() + "-cliente");
+        c1.getUser().setEmail(System.nanoTime() + "-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername(System.nanoTime() + "-professional");
+        professional.getUser().setEmail(System.nanoTime() + "-professional@bol");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
+
+
         Service service = serviceRepository.findByCategory("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
@@ -264,6 +270,8 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
         Assert.assertEquals("PEDICURE",
                 exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
 
@@ -274,11 +282,14 @@ public class OrderControllerTests {
     @Test public void testaddwallet() throws URISyntaxException {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testaddwallet");
-        c1.getUser().setEmail("testaddwallet@bol");
+        c1.getUser().setUsername("testaddwallet-cliente");
+        c1.getUser().setEmail("testaddwallet-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setEmail("testaddwalletprofessional@bol");
-        professional.getUser().setUsername("testaddwalletprofessional");
+        professional.getUser().setUsername("testaddwallet-professional");
+        professional.getUser().setEmail("testaddwallet-professional@bol");
+
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -420,13 +431,12 @@ public class OrderControllerTests {
     @Test
     public void updateStatusWithJson() throws URISyntaxException {
 
-        /*
-         Preparacao do teste:
-         Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
-         Salvamos tudo no banco.
-          */
         Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("updateStatusWithJson-cliente");
+        c1.getUser().setEmail("updateStatusWithJson-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("updateStatusWithJson-professional");
+        professional.getUser().setEmail("updateStatusWithJson-professional@bol");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -526,13 +536,12 @@ public class OrderControllerTests {
     @Test
     public void testParaTravarUpdateDeStatus() throws URISyntaxException {
 
-        /*
-         Preparacao do teste:
-         Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
-         Salvamos tudo no banco.
-          */
         Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testParaTravarUpdateDeStatus-cliente");
+        c1.getUser().setEmail("testParaTravarUpdateDeStatus-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testParaTravarUpdateDeStatus-professional");
+        professional.getUser().setEmail("testParaTravarUpdateDeStatus-professional@bol");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -723,8 +732,13 @@ public class OrderControllerTests {
 
     @Test
     public void createOrderOk() throws URISyntaxException {
+
         Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
+        c1.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername(System.nanoTime()+ "-createOrderOk" + "-professional");
+        professional.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-professional@bol");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);

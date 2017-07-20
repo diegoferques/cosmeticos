@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Created by matto on 17/06/2017.
  */
-@Slf4j
+ @Slf4j
 @org.springframework.stereotype.Service
 public class OrderService {
 

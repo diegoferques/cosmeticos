@@ -22,14 +22,15 @@ import java.util.Date;
 public class Order implements Serializable {
 
     public enum Status {
-        CREATED,SCHEDULED, ABORTED, EXECUTED, FINISHED_BY_PROFESSIONAL, FINISHED_BY_CUSTOMER_AUTO, FINISHED_BY_CUSTOMER;
+        CREATED, ABORTED, EXECUTED, FINISHED_BY_PROFESSIONAL, FINISHED_BY_CUSTOMER_AUTO, FINISHED_BY_CUSTOMER, SCHEDULED;
     }
 
     private static final long serialVersionUID = 1L;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +38,8 @@ public class Order implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     //@Basic(optional = false)
     //@Column(name = "date")
@@ -46,7 +48,8 @@ public class Order implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Basic(optional = false)
     @Column(name = "status")
@@ -54,14 +57,16 @@ public class Order implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @JoinColumn(name = "scheduleId", referencedColumnName = "scheduleId")
     @ManyToOne(cascade = CascadeType.ALL)
     private Schedule scheduleId;
 
     @JsonView({
-            ResponseJsonView.OrderControllerCreate.class
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @JoinColumns({
         @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional"),
@@ -74,7 +79,8 @@ public class Order implements Serializable {
     private Location idLocation;
 
     @JsonView({
-            ResponseJsonView.OrderControllerCreate.class
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @JoinColumn(name = "idCustomer", referencedColumnName = "idCustomer")
     @ManyToOne(optional = false)

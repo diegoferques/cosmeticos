@@ -16,13 +16,15 @@ public class OrderResponseBody {
     @JsonView(
             {
                 ResponseJsonView.OrderControllerCreate.class,
-                ResponseJsonView.OrderControllerUpdate.class
+                ResponseJsonView.OrderControllerUpdate.class,
+                ResponseJsonView.OrderControllerFindBy.class
             })
     private String description;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private List<Order> orderList = new ArrayList<>(10);
 

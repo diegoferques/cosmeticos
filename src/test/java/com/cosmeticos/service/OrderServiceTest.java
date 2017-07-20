@@ -1,8 +1,9 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,15 +23,12 @@ public class OrderServiceTest {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private PenaltyService penaltyService;
-
     @Test
     public void testUpdateStatus(){
 
         // TODO: insere umas orders com finished by professional e nao confiar no OrderPreLoad
 
-        List<Order> preUpdateallOrders = orderService.findBy(new Order());
+        List<Order> preUpdateallOrders = orderService.find10Lastest();
         int c = 0;
 
         for (Order o: preUpdateallOrders) {
@@ -44,14 +42,10 @@ public class OrderServiceTest {
         orderService.updateStatus();
 
         // assert: nenhuma order do banco pode estar finished_by_professional
-        List<Order> allOrders = orderService.findBy(new Order());
+        List<Order> allOrders = orderService.find10Lastest();
 
         for (Order o: allOrders) {
             Assert.assertNotEquals(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal(), o.getStatus().intValue());
         }
-    }
-
-    public void abort(){
-
     }
 }
