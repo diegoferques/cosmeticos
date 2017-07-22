@@ -39,7 +39,7 @@ public class OrderServiceTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalServicesRepository professionalServicesRepository;
 
     @Autowired
     private ServiceRepository serviceRepository;
@@ -99,8 +99,8 @@ public class OrderServiceTest {
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
         orderRepository.save(o5);
+                    }
 
-    }
 
     @Test
     public void testUpdateStatus(){
