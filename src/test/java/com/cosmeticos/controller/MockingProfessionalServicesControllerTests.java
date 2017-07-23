@@ -38,7 +38,7 @@ public class MockingProfessionalServicesControllerTests {
     @MockBean
     private LocationService locationService;
 
-    @Ignore
+ //   @Ignore
     @Test
     public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 

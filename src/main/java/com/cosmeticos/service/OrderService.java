@@ -1,26 +1,25 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.*;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ServiceRepository;
-import org.hibernate.Criteria;
-import org.hibernate.SharedSessionContract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.data.domain.Example;
-import org.springframework.util.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
+
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.Wallet;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by matto on 17/06/2017.
@@ -37,9 +36,6 @@ public class OrderService {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
-
-    @Autowired
-    private ServiceRepository serviceRepository;
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -88,7 +84,7 @@ public class OrderService {
             //sale.setScheduleId();
 
             //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-            order.setStatus(Order.Status.CREATED.ordinal());
+            order.setStatus(Order.Status.OPEN.ordinal());
 
             Order newOrder = orderRepository.save(order);
 
@@ -129,7 +125,7 @@ public class OrderService {
         Order orderRequest = request.getOrder();
         Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(Order.Status.FINISHED_BY_CUSTOMER.ordinal() == order.getStatus()){
+        if(Order.Status.CLOSED.ordinal() == order.getStatus()){
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
@@ -181,7 +177,7 @@ public class OrderService {
     @Scheduled(cron = "${order.unfinished.cron}")
     public void updateStatus() {
 
-        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.SEMI_CLOSED.ordinal());
 
         int count = onlyOrsersFinishedByProfessionals.size();
 

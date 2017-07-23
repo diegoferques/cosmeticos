@@ -27,9 +27,6 @@ public class OrderPreLoadConfiguration {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
-
-    @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired
@@ -68,7 +65,7 @@ public class OrderPreLoadConfiguration {
         s2.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 04, 11, 0, 0)));
 
         Order o1 = new Order();
-        o1.setStatus(Order.Status.CREATED.ordinal());
+        o1.setStatus(Order.Status.OPEN.ordinal());
         o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
         o1.setIdCustomer(c1);
         //o1.setIdLocation();
@@ -77,7 +74,7 @@ public class OrderPreLoadConfiguration {
         orderRepository.save(o1);
 
         Order o2 = new Order();
-        o2.setStatus(Order.Status.CREATED.ordinal());
+        o2.setStatus(Order.Status.OPEN.ordinal());
         o2.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 20, 0)));
         o2.setIdCustomer(c1);
         //o2.setIdLocation();
@@ -86,7 +83,7 @@ public class OrderPreLoadConfiguration {
         orderRepository.save(o2);
 
         Order o3 = new Order();
-        o3.setStatus(Order.Status.CREATED.ordinal());
+        o3.setStatus(Order.Status.OPEN.ordinal());
         o3.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
@@ -95,29 +92,29 @@ public class OrderPreLoadConfiguration {
         orderRepository.save(o3);
 
         Order o4 = new Order();
-        o4.setStatus(Order.Status.CREATED.ordinal());
+        o4.setStatus(Order.Status.OPEN.ordinal());
         o4.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 40, 0)));
         o4.setIdCustomer(c1);
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
         //o4.setScheduleId(s1);
-        o4.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+        o4.setStatus(Order.Status.SEMI_CLOSED.ordinal());
 
         orderRepository.save(o4);
 
         Order o5 = new Order();
-        o5.setStatus(Order.Status.CREATED.ordinal());
+        o5.setStatus(Order.Status.OPEN.ordinal());
         o5.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 50, 0)));
         o5.setIdCustomer(c1);
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
         //o5.setScheduleId(s2);
-        o5.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+        o5.setStatus(Order.Status.SEMI_CLOSED.ordinal());
         orderRepository.save(o5);
 
         //Scheduled Order
         Order o6 = new Order();
-        o6.setStatus(Order.Status.CREATED.ordinal());
+        o6.setStatus(Order.Status.OPEN.ordinal());
         o6.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 40, 0)));
         o6.setIdCustomer(c1);
         //o6.setIdLocation();
@@ -127,7 +124,7 @@ public class OrderPreLoadConfiguration {
 
         //Scheduled Order
         Order o7 = new Order();
-        o7.setStatus(Order.Status.CREATED.ordinal());
+        o7.setStatus(Order.Status.OPEN.ordinal());
         o7.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 50, 0)));
         o7.setIdCustomer(c1);
         //o5.setIdLocation();

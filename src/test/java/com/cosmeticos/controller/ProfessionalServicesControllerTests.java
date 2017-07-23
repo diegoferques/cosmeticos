@@ -1,12 +1,8 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
-import com.cosmeticos.model.*;
-import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.UserRepository;
+import java.text.ParseException;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.List;
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.ProfessionalServicesResponseBody;
+import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.Service;
+import com.cosmeticos.model.User;
 
 
 @RunWith(SpringRunner.class)
@@ -32,15 +30,6 @@ public class ProfessionalServicesControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
-
-	@Autowired
-	private ProfessionalRepository customerRepository;
-
-	@Autowired
-	private AddressRepository addressRepository;
-
-	@Autowired
-	private UserRepository userRepository;
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -90,20 +79,6 @@ public class ProfessionalServicesControllerTests {
 
 	}
 
-	private ProfessionalRequestBody createFakeRequestBody() {
-		Address address = createFakeAddress();
-		User user = createFakeUser();
-
-		Professional professional = createFakeProfessional();
-		professional.setAddress(address);
-		professional.setUser(user);
-
-		ProfessionalRequestBody requestBody = new ProfessionalRequestBody();
-		requestBody.setProfessional(professional);
-
-		return requestBody;
-	}
-
 	public User createFakeUser() {
 		User u = new User();
 		u.setEmail("diego@bol.com");
@@ -124,21 +99,5 @@ public class ProfessionalServicesControllerTests {
 		a.setState("RJ");
 
 		return a;
-	}
-
-	private Professional createFakeProfessional() {
-		Professional c1 = new Professional();
-		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
-		c1.setCellPhone("(21) 98877-6655");
-		c1.setCnpj("098.765.432-10");
-		c1.setDateRegister(Calendar.getInstance().getTime());
-		c1.setGenre('M');
-		c1.setNameProfessional("João da Silva");
-		//c1.setOrderCollection(null);
-		c1.setStatus(Professional.Status.ACTIVE);
-		c1.setAddress(this.createFakeAddress());
-		c1.setUser(this.createFakeUser());
-
-		return c1;
 	}
 }

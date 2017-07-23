@@ -39,19 +39,6 @@ public class MockingOrderControllerTests {
     @MockBean
     private OrderService orderService;
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private ProfessionalRepository professionalRepository;
-
-    @Autowired
-    private ScheduleRepository scheduleRepository;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-
     @Test
     public void testCreateError500() throws IOException, OrderService.ValidationException {
         /**/
@@ -61,7 +48,7 @@ public class MockingOrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.ABORTED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED.ordinal());
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -86,7 +73,7 @@ public class MockingOrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.ABORTED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED.ordinal());
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);

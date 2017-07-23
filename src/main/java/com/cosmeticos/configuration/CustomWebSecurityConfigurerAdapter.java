@@ -56,10 +56,13 @@ public class CustomWebSecurityConfigurerAdapter extends org.springframework.secu
 
         http.authorizeRequests()
                //.antMatchers("/**").permitAll()
-                .antMatchers("/secure/**").authenticated()
+                	.antMatchers("/secure/**").authenticated()
                 .and()
-                .httpBasic()
-                .authenticationEntryPoint(authenticationEntryPoint);
+                
+                //Referencia: https://github.com/spring-projects/spring-data-examples/tree/master/rest/security
+            		.csrf().disable()
+	                .httpBasic()
+	                .authenticationEntryPoint(authenticationEntryPoint);
 
         /*
         http.authorizeRequests()

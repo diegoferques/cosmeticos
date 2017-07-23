@@ -73,7 +73,7 @@ public class OrderServiceTest {
 
 
         Order o3 = new Order();
-        o3.setStatus(Order.Status.CREATED.ordinal());
+        o3.setStatus(Order.Status.OPEN.ordinal());
         o3.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
@@ -87,7 +87,7 @@ public class OrderServiceTest {
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
         //o4.setScheduleId(s1);
-        o4.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+        o4.setStatus(Order.Status.SEMI_CLOSED.ordinal());
 
         orderRepository.save(o4);
 
@@ -97,7 +97,7 @@ public class OrderServiceTest {
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
         //o5.setScheduleId(s2);
-        o5.setStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+        o5.setStatus(Order.Status.SEMI_CLOSED.ordinal());
         orderRepository.save(o5);
 
     }
@@ -111,7 +111,7 @@ public class OrderServiceTest {
         int c = 0;
 
         for (Order o: preUpdateallOrders) {
-            if(o.getStatus() == Order.Status.FINISHED_BY_PROFESSIONAL.ordinal()){
+            if(o.getStatus() == Order.Status.SEMI_CLOSED.ordinal()){
                 c++;
             }
         }
@@ -125,7 +125,7 @@ public class OrderServiceTest {
         List<Order> allOrders = orderService.findBy(new Order());
 
         for (Order o: allOrders) {
-            Assert.assertNotEquals(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal(), o.getStatus().intValue());
+            Assert.assertNotEquals(Order.Status.SEMI_CLOSED.ordinal(), o.getStatus().intValue());
         }
     }
 }
