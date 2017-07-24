@@ -9,7 +9,6 @@ import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.model.Service;
 import com.cosmeticos.service.LocationService;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -38,7 +37,7 @@ public class MockingProfessionalServicesControllerTests {
     @MockBean
     private LocationService locationService;
 
-    @Ignore
+    //@Ignore
     @Test
     public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 

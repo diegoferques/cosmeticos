@@ -9,17 +9,11 @@ import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ServiceRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Criteria;
-import org.hibernate.SharedSessionContract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.data.domain.Example;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +128,7 @@ public class OrderService {
         Order orderRequest = request.getOrder();
         Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(Order.Status.FINISHED_BY_CUSTOMER.ordinal() == order.getStatus()){
+        if(Order.Status.CLOSED.ordinal() == order.getStatus()){
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 

@@ -156,7 +156,7 @@ public class OrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.ABORTED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED.ordinal());
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -170,7 +170,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals((int) Order.Status.CANCELLED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
 
     }
 
@@ -529,7 +529,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.FINISHED_BY_CUSTOMER.ordinal(),
+        Assert.assertEquals((int) Order.Status.CLOSED.ordinal(),
                 (int)exchangePut.getBody().getOrderList().get(0).getStatus());
     }
 
@@ -634,7 +634,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.FINISHED_BY_CUSTOMER.ordinal(),
+        Assert.assertEquals((int) Order.Status.CLOSED.ordinal(),
                 (int)exchangePut.getBody().getOrderList().get(0).getStatus());
 
         String jsonUpdate2 = "{\n" +
@@ -1063,7 +1063,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(),
+        Assert.assertEquals((int) Order.Status.CANCELLED.ordinal(),
                 (int)exchangePut.getBody().getOrderList().get(0).getStatus());
 
     }
