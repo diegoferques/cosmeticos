@@ -199,7 +199,7 @@ public class JsonizerTest222 {
         s1.setStatus(Schedule.Status.ACTIVE);
 
         Order o1 = new Order();
-        o1.setStatus(Order.Status.CREATED.ordinal());
+        o1.setStatus(Order.Status.OPEN);
         o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
         o1.setIdCustomer(c1);
         //o1.setIdLocation();

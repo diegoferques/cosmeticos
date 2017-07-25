@@ -51,7 +51,7 @@ public class ScheduleService {
         s.setStatus(Schedule.Status.ACTIVE);
 
         Order newOrder = new Order(customerOptional.get(), professionalServices, s);
-        newOrder.setStatus(5); // Scheduled
+        newOrder.setStatus(Order.Status.SCHEDULED); // Scheduled
 
         s.getOrderCollection().add(newOrder);
 

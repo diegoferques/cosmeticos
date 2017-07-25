@@ -14,7 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByIdCustomer_idCustomer(Long idCustomer);
 
 
-    List<Order> findByStatus(int ordinal);
+    List<Order> findByStatus(Order.Status ordinal);
 
     /*
     @Query(value = "SELECT * FROM " +
@@ -34,4 +34,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //List<Order> findByStatusNotLike(String s1);
     //List<Order> findByStatusNotLike(int s1);
     List<Order> findByStatusNotLikeAndStatusNotLike(int s1, int s2);
+
 }

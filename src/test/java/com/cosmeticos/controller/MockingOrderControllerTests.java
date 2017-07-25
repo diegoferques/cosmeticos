@@ -61,7 +61,7 @@ public class MockingOrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.CANCELLED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -86,7 +86,7 @@ public class MockingOrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.CANCELLED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);

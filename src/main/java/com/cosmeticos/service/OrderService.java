@@ -87,7 +87,7 @@ public class OrderService {
             //sale.setScheduleId();
 
             //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-            order.setStatus(Order.Status.CREATED.ordinal());
+            order.setStatus(Order.Status.OPEN);
 
             Order newOrder = orderRepository.save(order);
 
@@ -128,7 +128,7 @@ public class OrderService {
         Order orderRequest = request.getOrder();
         Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(Order.Status.CLOSED.ordinal() == order.getStatus()){
+        if(Order.Status.CLOSED == order.getStatus()){
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
@@ -189,17 +189,17 @@ public class OrderService {
     @Scheduled(cron = "${order.unfinished.cron}")
     public void updateStatus() {
 
-        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.FINISHED_BY_PROFESSIONAL.ordinal());
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.SEMI_CLOSED);
 
         int count = onlyOrsersFinishedByProfessionals.size();
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
 
-            o.setStatus(Order.Status.FINISHED_BY_CUSTOMER_AUTO.ordinal());
+            o.setStatus(Order.Status.AUTO_CLOSED);
 
             orderRepository.save(o);
         }
-        log.info("{} orders foram atualizada para {}.", count, Order.Status.FINISHED_BY_CUSTOMER_AUTO.toString());
+        log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED);
     }
     public void abort(Order order){
         Order o = orderRepository.findOne(order.getIdOrder());
