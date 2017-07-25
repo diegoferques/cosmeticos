@@ -44,7 +44,7 @@ public class OrderServiceTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalServicesRepository professionalServicesRepository;
 
     @Autowired
     private ServiceRepository serviceRepository;
@@ -104,8 +104,8 @@ public class OrderServiceTest {
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
         orderRepository.save(o5);
+                    }
 
-    }
 
     @Ignore //TODO: vinicius corrigira este teste.
     @Test

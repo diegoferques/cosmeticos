@@ -4,6 +4,7 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
+import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.service.OrderService;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +32,9 @@ public class OrderController {
 
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    PenaltyService penaltyService;
 
     @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
@@ -77,6 +81,9 @@ public class OrderController {
                 return badRequest().body(buildErrorResponse(bindingResult));
 
             } else {
+                if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
+                    orderService.abort(request.getOrder());
+                }
                 Order order = orderService.update(request);
                 order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
                 order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
@@ -89,6 +96,7 @@ public class OrderController {
                         order,
                         new ObjectMapper().writeValueAsString(responseBody));
                 return ok(responseBody);
+
             }
         } catch (IllegalStateException e) {
 
