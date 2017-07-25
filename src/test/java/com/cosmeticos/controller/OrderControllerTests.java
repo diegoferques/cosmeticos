@@ -174,6 +174,7 @@ public class OrderControllerTests {
 
     }
 
+    //TODO - Corrigir este teste, pois algo foi alterado e o Schedule esta retornando NULL. Gera erros em outros testes
     @Test
     public void createScheduledOrderOk() throws URISyntaxException {
 
@@ -256,6 +257,8 @@ public class OrderControllerTests {
                "    }\n" +
                "  }\n" +
                "}";
+
+        System.out.println(json);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1067,5 +1070,108 @@ public class OrderControllerTests {
                 (int)exchangePut.getBody().getOrderList().get(0).getStatus());
 
     }
+
+    //TESTANDO O RETORNO DE ORDER SEM EXIBIR OS STATUS CANCELLED
+    @Test
+    public void testFindByStatusNotCancelled() throws ParseException, URISyntaxException {
+
+        createOrderOk();
+
+        Order o1 = orderRestultFrom_createOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"status\" : "+ Order.Status.CANCELLED.ordinal() +"\n" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
+        Assert.assertEquals(Order.Status.CANCELLED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+
+        final ResponseEntity<OrderResponseBody> exchange = //
+                restTemplate.exchange( //
+                        "/orders", //
+                        HttpMethod.GET, //
+                        null,
+                        OrderResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertNotNull(exchange.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+        for (Order order : exchange.getBody().getOrderList()) {
+            //ABAIXO VERIFICAMOS SE NENHUM STATUS DOS PEDISOS SAO CANCELLED OU CLOSED
+            Assert.assertNotEquals(Order.Status.CANCELLED.ordinal(), (int)order.getStatus());
+            Assert.assertNotEquals(Order.Status.CLOSED.ordinal(), (int)order.getStatus());
+        }
+
+    }
+
+    //TESTANDO O RETORNO DE ORDER SEM EXIBIR OS STATUS CLOSED
+    @Test
+    public void testFindByStatusNotClosed() throws ParseException, URISyntaxException {
+
+        createOrderOk();
+
+        Order o1 = orderRestultFrom_createOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
+                "    \"status\" : "+ Order.Status.CLOSED.ordinal() +"\n" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
+        Assert.assertEquals(Order.Status.CLOSED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+
+        final ResponseEntity<OrderResponseBody> exchange = //
+                restTemplate.exchange( //
+                        "/orders", //
+                        HttpMethod.GET, //
+                        null,
+                        OrderResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertNotNull(exchange.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+        for (Order order : exchange.getBody().getOrderList()) {
+            //ABAIXO VERIFICAMOS SE NENHUM STATUS DOS PEDISOS SAO CANCELLED OU CLOSED
+            Assert.assertNotEquals(Order.Status.CANCELLED.ordinal(), (int)order.getStatus());
+            Assert.assertNotEquals(Order.Status.CLOSED.ordinal(), (int)order.getStatus());
+        }
+
+    }
+
 
 }
