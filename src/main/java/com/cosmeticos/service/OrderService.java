@@ -170,6 +170,15 @@ public class OrderService {
         return orderRepository.findAll(Example.of(bindableQueryObject));
     }
 
+    public List<Order> findByStatusNotCancelledOrClosed() {
+        //return orderRepository.findTop10ByOrderByDateDesc();
+        //return orderRepository.findAll(Example.of(bindableQueryObject));
+        //return orderRepository.findAllCustom();
+        //return orderRepository.findByQueryAnnotation();
+        return orderRepository.findByStatusNotLikeAndStatusNotLike(
+                Order.Status.CANCELLED.ordinal(), Order.Status.CLOSED.ordinal());
+    }
+
 
     public class ValidationException extends Exception {
         public ValidationException(String s) {
