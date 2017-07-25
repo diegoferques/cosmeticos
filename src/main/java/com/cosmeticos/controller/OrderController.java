@@ -172,7 +172,8 @@ public class OrderController {
     public HttpEntity<OrderResponseBody> findBy(@ModelAttribute Order bindableQueryObject) {
 
         try {
-            List<Order> entitylist = orderService.findBy(bindableQueryObject);
+            //List<Order> entitylist = orderService.findBy(bindableQueryObject);
+            List<Order> entitylist = orderService.findByStatusNotCancelledOrClosed();
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);
