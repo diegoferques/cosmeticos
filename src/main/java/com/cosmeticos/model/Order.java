@@ -22,7 +22,7 @@ import java.util.Date;
 public class Order implements Serializable {
 
     public enum Status {
-        CREATED, CANCELLED, EXECUTED, FINISHED_BY_PROFESSIONAL, FINISHED_BY_CUSTOMER_AUTO, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED
+        OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED
     }
 
     private static final long serialVersionUID = 1L;
@@ -53,7 +53,8 @@ public class Order implements Serializable {
     })
     @Basic(optional = false)
     @Column(name = "status")
-    private Integer status;
+    @Enumerated(EnumType.ORDINAL)
+    private Status status;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
@@ -93,7 +94,7 @@ public class Order implements Serializable {
         this.idOrder = idOrder;
     }
 
-    public Order(Long idOrder, Date date, Integer status) {
+    public Order(Long idOrder, Date date, Status status) {
         this.idOrder = idOrder;
         this.date = date;
         this.status = status;

@@ -124,22 +124,107 @@ public class OrderControllerTests {
     public void testUpdateOK() throws IOException, URISyntaxException {
 
         /*
+         PRE-CONDICOES para o teste:
+         Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
+         Salvamos tudo no banco.
+          */
+
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testUpdateOK-cliente");
+        c1.getUser().setEmail("testUpdateOK-cliente@bol");
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testUpdateOK-professional");
+        professional.getUser().setEmail("testUpdateOK-professional@bol");
+
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
+
+
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+        /*
+         O teste comeca aqui:
+         Fazemos um json com informacoes que batem com o que foi inserido acima. Nossa pre-condicao pede que 3
+         objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
+         producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
+          */
+        String json = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"status\" : \"ACTIVE\",\n" +
+                "      \"orderCollection\" : [ ]\n" +
+                "    },\n" +
+                "    \"professionalServices\" : {\n" +
+                "      \"service\" : {\n" +
+                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
+                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
+                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
+                "      \"cpf\" : \"816.810.695-68\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \"KILLER\",\n" +
+                "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                "      \"idAddress\" : null\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        ResponseEntity<OrderResponseBody> exchange = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        OrderResponseBody orderResponseBody = exchange.getBody();
+
+        Order orderInserida = orderResponseBody.getOrderList().get(0);
+
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
-                "    \"idOrder\" : 1,\n" +
-                "    \"status\" : "+ Order.Status.ABORTED.ordinal() +"\n" +
-                //"    \"scheduleId\" : {\n" +
-                //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
-                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                //"      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
-                //"    }" +
+                "    \"idOrder\" : "+orderInserida.getIdOrder()+",\n" +
+                "    \"status\" : "+ Order.Status.CANCELLED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
         System.out.println(jsonUpdate);
 
         RequestEntity<String> entityUpdate =  RequestEntity
-                .put(new URI("/orders"))
+                .put(new URI("/orders")) // put pra atualizar o que inserimos la em cima
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
@@ -147,16 +232,18 @@ public class OrderControllerTests {
         ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
-        Assert.assertNotNull(exchangeUpdate);
+        OrderResponseBody responseBodyDoPut = exchangeUpdate.getBody();
+
+        Order orderAtualizada = responseBodyDoPut.getOrderList().get(0);
+
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CANCELLED, orderAtualizada.getStatus());
 
-        */
+/*
 
+        Order s1 = fakeOrder();
 
-        Order s1 = new Order();
-        s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.ABORTED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -170,7 +257,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals( Order.Status.CANCELLED, exchange.getBody().getOrderList().get(0).getStatus()); */
 
     }
 
@@ -268,7 +355,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
@@ -508,8 +595,9 @@ public class OrderControllerTests {
         ResponseEntity<OrderResponseBody> exchange = restTemplate
                 .exchange(entity, OrderResponseBody.class);
 
-        Order newOrder = exchange.getBody().getOrderList().get(0);
-
+        //Order newOrder1 = exchange.getBody().getOrderList().get(0);
+        Order newOrder = orderRepository.findOne(1L);
+        //Order newOrder = newOrder1;
 
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
@@ -529,8 +617,8 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.FINISHED_BY_CUSTOMER.ordinal(),
-                (int)exchangePut.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CLOSED,
+                exchangePut.getBody().getOrderList().get(0).getStatus());
     }
 
     @Test
@@ -634,8 +722,8 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.FINISHED_BY_CUSTOMER.ordinal(),
-                (int)exchangePut.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CLOSED,
+                exchangePut.getBody().getOrderList().get(0).getStatus());
 
         String jsonUpdate2 = "{\n" +
                 "  \"order\" : {\n" +
@@ -805,7 +893,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.CREATED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
 
 
@@ -923,7 +1011,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         //Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Order.Status.SCHEDULED.ordinal(),(int) exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         orderRestultFrom_updateScheduledOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
     }
@@ -961,7 +1049,7 @@ public class OrderControllerTests {
         //TODO - FINALIZAR OS ASSERTS
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        Assert.assertEquals(Order.Status.EXECUTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.EXECUTED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
     }
@@ -1048,7 +1136,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : 2\n" +
+                "    \"status\" : 1\n" +
                 "  }\n" +
                 "}";
 
@@ -1063,8 +1151,8 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(),
-                (int)exchangePut.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CANCELLED,
+                exchangePut.getBody().getOrderList().get(0).getStatus());
 
     }
 
