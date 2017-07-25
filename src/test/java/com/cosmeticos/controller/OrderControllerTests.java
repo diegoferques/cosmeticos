@@ -595,8 +595,8 @@ public class OrderControllerTests {
         ResponseEntity<OrderResponseBody> exchange = restTemplate
                 .exchange(entity, OrderResponseBody.class);
 
-        //Order newOrder1 = exchange.getBody().getOrderList().get(0);
-        Order newOrder = orderRepository.findOne(1L);
+        Order newOrder = exchange.getBody().getOrderList().get(0);
+        //Order newOrder = orderRepository.findOne(1L);
         //Order newOrder = newOrder1;
 
         String jsonUpdate = "{\n" +
