@@ -131,7 +131,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : 1,\n" +
-                "    \"status\" : "+ Order.Status.ABORTED.ordinal() +"\n" +
+                "    \"status\" : "+ Order.Status.ABORTED +"\n" +
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
@@ -153,14 +153,14 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        Assert.assertEquals((int) Order.Status.ABORTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals((int) Order.Status.ABORTED, (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         */
 
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.CANCELLED.ordinal());
+        s1.setStatus(Order.Status.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -174,7 +174,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.CANCELLED.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CANCELLED, exchange.getBody().getOrderList().get(0).getStatus());
 
     }
 
@@ -272,7 +272,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.OPEN.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
@@ -360,12 +360,14 @@ public class OrderControllerTests {
                 "  }\n" +
                 "}";
 
-        RequestEntity
+        RequestEntity<String> entity = RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
+        restTemplate.exchange(entity, OrderResponseBody.class);
+        
         // Antes do 1o request a carteira tem que estar vazia.
         // //Apos o 2o request a carteira ainda tem q estar vazia.
         Assert.assertTrue(professional.getWallet() == null || professional.getWallet().getCustomers().isEmpty());
@@ -414,12 +416,14 @@ public class OrderControllerTests {
                 "  }\n" +
                 "}";
 
-        RequestEntity
+        RequestEntity<String> entityPost2 = RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
+        restTemplate.exchange(entityPost2, OrderResponseBody.class);
+        
         Wallet wallet = walletRepository.findByProfessional_idProfessional(professional.getIdProfessional());//
 
         Assert.assertTrue(wallet != null && !wallet.getCustomers().isEmpty());
@@ -527,8 +531,8 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.CLOSED.ordinal(),
-                (int)exchangePut.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CLOSED,
+                exchangePut.getBody().getOrderList().get(0).getStatus());
     }
 
     @Test
@@ -561,7 +565,7 @@ public class OrderControllerTests {
         String json = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : "+Order.Status.OPEN.ordinal()+",\n" +
+                "    \"status\" : \""+Order.Status.OPEN+"\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleDate\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -617,7 +621,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : "+Order.Status.SEMI_CLOSED.ordinal() + "\n" +
+                "    \"status\" : \""+Order.Status.CLOSED + "\"\n" +
                 "  }\n" +
                 "}";
 
@@ -632,13 +636,13 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals((int) Order.Status.CLOSED.ordinal(),
-                (int)exchangePut.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CLOSED,
+                exchangePut.getBody().getOrderList().get(0).getStatus());
 
         String jsonUpdate2 = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : "+Order.Status.SEMI_CLOSED.ordinal() + "\n" +
+                "    \"status\" : \""+Order.Status.SEMI_CLOSED + "\"\n" +
                 "  }\n" +
                 "}";
 
@@ -801,7 +805,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals((int) Order.Status.OPEN.ordinal(), (int)exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
 
 
@@ -895,7 +899,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
-                "    \"status\" : "+ Order.Status.SCHEDULED.ordinal() +"\n" +
+                "    \"status\" : \""+ Order.Status.SCHEDULED +"\"\n" +
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
@@ -919,7 +923,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         //Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Order.Status.SCHEDULED.ordinal(),(int) exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         orderRestultFrom_updateScheduledOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
     }
@@ -934,7 +938,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
-                "    \"status\" : "+ Order.Status.EXECUTED.ordinal() +"\n" +
+                "    \"status\" : \""+ Order.Status.EXECUTED +"\"\n" +
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
@@ -957,7 +961,7 @@ public class OrderControllerTests {
         //TODO - FINALIZAR OS ASSERTS
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        Assert.assertEquals(Order.Status.EXECUTED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.EXECUTED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
     }

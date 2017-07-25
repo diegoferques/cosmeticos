@@ -1,17 +1,13 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import com.cosmeticos.Application;
 
 /**
  * Created by Vinicius on 15/07/2017.

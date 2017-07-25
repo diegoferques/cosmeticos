@@ -1,9 +1,12 @@
 package com.cosmeticos.service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -84,7 +87,7 @@ public class OrderService {
             //sale.setScheduleId();
 
             //O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-            order.setStatus(Order.Status.OPEN.ordinal());
+            order.setStatus(Order.Status.OPEN);
 
             Order newOrder = orderRepository.save(order);
 
@@ -125,7 +128,7 @@ public class OrderService {
         Order orderRequest = request.getOrder();
         Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
-        if(Order.Status.CLOSED.ordinal() == order.getStatus()){
+        if(Order.Status.CLOSED == order.getStatus()){
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
@@ -153,8 +156,6 @@ public class OrderService {
             order.setScheduleId(orderRequest.getScheduleId());
         }
 
-
-
         return orderRepository.save(order);
     }
 
@@ -174,20 +175,25 @@ public class OrderService {
         }
     }
 
+    @Ignore //TODO: vinicius precisa corrigir. Card https://trello.com/c/q7U2dl9K
     @Scheduled(cron = "${order.unfinished.cron}")
     public void updateStatus() {
 
-        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.SEMI_CLOSED.ordinal());
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.SEMI_CLOSED);
 
         int count = onlyOrsersFinishedByProfessionals.size();
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
-
-            o.setStatus(Order.Status.FINISHED_BY_CUSTOMER_AUTO.ordinal());
-
-            orderRepository.save(o);
+        	LocalDate lastUpdateLocalDate = o.getLastUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        	
+        	LocalDate limitDate = LocalDate.now().minusDays(5);
+            
+        	if (lastUpdateLocalDate.isBefore(limitDate)) {
+				o.setStatus(Order.Status.AUTO_CLOSED);
+				orderRepository.save(o);
+			}
         }
-        log.info("{} orders foram atualizada para {}.", count, Order.Status.FINISHED_BY_CUSTOMER_AUTO.toString());
+        log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
     }
 
 }

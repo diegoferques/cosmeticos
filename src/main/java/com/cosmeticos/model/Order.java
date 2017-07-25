@@ -4,23 +4,15 @@
  */
 package com.cosmeticos.model;
 
-import static com.cosmeticos.model.Order.Status.ACCEPTED;
-import static com.cosmeticos.model.Order.Status.CANCELLED;
-import static com.cosmeticos.model.Order.Status.CLOSED;
-import static com.cosmeticos.model.Order.Status.INPROGRESS;
-import static com.cosmeticos.model.Order.Status.OPEN;
-import static com.cosmeticos.model.Order.Status.SCHEDULED;
-import static com.cosmeticos.model.Order.Status.SEMI_CLOSED;
-
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -46,7 +38,7 @@ import lombok.Data;
 public class Order implements Serializable {
 
 	public enum Status {
-		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, FINISHED_BY_CUSTOMER_AUTO, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED
+		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -68,7 +60,8 @@ public class Order implements Serializable {
 			ResponseJsonView.OrderControllerFindBy.class })
 	@Basic(optional = false)
 	@Column(name = "status")
-	private Integer status;
+	@Enumerated(EnumType.ORDINAL)
+	private Status status;
 
 	@JsonView({ ResponseJsonView.OrderControllerCreate.class, ResponseJsonView.OrderControllerUpdate.class,
 			ResponseJsonView.OrderControllerFindBy.class })
@@ -91,18 +84,12 @@ public class Order implements Serializable {
 	@ManyToOne(optional = false)
 	private Customer idCustomer;
 
-	/**
-	 * "(Status atual, Status permitidos[])"
-	 */
-	private Map<Order.Status, Order.Status[]> statusChangeMatrix;
-
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastUpdate;
+	
+	
+	
 	public Order() {
-		statusChangeMatrix = new HashMap<>();
-		statusChangeMatrix.put(OPEN, new Status[] { ACCEPTED, SCHEDULED, CANCELLED });
-		statusChangeMatrix.put(ACCEPTED, new Status[] { INPROGRESS, CANCELLED });
-		statusChangeMatrix.put(SCHEDULED, new Status[] { CANCELLED, INPROGRESS });
-		statusChangeMatrix.put(INPROGRESS, new Status[] { SEMI_CLOSED, CANCELLED, SCHEDULED });
-		statusChangeMatrix.put(SEMI_CLOSED, new Status[] { CLOSED });
 	}
 
 	public Order(Long idOrder) {
@@ -110,7 +97,7 @@ public class Order implements Serializable {
 		this.idOrder = idOrder;
 	}
 
-	public Order(Long idOrder, Date date, Integer status) {
+	public Order(Long idOrder, Date date, Status status) {
 		this();
 		this.idOrder = idOrder;
 		this.date = date;
@@ -124,36 +111,6 @@ public class Order implements Serializable {
 		this.scheduleId = scheduleId;
 	}
 
-	/**
-	 * Antes de atribuir o status, verificamos se a transicao do status antigo pro
-	 * novo eh permitida.
-	 * 
-	 * @param status
-	 */
-	public void setStatus(Integer statusOrdinal) {
-		
-		Status statusCandidate = null;
-		try {
-			statusCandidate = Status.values()[statusOrdinal];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new IllegalArgumentException(statusOrdinal + " nao eh um status valido.");
-		}
-
-		
-		Status statusCurrent = Status.values()[getStatus()];
-
-		Status[] allowedStatus = this.statusChangeMatrix.get(statusCurrent);
-
-		try {
-			Status newStatus = allowedStatus[statusCandidate.ordinal()];
-			this.status = newStatus.ordinal();
-		} catch (ArrayIndexOutOfBoundsException e) {
-			String msg = String.format("Nao eh permitido mudar do status %s para o status %s ou %d eh um ordinal invalido.", statusCurrent,
-					statusCandidate);
-			
-			throw new IllegalStateException(msg);
-		}
-	}
 
 	@Override
 	public int hashCode() {
