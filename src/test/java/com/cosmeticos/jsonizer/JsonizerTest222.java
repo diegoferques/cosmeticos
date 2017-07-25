@@ -1,20 +1,30 @@
 package com.cosmeticos.jsonizer;
 
-import com.cosmeticos.commons.*;
-import com.cosmeticos.controller.CustomerController;
-import com.cosmeticos.controller.CustomerControllerTests;
-import com.cosmeticos.controller.ProfessionalControllerTests;
-import com.cosmeticos.controller.UserControllerTest;
-import com.cosmeticos.model.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.Test;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashSet;
+
+import org.junit.Test;
+
+import com.cosmeticos.commons.CustomerRequestBody;
+import com.cosmeticos.commons.HabilityRequestBody;
+import com.cosmeticos.commons.ProfessionalRequestBody;
+import com.cosmeticos.commons.RoleRequestBody;
+import com.cosmeticos.commons.ScheduleRequestBody;
+import com.cosmeticos.commons.UserRequestBody;
+import com.cosmeticos.controller.CustomerControllerTests;
+import com.cosmeticos.model.Address;
+import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Hability;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.Role;
+import com.cosmeticos.model.Service;
+import com.cosmeticos.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Created by Lulu on 30/05/2017.
@@ -162,54 +172,4 @@ public class JsonizerTest222 {
 
         System.out.println(json);
     }
-
-    public static void main(String args[]) throws Exception {
-        ObjectMapper om = new ObjectMapper();
-        om.enable(SerializationFeature.INDENT_OUTPUT);
-
-        //User
-        User u1 = new User();
-        u1.setUsername("KILLER");
-        u1.setPassword("109809876");
-        u1.setEmail("Killer@gmail.com");
-        u1.setSourceApp("facebook");
-        Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.setUser(u1);
-
-        Professional p = new Professional();
-        p.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1991, 10, 21, 0, 0, 0)));
-        p.setCellPhone("(21) 99887-7665");
-        p.setDateRegister(Calendar.getInstance().getTime());
-        p.setGenre('F');
-        p.setNameProfessional("Fernanda Cavalcante");
-        p.setStatus(Professional.Status.INACTIVE);
-
-        Service srv1 = new Service();
-        srv1.setCategory("MASSAGISTA");
-
-        ProfessionalServices ps1 = new ProfessionalServices();
-        ps1.setProfessional(p);
-        ps1.setService(srv1);
-
-        p.getProfessionalServicesCollection().add(ps1);
-
-        //Schedule s1 = scheduleRepository.findOne(1L);
-        Schedule s1 = new Schedule();
-        s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 10, 14, 00, 0)));
-        s1.setStatus(Schedule.Status.ACTIVE);
-
-        Order o1 = new Order();
-        o1.setStatus(Order.Status.OPEN);
-        o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
-        o1.setIdCustomer(c1);
-        //o1.setIdLocation();
-        o1.setScheduleId(s1);
-
-        OrderRequestBody or = new OrderRequestBody();
-        or.setOrder(o1);
-
-        String json = om.writeValueAsString(or);
-        System.out.println(json);
-    }
-
 }

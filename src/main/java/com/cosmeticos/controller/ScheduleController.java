@@ -24,21 +24,6 @@ public class ScheduleController {
 
     private @Autowired ScheduleService service;
 
-    @RequestMapping(path = "/schedules", method = RequestMethod.POST)
-    public HttpEntity<ScheduleResponseBody> create(@Valid @RequestBody ScheduleRequestBody request, BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors()) {
-            log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
-            return badRequest().body(buildErrorResponse(bindingResult));
-        }
-        else
-        {
-            Schedule s = service.create(request);
-            log.info("Schedule adicionado com sucesso:  [{}]", s);
-            return ok().       build();
-        }
-    }
-
     @RequestMapping(path = "/schedules", method = RequestMethod.PUT)
     public HttpEntity<ScheduleResponseBody> update(@Valid @RequestBody ScheduleRequestBody request, BindingResult bindingResult) {
 

@@ -53,6 +53,7 @@ public class ProfessionalService {
 
         configureHability(request.getProfessional(), newProfessional);
         configureProfessionalServices(request.getProfessional(), newProfessional);
+        
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
     }
@@ -97,6 +98,8 @@ public class ProfessionalService {
                 //addressService.updateGeocodeFromProfessional(professional);
             }
 
+            configureProfessionalServices(cr, professional);
+            
             professionalRepository.save(professional);
 
             return Optional.of(professional);
