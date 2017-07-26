@@ -34,11 +34,23 @@ public class CustomerControllerTests {
 
 	private Customer testCreateOK;
 
+	private String emailTeste = "";
+
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
 	@Test
 	public void testCreateOK() throws IOException, URISyntaxException {
+
+		String email;
+
+		if(emailTeste.isEmpty()) {
+			email = "b@b.com";
+		} else {
+			email = emailTeste;
+		}
+
+		System.out.println("Email em uso: " + email);
 
 		String content = "{\n" +
 				"   \"customer\":{\n" +
@@ -57,7 +69,7 @@ public class CustomerControllerTests {
 				"      \"genre\":null,\n" +
 				"      \"status\":null,\n" +
 				"      \"user\":{\n" +
-				"         \"email\":\"b@b.com\",\n" +
+				"         \"email\":\""+ email +"\",\n" +
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"123\",\n" +
 				"         \"sourceApp\":null,\n" +
@@ -182,6 +194,70 @@ public class CustomerControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+	}
+
+	//RNF68
+	@Test
+	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
+		emailTeste = "emailteste@email.com";
+		testCreateOK();
+
+		Customer c1 = testCreateOK;
+
+	/*
+
+		String json = "{\n" +
+				"   \"customer\":{\n" +
+				"      \"idCustomer\":"+ c1.getIdCustomer() +",\n" +
+				//"      \"cellPhone\":null,\n" +
+				//"      \"dateRegister\":null,\n" +
+				//"      \"genre\":null,\n" +
+				//"      \"status\":null,\n" +
+				"      \"user\":{\n" +
+				"         \"email\":\""+ emailTeste +"\",\n" +
+				"         \"idLogin\":"+c1.getUser().getIdLogin()+"\n" +
+				//"         \"password\":\"123\",\n" +
+				//"         \"sourceApp\":null,\n" +
+				//"         \"username\":\"b@b.com\"\n" +
+				"      },\n" +
+				//"      \"cpf\":\"05404577726\",\n" +
+				//"      \"idAddress\":null,\n" +
+				//"      \"idCustomer\":null,\n" +
+				//"      \"idLogin\":null,\n" +
+				"      \"nameCustomer\":\"Usuario Alterado\"\n" +
+				"   }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.put(new URI("/customers"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<CustomerResponseBody> exchange = restTemplate
+				.exchange(entity, CustomerResponseBody.class);
+
+	*/
+		c1.getUser().setEmail(emailTeste);
+
+		CustomerRequestBody cr = new CustomerRequestBody();
+		cr.setCustomer(c1);
+
+		final ResponseEntity<CustomerResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/customers", //
+						HttpMethod.PUT, //
+						new HttpEntity(cr), // Body
+						CustomerResponseBody.class);
+
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+
 
 	}
 

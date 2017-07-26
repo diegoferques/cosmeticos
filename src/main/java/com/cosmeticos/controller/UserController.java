@@ -47,6 +47,12 @@ public class UserController {
                 log.error("Nao e permitido cadastro de usuario associados a cartoes pre-existentes.");
                 return badRequest().body(responseBody);
 
+            } else if(service.verifyEmailExists(request.getEntity().getEmail())) {
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("E-mail já existente.");
+                log.error("Nao e permitido cadastro de usuario associados a emails pre-existentes.");
+                return badRequest().body(responseBody);
+
             } else {
                 User u = service.create(request);
                 log.info("User adicionado com sucesso:  [{}]", u);
@@ -82,7 +88,14 @@ public class UserController {
 
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("Entity ID must to be set!");
-                log.error("BAD REQUEST: Entity ID must to be set!");                return badRequest().body(responseBody);
+                log.error("BAD REQUEST: Entity ID must to be set!");
+                return badRequest().body(responseBody);
+
+            } else if(service.verifyEmailExists(request.getEntity().getEmail())) {
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("E-mail já existente.");
+                log.error("Nao e permitido atualizar usuario para um novo emails pre-existentes.");
+                return badRequest().body(responseBody);
 
             } else {
 

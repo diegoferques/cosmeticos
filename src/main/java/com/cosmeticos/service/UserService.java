@@ -64,4 +64,14 @@ public class UserService {
         return StreamSupport.stream(result.spliterator(), false)
                 .collect(Collectors.toList());
     }
+
+    public Boolean verifyEmailExists(String email) {
+        Optional<User> userOptional = repository.findByEmail(email);
+
+        if(userOptional.isPresent()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
