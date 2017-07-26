@@ -91,16 +91,17 @@ public class CustomerControllerTests {
 	//TESTEI DAS DUAS FORMAS (COMENTADA E DESCOMENTADA), FIQUEI MAIS DE 1 HORA TENTANDO RESOLVER
 	//PAREI PARA DAR CONTINUIDADE NO MEU CARD RFN42
 	// TODO: corrigir este teste pq esta chegando customer null no controller
-	@Ignore
+	//@Ignore
 	@Test
 	public void testUpdateOK() throws IOException, URISyntaxException {
 		this.testCreateOK();
 
-		/*
 		String content = "{\n" +
 				"   \"customer\":{\n" +
 				"      \"idCustomer\":"+ testCreateOK.getIdCustomer() +",\n" +
-				"      \"nameCustomer\":\"Diego Fernandes Marques da Silva\"\n" +
+				"      \"nameCustomer\":\"Diego Fernandes Marques da Silva\",\n" +
+				"      \"birthDate\":\""+Calendar.getInstance().getTime().getTime()+"\",\n" +
+				"      \"cpf\":\"05406688898\"\n" +
 				"   }\n" +
 				"}";
 
@@ -118,8 +119,8 @@ public class CustomerControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 		Assert.assertEquals("Diego Fernandes Marques da Silva", exchange.getBody().getCustomerList().get(0).getNameCustomer());
-		 */
 
+/*
 		Customer c1 = testCreateOK;
 		c1.setNameCustomer("Diego Fernandes Marques da Silva");
 
@@ -136,6 +137,7 @@ public class CustomerControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 		Assert.assertEquals("Diego Fernandes Marques da Silva", exchange.getBody().getCustomerList().get(0).getNameCustomer());
+		*/
 	}
 
 	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection

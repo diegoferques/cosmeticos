@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -187,7 +186,6 @@ public class OrderService {
         }
     }
 
-    @Ignore //TODO: vinicius precisa corrigir. Card https://trello.com/c/q7U2dl9K
     @Scheduled(cron = "${order.unfinished.cron}")
     public void updateStatus() {
 
