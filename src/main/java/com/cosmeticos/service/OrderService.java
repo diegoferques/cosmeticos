@@ -1,28 +1,22 @@
 package com.cosmeticos.service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.model.*;
+import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Wallet;
-import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by matto on 17/06/2017.

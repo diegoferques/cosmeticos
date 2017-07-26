@@ -49,6 +49,8 @@ public class ProfessionalControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
+	private Professional returnOfCreateOK = null;
+
 	private Professional returnOfCreateOKWithAddress = null;
 
 	private String emailUsuario = null;
@@ -63,6 +65,10 @@ public class ProfessionalControllerTests {
 
 	@Test
 	public void testCreateOK() throws IOException, URISyntaxException {
+		String email = "a@a.com";
+		if(!StringUtils.isEmpty(emailUsuario)) {
+			email = emailUsuario;
+		}
 
 		String json = "{\n" +
 				"  \"professional\": {\n" +
@@ -73,11 +79,11 @@ public class ProfessionalControllerTests {
 				"    \"genre\": null,\n" +
 				"    \"status\": null,\n" +
 				"    \"user\": {\n" +
-				"      \"email\": \"a@a.com\",\n" +
+				"      \"email\": \""+ email +"\",\n" +
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"      \"username\": \"a@a.com\"\n" +
+				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
 				"    \"idProfessional\": null,\n" +
@@ -107,6 +113,8 @@ public class ProfessionalControllerTests {
 				
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+		returnOfCreateOK = exchange.getBody().getProfessionalList().get(0);
 	}
 
 	@Test
@@ -651,6 +659,93 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
 	}
+
+	@Test
+	public void testCreateUserEmailBadRequest() throws IOException, URISyntaxException {
+		emailUsuario = "onemoretest@email.com";
+
+		testCreateOK();
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": null,\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"user\": {\n" +
+				"      \"email\": \""+ returnOfCreateOK.getUser().getEmail() +"\",\n" +
+				"      \"idLogin\": null,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"0984068791\",\n" +
+				"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"Repeated Email\",\n" +
+				"    \"professionalServicesCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"service\": {\n" +
+				"          \"category\": \"HYDRATION\",\n" +
+				"          \"idService\": 2\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+	}
+
+	@Test
+	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
+		emailUsuario = "onemorecheck@email.com";
+
+		testCreateOK();
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": "+ returnOfCreateOK.getIdProfessional() +",\n" +
+				"    \"user\": {\n" +
+				"      \"idLogin\": "+ returnOfCreateOK.getUser().getIdLogin() +",\n" +
+				"      \"email\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
+				"    },\n" +
+				"    \"nameProfessional\": \"Another Repeated Email\"\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+
+		RequestEntity<String> entity =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+	}
+
 
 	static Address createFakeAddress() {
 		Address a = new Address();

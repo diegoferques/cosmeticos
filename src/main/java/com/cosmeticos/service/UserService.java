@@ -66,6 +66,7 @@ public class UserService {
     }
 
     public Boolean verifyEmailExists(String email) {
+
         Optional<User> userOptional = repository.findByEmail(email);
 
         if(userOptional.isPresent()) {
@@ -73,5 +74,6 @@ public class UserService {
         } else {
             return false;
         }
+
     }
 }

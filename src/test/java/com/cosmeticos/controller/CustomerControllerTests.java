@@ -1,7 +1,6 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
@@ -72,7 +71,7 @@ public class CustomerControllerTests {
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"123\",\n" +
 				"         \"sourceApp\":null,\n" +
-				"         \"username\":\"b@b.com\"\n" +
+				"         \"username\":\""+ email +"\"\n" +
 				"      },\n" +
 				"      \"cpf\":\"05404577726\",\n" +
 				"      \"idAddress\":null,\n" +
@@ -105,6 +104,7 @@ public class CustomerControllerTests {
 	//@Ignore
 	@Test
 	public void testUpdateOK() throws IOException, URISyntaxException {
+		emailTeste = "emailUpdateOk@teste.com";
 		this.testCreateOK();
 
 		String content = "{\n" +
@@ -151,7 +151,6 @@ public class CustomerControllerTests {
 		*/
 	}
 
-	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection
 	@Test
 	public void testFindById() throws ParseException {
 
@@ -198,6 +197,60 @@ public class CustomerControllerTests {
 
 	}
 
+	@Test
+	public void testCreateUserEmailBadRequest() throws IOException, URISyntaxException {
+
+		emailTeste = "emailcreateteste@email.com";
+		testCreateOK();
+
+		System.out.println("Email em uso: " + emailTeste);
+
+		String content = "{\n" +
+				"   \"customer\":{\n" +
+				"      \"address\":{\n" +
+				"         \"address\":null,\n" +
+				"         \"cep\":null,\n" +
+				"         \"city\":null,\n" +
+				"         \"country\":null,\n" +
+				"         \"idAddress\":null,\n" +
+				"         \"neighborhood\":null,\n" +
+				"         \"state\":null\n" +
+				"      },\n" +
+				"      \"birthDate\":1310353200000,\n" +
+				"      \"cellPhone\":null,\n" +
+				"      \"dateRegister\":null,\n" +
+				"      \"genre\":null,\n" +
+				"      \"status\":null,\n" +
+				"      \"user\":{\n" +
+				"         \"email\":\""+ emailTeste +"\",\n" +
+				"         \"idLogin\":null,\n" +
+				"         \"password\":\"a1b2c3\",\n" +
+				"         \"sourceApp\":null,\n" +
+				"         \"username\":\""+ emailTeste +"\"\n" +
+				"      },\n" +
+				"      \"cpf\":\"09840387913\",\n" +
+				"      \"idAddress\":null,\n" +
+				"      \"idCustomer\":null,\n" +
+				"      \"idLogin\":null,\n" +
+				"      \"nameCustomer\":\"Doug\"\n" +
+				"   }\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/customers"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(content);
+
+		ResponseEntity<CustomerResponseBody> exchange = restTemplate
+				.exchange(entity, CustomerResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+	}
+
+
 	//RNF68
 	@Test
 	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
@@ -206,26 +259,13 @@ public class CustomerControllerTests {
 
 		Customer c1 = testCreateOK;
 
-	/*
-
 		String json = "{\n" +
 				"   \"customer\":{\n" +
 				"      \"idCustomer\":"+ c1.getIdCustomer() +",\n" +
-				//"      \"cellPhone\":null,\n" +
-				//"      \"dateRegister\":null,\n" +
-				//"      \"genre\":null,\n" +
-				//"      \"status\":null,\n" +
 				"      \"user\":{\n" +
 				"         \"email\":\""+ emailTeste +"\",\n" +
 				"         \"idLogin\":"+c1.getUser().getIdLogin()+"\n" +
-				//"         \"password\":\"123\",\n" +
-				//"         \"sourceApp\":null,\n" +
-				//"         \"username\":\"b@b.com\"\n" +
 				"      },\n" +
-				//"      \"cpf\":\"05404577726\",\n" +
-				//"      \"idAddress\":null,\n" +
-				//"      \"idCustomer\":null,\n" +
-				//"      \"idLogin\":null,\n" +
 				"      \"nameCustomer\":\"Usuario Alterado\"\n" +
 				"   }\n" +
 				"}";
@@ -240,20 +280,6 @@ public class CustomerControllerTests {
 
 		ResponseEntity<CustomerResponseBody> exchange = restTemplate
 				.exchange(entity, CustomerResponseBody.class);
-
-	*/
-		c1.getUser().setEmail(emailTeste);
-
-		CustomerRequestBody cr = new CustomerRequestBody();
-		cr.setCustomer(c1);
-
-		final ResponseEntity<CustomerResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/customers", //
-						HttpMethod.PUT, //
-						new HttpEntity(cr), // Body
-						CustomerResponseBody.class);
-
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
