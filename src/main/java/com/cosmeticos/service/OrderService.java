@@ -1,23 +1,28 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.*;
-import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.StringUtils;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
+
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.Wallet;
+import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by matto on 17/06/2017.
@@ -181,7 +186,6 @@ public class OrderService {
         }
     }
 
-    @Ignore //TODO: vinicius precisa corrigir. Card https://trello.com/c/q7U2dl9K
     @Scheduled(cron = "${order.unfinished.cron}")
     public void updateStatus() {
 
