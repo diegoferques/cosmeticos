@@ -1189,7 +1189,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
-        Assert.assertEquals(Order.Status.CANCELLED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CANCELLED.ordinal(), exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         final ResponseEntity<OrderResponseBody> exchange = //
                 restTemplate.exchange( //
@@ -1204,8 +1204,8 @@ public class OrderControllerTests {
 
         for (Order order : exchange.getBody().getOrderList()) {
             //ABAIXO VERIFICAMOS SE NENHUM STATUS DOS PEDISOS SAO CANCELLED OU CLOSED
-            Assert.assertNotEquals(Order.Status.CANCELLED.ordinal(), (int)order.getStatus());
-            Assert.assertNotEquals(Order.Status.CLOSED.ordinal(), (int)order.getStatus());
+            Assert.assertNotEquals(Order.Status.CANCELLED.ordinal(), order.getStatus());
+            Assert.assertNotEquals(Order.Status.CLOSED.ordinal(), order.getStatus());
         }
 
     }
@@ -1240,7 +1240,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
-        Assert.assertEquals(Order.Status.CLOSED.ordinal(), (int)exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CLOSED.ordinal(), exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         final ResponseEntity<OrderResponseBody> exchange = //
                 restTemplate.exchange( //
@@ -1255,8 +1255,8 @@ public class OrderControllerTests {
 
         for (Order order : exchange.getBody().getOrderList()) {
             //ABAIXO VERIFICAMOS SE NENHUM STATUS DOS PEDISOS SAO CANCELLED OU CLOSED
-            Assert.assertNotEquals(Order.Status.CANCELLED.ordinal(), (int)order.getStatus());
-            Assert.assertNotEquals(Order.Status.CLOSED.ordinal(), (int)order.getStatus());
+            Assert.assertNotEquals(Order.Status.CANCELLED.ordinal(), order.getStatus());
+            Assert.assertNotEquals(Order.Status.CLOSED.ordinal(), order.getStatus());
         }
 
     }

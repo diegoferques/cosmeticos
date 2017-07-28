@@ -117,7 +117,7 @@ public class OrderServiceTest {
         }
 
         Assert.assertTrue("PAra prosseguirmos com este teste, " +
-                "devemos ter Orders no banco com status FINISHED_BY_PROFESSIONAL", c > 0);
+                "devemos ter Orders no banco com status SEMI_CLOSED", c > 0);
 
         orderService.updateStatus();
 

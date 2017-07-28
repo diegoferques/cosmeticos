@@ -105,8 +105,7 @@ public class OrderPreLoadConfiguration {
 
         orderRepository.save(o4);
 
-        Order o5 = new Order();//naum tem.. posso trocar aki? nem precisa trocar, pode ate pegar esse aki mesmo, mas vc sabe qual eh o id dessa order?5? 5 eh o nome da variavel.. podem haver cards q vao incluir orders antes dessa o5, e isso vai mudar o id dela no banco.. por isso que nao da pra confiar em informacao externa do teste. O ideal, é vc criar a order q vc vai alterar dentro do proprio teste.saquei.. setup neh?
-        // se for usar setup, vai ter q criar um aclasse só pra esse teste. Prefere?melhor pow. Maos a obra entao.. vo ali dar uma barrigada ek ja voltokkkkk.. jah eh..
+        Order o5 = new Order();
         o5.setStatus(Order.Status.OPEN);
         o5.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 50, 0)));
         o5.setIdCustomer(c1);
