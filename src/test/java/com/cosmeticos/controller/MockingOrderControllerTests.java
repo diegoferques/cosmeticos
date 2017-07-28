@@ -1,18 +1,7 @@
 package com.cosmeticos.controller;
 
-/**
- * Created by matto on 28/06/2017.
- */
+import java.io.IOException;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ScheduleRepository;
-import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
+/**
+ * Created by matto on 28/06/2017.
+ */
+
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.service.OrderService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,19 +35,6 @@ public class MockingOrderControllerTests {
 
     @MockBean
     private OrderService orderService;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private ProfessionalRepository professionalRepository;
-
-    @Autowired
-    private ScheduleRepository scheduleRepository;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
 
     @Test
     public void testCreateError500() throws IOException, OrderService.ValidationException {

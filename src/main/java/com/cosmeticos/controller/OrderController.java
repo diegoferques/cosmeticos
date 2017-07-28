@@ -81,7 +81,7 @@ public class OrderController {
                 return badRequest().body(buildErrorResponse(bindingResult));
 
             } else {
-                if (request.getOrder().getStatus() == Order.Status.CANCELLED) {
+                if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
                 }
                 Order order = orderService.update(request);

@@ -1,14 +1,19 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.commons.ProfessionalservicesRequestBody;
-import com.cosmeticos.model.*;
-import com.cosmeticos.repository.*;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.User;
+import com.cosmeticos.model.Wallet;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.*;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -26,12 +31,6 @@ public class ProfessionalPreLoadConfiguration {
 
     @Autowired
     private WalletRepository customerWalletRepository;
-
-    @Autowired
-    private ServiceRepository serviceRepository;
-
-    @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
 
     @PostConstruct
     public void insertInitialH2Data()

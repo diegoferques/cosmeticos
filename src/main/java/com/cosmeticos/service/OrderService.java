@@ -3,17 +3,17 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.penalty.PenaltyType;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ServiceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +33,6 @@ public class OrderService {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
-
-    @Autowired
-    private ServiceRepository serviceRepository;
 
     @Autowired
     private PenaltyService penaltyService;
@@ -156,8 +153,6 @@ public class OrderService {
             order.setScheduleId(orderRequest.getScheduleId());
         }
 
-
-
         return orderRepository.save(order);
     }
 
@@ -176,9 +171,8 @@ public class OrderService {
         //return orderRepository.findAllCustom();
         //return orderRepository.findByQueryAnnotation();
         return orderRepository.findByStatusNotLikeAndStatusNotLike(
-                Order.Status.CANCELLED.ordinal(), Order.Status.CLOSED.ordinal());
+                Order.Status.CANCELLED, Order.Status.CLOSED);
     }
-
 
     public class ValidationException extends Exception {
         public ValidationException(String s) {
@@ -194,17 +188,21 @@ public class OrderService {
         int count = onlyOrsersFinishedByProfessionals.size();
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
-
-            o.setStatus(Order.Status.AUTO_CLOSED);
-
-            orderRepository.save(o);
+        	LocalDate lastUpdateLocalDate = o.getLastUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        	
+        	LocalDate limitDate = LocalDate.now().minusDays(5);
+            
+        	if (lastUpdateLocalDate.isBefore(limitDate)) {
+				o.setStatus(Order.Status.AUTO_CLOSED);
+				orderRepository.save(o);
+			}
         }
-        log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED);
+        log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
     }
     public void abort(Order order){
         Order o = orderRepository.findOne(order.getIdOrder());
 
-        penaltyService.apply(o.getIdCustomer().getUser(), PenaltyType.Value.NONE);
+        penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
     }
 
 }
