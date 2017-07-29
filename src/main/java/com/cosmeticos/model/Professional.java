@@ -23,7 +23,9 @@ import java.util.Set;
 public class Professional  implements Serializable {
 
     public enum Type{
+
         HOME_CARE, ON_SITE, FULL
+
     }
 
     public  enum Status

@@ -24,7 +24,14 @@ import java.util.Set;
 @Data
 @Entity
 public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    public  enum Status {
+
+        ACTIVE, INACTIVE, GONE
+
+    }
+
+        private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +51,11 @@ public class User implements Serializable {
     private String email;
 
     private String sourceApp;
+
+    @Enumerated
+    private Status status;
+
+    private String goodByeReason;
 
     @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
