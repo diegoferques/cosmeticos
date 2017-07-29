@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cosmeticos.Application;
@@ -52,16 +53,20 @@ public class OrderServiceTest {
     @Autowired
     private OrderService orderService;
 
+    Order o3;
+    Order o4;
+    Order o5;
+
     @Before
     public void setUp() throws Exception {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testaddwallet-cliente");
-        c1.getUser().setEmail("testaddwallet-cliente@bol");
+        c1.getUser().setUsername("testUpdateStatus-cliente");
+        c1.getUser().setEmail("testUpdateStatus-cliente@bol");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testaddwallet-professional");
-        professional.getUser().setEmail("testaddwallet-professional@bol");
+        professional.getUser().setUsername("testUpdateStatus-professional");
+        professional.getUser().setEmail("testUpdateStatus-professional@bol");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -77,17 +82,21 @@ public class OrderServiceTest {
         professionalRepository.save(professional);
 
 
-        Order o3 = new Order();
+        o3 = new Order();
         o3.setStatus(Order.Status.OPEN);
         o3.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
+        o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
         o3.setProfessionalServices(ps1);
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
 
-        Order o4 = new Order();
-        o4.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 40, 0)));
+        LocalDateTime ldt1 = LocalDateTime.now();
+        ldt1.minusDays(3);
+        o4 = new Order();
+        o4.setDate(Timestamp.valueOf(ldt1));
+        o4.setLastUpdate(Timestamp.valueOf(ldt1.minusDays(3)));
         o4.setIdCustomer(c1);
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
@@ -96,9 +105,12 @@ public class OrderServiceTest {
 
         orderRepository.save(o4);
 
-        Order o5 = new Order();
-        o5.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 50, 0)));
+        LocalDateTime ldt2 = LocalDateTime.now();
+        ldt2.minusDays(8);
+        o5 = new Order();
+        o5.setDate(Timestamp.valueOf(ldt2));
         o5.setIdCustomer(c1);
+        o5.setLastUpdate(Timestamp.valueOf(ldt2.minusDays(8)));
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
         //o5.setScheduleId(s2);
@@ -107,38 +119,18 @@ public class OrderServiceTest {
                     }
 
 
-    @Ignore //TODO: vinicius corrigira este teste.
     @Test
     public void testUpdateStatus(){
 
-        // TODO: insere umas orders com finished by professional e nao confiar no OrderPreLoad
-    	// TODO: inserir uma order com lastUpdate de 3 dias atras e status semi_closed
-    	// TODO: inserir uma order com lastupdate de 8 dias atras e status semi_closed
 
-        List<Order> preUpdateallOrders = orderService.findBy(new Order());// TODO: apagar esta linha
-        int c = 0;
-
-        for (Order o: preUpdateallOrders) {
-            if(o.getStatus() == Order.Status.SEMI_CLOSED){
-                c++;
-            }
-        }
-        Assert.assertTrue("Para prosseguirmos com este teste, " +
-        		"devemos ter Orders no banco com status FINISHED_BY_PROFESSIONAL", c > 0);
-        // TODO apagar as linhas acima
-        
-
-
-        // 
-        
         orderService.updateStatus();
+            o3 = orderRepository.findOne(o3.getIdOrder());
+            o4 = orderRepository.findOne(o4.getIdOrder());
+            o5 = orderRepository.findOne(o5.getIdOrder());
 
-        // TODO: buscar a order com updatestatus de 3 dias atras pelo seu id e fazer assert de q seu status continua sendo semi_closed
-        // TODO: buscar a order com updatestatus de 8 dias atras pelo seu id e fazer assert de q seu status eh auto_closed
-        List<Order> allOrders = orderService.findBy(new Order());
+            Assert.assertEquals(Order.Status.SEMI_CLOSED, o4.getStatus());
 
-        for (Order o: allOrders) {
-            Assert.assertNotEquals(Order.Status.SEMI_CLOSED, o.getStatus());
-        }
+            Assert.assertEquals(Order.Status.AUTO_CLOSED, o5.getStatus());
+            Assert.assertEquals(Order.Status.OPEN, o3.getStatus());
     }
 }
