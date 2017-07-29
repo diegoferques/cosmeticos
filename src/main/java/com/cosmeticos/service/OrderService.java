@@ -181,6 +181,17 @@ public class OrderService {
                 Order.Status.CANCELLED, Order.Status.CLOSED);
     }
 
+    public void abort(Order order){
+        Order o = orderRepository.findOne(order.getIdOrder());
+
+        penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
+    }
+
+	public List<Order> findActiveByCustomer(Customer idCustomer) {
+        return orderRepository.findByStatusNotLikeAndStatusNotLikeAndIdCustomer_IdCustomer(
+                Order.Status.CANCELLED, Order.Status.CLOSED, idCustomer.getIdCustomer());
+	}
+
     public class ValidationException extends Exception {
         public ValidationException(String s) {
             super(s);
@@ -207,10 +218,4 @@ public class OrderService {
         }
         log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
     }
-    public void abort(Order order){
-        Order o = orderRepository.findOne(order.getIdOrder());
-
-        penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
-    }
-
 }

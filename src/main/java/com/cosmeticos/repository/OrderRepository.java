@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cosmeticos.model.Order;
-import java.util.List;
+import com.cosmeticos.model.Order.Status;
 
 /**
  * Created by matto on 17/06/2017.
@@ -36,4 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //List<Order> findByStatusNotLike(String s1);
     //List<Order> findByStatusNotLike(int s1);
     List<Order> findByStatusNotLikeAndStatusNotLike(Order.Status s1, Order.Status s2);
+
+	List<Order> findByStatusNotLikeAndStatusNotLikeAndIdCustomer_IdCustomer(Status s1, Status s2,
+			Long idCustomer);
 }
