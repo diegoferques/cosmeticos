@@ -92,6 +92,10 @@ public class ProfessionalService {
                 professional.setStatus(cr.getStatus());
             }
 
+            if(!StringUtils.isEmpty(cr.getAttendance())){
+                professional.setAttendance(cr.getAttendance());
+            }
+
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
             if (cr.getAddress() != null) {
                 addressService.updateGeocodeFromProfessionalUpdate(cr);
