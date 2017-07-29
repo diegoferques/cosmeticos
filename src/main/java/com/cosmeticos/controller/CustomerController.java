@@ -4,6 +4,7 @@ import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.service.CustomerService;
+import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class CustomerController {
     @Autowired
     private CustomerService service;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(path = "/customers", method = RequestMethod.POST)
     public HttpEntity<CustomerResponseBody> create(@Valid @RequestBody CustomerRequestBody request,
                                                    BindingResult bindingResult) {
@@ -34,11 +38,28 @@ public class CustomerController {
             if(bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
+
             } else {
-                Customer customer = service.create(request);
-                log.info("Customer adicionado com sucesso:  [{}]", customer);
-                //return ok().build();
-                return ok(new CustomerResponseBody(customer));
+
+                String userEmail = "";
+                if(request.getCustomer().getUser() != null) {
+                    userEmail = request.getCustomer().getUser().getEmail();
+                }
+
+                if(userService.verifyEmailExists(userEmail)) {
+
+                    CustomerResponseBody responseBody = new CustomerResponseBody();
+                    responseBody.setDescription("E-mail já existente.");
+                    log.error("Nao e permitido atualizar usuario para um email pre-existentes.");
+
+                    return badRequest().body(responseBody);
+
+                } else {
+                    Customer customer = service.create(request);
+                    log.info("Customer adicionado com sucesso:  [{}]", customer);
+                    //return ok().build();
+                    return ok(new CustomerResponseBody(customer));
+                }
             }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -53,24 +74,40 @@ public class CustomerController {
     }
 
     @RequestMapping(path = "/customers", method = RequestMethod.PUT)
-    public HttpEntity<CustomerResponseBody> update(CustomerRequestBody request,
+    public HttpEntity<CustomerResponseBody> update(@RequestBody CustomerRequestBody request,
                                                    BindingResult bindingResult) {
 
         try {
             if(bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
-            }
-            else
-            {
-                Customer customer = service.update(request);
 
-                CustomerResponseBody responseBody = new CustomerResponseBody(customer);
-                log.info("Customer atualizado com sucesso:  [{}] responseJson[{}]",
-                        customer,
-                        new ObjectMapper().writeValueAsString(responseBody));
-                return ok(responseBody);
+            } else {
+
+                String userEmail = "";
+                if(request.getCustomer().getUser() != null) {
+                    userEmail = request.getCustomer().getUser().getEmail();
+                }
+
+                if(userService.verifyEmailExists(userEmail)) {
+
+                    CustomerResponseBody responseBody = new CustomerResponseBody();
+                    responseBody.setDescription("E-mail já existente.");
+                    log.error("Nao e permitido atualizar usuario para um email pre-existentes.");
+
+                    return badRequest().body(responseBody);
+
+                } else {
+                    Customer customer = service.update(request);
+
+                    CustomerResponseBody responseBody = new CustomerResponseBody(customer);
+                    log.info("Customer atualizado com sucesso:  [{}] responseJson[{}]",
+                            customer,
+                            new ObjectMapper().writeValueAsString(responseBody));
+                    return ok(responseBody);
+                }
             }
+
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 

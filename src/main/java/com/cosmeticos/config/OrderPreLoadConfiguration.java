@@ -27,6 +27,9 @@ public class OrderPreLoadConfiguration {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired

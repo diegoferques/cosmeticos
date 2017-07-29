@@ -13,6 +13,7 @@ import com.cosmeticos.model.User;
 import com.cosmeticos.model.Wallet;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.*;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -28,6 +29,9 @@ public class ProfessionalPreLoadConfiguration {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private WalletRepository customerWalletRepository;
+
     @PostConstruct
     public void insertInitialH2Data()
     {
@@ -40,9 +44,16 @@ public class ProfessionalPreLoadConfiguration {
 
         User user1 = new User("garry", "123qwe", "garry@bol");
 
+        Address address1 = new Address();
+        address1.setLatitude("-22.7245761");
+        address1.setLongitude("-43.51020159999999");
+
+
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
-        p1.setAddress(new Address());
+
+        p1.setAddress(address1);
+        address1.setProfessional(p1);
 
         // bidirecional reference
         p1.setUser(user1);
@@ -54,34 +65,66 @@ public class ProfessionalPreLoadConfiguration {
 
         repository.save(p1);
 
-
-
-        //
+        ////////////////////////////////////////
         User user2 = new User("Diego", "123qwe", "Diego@bol");
+
+        Address address2 = new Address();
+        address2.setLatitude("-22.750996");
+        address2.setLongitude("-43.45973010000001");
+
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
-        s2.setAddress(new Address());
+        s2.setAddress(address2);
         s2.setUser(user2);
-        user2.setProfessional(s2);
 
+        user2.setProfessional(s2);
+        address2.setProfessional(s2);
+
+
+
+        ////////////////////////////////////////
         User user3;
+
+        Address address3 = new Address();
+        address3.setLatitude("-22.7248375");
+        address3.setLongitude("-43.5251476");
+
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
-        s3.setAddress(new Address());
+
+        s3.setAddress(address3);
+        address3.setProfessional(s3);
+
         s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
         user3.setProfessional(s3);
 
+        ////////////////////////////////////////
         User user4;
+        Address address4 = new Address();
+        address4.setLatitude("-22,9111");
+        address4.setLongitude("-43,1826");
+
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");
-        s4.setAddress(new Address());
+
+        s4.setAddress(address4);
+        address4.setProfessional(s4);
+
         s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
         user4.setProfessional(s4);
 
+        ////////////////////////////////////////
         User user5;
+        Address address5 = new Address();
+        address5.setLatitude("-22.7269425");
+        address5.setLongitude("-43.528198");
+
         Professional s5 = new Professional();
         s5.setNameProfessional("Habib");
-        s5.setAddress(new Address());
+
+        s5.setAddress(address5);
+        address5.setProfessional(s5);
+
         s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
         user5.setProfessional(s5);
 

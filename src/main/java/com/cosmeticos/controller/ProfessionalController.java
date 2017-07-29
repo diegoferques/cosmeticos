@@ -5,6 +5,7 @@ import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.service.ProfessionalService;
+import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class ProfessionalController {
     @Autowired
     private ProfessionalService service;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(path = "/professionals", method = RequestMethod.POST)
     public HttpEntity<ProfessionalResponseBody> create(@Valid @RequestBody ProfessionalRequestBody request,
                                                        BindingResult bindingResult) {
@@ -43,16 +47,34 @@ public class ProfessionalController {
                 log.error("BAD REQUEST: Nao foi identificado um Servico associado ao profissional ou o Service.ID " +
                         "nao esta configurado");
                 return badRequest().body(buildErrorResponse(bindingResult));
+
             } else {
-                Professional professional = service.create(request);
 
-                ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
-                responseBody.setDescription("sucess");
+                String userEmail = "";
+                if(request.getProfessional().getUser() != null) {
+                    userEmail = request.getProfessional().getUser().getEmail();
+                }
 
-                log.info("Professional adicionado com sucesso:  [{}]", professional);
+                if(userService.verifyEmailExists(userEmail)) {
 
-                return ok(responseBody);
+                    ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+                    responseBody.setDescription("E-mail já existente.");
+                    log.error("Nao e permitido criar profissional com um email já existente.");
+
+                    return badRequest().body(responseBody);
+
+                } else {
+                    Professional professional = service.create(request);
+
+                    ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
+                    responseBody.setDescription("sucess");
+
+                    log.info("Professional adicionado com sucesso:  [{}]", professional);
+
+                    return ok(responseBody);
+                }
             }
+
         } catch (ConstraintViolationException e) {
             /**
              * Alguns dados de requisicao invalidos podem nao ser processados no request devido ao nivel de aninhamento
@@ -76,7 +98,7 @@ public class ProfessionalController {
     }
 
     @RequestMapping(path = "/professionals", method = RequestMethod.PUT)
-    public HttpEntity<ProfessionalResponseBody> update(@Valid @RequestBody ProfessionalRequestBody request, BindingResult bindingResult) {
+    public HttpEntity<ProfessionalResponseBody> update(@RequestBody ProfessionalRequestBody request, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors()) {
@@ -89,13 +111,31 @@ public class ProfessionalController {
                 Optional<Professional> optional = service.update(request);
 
                 if (optional.isPresent()) {
-                    Professional Professional = optional.get();
 
-                    ProfessionalResponseBody responseBody = new ProfessionalResponseBody(Professional);
-                    log.info("Professional atualizado com sucesso:  [{}] responseJson[{}]",
-                            Professional,
-                            new ObjectMapper().writeValueAsString(responseBody));
-                    return ok(responseBody);
+                    String userEmail = "";
+                    if(request.getProfessional().getUser() != null) {
+                        userEmail = request.getProfessional().getUser().getEmail();
+                    }
+
+                    if(userService.verifyEmailExists(userEmail)) {
+
+                        ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+                        responseBody.setDescription("E-mail já existente.");
+                        log.error("Nao e permitido atualizar profissional para um email já existente.");
+
+                        return badRequest().body(responseBody);
+
+                    } else {
+
+                        Professional Professional = optional.get();
+
+                        ProfessionalResponseBody responseBody = new ProfessionalResponseBody(Professional);
+                        log.info("Professional atualizado com sucesso:  [{}] responseJson[{}]",
+                                Professional,
+                                new ObjectMapper().writeValueAsString(responseBody));
+                        return ok(responseBody);
+                    }
+
                 } else {
                     log.info("Professional inexistente:  [{}]",
                             request.getProfessional());

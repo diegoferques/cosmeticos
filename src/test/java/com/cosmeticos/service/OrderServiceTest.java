@@ -123,14 +123,14 @@ public class OrderServiceTest {
                 c++;
             }
         }
-        Assert.assertTrue("Para prosseguirmos com este teste, " +
-        		"devemos ter Orders no banco com status FINISHED_BY_PROFESSIONAL", c > 0);
+
+        Assert.assertTrue("PAra prosseguirmos com este teste, " +
+                "devemos ter Orders no banco com status SEMI_CLOSED", c > 0);
         // TODO apagar as linhas acima
-        
 
 
-        // 
-        
+        //
+
         orderService.updateStatus();
 
         // TODO: buscar a order com updatestatus de 3 dias atras pelo seu id e fazer assert de q seu status continua sendo semi_closed
