@@ -27,10 +27,6 @@ import java.util.Optional;
 @org.springframework.stereotype.Service
 public class OrderService {
 
-    private enum statusValidation {
-        OPEN, CANCELLED, SEMI_CLOSED, CLOSED, SCHEDULED
-    }
-
     @Autowired
     private OrderRepository orderRepository;
 
@@ -186,7 +182,6 @@ public class OrderService {
         }
     }
 
-    @Ignore //TODO: vinicius precisa corrigir. Card https://trello.com/c/q7U2dl9K
     @Scheduled(cron = "${order.unfinished.cron}")
     public void updateStatus() {
 

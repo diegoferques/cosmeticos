@@ -1,13 +1,11 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +32,23 @@ public class CustomerControllerTests {
 
 	private Customer testCreateOK;
 
+	private String emailTeste = "";
+
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
 	@Test
 	public void testCreateOK() throws IOException, URISyntaxException {
+
+		String email;
+
+		if(emailTeste.isEmpty()) {
+			email = "b@b.com";
+		} else {
+			email = emailTeste;
+		}
+
+		System.out.println("Email em uso: " + email);
 
 		String content = "{\n" +
 				"   \"customer\":{\n" +
@@ -57,11 +67,11 @@ public class CustomerControllerTests {
 				"      \"genre\":null,\n" +
 				"      \"status\":null,\n" +
 				"      \"user\":{\n" +
-				"         \"email\":\"b@b.com\",\n" +
+				"         \"email\":\""+ email +"\",\n" +
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"123\",\n" +
 				"         \"sourceApp\":null,\n" +
-				"         \"username\":\"b@b.com\"\n" +
+				"         \"username\":\""+ email +"\"\n" +
 				"      },\n" +
 				"      \"cpf\":\"05404577726\",\n" +
 				"      \"idAddress\":null,\n" +
@@ -91,16 +101,18 @@ public class CustomerControllerTests {
 	//TESTEI DAS DUAS FORMAS (COMENTADA E DESCOMENTADA), FIQUEI MAIS DE 1 HORA TENTANDO RESOLVER
 	//PAREI PARA DAR CONTINUIDADE NO MEU CARD RFN42
 	// TODO: corrigir este teste pq esta chegando customer null no controller
-	@Ignore
+	//@Ignore
 	@Test
 	public void testUpdateOK() throws IOException, URISyntaxException {
+		emailTeste = "emailUpdateOk@teste.com";
 		this.testCreateOK();
 
-		/*
 		String content = "{\n" +
 				"   \"customer\":{\n" +
 				"      \"idCustomer\":"+ testCreateOK.getIdCustomer() +",\n" +
-				"      \"nameCustomer\":\"Diego Fernandes Marques da Silva\"\n" +
+				"      \"nameCustomer\":\"Diego Fernandes Marques da Silva\",\n" +
+				"      \"birthDate\":\""+Calendar.getInstance().getTime().getTime()+"\",\n" +
+				"      \"cpf\":\"05406688898\"\n" +
 				"   }\n" +
 				"}";
 
@@ -118,8 +130,8 @@ public class CustomerControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 		Assert.assertEquals("Diego Fernandes Marques da Silva", exchange.getBody().getCustomerList().get(0).getNameCustomer());
-		 */
 
+/*
 		Customer c1 = testCreateOK;
 		c1.setNameCustomer("Diego Fernandes Marques da Silva");
 
@@ -136,9 +148,9 @@ public class CustomerControllerTests {
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 		Assert.assertEquals("Diego Fernandes Marques da Silva", exchange.getBody().getCustomerList().get(0).getNameCustomer());
+		*/
 	}
 
-	// TODO - Aparentemente o erro é por conta do retorno infinito de CustomerCollection
 	@Test
 	public void testFindById() throws ParseException {
 
@@ -182,6 +194,97 @@ public class CustomerControllerTests {
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+	}
+
+	@Test
+	public void testCreateUserEmailBadRequest() throws IOException, URISyntaxException {
+
+		emailTeste = "emailcreateteste@email.com";
+		testCreateOK();
+
+		System.out.println("Email em uso: " + emailTeste);
+
+		String content = "{\n" +
+				"   \"customer\":{\n" +
+				"      \"address\":{\n" +
+				"         \"address\":null,\n" +
+				"         \"cep\":null,\n" +
+				"         \"city\":null,\n" +
+				"         \"country\":null,\n" +
+				"         \"idAddress\":null,\n" +
+				"         \"neighborhood\":null,\n" +
+				"         \"state\":null\n" +
+				"      },\n" +
+				"      \"birthDate\":1310353200000,\n" +
+				"      \"cellPhone\":null,\n" +
+				"      \"dateRegister\":null,\n" +
+				"      \"genre\":null,\n" +
+				"      \"status\":null,\n" +
+				"      \"user\":{\n" +
+				"         \"email\":\""+ emailTeste +"\",\n" +
+				"         \"idLogin\":null,\n" +
+				"         \"password\":\"a1b2c3\",\n" +
+				"         \"sourceApp\":null,\n" +
+				"         \"username\":\""+ emailTeste +"\"\n" +
+				"      },\n" +
+				"      \"cpf\":\"09840387913\",\n" +
+				"      \"idAddress\":null,\n" +
+				"      \"idCustomer\":null,\n" +
+				"      \"idLogin\":null,\n" +
+				"      \"nameCustomer\":\"Doug\"\n" +
+				"   }\n" +
+				"}";
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/customers"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(content);
+
+		ResponseEntity<CustomerResponseBody> exchange = restTemplate
+				.exchange(entity, CustomerResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+	}
+
+
+	//RNF68
+	@Test
+	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
+		emailTeste = "emailteste@email.com";
+		testCreateOK();
+
+		Customer c1 = testCreateOK;
+
+		String json = "{\n" +
+				"   \"customer\":{\n" +
+				"      \"idCustomer\":"+ c1.getIdCustomer() +",\n" +
+				"      \"user\":{\n" +
+				"         \"email\":\""+ emailTeste +"\",\n" +
+				"         \"idLogin\":"+c1.getUser().getIdLogin()+"\n" +
+				"      },\n" +
+				"      \"nameCustomer\":\"Usuario Alterado\"\n" +
+				"   }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.put(new URI("/customers"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<CustomerResponseBody> exchange = restTemplate
+				.exchange(entity, CustomerResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+
 
 	}
 
