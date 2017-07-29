@@ -1,10 +1,8 @@
 package com.cosmeticos.repository;
 
-import java.util.List;
-
+import com.cosmeticos.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.cosmeticos.model.Order;
 import java.util.List;
 
 /**
@@ -17,6 +15,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
     List<Order> findByStatus(Order.Status status);
+
+    List<Order> findByProfessionalServices_Professional_idProfessional(Long idProfessional);
+
+    List<Order> findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+            Order.Status s1, Order.Status s2, Long idProfessional);
     
     /*
     @Query(value = "SELECT * FROM " +
