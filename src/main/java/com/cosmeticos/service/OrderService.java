@@ -7,7 +7,6 @@ import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.validation.OrderValidationException;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -221,8 +220,10 @@ public class OrderService {
             professional = requestedOrder.getProfessionalServices().getProfessional();
         }
 
-        List<Order> orderList = orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
-                Order.Status.INPROGRESS, Order.Status.ACCEPTED, professional.getIdProfessional());
+        //List<Order> orderList = orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+        //professional.getIdProfessional(), Order.Status.INPROGRESS, Order.Status.ACCEPTED);
+        List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+                professional.getIdProfessional());
 
         if(!orderList.isEmpty()) {
             throw new OrderValidationException();

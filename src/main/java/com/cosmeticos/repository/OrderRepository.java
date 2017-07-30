@@ -2,6 +2,7 @@ package com.cosmeticos.repository;
 
 import com.cosmeticos.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -20,6 +21,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
             Order.Status s1, Order.Status s2, Long idProfessional);
+
+    @Query(value = "SELECT o FROM Order o " +
+            "WHERE o.professionalServices.professional.idProfessional = ?1 " +
+            "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
+    List<Order> findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+            Long idProfessional);
     
     /*
     @Query(value = "SELECT * FROM " +

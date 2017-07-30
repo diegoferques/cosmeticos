@@ -4,12 +4,9 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.*;
-import com.cosmeticos.repository.ServiceRepository;
-import com.cosmeticos.repository.WalletRepository;
+import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +119,7 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.FORBIDDEN, exchange.getStatusCode());
 
     }
-    @Ignore//TODO: vinicius precisa corrigir. Card https://trello.com/c/q7U2dl9K
+
     @Test
     public void testUpdateOK() throws IOException, URISyntaxException {
 
@@ -1168,33 +1165,65 @@ public class OrderControllerTests {
     @Test
     public void testFindByStatusNotCancelled() throws ParseException, URISyntaxException {
 
-        createOrderOk();
+        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testFindByStatusNotCancelled-customer1");
+        c1.getUser().setEmail("testFindByStatusNotCancelled-customer1@email.com");
+        c1.getUser().setPassword("123");
+        c1.setCpf("123.456.789-05");
 
-        Order o1 = orderRestultFrom_createOrderOk;
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testFindByStatusNotCancelled-professional");
+        professional.getUser().setEmail("testFindByStatusNotCancelled-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.456.789-06");
 
-        String jsonUpdate = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
-                "    \"status\" : "+ Order.Status.CANCELLED.ordinal() +"\n" +
-                "\n}\n" +
-                "}";
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
 
-        System.out.println(jsonUpdate);
+        Service service = serviceRepository.findByCategory("PEDICURE");
 
-        RequestEntity<String> entityUpdate =  RequestEntity
-                .put(new URI("/orders"))
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        //Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+        //-------
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(jsonUpdate);
+                .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
-                .exchange(entityUpdate, OrderResponseBody.class);
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
 
-        Assert.assertNotNull(exchangeUpdate);
-        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
-        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
-        Assert.assertEquals(Order.Status.CANCELLED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+
+        Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
+        //-------
+
+        //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
+        ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
+                createdOrder.getIdOrder(), Order.Status.CANCELLED);
+
+        Assert.assertNotNull(exchangeUpdateAccepted);
+        Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
+
+        Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
+        //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CANCELLED
+        Assert.assertEquals(Order.Status.CANCELLED, orderUpdateAccepted.getStatus());
+        //-------
 
         final ResponseEntity<OrderResponseBody> exchange = //
                 restTemplate.exchange( //
@@ -1219,34 +1248,67 @@ public class OrderControllerTests {
     @Test
     public void testFindByStatusNotClosed() throws ParseException, URISyntaxException {
 
-        createOrderOk();
+        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testFindByStatusNotClosed-customer1");
+        c1.getUser().setEmail("testFindByStatusNotClosed-customer1@email.com");
+        c1.getUser().setPassword("123");
+        c1.setCpf("123.456.789-05");
 
-        Order o1 = orderRestultFrom_createOrderOk;
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testFindByStatusNotClosed-professional");
+        professional.getUser().setEmail("testFindByStatusNotClosed-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.456.789-06");
 
-        String jsonUpdate = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
-                "    \"status\" : "+ Order.Status.CLOSED.ordinal() +"\n" +
-                "\n}\n" +
-                "}";
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
 
-        System.out.println(jsonUpdate);
+        Service service = serviceRepository.findByCategory("PEDICURE");
 
-        RequestEntity<String> entityUpdate =  RequestEntity
-                .put(new URI("/orders"))
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+        //-------
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(jsonUpdate);
+                .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
-                .exchange(entityUpdate, OrderResponseBody.class);
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
 
-        Assert.assertNotNull(exchangeUpdate);
-        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
-        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+
+        Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
+        //-------
+
+        //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
+        ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
+                createdOrder.getIdOrder(), Order.Status.CLOSED);
+
+        Assert.assertNotNull(exchangeUpdateAccepted);
+        Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
+
+        Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
         //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
-        Assert.assertEquals(Order.Status.CLOSED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+        //-------
 
+        //ABAIXO LISTAMOS TODOS OS ORDERS EXISTENTES, MAS NAO DEVEM VIR OS CANCELLED OU CLOSED
         final ResponseEntity<OrderResponseBody> exchange = //
                 restTemplate.exchange( //
                         "/orders", //
