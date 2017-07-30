@@ -22,6 +22,12 @@ import java.util.Set;
 @Entity
 public class Professional  implements Serializable {
 
+    public enum Type{
+
+        HOME_CARE, ON_SITE, FULL
+
+    }
+
     public  enum Status
     {
         INACTIVE, ACTIVE;
@@ -71,6 +77,12 @@ public class Professional  implements Serializable {
     })
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+    })
+    @Enumerated
+    private Type attendance;
 
 	// TODO incluir @NotNull
     @JsonManagedReference(value="user-professional")

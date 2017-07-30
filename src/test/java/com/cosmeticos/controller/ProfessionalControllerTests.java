@@ -775,4 +775,179 @@ public class ProfessionalControllerTests {
 
 		return c1;
 	}
+
+	@Test
+	public void testCreateAttendanceOK() throws IOException, URISyntaxException {
+		String email = "a@a.com";
+		if(!StringUtils.isEmpty(emailUsuario)) {
+			email = emailUsuario;
+		}
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": null,\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"attendance\": \"HOME_CARE\",\n" +
+				"    \"user\": {\n" +
+				"      \"email\": \""+ email +"\",\n" +
+				"      \"idLogin\": null,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \""+ email +"\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaa\",\n" +
+				"    \"professionalServicesCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"service\": {\n" +
+				"          \"category\": \"HYDRATION\",\n" +
+				"          \"idService\": 2\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+		returnOfCreateOK = exchange.getBody().getProfessionalList().get(0);
+	}
+
+	@Test
+	public void testUpdateAttendanceOK() throws IOException, URISyntaxException {
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": null,\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"attendance\": \"HOME_CARE\",\n" +
+				"    \"user\": {\n" +
+				"      \"email\": null,\n" +
+				//"      \"idLogin\": 1,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \"aaa\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				//"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaaa\"\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+		Professional professional = exchange.getBody().getProfessionalList().get(0);
+
+		String jsonUpdate = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
+				"    \"attendance\": \"FULL\"\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(jsonUpdate);
+
+
+		RequestEntity<String> entityUpdate =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonUpdate);
+
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
+				.exchange(entityUpdate, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchangeUpdate);
+		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+		Assert.assertEquals(Professional.Type.FULL, exchangeUpdate.getBody().getProfessionalList().get(0).getAttendance());
+	}
+
+	@Test
+	public void testGetAttendanceOK() throws IOException, URISyntaxException {
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": null,\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"attendance\": \"ON_SITE\",\n" +
+				"    \"user\": {\n" +
+				"      \"email\": null,\n" +
+				//"      \"idLogin\": 1,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"      \"username\": \"aaa\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				//"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaaa\"\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity = RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+		Professional professional = exchange.getBody().getProfessionalList().get(0);
+
+		final ResponseEntity<ProfessionalResponseBody> getExchangeGet = //
+				restTemplate.exchange( //
+						"/professionals", //
+						HttpMethod.GET, //
+						null,
+						ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, getExchangeGet.getStatusCode());
+	}
+
 }
