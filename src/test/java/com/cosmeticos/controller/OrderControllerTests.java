@@ -1502,6 +1502,7 @@ public class OrderControllerTests {
 
     }
 
+    //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
     public String getOrderCreateJson(Service service, Professional professional, Customer customer) {
 
         String jsonCreate = "{\n" +
