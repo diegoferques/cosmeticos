@@ -779,7 +779,7 @@ public class ProfessionalControllerTests {
 
 	@Test
 	public void testCreateAttendanceOK() throws IOException, URISyntaxException {
-		String email = "a@a.com";
+		String email = "testCreateAttendanceOK@a.com";
 		if(!StringUtils.isEmpty(emailUsuario)) {
 			email = emailUsuario;
 		}
@@ -846,11 +846,11 @@ public class ProfessionalControllerTests {
 				"    \"status\": null,\n" +
 				"    \"attendance\": \"HOME_CARE\",\n" +
 				"    \"user\": {\n" +
-				"      \"email\": null,\n" +
+				"      \"email\": \"testUpdateAttendanceOK@bol.com\",\n" +
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"      \"username\": \"aaa\"\n" +
+				"      \"username\": \"testUpdateAttendanceOK\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
 				//"    \"idProfessional\": null,\n" +

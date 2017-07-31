@@ -6,6 +6,7 @@ import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -203,6 +204,31 @@ public class OrderService {
         Order o = orderRepository.findOne(order.getIdOrder());
 
         penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
+    }
+
+    public void validate(Order order) throws OrderValidationException {
+
+        Professional professional;
+
+        //SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL PARA VERIFICAR SE JA TEM ORDERS
+        if(order.getIdOrder() == null) {
+            professional = order.getProfessionalServices().getProfessional();
+
+        //SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM COMO O UPDATE DE STATUS
+        } else {
+            Order requestedOrder = orderRepository.findOne(order.getIdOrder());
+            professional = requestedOrder.getProfessionalServices().getProfessional();
+        }
+
+        //List<Order> orderList = orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+        //professional.getIdProfessional(), Order.Status.INPROGRESS, Order.Status.ACCEPTED);
+        List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+                professional.getIdProfessional());
+
+        if(!orderList.isEmpty()) {
+            throw new OrderValidationException();
+        }
+
     }
 
 }

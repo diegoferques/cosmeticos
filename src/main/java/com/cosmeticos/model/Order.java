@@ -67,7 +67,6 @@ public class Order implements Serializable {
     })
 	@Basic(optional = false)
 	@Column(name = "status")
-	@Enumerated(EnumType.ORDINAL)
 	private Status status;
 
     @JsonView({
@@ -84,8 +83,8 @@ public class Order implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class
     })
     @JoinColumns({
-        @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional"),
-			@JoinColumn(name = "idService", referencedColumnName = "idService") })
+        @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional"),
+			@JoinColumn(name = "id_service", referencedColumnName = "idService") })
 	@ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 
