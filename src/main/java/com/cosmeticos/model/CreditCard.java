@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by Vinicius on 23/06/2017.
@@ -28,6 +29,15 @@ public class CreditCard implements Serializable {
 
     private String token;
 
+    private String ownerName;
+
+    private String cardNumber;
+
+    private String securityCode;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expirationDate;
+
     private String vendor;
 
     @Enumerated
@@ -37,6 +47,8 @@ public class CreditCard implements Serializable {
     @JoinColumn(name = "id_user")
     @ManyToOne(optional = false)
     private User user;
+
+
 
     /*@ManyToOne
     private Professional professional;

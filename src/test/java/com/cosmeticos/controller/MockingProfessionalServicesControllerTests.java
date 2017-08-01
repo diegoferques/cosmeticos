@@ -82,7 +82,7 @@ public class MockingProfessionalServicesControllerTests {
                 "      {\n" +
                 "        \"professional\": null,\n" +
                 "        \"service\": {\n" +
-                "          \"category\": \"HYDRATION\",\n" +
+                "          \"category\": \"HIDRATAÇÃO\",\n" +
                 "          \"idService\": 2\n" +
                 "        }\n" +
                 "      }\n" +
@@ -111,7 +111,7 @@ public class MockingProfessionalServicesControllerTests {
 
         final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
                 restTemplate.exchange( //
-                        "/professionalservices/nearby/?service.category=HYDRATION&latitude=-22.7386053&longitude=-43.5108277&radius=6000",
+                        "/professionalservices/nearby/?service.idService=2&latitude=-22.7386053&longitude=-43.5108277&radius=6000",
                         HttpMethod.GET, //
                         null,
                         ProfessionalServicesResponseBody.class);
@@ -128,7 +128,7 @@ public class MockingProfessionalServicesControllerTests {
             Service s = ps.getService();
 
             Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
-            Assert.assertEquals("HYDRATION", s.getCategory());
+            Assert.assertEquals("HIDRATAÇÃO", s.getCategory());
             Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
         }
     }

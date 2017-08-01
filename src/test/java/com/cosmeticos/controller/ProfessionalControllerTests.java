@@ -778,7 +778,7 @@ public class ProfessionalControllerTests {
 
 	@Test
 	public void testCreateAttendanceOK() throws IOException, URISyntaxException {
-		String email = "a@a.com";
+		String email = "a@123a.com";
 		if(!StringUtils.isEmpty(emailUsuario)) {
 			email = emailUsuario;
 		}
@@ -807,7 +807,7 @@ public class ProfessionalControllerTests {
 				"      {\n" +
 				"        \"professional\": null,\n" +
 				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
+				"          \"category\": \"HIDRATAÇÃO\",\n" +
 				"          \"idService\": 2\n" +
 				"        }\n" +
 				"      }\n" +
@@ -835,6 +835,8 @@ public class ProfessionalControllerTests {
 	@Test
 	public void testUpdateAttendanceOK() throws IOException, URISyntaxException {
 
+
+
 		String json = "{\n" +
 				"  \"professional\": {\n" +
 				"    \"address\": null,\n" +
@@ -845,8 +847,8 @@ public class ProfessionalControllerTests {
 				"    \"status\": null,\n" +
 				"    \"attendance\": \"HOME_CARE\",\n" +
 				"    \"user\": {\n" +
-				"      \"email\": null,\n" +
-				//"      \"idLogin\": 1,\n" +
+				"      \"email\": \"a@bol\",\n" +
+				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
 				"      \"username\": \"aaa\"\n" +
