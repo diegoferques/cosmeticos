@@ -67,6 +67,7 @@ public class Order implements Serializable {
     })
 	@Basic(optional = false)
 	@Column(name = "status")
+    @Enumerated(EnumType.STRING)
 	private Status status;
 
     @JsonView({
@@ -102,8 +103,12 @@ public class Order implements Serializable {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
-	
-	
+
+    @JsonView({
+            ResponseJsonView.OrderControllerFindBy.class
+    })
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expireTime;	
 	
 	public Order() {
 	}

@@ -67,11 +67,11 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
 
-        <!-- Adicionado por Diego Fernandes -->
+        <!-- Adicionado por Diego Fernandes
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+        </dependency>  -->
         <!--
         <dependency>
             <groupId>org.springframework.security</groupId>

@@ -194,7 +194,7 @@ public class OrderController {
 
     @JsonView(ResponseJsonView.OrderControllerFindBy.class)
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
-    public HttpEntity<OrderResponseBody> findBy(@ModelAttribute Order bindableQueryObject) {
+    public HttpEntity<OrderResponseBody> findBy() {
 
         try {
             //List<Order> entitylist = orderService.findBy(bindableQueryObject);
@@ -220,6 +220,34 @@ public class OrderController {
         }
     }
 
+    @JsonView(ResponseJsonView.OrderControllerFindBy.class)
+    @RequestMapping(path = "/orders/bycustomer", method = RequestMethod.GET)
+    public HttpEntity<OrderResponseBody> findActiveByCustomer(@ModelAttribute Order bindable) {
+
+        try {
+            //List<Order> entitylist = orderService.findBy(bindableQueryObject);
+            List<Order> entitylist = orderService.findActiveByCustomer(bindable.getIdCustomer());
+
+            OrderResponseBody responseBody = new OrderResponseBody();
+            responseBody.setOrderList(entitylist);
+            responseBody.setDescription(entitylist.size() + " retrieved.");
+
+            log.info("{} Orders successfully retrieved.", entitylist.size());
+
+            return ok().body(responseBody);
+
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody response = new OrderResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na exibição da Lista de Order: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
     private OrderResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
