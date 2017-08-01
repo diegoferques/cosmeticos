@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CreditCardRepository;
@@ -206,5 +207,65 @@ public class UserControllerTest {
         //u.getCustomerCollection().add(c);
         //userRepository.save(u);
         return u;
+    }
+
+    @Test
+    public void inserirUsuarioNovo() throws URISyntaxException {
+
+        String content = "{\n" +
+                "\t\"entity\": \n" +
+                "\t{\n" +
+                "\t\t\"username\": \"KILLER7\",\n" +
+                "\t    \"password\": \"109809876\",\n" +
+                "\t    \"email\": \"Killer@gmail.com\",\n" +
+                "\t    \"sourceApp\": \"facebook\",\n" +
+                "\t    \"status\": \"ACTIVE\"\n" +
+                "\t}\n" +
+                "\t\n" +
+                "}";
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/users"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(content);
+
+        ResponseEntity<UserResponseBody> rsp = restTemplate
+                .exchange(entity, UserResponseBody.class);
+
+        Assert.assertNotNull(rsp);
+        Assert.assertEquals(HttpStatus.OK, rsp.getStatusCode());
+
+        User user = rsp.getBody().getUserList().get(0);
+
+        String contentUpdate = "{\n" +
+                "\t\"entity\": \n" +
+                "\t{\n" +
+                "\t\t\"idLogin\": \""+user.getIdLogin()+"\",\n" +
+                "\t\t\"username\": \"KILLER337\",\n" +
+                "\t    \"password\": \"109809876\",\n" +
+                "\t    \"email\": \"Killer33@gmail.com\",\n" +
+                "\t    \"sourceApp\": \"facebook\",\n" +
+                "\t    \"status\": \"GONE\",\n" +
+                "\t    \"goodByeReason\": \"TESTE ALTERADO\"\n" +
+                "\t    }\n " +
+                "}";
+
+        System.out.println(contentUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/users"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(contentUpdate);
+
+        ResponseEntity<UserResponseBody> rspUpdate = restTemplate
+                .exchange(entityUpdate, UserResponseBody.class);
+
+        // Conferindo se o controller executou a operacao com sucesso
+        Assert.assertNotNull(rspUpdate);
+        Assert.assertEquals(HttpStatus.OK, rspUpdate.getStatusCode());
+
+
     }
 }

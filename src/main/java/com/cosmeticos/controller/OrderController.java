@@ -6,6 +6,7 @@ import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.service.OrderService;
+import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,8 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
+                orderService.validate(request.getOrder());
+
                 Order order = orderService.create(request);
                 log.info("Order adicionado com sucesso:  [{}]", order);
                 //return ok().build();
@@ -59,6 +62,16 @@ public class OrderController {
             log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
 
             return badRequest().body(orderResponseBody);
+        } catch (OrderValidationException e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody orderResponseBody = new OrderResponseBody();
+            orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
+
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
@@ -84,6 +97,8 @@ public class OrderController {
                 if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
                 }
+                orderService.validate(request.getOrder());
+
                 Order order = orderService.update(request);
                 order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
                 order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
@@ -108,6 +123,16 @@ public class OrderController {
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+
+        } catch (OrderValidationException e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody orderResponseBody = new OrderResponseBody();
+            orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
+
+            log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

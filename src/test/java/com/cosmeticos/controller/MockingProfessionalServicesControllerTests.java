@@ -7,6 +7,7 @@ import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.model.Service;
+import com.cosmeticos.repository.ServiceRepository;
 import com.cosmeticos.service.LocationService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,9 +38,17 @@ public class MockingProfessionalServicesControllerTests {
     @MockBean
     private LocationService locationService;
 
+    @Autowired
+    private ServiceRepository serviceRepository;
+
     //@Ignore
     @Test
     public void testNearbyWithDistance() throws ParseException, URISyntaxException {
+
+
+        Service s1 = new Service();
+        s1.setCategory("testNearbyWithDistance-service");
+        serviceRepository.save(s1);
 
         LocationGoogle sourceLocation = new LocationGoogle();
         sourceLocation.setLat(-22.7387053);
@@ -82,8 +91,8 @@ public class MockingProfessionalServicesControllerTests {
                 "      {\n" +
                 "        \"professional\": null,\n" +
                 "        \"service\": {\n" +
-                "          \"category\": \"HYDRATION\",\n" +
-                "          \"idService\": 2\n" +
+                "          \"category\": \"testNearbyWithDistance-service\",\n" +
+                "          \"idService\": "+s1.getIdService()+"\n" +
                 "        }\n" +
                 "      }\n" +
                 "    ]\n" +
@@ -111,7 +120,12 @@ public class MockingProfessionalServicesControllerTests {
 
         final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
                 restTemplate.exchange( //
-                        "/professionalservices/nearby/?service.category=HYDRATION&latitude=-22.7386053&longitude=-43.5108277&radius=6000",
+                        "/professionalservices/nearby/?service.category=testNearbyWithDistance-service" +
+
+                                // Coordenadas do cliente: Casa do garry
+                                "&latitude=-22.7331757&longitude=-43.5209273" +
+
+                                "&radius=6000",
                         HttpMethod.GET, //
                         null,
                         ProfessionalServicesResponseBody.class);
@@ -128,7 +142,7 @@ public class MockingProfessionalServicesControllerTests {
             Service s = ps.getService();
 
             Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
-            Assert.assertEquals("HYDRATION", s.getCategory());
+            Assert.assertEquals("testNearbyWithDistance-service", s.getCategory());
             Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
         }
     }
