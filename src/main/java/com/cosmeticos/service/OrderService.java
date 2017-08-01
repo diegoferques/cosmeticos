@@ -1,11 +1,14 @@
 package com.cosmeticos.service;
 
+import static com.cosmeticos.model.Order.Status.*;
+
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -14,7 +17,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +77,11 @@ public class OrderService {
             order.setIdLocation(orderRequest.getOrder().getIdLocation());
             order.setIdCustomer(customer);
             order.setDate(Calendar.getInstance().getTime());
+            order.setLastUpdate(order.getDate());
+            order.setExpireTime(new Date(order.getDate().getTime() + 
+            		
+            		// 6 horas de validade
+            		21600000));
 
             // ProfessionalServices por ser uma tabela associativa necessita de um cuidado estra
             order.setProfessionalServices(persistentProfessionalServices.get());
@@ -170,9 +180,23 @@ public class OrderService {
         //return orderRepository.findAll(Example.of(bindableQueryObject));
         //return orderRepository.findAllCustom();
         //return orderRepository.findByQueryAnnotation();
-        return orderRepository.findByStatusNotLikeAndStatusNotLike(
-                Order.Status.CANCELLED, Order.Status.CLOSED);
+        return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED));
     }
+
+    public void abort(Order order){
+        Order o = orderRepository.findOne(order.getIdOrder());
+
+        penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
+    }
+
+	public List<Order> findActiveByCustomer(Customer idCustomer) {
+        return orderRepository.findByStatusNotInAndIdCustomer_IdCustomer(
+        		Arrays.asList(
+        				CANCELLED, 
+        				AUTO_CLOSED, 
+        				CLOSED), 
+        		idCustomer.getIdCustomer());
+	}
 
     public class ValidationException extends Exception {
         public ValidationException(String s) {
@@ -199,10 +223,29 @@ public class OrderService {
         }
         log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
     }
-    public void abort(Order order){
-        Order o = orderRepository.findOne(order.getIdOrder());
+    
+    public void validate(Order order) throws OrderValidationException {
 
-        penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
+        Professional professional;
+
+        //SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL PARA VERIFICAR SE JA TEM ORDERS
+        if(order.getIdOrder() == null) {
+            professional = order.getProfessionalServices().getProfessional();
+
+        //SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM COMO O UPDATE DE STATUS
+        } else {
+            Order requestedOrder = orderRepository.findOne(order.getIdOrder());
+            professional = requestedOrder.getProfessionalServices().getProfessional();
+        }
+
+        //List<Order> orderList = orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+        //professional.getIdProfessional(), Order.Status.INPROGRESS, Order.Status.ACCEPTED);
+        List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+                professional.getIdProfessional());
+
+        if(!orderList.isEmpty()) {
+            throw new OrderValidationException();
+        }
+
     }
-
 }

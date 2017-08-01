@@ -1,11 +1,13 @@
 package com.cosmeticos.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.cosmeticos.model.Order;
-import java.util.List;
+import com.cosmeticos.model.Order.Status;
 
 /**
  * Created by matto on 17/06/2017.
@@ -17,6 +19,21 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
     List<Order> findByStatus(Order.Status status);
+
+    List<Order> findByProfessionalServices_Professional_idProfessional(Long idProfessional);
+
+    List<Order> findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+            Order.Status s1, Order.Status s2, Long idProfessional);
+
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalServices ps " +
+            "join fetch ps.professional p " +
+            "WHERE p.idProfessional = ?1 " +
+            "AND  o.status in( 7, 8 )")
+    List<Order> findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+            Long idProfessional);
     
     /*
     @Query(value = "SELECT * FROM " +
@@ -35,5 +52,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //List<Order> findByStatusNotLike(Order.Status s1);
     //List<Order> findByStatusNotLike(String s1);
     //List<Order> findByStatusNotLike(int s1);
-    List<Order> findByStatusNotLikeAndStatusNotLike(Order.Status s1, Order.Status s2);
+    List<Order> findByStatusNotIn(Collection<Status> status);
+
+	List<Order> findByStatusNotInAndIdCustomer_IdCustomer(Collection<Status> status,
+			Long idCustomer);
 }
