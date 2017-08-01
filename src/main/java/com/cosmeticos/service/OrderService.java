@@ -1,5 +1,7 @@
 package com.cosmeticos.service;
 
+import static com.cosmeticos.model.Order.Status.*;
+
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.penalty.PenaltyService;
@@ -14,7 +16,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +76,11 @@ public class OrderService {
             order.setIdLocation(orderRequest.getOrder().getIdLocation());
             order.setIdCustomer(customer);
             order.setDate(Calendar.getInstance().getTime());
+            order.setLastUpdate(order.getDate());
+            order.setExpireTime(new Date(order.getDate().getTime() + 
+            		
+            		// 6 horas de validade
+            		21600000));
 
             // ProfessionalServices por ser uma tabela associativa necessita de um cuidado estra
             order.setProfessionalServices(persistentProfessionalServices.get());
@@ -170,8 +179,7 @@ public class OrderService {
         //return orderRepository.findAll(Example.of(bindableQueryObject));
         //return orderRepository.findAllCustom();
         //return orderRepository.findByQueryAnnotation();
-        return orderRepository.findByStatusNotLikeAndStatusNotLike(
-                Order.Status.CANCELLED, Order.Status.CLOSED);
+        return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED));
     }
 
     public void abort(Order order){
@@ -181,8 +189,12 @@ public class OrderService {
     }
 
 	public List<Order> findActiveByCustomer(Customer idCustomer) {
-        return orderRepository.findByStatusNotLikeAndStatusNotLikeAndIdCustomer_IdCustomer(
-                Order.Status.CANCELLED, Order.Status.CLOSED, idCustomer.getIdCustomer());
+        return orderRepository.findByStatusNotInAndIdCustomer_IdCustomer(
+        		Arrays.asList(
+        				CANCELLED, 
+        				AUTO_CLOSED, 
+        				CLOSED), 
+        		idCustomer.getIdCustomer());
 	}
 
     public class ValidationException extends Exception {

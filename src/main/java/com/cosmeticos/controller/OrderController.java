@@ -205,7 +205,7 @@ public class OrderController {
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);
-            responseBody.setDescription("TOP 10 successfully retrieved.");
+            responseBody.setDescription(entitylist.size() + " retrieved.");
 
             log.info("{} Orders successfully retrieved.", entitylist.size());
 
