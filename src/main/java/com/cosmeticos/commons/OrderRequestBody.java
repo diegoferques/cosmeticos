@@ -10,6 +10,9 @@ import lombok.Data;
 public class OrderRequestBody {
 
     private Order order;
-    
-    private Integer stars;
+
+    //ISSO JA ESTAVA AQUI, SERA QUE FOI ALGUEM QUE FEZ PENSANDO EM USAR COMO VOTE?
+    private Integer value;
+
+    private Integer vote;
 }
