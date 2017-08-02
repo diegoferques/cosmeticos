@@ -3,9 +3,6 @@ package com.cosmeticos.payment.client;
 
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Data
 public class Transacao {
 
@@ -23,14 +20,5 @@ public class Transacao {
     public String campoLivre4;
     public String campoLivre5;
     public String dataVencimentoBoleto;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
 
 }
