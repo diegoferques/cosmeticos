@@ -30,7 +30,7 @@ public class Professional  implements Serializable {
 
     public  enum Status
     {
-        INACTIVE, ACTIVE;
+        INACTIVE, ACTIVE, STANDBY, OUT_FOR_SERVICE;
 		
 		@JsonValue
 		public int toValue() {

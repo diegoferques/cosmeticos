@@ -1,13 +1,5 @@
 package com.cosmeticos.service;
 
-import static com.cosmeticos.model.Order.Status.ACCEPTED;
-import static com.cosmeticos.model.Order.Status.CANCELLED;
-import static com.cosmeticos.model.Order.Status.CLOSED;
-import static com.cosmeticos.model.Order.Status.INPROGRESS;
-import static com.cosmeticos.model.Order.Status.OPEN;
-import static com.cosmeticos.model.Order.Status.SCHEDULED;
-import static com.cosmeticos.model.Order.Status.SEMI_CLOSED;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -17,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Order.Status;
+
+import static com.cosmeticos.model.Order.Status.*;
 
 @Service
 public class OrderStatusHandler {
@@ -29,7 +23,7 @@ public class OrderStatusHandler {
 	public OrderStatusHandler() {
 		statusChangeMatrix = new HashMap<>();
 		statusChangeMatrix.put(null, new Status[] { OPEN });
-		statusChangeMatrix.put(OPEN, new Status[] { ACCEPTED, SCHEDULED, CANCELLED });
+		statusChangeMatrix.put(OPEN, new Status[] { ACCEPTED, SCHEDULED, CANCELLED, EXPIRED });
 		statusChangeMatrix.put(ACCEPTED, new Status[] { INPROGRESS, CANCELLED });
 		statusChangeMatrix.put(SCHEDULED, new Status[] { INPROGRESS, CANCELLED });
 		statusChangeMatrix.put(INPROGRESS, new Status[] { SEMI_CLOSED, CANCELLED });

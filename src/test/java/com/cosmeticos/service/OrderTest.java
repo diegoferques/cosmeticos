@@ -49,6 +49,12 @@ public class OrderTest {
 		order.setStatus(Status.OPEN);
 		Assert.assertEquals(Status.CANCELLED, handler.handle(order, Status.CANCELLED));
 	}
+
+	@Test
+	public void testOpenToExpired() {
+		order.setStatus(Status.OPEN);
+		Assert.assertEquals(Status.EXPIRED, handler.handle(order, Status.EXPIRED));
+	}
 	
 	@Test
 	public void testAcceptedToInprogress() {
