@@ -10,6 +10,6 @@ import lombok.Data;
 public class OrderRequestBody {
 
     private Order order;
-    
-    private Integer stars;
+
+    private Integer vote;
 }
