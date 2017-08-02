@@ -1,9 +1,11 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.model.Vote;
+import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,12 @@ public class VoteService {
     @Autowired
     private VoteRepository voteRepository;
 
-    public void create(OrderRequestBody orderRequestBody) {
+    @Autowired
+    private OrderRepository orderRepository;
+
+    public void create(OrderRequestBody orderRequestBody, Order order) {
         Vote vote = new Vote();
-        vote.setUser(orderRequestBody.getOrder().getProfessionalServices().getProfessional().getUser());
+        vote.setUser(order.getProfessionalServices().getProfessional().getUser());
         vote.setValue(orderRequestBody.getVote());
         voteRepository.save(vote);
     }

@@ -104,14 +104,12 @@ public class OrderController {
                 orderService.validate(request.getOrder());
 
                 Order order = orderService.update(request);
-                order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-                order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-
-                order.setProfessionalServices(null);
-                order.setIdCustomer(null);
+                //TODO - SETANDO CUSTOMER E PROFESSIONAL COMO NULL, NUNCA CONSEGUIREI ADICIONAR O VOTO AO PROFESSIONAL/USER DE ORDER
+                //order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
+                //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
 
                 //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
-                voteService.create(request);
+                voteService.create(request, order);
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",

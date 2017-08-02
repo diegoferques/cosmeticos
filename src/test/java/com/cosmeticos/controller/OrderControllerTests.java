@@ -5,6 +5,7 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
+import com.cosmeticos.service.VoteService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +60,9 @@ public class OrderControllerTests {
 
     @Autowired
     private OrderService service;
+
+    @Autowired
+    private VoteService voteService;
 
     @Before
     public void setup()
@@ -1502,6 +1506,113 @@ public class OrderControllerTests {
 
     }
 
+    @Test
+    public void testOrderClosedAndVote() throws IOException, URISyntaxException {
+
+        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testOrderClosedAndVote-customer1");
+        c1.getUser().setEmail("testOrderClosedAndVote-customer1@email.com");
+        c1.getUser().setPassword("123");
+        c1.setCpf("123.984.789-01");
+        c1.setNameCustomer("testOrderClosedAndVote Customer");
+
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testOrderClosedAndVote-professional");
+        professional.getUser().setEmail("testOrderClosedAndVote-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.984.789-03");
+        professional.setNameProfessional("testOrderClosedAndVote Professional");
+
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
+
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+        //-------
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        System.out.println(jsonCreate);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+
+        Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
+        //-------
+
+        //ATUALIZAMOS ORDER PARA CLOSED PARA E ENVIAMOS O VOTO
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
+                "    \"status\" : \""+ Order.Status.CLOSED +"\"\n" +
+                "   },\n" +
+                "   \"vote\" : 3\n" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders")) // put pra atualizar o que inserimos la em cima
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+
+        Order orderUpdateAccepted = exchangeUpdate.getBody().getOrderList().get(0);
+        Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+
+        float vote = voteService.getProfessionalEvaluation(professional);
+        Assert.assertNotNull(vote);
+        Assert.assertTrue((float)3.0 == vote);
+
+        //-------
+
+        /*
+        //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
+        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
+
+        RequestEntity<String> entity2 =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate2);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate2 = restTemplate
+                .exchange(entity2, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate2);
+        Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode());
+        */
+        //-------
+
+    }
+
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
     public String getOrderCreateJson(Service service, Professional professional, Customer customer) {
 
@@ -1521,7 +1632,7 @@ public class OrderControllerTests {
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
+                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
                 "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
                 "        \"genre\" : \"F\",\n" +
                 "        \"birthDate\" : 688010400000,\n" +
@@ -1533,7 +1644,7 @@ public class OrderControllerTests {
                 "    \"idLocation\" : null,\n" +
                 "    \"idCustomer\" : {\n" +
                 "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
+                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
                 "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
                 "      \"genre\" : \"F\",\n" +
                 "      \"birthDate\" : 688010400000,\n" +
