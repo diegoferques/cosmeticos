@@ -123,6 +123,17 @@ public class OrderTest {
 	}
 
 	@Test
+	public void testFailOnExpiredToOpen() {
+		try {
+			order.setStatus(Status.EXPIRED);
+			Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
+			Assert.fail("setStatus deveria ter lancado excecao");
+		} catch (Exception e) {
+			Assert.assertTrue(e instanceof IllegalStateException);
+		}
+	}
+
+	@Test
 	public void testFailOnClosedToOpen() {
 		try {
 			order.setStatus(Status.CLOSED);

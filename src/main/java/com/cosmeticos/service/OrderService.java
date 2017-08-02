@@ -139,6 +139,10 @@ public class OrderService {
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
+        if(Order.Status.EXPIRED == order.getStatus()){
+            throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
+        }
+
         if (!StringUtils.isEmpty(orderRequest.getDate())) {
             order.setDate(orderRequest.getDate());
         }
@@ -247,5 +251,20 @@ public class OrderService {
             throw new OrderValidationException();
         }
 
+    }
+    @Scheduled(cron = "${order.expired.cron}")
+    public void updateStatusOpenToExpired() {
+
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.OPEN);
+
+        int count = onlyOrsersFinishedByProfessionals.size();
+
+        for (Order o : onlyOrsersFinishedByProfessionals) {
+
+                o.setStatus(Order.Status.EXPIRED);
+                orderRepository.save(o);
+
+        }
+        log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
     }
 }
