@@ -1,10 +1,13 @@
 
 package com.cosmeticos.payment.client;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Data
 public class RetornoTransacao {
 
     public Integer numeroTransacao;

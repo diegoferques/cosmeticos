@@ -1,9 +1,12 @@
 
 package com.cosmeticos.payment.client;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 public class ItensDoPedido {
 
     public Integer codigoProduto;
