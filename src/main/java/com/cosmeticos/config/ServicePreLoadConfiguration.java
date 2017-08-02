@@ -25,13 +25,13 @@ public class ServicePreLoadConfiguration {
         s1.setCategory("ESCOVA");
 
         Service s2 = new Service();
-        s2.setCategory("HIDRATAÇÂO");
+        s2.setCategory("HIDRATAÇÃO");
 
         Service s3 = new Service();
         s3.setCategory("PENTEADO");
 
         Service s4 = new Service();
-        s4.setCategory("DEPILAÇÂO");
+        s4.setCategory("DEPILAÇÃO");
 
         Service s5 = new Service();
         s5.setCategory("MASSAGEM");
