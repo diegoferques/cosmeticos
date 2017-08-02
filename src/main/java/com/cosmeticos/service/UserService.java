@@ -6,8 +6,10 @@ import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -75,5 +77,39 @@ public class UserService {
 
         return emailExists;
 
+    }
+
+    public Optional<User> passwordReset(UserRequestBody request){
+
+        Optional<User> userOptional = repository.findByEmail(request.getEntity().getEmail());
+
+        if (userOptional.isPresent()) {
+            User persistentUser = userOptional.get();
+
+            persistentUser.setPassword(generateRandomPassword(8));
+
+            repository.save(persistentUser);
+        }
+
+        return userOptional;
+    }
+
+    private String generateRandomPassword(int length) {
+
+        Random RANDOM = new SecureRandom();
+
+        //http://www.java2s.com/Code/Java/Security/GeneratearandomStringsuitableforuseasatemporarypassword.htm
+        // Pick from some letters that won't be easily mistaken for each
+        // other. So, for example, omit o O and 0, 1 l and L.
+        String letters = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789+@";
+
+        String pw = "";
+        for (int i=0; i<length; i++)
+        {
+            int index = (int)(RANDOM.nextDouble()*letters.length());
+            pw += letters.substring(index, index+1);
+        }
+
+        return pw;
     }
 }
