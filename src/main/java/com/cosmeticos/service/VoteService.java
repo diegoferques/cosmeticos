@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by matto on 01/08/2017.
+ * Created by matto on 01/08/2017..
  */
 @Service
 public class VoteService {
