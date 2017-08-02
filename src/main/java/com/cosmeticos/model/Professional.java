@@ -120,6 +120,9 @@ public class Professional  implements Serializable {
     @Transient
     private Long distance;
 
+    @Transient
+    private float evaluation;
+
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
     }

@@ -6,6 +6,7 @@ import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.service.OrderService;
+import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,9 @@ public class OrderController {
 
     @Autowired
     PenaltyService penaltyService;
+
+    @Autowired
+    VoteService voteService;
 
     @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
@@ -100,11 +104,12 @@ public class OrderController {
                 orderService.validate(request.getOrder());
 
                 Order order = orderService.update(request);
-                order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-                order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
+                //TODO - SETANDO CUSTOMER E PROFESSIONAL COMO NULL, NUNCA CONSEGUIREI ADICIONAR O VOTO AO PROFESSIONAL/USER DE ORDER
+                //order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
+                //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
 
-                order.setProfessionalServices(null);
-                order.setIdCustomer(null);
+                //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
+                voteService.create(request, order);
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
