@@ -1423,11 +1423,11 @@ public class OrderControllerTests {
     public void testParaTravarUpdateStatusDeExpiredParaOpen() throws IOException, URISyntaxException {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testParaTravarUpdateDeStatus-cliente");
-        c1.getUser().setEmail("testParaTravarUpdateDeStatus-cliente@bol");
+        c1.getUser().setUsername("testUpdateStatusDeExpiredParaOpen-cliente");
+        c1.getUser().setEmail("testUpdateStatusDeExpiredParaOpen-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testParaTravarUpdateDeStatus-professional");
-        professional.getUser().setEmail("testParaTravarUpdateDeStatus-professional@bol");
+        professional.getUser().setUsername("testUpdateStatusDeExpiredParaOpen-professional");
+        professional.getUser().setEmail("testUpdateStatusDeExpiredParaOpen-professional@bol");
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
