@@ -1509,7 +1509,7 @@ public class OrderControllerTests {
     @Test
     public void testOrderClosedAndVote() throws IOException, URISyntaxException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        //SETAMOS E SALVAMOS O PROFESSIONAL E CUSTOMER QUE VAMOS UTILIZAR NESTE TESTE
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername("testOrderClosedAndVote-customer1");
         c1.getUser().setEmail("testOrderClosedAndVote-customer1@email.com");
@@ -1537,7 +1537,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
         //-------
 
-        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
         String jsonCreate = this.getOrderCreateJson(service, professional, c1);
         System.out.println(jsonCreate);
 
@@ -1559,7 +1559,7 @@ public class OrderControllerTests {
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
-        //ATUALIZAMOS ORDER PARA CLOSED PARA E ENVIAMOS O VOTO
+        //ATUALIZAMOS ORDER PARA CLOSED E ENVIAMOS O VOTO
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
@@ -1572,7 +1572,7 @@ public class OrderControllerTests {
         System.out.println(jsonUpdate);
 
         RequestEntity<String> entityUpdate =  RequestEntity
-                .put(new URI("/orders")) // put pra atualizar o que inserimos la em cima
+                .put(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
@@ -1590,27 +1590,7 @@ public class OrderControllerTests {
         float vote = voteService.getProfessionalEvaluation(professional);
         Assert.assertNotNull(vote);
         Assert.assertTrue((float)3.0 == vote);
-
         //-------
-
-        /*
-        //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
-
-        RequestEntity<String> entity2 =  RequestEntity
-                .post(new URI("/orders"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonCreate2);
-
-        ResponseEntity<OrderResponseBody> exchangeCreate2 = restTemplate
-                .exchange(entity2, OrderResponseBody.class);
-
-        Assert.assertNotNull(exchangeCreate2);
-        Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode());
-        */
-        //-------
-
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
