@@ -33,13 +33,13 @@ import static org.springframework.http.ResponseEntity.*;
 public class OrderController {
 
     @Autowired
-    OrderService orderService;
+    private OrderService orderService;
 
     @Autowired
-    PenaltyService penaltyService;
+    private PenaltyService penaltyService;
 
     @Autowired
-    VoteService voteService;
+    private VoteService voteService;
 
     @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
@@ -109,7 +109,7 @@ public class OrderController {
                 //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
 
                 //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
-                voteService.create(request, order);
+                voteService.create(order.getProfessionalServices().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
