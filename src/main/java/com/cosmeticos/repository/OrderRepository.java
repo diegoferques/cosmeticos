@@ -31,7 +31,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "join fetch o.professionalServices ps " +
             "join fetch ps.professional p " +
             "WHERE p.idProfessional = ?1 " +
-            "AND  o.status in( 7, 8 )")
+            "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
     List<Order> findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
             Long idProfessional);
     
