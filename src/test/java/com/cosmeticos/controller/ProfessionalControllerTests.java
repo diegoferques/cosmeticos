@@ -836,6 +836,8 @@ public class ProfessionalControllerTests {
 	@Test
 	public void testUpdateAttendanceOK() throws IOException, URISyntaxException {
 
+
+
 		String json = "{\n" +
 				"  \"professional\": {\n" +
 				"    \"address\": null,\n" +
