@@ -49,6 +49,12 @@ public class OrderTest {
 		order.setStatus(Status.OPEN);
 		Assert.assertEquals(Status.CANCELLED, handler.handle(order, Status.CANCELLED));
 	}
+
+	@Test
+	public void testOpenToExpired() {
+		order.setStatus(Status.OPEN);
+		Assert.assertEquals(Status.EXPIRED, handler.handle(order, Status.EXPIRED));
+	}
 	
 	@Test
 	public void testAcceptedToInprogress() {
@@ -109,6 +115,17 @@ public class OrderTest {
 	public void testFailOnCancelledToOpen() {
 		try {
 			order.setStatus(Status.CANCELLED);
+			Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
+			Assert.fail("setStatus deveria ter lancado excecao");
+		} catch (Exception e) {
+			Assert.assertTrue(e instanceof IllegalStateException);
+		}
+	}
+
+	@Test
+	public void testFailOnExpiredToOpen() {
+		try {
+			order.setStatus(Status.EXPIRED);
 			Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {

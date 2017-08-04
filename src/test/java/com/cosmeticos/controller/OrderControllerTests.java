@@ -1420,6 +1420,131 @@ public class OrderControllerTests {
     }
 
     @Test
+    public void testParaTravarUpdateStatusDeExpiredParaOpen() throws IOException, URISyntaxException {
+
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testUpdateStatusDeExpiredParaOpen-cliente");
+        c1.getUser().setEmail("testUpdateStatusDeExpiredParaOpen-cliente@bol");
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testUpdateStatusDeExpiredParaOpen-professional");
+        professional.getUser().setEmail("testUpdateStatusDeExpiredParaOpen-professional@bol");
+
+        customerRepository.save(c1);
+        professionalRepository.save(professional);
+
+        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+
+        /*
+         O teste comeca aqui:
+         Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
+         um profissional associado a um servico que existirao no banco.
+          */
+        String json = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : \"" + Order.Status.OPEN + "\",\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"status\" : \"ACTIVE\",\n" +
+                "      \"orderCollection\" : [ ]\n" +
+                "    },\n" +
+                "    \"professionalServices\" : {\n" +
+                "      \"service\" : {\n" +
+                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
+                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : " + c1.getIdCustomer() + ",\n" +
+                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
+                "      \"cpf\" : \"816.810.695-68\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \"KILLER\",\n" +
+                "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                "      \"idAddress\" : null\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        RequestEntity<String> entity = RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        ResponseEntity<OrderResponseBody> exchange = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Order newOrder = exchange.getBody().getOrderList().get(0);
+
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : " + newOrder.getIdOrder() + ",\n" +
+                "    \"status\" : \"" + Order.Status.EXPIRED + "\"\n" +
+                "  }\n" +
+                "}";
+
+        RequestEntity<String> entityPut = RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangePut = restTemplate
+                .exchange(entityPut, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangePut);
+        Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
+        Assert.assertEquals(Order.Status.EXPIRED,
+                exchangePut.getBody().getOrderList().get(0).getStatus());
+
+        String jsonUpdate2 = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : " + newOrder.getIdOrder() + ",\n" +
+                "    \"status\" : \"" + Order.Status.OPEN + "\"\n" +
+                "  }\n" +
+                "}";
+
+        RequestEntity<String> entityPut2 = RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate2);
+
+        ResponseEntity<OrderResponseBody> exchangePut2 = restTemplate
+                .exchange(entityPut2, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangePut2);
+        Assert.assertEquals(HttpStatus.FORBIDDEN, exchangePut2.getStatusCode());
+
+    }
+
+    @Test
     public void testCreateToConflictedOrderErrorCausedByOrderStatusInProgress() throws IOException, URISyntaxException {
 
         //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE

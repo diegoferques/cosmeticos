@@ -38,7 +38,7 @@ import lombok.Data;
 public class Order implements Serializable {
 
 	public enum Status {
-		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED
+		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED, EXPIRED
 	}
 
 	private static final long serialVersionUID = 1L;
