@@ -5,7 +5,7 @@ import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
 import com.cosmeticos.service.UserService;
-import com.cosmeticos.smtp.MailSender;
+import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -32,6 +32,9 @@ public class UserController {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    MailSenderService mailSenderService;
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
@@ -182,7 +185,7 @@ public class UserController {
     //TODO - FALTA CRIAR TESTES E VALIDAR
     //REFERENCIA: https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
     @RequestMapping(path = "/password_reset", method = RequestMethod.PUT)
-    public HttpEntity<UserResponseBody> passwordReset(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
+    public HttpEntity<UserResponseBody> passwordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors()) {
@@ -208,8 +211,7 @@ public class UserController {
                 Optional<User> userOptional = service.passwordReset(request);
                 User updatedUser = userOptional.get();
 
-                MailSender mailSender = new MailSender();
-                Boolean sendEmail = mailSender.sendPasswordReset(updatedUser);
+                Boolean sendEmail = mailSenderService.sendPasswordReset(updatedUser);
 
                 UserResponseBody responseBody = new UserResponseBody();
 
