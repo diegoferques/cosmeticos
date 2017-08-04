@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
@@ -259,19 +260,20 @@ public class OrderService {
 
 		List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.OPEN);
 
-		int count = onlyOrsersFinishedByProfessionals.size();
+		int count = 0;
+            LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
 
-		LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
+            for (Order o : onlyOrsersFinishedByProfessionals) {
+                LocalDateTime orderCreationDate = o.getLastUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-		for (Order o : onlyOrsersFinishedByProfessionals) {
 
-			LocalDateTime orderCreationDate = o.getLastUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                if (orderCreationDate.isBefore(tenMinutesAgo)) {
+                    o.setStatus(Order.Status.EXPIRED);
+                    orderRepository.save(o);
+                    count++;
+                }
+            }
+            log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
 
-			if (orderCreationDate.isBefore(tenMinutesAgo)) {
-				o.setStatus(Order.Status.EXPIRED);
-				orderRepository.save(o);
-			}
-		}
-		log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
 	}
 }
