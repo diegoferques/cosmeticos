@@ -58,16 +58,16 @@ public class OrderPreLoadConfiguration {
 
         Schedule s1 = new Schedule();
         s1.setStatus(Schedule.Status.ACTIVE);
-        s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 03, 10, 0, 0)));
+        s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.now()));
 
         Schedule s2 = new Schedule();
         s2.setStatus(Schedule.Status.ACTIVE);
-        s2.setScheduleDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 04, 11, 0, 0)));
+        s2.setScheduleDate(Timestamp.valueOf(LocalDateTime.now()));
 
         Order o1 = new Order();
         o1.setStatus(Order.Status.OPEN);
-        o1.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
-        o1.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 10, 0)));
+        o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o1.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o1.setIdCustomer(c1);
         //o1.setIdLocation();
         o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
@@ -76,8 +76,8 @@ public class OrderPreLoadConfiguration {
 
         Order o2 = new Order();
         o2.setStatus(Order.Status.OPEN);
-        o2.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 20, 0)));
-        o2.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 20, 0)));
+        o2.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o2.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o2.setIdCustomer(c1);
         //o2.setIdLocation();
         o2.setProfessionalServices(ps1);
@@ -86,8 +86,8 @@ public class OrderPreLoadConfiguration {
 
         Order o3 = new Order();
         o3.setStatus(Order.Status.OPEN);
-        o3.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
-        o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
+        o3.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
         o3.setProfessionalServices(ps1);
@@ -96,8 +96,8 @@ public class OrderPreLoadConfiguration {
 
         Order o4 = new Order();
         o4.setStatus(Order.Status.OPEN);
-        o4.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 40, 0)));
-        o4.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 40, 0)));
+        o4.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o4.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o4.setIdCustomer(c1);
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
@@ -108,8 +108,8 @@ public class OrderPreLoadConfiguration {
 
         Order o5 = new Order();
         o5.setStatus(Order.Status.OPEN);
-        o5.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 50, 0)));
-        o5.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 50, 0)));
+        o5.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o5.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o5.setIdCustomer(c1);
         //o5.setIdLocation();
         o5.setProfessionalServices(ps1);
@@ -120,8 +120,8 @@ public class OrderPreLoadConfiguration {
         //Scheduled Order
         Order o6 = new Order();
         o6.setStatus(Order.Status.OPEN);
-        o6.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 40, 0)));
-        o6.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 40, 0)));
+        o6.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o6.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setIdCustomer(c1);
         //o6.setIdLocation();
         o6.setProfessionalServices(ps1);
@@ -131,8 +131,8 @@ public class OrderPreLoadConfiguration {
         //Scheduled Order
         Order o7 = new Order();
         o7.setStatus(Order.Status.OPEN);
-        o7.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 50, 0)));
-        o7.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 02, 22, 50, 0)));
+        o7.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o7.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setIdCustomer(c1);
         //o5.setIdLocation();
         o7.setProfessionalServices(ps1);

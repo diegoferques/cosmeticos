@@ -30,7 +30,7 @@ public class Professional  implements Serializable {
 
     public  enum Status
     {
-        INACTIVE, ACTIVE;
+        INACTIVE, ACTIVE, STANDBY, OUT_FOR_SERVICE;
 		
 		@JsonValue
 		public int toValue() {
@@ -119,6 +119,9 @@ public class Professional  implements Serializable {
 
     @Transient
     private Long distance;
+
+    @Transient
+    private float evaluation;
 
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
