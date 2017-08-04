@@ -185,7 +185,7 @@ public class OrderService {
 		// return orderRepository.findAll(Example.of(bindableQueryObject));
 		// return orderRepository.findAllCustom();
 		// return orderRepository.findByQueryAnnotation();
-		return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED));
+		return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED, EXPIRED));
 	}
 
 	public void abort(Order order) {
@@ -259,9 +259,9 @@ public class OrderService {
 
 		List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.OPEN);
 
-		int count = onlyOrsersFinishedByProfessionals.size();
+		int count = 0;
 
-		LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
+		LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(1);
 
 		for (Order o : onlyOrsersFinishedByProfessionals) {
 
@@ -270,6 +270,7 @@ public class OrderService {
 			if (orderCreationDate.isBefore(tenMinutesAgo)) {
 				o.setStatus(Order.Status.EXPIRED);
 				orderRepository.save(o);
+				count++;
 			}
 		}
 		log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
