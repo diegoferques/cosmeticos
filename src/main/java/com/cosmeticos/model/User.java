@@ -94,7 +94,7 @@ public class User implements Serializable {
        this.getCreditCardCollection().add(cc);
    }
 
-   @JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
+   //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
     public String getPassword() {
         return password;
     }
