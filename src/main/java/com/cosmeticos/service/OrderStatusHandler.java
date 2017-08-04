@@ -23,12 +23,11 @@ public class OrderStatusHandler {
 	public OrderStatusHandler() {
 		statusChangeMatrix = new HashMap<>();
 		statusChangeMatrix.put(null, new Status[] { OPEN });
-		statusChangeMatrix.put(OPEN, new Status[] { ACCEPTED, SCHEDULED, CANCELLED });
+		statusChangeMatrix.put(OPEN, new Status[] { ACCEPTED, SCHEDULED, CANCELLED, EXPIRED });
 		statusChangeMatrix.put(ACCEPTED, new Status[] { INPROGRESS, CANCELLED });
 		statusChangeMatrix.put(SCHEDULED, new Status[] { INPROGRESS, CANCELLED });
 		statusChangeMatrix.put(INPROGRESS, new Status[] { SEMI_CLOSED, CANCELLED });
 		statusChangeMatrix.put(SEMI_CLOSED, new Status[] { CLOSED });
-		statusChangeMatrix.put(OPEN, new Status[] { EXPIRED });
 
 	}
 	

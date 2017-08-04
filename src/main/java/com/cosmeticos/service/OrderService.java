@@ -186,7 +186,7 @@ public class OrderService {
 		// return orderRepository.findAll(Example.of(bindableQueryObject));
 		// return orderRepository.findAllCustom();
 		// return orderRepository.findByQueryAnnotation();
-		return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED));
+		return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED, EXPIRED));
 	}
 
 	public void abort(Order order) {
@@ -274,6 +274,9 @@ public class OrderService {
                 }
             }
             log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
+
+
+
 
 	}
 }
