@@ -1,41 +1,33 @@
 package com.cosmeticos.payment.superpay.client.rest;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import com.cosmeticos.payment.superpay.client.rest.model.TransacaoRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import com.cosmeticos.payment.superpay.client.rest.model.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.google.gson.Gson;
-
-import com.cosmeticos.payment.superpay.client.rest.model.DadosCobranca;
-import com.cosmeticos.payment.superpay.client.rest.model.DadosEntrega;
-import com.cosmeticos.payment.superpay.client.rest.model.Endereco;
-import com.cosmeticos.payment.superpay.client.rest.model.ItemPedido;
-import com.cosmeticos.payment.superpay.client.rest.model.Telefone;
-import com.cosmeticos.payment.superpay.client.rest.model.Transacao;
 import com.cosmeticos.payment.superpay.client.rest.model.TransacaoRequest;
-import com.cosmeticos.payment.superpay.client.rest.model.Usuario;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
+
+	@Autowired
+	private RestTemplateBuilder restTemplateBuilder;
 
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -48,11 +40,25 @@ public class Application implements CommandLineRunner {
 
 		log.info(">>>> Teste RESTv2");
 		TransacaoRequest request = getRequest();
+
+		/*
 		Gson mapper = new Gson();
 		String jsonHeader = mapper.toJson(new Usuario("superpay", "superpay"));
+
 		Map<String, String> usuarioMap = new HashMap<>();
 		usuarioMap.put("usuario", jsonHeader);
+
 		String jsonRequest = mapper.toJson(request);
+		*/
+
+		ObjectMapper om = new ObjectMapper();
+		String jsonHeader = om.writeValueAsString(new Usuario("superpay", "superpay"));
+
+		Map<String, String> usuarioMap = new HashMap<>();
+		usuarioMap.put("usuario", jsonHeader);
+
+		String jsonRequest = om.writeValueAsString(request);
+
 		log.info(jsonHeader);
 		log.info(jsonRequest);
 		String response = postJson("https://homologacao.superpay.com.br/checkout/api/v2/transacao", usuarioMap,
@@ -148,9 +154,27 @@ public class Application implements CommandLineRunner {
 	}
 
 	private String postJson(String url, Map<String, String> headers, String data) {
-		String result = null;
+		RestTemplate restTemplate = restTemplateBuilder.build();
+
 		try {
 
+			RequestEntity<String> entity = RequestEntity
+					.post(new URI(url))
+					.contentType(MediaType.APPLICATION_JSON)
+					.header("usuario", headers.get("usuario"))
+					.accept(MediaType.APPLICATION_JSON)
+					.body(data);
+
+			ResponseEntity<String> result = restTemplate
+					.exchange(entity, String.class);
+
+		} catch (Exception e) {
+			log.error(e.toString());
+			result = e.toString();
+
+		}
+
+			/*
 			HttpPost post = new HttpPost(url);
 
 			post.setEntity(new BufferedHttpEntity(
@@ -180,6 +204,7 @@ public class Application implements CommandLineRunner {
 			log.error(e.toString());
 			result = e.toString();
 		}
+		*/
 
 		return result;
 	}
