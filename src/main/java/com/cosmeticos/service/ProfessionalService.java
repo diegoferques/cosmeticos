@@ -148,14 +148,16 @@ public class ProfessionalService {
         Set<ProfessionalServices> receivedProfessionalServices =
                 receivedProfessional.getProfessionalServicesCollection();
 
-        receivedProfessionalServices.stream().forEach(ps -> {
-            ps.setProfessional(newProfessional);
+        if (receivedProfessionalServices != null) {
+			receivedProfessionalServices.stream().forEach(ps -> {
+				ps.setProfessional(newProfessional);
 
-            ProfessionalServicesPK pk = new ProfessionalServicesPK(ps);
-            ps.setProfessionalServicesPK(pk);
+				ProfessionalServicesPK pk = new ProfessionalServicesPK(ps);
+				ps.setProfessionalServicesPK(pk);
 
-            newProfessional.getProfessionalServicesCollection().add(ps);
-        });
+				newProfessional.getProfessionalServicesCollection().add(ps);
+			});
+		}
     }
 
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {
