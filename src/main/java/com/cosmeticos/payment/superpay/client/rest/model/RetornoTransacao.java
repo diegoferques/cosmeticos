@@ -1,5 +1,5 @@
 
-package com.cosmeticos.payment.client;
+package com.cosmeticos.payment.superpay.client.rest.model;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class RetornoTransacao {
     public Integer statusTransacao;
     public String autorizacao;
     public String codigoTransacaoOperadora;
-    public String dataTransacaoOperadora;
+    //public String dataTransacaoOperadora;
     public String dataAprovacaoOperadora;
     public String numeroComprovanteVenda;
     public String nsu;

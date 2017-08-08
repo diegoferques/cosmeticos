@@ -1,27 +1,24 @@
 package com.cosmeticos.payment.superpay.client.rest;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.cosmeticos.payment.superpay.client.rest.model.TransacaoRequest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -69,8 +66,8 @@ public class Application implements CommandLineRunner {
 
 	private TransacaoRequest getRequest() {
 		TransacaoRequest result = new TransacaoRequest();
-		result.setCodigoEstabelecimento("INCLUIR CODIGO ESTABELECIMENTO SUPERPAY");
-		result.setCodigoFormaPagamento(120);
+		result.setCodigoEstabelecimento("1501698887865");
+		result.setCodigoFormaPagamento(170);
 
 		Transacao transacao = new Transacao();
 		transacao.setParcelas(1);
@@ -85,10 +82,10 @@ public class Application implements CommandLineRunner {
 		result.setTransacao(transacao);
 		
 		DadosCartao dadosCartao = new DadosCartao();
-		dadosCartao.setNomePortador("Teste");
-		dadosCartao.setNumeroCartao("44443333222211111");
+		dadosCartao.setNomePortador("Cliente Teste");
+		dadosCartao.setNumeroCartao("0000000000000001");
 		dadosCartao.setCodigoSeguranca("123");
-		dadosCartao.setDataValidade("10/2017");
+		dadosCartao.setDataValidade("12/2026");
 
 		List<ItemPedido> itensDoPedido = new ArrayList<>();
 		ItemPedido item = new ItemPedido();
@@ -156,6 +153,10 @@ public class Application implements CommandLineRunner {
 	private String postJson(String url, Map<String, String> headers, String data) {
 		RestTemplate restTemplate = restTemplateBuilder.build();
 
+		String result = "";
+		System.out.println("HEADERS: " + headers);
+		System.out.println("BODY: " + data);
+
 		try {
 
 			RequestEntity<String> entity = RequestEntity
@@ -165,8 +166,10 @@ public class Application implements CommandLineRunner {
 					.accept(MediaType.APPLICATION_JSON)
 					.body(data);
 
-			ResponseEntity<String> result = restTemplate
+			ResponseEntity<String> exchange = restTemplate
 					.exchange(entity, String.class);
+
+			result = exchange.getBody();
 
 		} catch (Exception e) {
 			log.error(e.toString());
