@@ -10,7 +10,7 @@ import com.cosmeticos.model.ProfessionalServices;
  */
 public class ResponseJsonView {
 
-    /**
+	/**
      * Especifica que campos da entidade o endpoint mapeado por
      * {@link com.cosmeticos.controller.ProfessionalServicesController#findAll(ProfessionalServices)}
      * serializara no json.
@@ -21,4 +21,6 @@ public class ResponseJsonView {
     public interface OrderControllerCreate {}
     public interface OrderControllerUpdate {}
     public interface OrderControllerFindBy {}
+    public interface ProfessionalFindAll {}
+    public interface ProfessionalUpdate {}
 }

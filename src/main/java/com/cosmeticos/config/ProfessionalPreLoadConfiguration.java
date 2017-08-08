@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.Professional.Type;
 import com.cosmeticos.model.User;
 import com.cosmeticos.model.Wallet;
 import com.cosmeticos.repository.CustomerRepository;
@@ -51,6 +52,7 @@ public class ProfessionalPreLoadConfiguration {
 
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
+        p1.setAttendance(Type.HOME_CARE);
 
         p1.setAddress(address1);
         address1.setProfessional(p1);
