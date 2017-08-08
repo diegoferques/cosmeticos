@@ -6,4 +6,5 @@ package com.cosmeticos.validation;
 public class OrderValidationException extends Exception {
 
 
+
 }

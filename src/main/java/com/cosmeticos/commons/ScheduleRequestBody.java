@@ -22,8 +22,10 @@ public class ScheduleRequestBody {
     @NotNull(message = "Service ID was not set!")
     private Long idService;
 
-    @NotNull(message = "ScheduleDate cannot be null!")
-    private Date scheduleDate;
+    @NotNull(message = "ScheduleStart cannot be null!")
+    private Date scheduleStart;
 
-    private String status;
+    @NotNull(message = "ScheduleEnd cannot be null")
+    private Date scheduleEnd;
+
 }

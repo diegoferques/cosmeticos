@@ -28,16 +28,12 @@ public class SchedulePreLoadConfiguration {
         for (int i = 0; i < 100; i++) {
 
             Schedule s = new Schedule();
-            s.setScheduleDate(Timestamp.valueOf(LocalDateTime.of(2017
+            s.setScheduleStart(Timestamp.valueOf(LocalDateTime.of(2017
                     , (int) (System.nanoTime() % 11) + 1
                     , (int) (System.nanoTime() % 28) + 1
                     , (int) (System.nanoTime() % 24)
                     , 0)));
 
-            Schedule.Status[] allStatus = Schedule.Status.values();
-            int randomStatusIndex = (int)(System.nanoTime() % allStatus.length);
-
-            s.setStatus(allStatus[randomStatusIndex]);
 
             repository.save(s);
         }

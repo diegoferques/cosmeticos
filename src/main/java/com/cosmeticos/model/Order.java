@@ -37,7 +37,8 @@ import lombok.Data;
 @Table(name = "[ORDER]")
 public class Order implements Serializable {
 
-	public enum Status {
+
+    public enum Status {
 		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED, EXPIRED
 	}
 

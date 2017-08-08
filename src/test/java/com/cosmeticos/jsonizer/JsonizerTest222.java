@@ -163,7 +163,7 @@ public class JsonizerTest222 {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
         ScheduleRequestBody scheduleRequest = new ScheduleRequestBody();
-        scheduleRequest.setScheduleDate(Calendar.getInstance().getTime());
+        scheduleRequest.setScheduleStart(Calendar.getInstance().getTime());
         scheduleRequest.setIdCustomer(1L);
         scheduleRequest.setIdProfessional(1L);
         scheduleRequest.setIdService(1L);
