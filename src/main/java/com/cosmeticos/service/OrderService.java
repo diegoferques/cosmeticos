@@ -97,36 +97,37 @@ public class OrderService {
 
 			Order newOrder = orderRepository.save(order);
 			// Buscando se o customer que chegou no request esta na wallet
-			/*Optional<Customer> customerInWallet = professional.getWallet().getCustomers()
-					.stream()
-					.filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
-					.findFirst();
-*/
-			// Se o cliente nao esta na wallet entao aplicamos a logica de adicionar na wallet.
-			//if (!customerInWallet.isPresent()) {
-				List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
+				Optional<Customer> customerInWallet = professional.getWallet().getCustomers()
+						.stream()
+						.filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
+						.findAny();
 
-				int totalOrders = 0;
-				//daki pra baixo faz a parada da wallet..... nao.. na vdd.. perai
-				for (int i = 0; i < savedOrders.size(); i++) {
-                    Order o = savedOrders.get(i);
-                    if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
-                            .getIdProfessional()) {
-                        totalOrders++;
-                    }
-                //}
+				// Se o cliente nao esta na wallet entao aplicamos a logica de adicionar na wallet.
+				if (!customerInWallet.isPresent()) {
+					List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
 
-				if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho.
-                                        // pode debugar.
-                {
-                    if (professional.getWallet() == null) {
-                        professional.setWallet(new Wallet());
-                        professional.getWallet().setProfessional(professional);
-                    }
-                    professional.getWallet().getCustomers().add(customer);
-                    professionalRepository.save(professional);
-                }
-			}
+					int totalOrders = 0;
+					//daki pra baixo faz a parada da wallet..... nao.. na vdd.. perai
+					for (int i = 0; i < savedOrders.size(); i++) {
+						Order o = savedOrders.get(i);
+						if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
+								.getIdProfessional()) {
+							totalOrders++;
+						}
+					}
+
+					if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho.
+					// pode debugar.
+					{
+						if (professional.getWallet() == null) {
+							professional.setWallet(new Wallet());
+							professional.getWallet().setProfessional(professional);
+						}
+						professional.getWallet().getCustomers().add(customer);
+						professionalRepository.save(professional);
+					}
+				}
+
 
 			return newOrder;
 		} else {
@@ -167,8 +168,16 @@ public class OrderService {
 		}
 
 		if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
-			order.setProfessionalServices(orderRequest.getProfessionalServices());
+
+			Professional p = orderRequest.getProfessionalServices().getProfessional();
+			Service s = orderRequest.getProfessionalServices().getService();
+
+			ProfessionalServices ps = new ProfessionalServices(p, s);
+
+			order.setProfessionalServices(ps);
+
 		}
+
 
 		if (!StringUtils.isEmpty(orderRequest.getScheduleId())) {
 			order.setScheduleId(orderRequest.getScheduleId());
@@ -243,8 +252,8 @@ public class OrderService {
 	public void validate(Order order) throws OrderValidationException, ValidationException {//
 
 		// Aqui vc escolhe o que quer usar.
-		//validateScheduled1(order);
-		validateScheduled2(order);
+		validateScheduled1(order);
+		//validateScheduled2(order);
 
 
 
@@ -306,26 +315,25 @@ public class OrderService {
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
 		newOrderScheduleStart.getTime();
 
+		ProfessionalServices ps = order.getProfessionalServices();
+		Professional p = ps.getProfessional();
 
-		Long idProfessional = order.getProfessionalServices().getProfessional().getIdProfessional();
+		Long idProfessional = p.getIdProfessional();
 		Date pretendedStart = order.getScheduleId().getScheduleStart();
 		//Date pretendedEnd = order.getScheduleId().getScheduleEnd();
-		idProfessional.longValue();
-		pretendedStart.getTime();
 		/*
 		Aplico mais filtros na query e trago só as orders que interessa.
 
 		Eh sempre a melhor opcao deixar os filtros na responsabilidade do banco.
 		 */
 		List<Order> orders = orderRepository.findScheduledOrdersByProfessionalWithScheduleConflict(idProfessional, pretendedStart);
-		orderRepository.save(orders);
 		// A query busca tudo que esta conflitando no banco. Se houver resultado, eh pq tem conflito.
 		if(!orders.isEmpty()){
 
-			throw new IllegalStateException();
-			//throw new ValidationException("Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+			throw new ValidationException("Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+		}else {
+			newOrderScheduleStart = order.getScheduleId().getScheduleStart();
 		}
-
 	}
 
 	@Scheduled(cron = "${order.expired.cron}")

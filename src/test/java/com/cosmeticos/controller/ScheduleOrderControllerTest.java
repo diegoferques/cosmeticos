@@ -294,6 +294,11 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleEnd\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 16, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
+                "    \"professionalServices\" : {\n" +
+                "      \"service\" : {\n" +
+                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -359,7 +364,7 @@ public class ScheduleOrderControllerTest {
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
+                "        \"nameProfessional\" : \"Fernanda Cavalcante100  \",\n" +
                 "        \"genre\" : \"F\",\n" +
                 "        \"birthDate\" : 688010400000,\n" +
                 "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
@@ -370,7 +375,7 @@ public class ScheduleOrderControllerTest {
                 "    \"idLocation\" : null,\n" +
                 "    \"idCustomer\" : {\n" +
                 "      \"idCustomer\" : " + c2.getIdCustomer() + ",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante6\",\n" +
+                "      \"nameCustomer\" : \"Fernanda Cavalcante9\",\n" +
                 "      \"cpf\" : \"816.810.695-688\",\n" +
                 "      \"genre\" : \"F\",\n" +
                 "      \"birthDate\" : 688010400000,\n" +
@@ -378,8 +383,8 @@ public class ScheduleOrderControllerTest {
                 "      \"dateRegister\" : 1499195092952,\n" +
                 "      \"status\" : 0,\n" +
                 "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"username\" : \""+c2.getNameCustomer()+"\",\n" +
+                "        \"email\" : \"Kill@bol.com\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -399,23 +404,8 @@ public class ScheduleOrderControllerTest {
                 .exchange(entityFail, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeFail);
-        Assert.assertEquals(HttpStatus.CONFLICT, exchangeFail.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchangeFail.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, exchangeFail.getStatusCode());
 
-        Schedule sFail = exchangeFail.getBody().getOrderList().get(0).getScheduleId();
-
-        Assert.assertNotNull(s);
-        String scheduleDateFail = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(sFail.getScheduleStart());
-        Assert.assertEquals("07/07/2017 15:00", scheduleDateFail);
-
-
-
-        Assert.assertNotNull(exchangeFail.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchangeFail.getBody().getOrderList().get(0).getProfessionalServices().getService());
-        Assert.assertEquals("PEDICURE",
-                exchangeFail.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
-
-        orderRestultFrom_createScheduledOrderOk = exchangeFail.getBody().getOrderList().get(0);
 
     }
 
