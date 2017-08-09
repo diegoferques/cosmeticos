@@ -340,13 +340,14 @@ public class ScheduleOrderControllerTest {
         ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+        
         Schedule s1 = exchangeUpdate.getBody().getOrderList().get(0).getScheduleId();
         Assert.assertNotNull(s1);
         String scheduleUpdate = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(s1.getScheduleEnd());
         Assert.assertEquals("07/07/2017 16:00", scheduleUpdate);
 
-        Assert.assertNotNull(exchangeUpdate);
-        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertEquals(Order.Status.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         String jsonFail = "{\n" +

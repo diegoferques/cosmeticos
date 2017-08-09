@@ -97,37 +97,8 @@ public class OrderService {
 
 			Order newOrder = orderRepository.save(order);
 			// Buscando se o customer que chegou no request esta na wallet
-				Optional<Customer> customerInWallet = professional.getWallet().getCustomers()
-						.stream()
-						.filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
-						.findAny();
-
-				// Se o cliente nao esta na wallet entao aplicamos a logica de adicionar na wallet.
-				if (!customerInWallet.isPresent()) {
-					List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
-
-					int totalOrders = 0;
-					//daki pra baixo faz a parada da wallet..... nao.. na vdd.. perai
-					for (int i = 0; i < savedOrders.size(); i++) {
-						Order o = savedOrders.get(i);
-						if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
-								.getIdProfessional()) {
-							totalOrders++;
-						}
-					}
-
-					if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho.
-					// pode debugar.
-					{
-						if (professional.getWallet() == null) {
-							professional.setWallet(new Wallet());
-							professional.getWallet().setProfessional(professional);
-						}
-						professional.getWallet().getCustomers().add(customer);
-						professionalRepository.save(professional);
-					}
-				}
-
+			
+			addInWallet(professional, customer);
 
 			return newOrder;
 		} else {
@@ -137,6 +108,51 @@ public class OrderService {
 							+ professional.getIdProfessional() + "] em nosso banco de dados.");
 		}
 
+	}
+
+	/**
+	 * Adiciona o cliente na carteira do profissional se as condicoes forem satisfeitas.
+	 * @param professional
+	 * @param customer
+	 */
+	private void addInWallet(Professional professional, Customer customer) {
+		Optional<Wallet> optionalWallet = Optional.ofNullable(professional.getWallet());
+		Optional<Customer> customerInWallet = Optional.empty();
+		
+		// Verificando se pelo menos existe a wallet.
+		if(optionalWallet.isPresent())
+		{	
+			customerInWallet = professional.getWallet().getCustomers()
+				.stream()
+				.filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
+				.findAny();
+		}
+		
+		// Se nao existe wallet ou se o cliente nao esta na wallet, entao aplicamos a logica de adicionar na wallet.
+		if (!optionalWallet.isPresent() || !customerInWallet.isPresent()) {
+			List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
+
+			int totalOrders = 0;
+			//daki pra baixo faz a parada da wallet..... nao.. na vdd.. perai
+			for (int i = 0; i < savedOrders.size(); i++) {
+				Order o = savedOrders.get(i);
+				if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
+						.getIdProfessional()) {
+					totalOrders++;
+				}
+			}
+
+			if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho.
+			// pode debugar.
+			{
+				if (professional.getWallet() == null) {
+					professional.setWallet(new Wallet());
+					professional.getWallet().setProfessional(professional);
+				}
+				professional.getWallet().getCustomers().add(customer);
+				professionalRepository.save(professional);
+			}
+		}
 	}
 
 	public Order update(OrderRequestBody request) {
