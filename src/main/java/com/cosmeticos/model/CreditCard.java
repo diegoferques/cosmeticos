@@ -35,8 +35,12 @@ public class CreditCard implements Serializable {
 
     private String securityCode;
 
+    //TODO - VALIDADE DO CARTAO DEVERIA SER STRING (EX.: "07/2022")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expirationDate;
+
+    //TODO - TIVE QUE CRIAR ISSO AQUI PARA ADIANTAR MEUS TESTES
+    private String validThru;
 
     private String vendor;
 
