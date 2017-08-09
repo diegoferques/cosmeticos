@@ -47,13 +47,13 @@ public class PaymentController {
         NONE, PORTUGUESE, ENGLISH, SPANISH
     }
 
-    private Map<Integer, String> usuarioMap = getFormasPagamento();
+    private Map<String, Integer> usuarioMap = getFormasPagamento();
 
-    private Map<Integer, String> getFormasPagamento() {
-        Map<Integer, String> formasPagamento = new HashMap<Integer, String>();
-        formasPagamento.put(170, "Visa");
-        formasPagamento.put(171, "MasterCard");
-        formasPagamento.put(29, "Itaú");
+    private Map<String, Integer> getFormasPagamento() {
+        Map<String, Integer> formasPagamento = new HashMap<String, Integer>();
+        formasPagamento.put( "Visa", 170);
+        formasPagamento.put("MasterCard", 171);
+        formasPagamento.put("Itau", 29);
 
         return formasPagamento;
     }
@@ -98,10 +98,10 @@ public class PaymentController {
         request.setCodigoEstabelecimento("1501698887865");
 
         //TODO - VERIFICAR QUAL A BANDEIRA DO CARTAO E PEGAR O SEU CODIGO
-        //request.setCodigoFormaPagamento(Integer.parseInt(usuarioMap.get("Visa")));
-        //request.setCodigoFormaPagamento(Integer.valueOf(usuarioMap.get(creditCard.getVendor())));
+        request.setCodigoFormaPagamento(usuarioMap.get("Visa"));
+        request.setCodigoFormaPagamento(usuarioMap.get(creditCard.getVendor()));
         //DEFINIDO MANUALMENTE ATE RESOLVER O PROBLEMA ACIMA - java.lang.NumberFormatException: null
-        request.setCodigoFormaPagamento(170);
+       // request.setCodigoFormaPagamento(170);
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);
