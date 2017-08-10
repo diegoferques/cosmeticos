@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 /**
  * Created by Vinicius on 12/06/2017.
@@ -31,7 +29,8 @@ public class UserPreLoadConfiguration {
         cc.setToken("4321");
         cc.setCardNumber("45518700000001831");
         cc.setSecurityCode("123");
-        cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
+        //cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
+        cc.setExpirationDate("12/2017");
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
 
@@ -39,7 +38,8 @@ public class UserPreLoadConfiguration {
         ccNovo.setToken("77777");
         ccNovo.setCardNumber("56629811111112942");
         ccNovo.setSecurityCode("321");
-        ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
+        //ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
+        ccNovo.setExpirationDate("03/2018");
         ccNovo.setVendor("Visa");
         ccNovo.setStatus(CreditCard.Status.ACTIVE);
 
@@ -62,7 +62,8 @@ public class UserPreLoadConfiguration {
         cc2.setToken("7772344377");
         cc2.setCardNumber("67730922222223053");
         cc2.setSecurityCode("123");
-        cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
+        //cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
+        cc2.setExpirationDate("12/2018");
         cc2.setVendor("Master");
         cc2.setStatus(CreditCard.Status.INACTIVE);
 

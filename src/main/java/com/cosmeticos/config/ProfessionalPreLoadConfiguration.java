@@ -1,19 +1,18 @@
 package com.cosmeticos.config;
 
-import javax.annotation.PostConstruct;
-
+import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
-import com.cosmeticos.model.Wallet;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.*;
+import javax.annotation.PostConstruct;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -31,6 +30,12 @@ public class ProfessionalPreLoadConfiguration {
 
     @Autowired
     private WalletRepository customerWalletRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
+
+    @Autowired
+    private ProfessionalRepository professionalRepository;
 
     @PostConstruct
     public void insertInitialH2Data()
@@ -175,6 +180,72 @@ public class ProfessionalPreLoadConfiguration {
 
         repository.save(s7);
 
+        //ADICIONADO PARA TESTAR PELO POSTMAN O CARD RNF76
+        Professional professional = createFakeProfessional();
+        professional.getUser().setUsername("testPaymentPreload-professional");
+        professional.getUser().setEmail("testPaymentPreload-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("098.605.789-06");
+
+        professionalRepository.save(professional);
+
+        Service service = serviceRepository.findByCategory("MASSOTERAPEUTA");
+
+        if(service == null) {
+            service = new Service();
+            service.setCategory("MASSOTERAPEUTA");
+            serviceRepository.save(service);
+        }
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+
 
     }
+
+    public static Professional createFakeProfessional() {
+        Professional c1 = new Professional();
+        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
+        c1.setCellPhone("(21) 98877-6655");
+        c1.setCnpj("098.765.432-10");
+        c1.setDateRegister(Calendar.getInstance().getTime());
+        c1.setGenre('M');
+        c1.setNameProfessional("João da Silva");
+        //c1.setOrderCollection(null);
+        c1.setStatus(Professional.Status.ACTIVE);
+        c1.setAddress(createFakeAddress());
+        c1.setUser(createFakeUser("222", "222@2.com"));
+        c1.getUser().setProfessional(c1);
+
+        return c1;
+    }
+
+    public static User createFakeUser(String username, String email) {
+        User u = new User();
+        u.setEmail(email);
+        //u.setUser(1234L);
+        u.setPassword("123qwe");
+        u.setSourceApp("google+");
+        u.setUsername(username);
+        //u.getCustomerCollection().add(c);
+        //userRepository.save(u);
+        return u;
+    }
+
+    static Address createFakeAddress() {
+        Address a = new Address();
+        a.setAddress("Rua Perlita");
+        a.setCep("0000000");
+        a.setCity("RJO");
+        a.setCountry("BRA");
+        a.setNeighborhood("Austin");
+        a.setState("RJ");
+
+        return a;
+    }
+
 }

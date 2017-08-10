@@ -135,7 +135,8 @@ public class UserControllerTest {
         cc1.setToken("4321");
         cc1.setCardNumber("67730934681683053");
         cc1.setSecurityCode("321");
-        cc1.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 11, 11, 0, 0)));
+        //cc1.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 11, 11, 0, 0)));
+        cc1.setExpirationDate("11/2018");
         cc1.setVendor("MasterCard");
         cc1.setStatus(CreditCard.Status.ACTIVE);
 
@@ -143,7 +144,8 @@ public class UserControllerTest {
         cc2.setToken("1234");
         cc2.setCardNumber("67730987357243053");
         cc2.setSecurityCode("123");
-        cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2020, 07, 07, 0, 0)));
+        //cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2020, 07, 07, 0, 0)));
+        cc2.setExpirationDate("07/2020");
         cc2.setVendor("visa");
         cc2.setStatus(CreditCard.Status.ACTIVE);
 

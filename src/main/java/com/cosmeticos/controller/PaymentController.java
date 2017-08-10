@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -30,6 +31,18 @@ import java.util.Map;
 @Slf4j
 @Controller
 public class PaymentController {
+
+    @Value("${superpay.url.transacao}")
+    private String urlTransacao;
+
+    @Value("${superpay.estabelecimento}")
+    private String estabelecimento;
+
+    @Value("${superpay.login}")
+    private String login;
+
+    @Value("${superpay.senha}")
+    private String senha;
 
     @Autowired
     private PaymentService paymentService;
@@ -66,8 +79,7 @@ public class PaymentController {
         TransacaoRequest request = createRequest(order);
 
         ObjectMapper om = new ObjectMapper();
-        //TODO - COLOCAR LOGIN E SENHA EM PROPERTIES E PEGAR OS VALORES AQUI, POIS TEREMOS CODIGO DE HOMOLOGACAO E PRODUCAO
-        String jsonHeader = om.writeValueAsString(new Usuario("superpay", "superpay"));
+        String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
 
         Map<String, String> usuarioMap = new HashMap<>();
         usuarioMap.put("usuario", jsonHeader);
@@ -76,9 +88,8 @@ public class PaymentController {
 
         System.out.println(jsonHeader);
         System.out.println(jsonRequest);
-        //TODO - COLOCAR URL EM PROPERTIES E PEGAR O SEU VALOR AQUI, POIS TEREMOS CODIGO DE HOMOLOGACAO E PRODUCAO
-        String response = postJson("https://homologacao.superpay.com.br/checkout/api/v2/transacao", usuarioMap,
-                jsonRequest);
+
+        String response = postJson(urlTransacao, usuarioMap, jsonRequest);
         System.out.println(response);
         System.out.println("<<<<");
 
@@ -94,14 +105,9 @@ public class PaymentController {
 
         TransacaoRequest request = new TransacaoRequest();
 
-        //TODO - COLOCAR EM PROPERTIES E PEGAR O SEU VALOR AQUI, POIS TEREMOS CODIGO DE HOMOLOGACAO E PRODUCAO
-        request.setCodigoEstabelecimento("1501698887865");
+        request.setCodigoEstabelecimento(estabelecimento);
 
-        //TODO - VERIFICAR QUAL A BANDEIRA DO CARTAO E PEGAR O SEU CODIGO
-        request.setCodigoFormaPagamento(usuarioMap.get("Visa"));
         request.setCodigoFormaPagamento(usuarioMap.get(creditCard.getVendor()));
-        //DEFINIDO MANUALMENTE ATE RESOLVER O PROBLEMA ACIMA - java.lang.NumberFormatException: null
-       // request.setCodigoFormaPagamento(170);
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);
@@ -146,7 +152,7 @@ public class PaymentController {
         dadosCartao.setNomePortador(creditCard.getOwnerName());
         dadosCartao.setNumeroCartao(creditCard.getCardNumber());
         dadosCartao.setCodigoSeguranca(creditCard.getSecurityCode());
-        dadosCartao.setDataValidade(creditCard.getValidThru());
+        dadosCartao.setDataValidade(creditCard.getExpirationDate());
 
         return dadosCartao;
     }
@@ -170,9 +176,10 @@ public class PaymentController {
 
         DadosCobranca dadosCobranca = new DadosCobranca();
 
-        //TODO - CORRIGIR O PROBLEMA ABAIXO AO PASSAR O ID DO USUARIO DE LONG PARA INTEGER
-        //dadosCobranca.setCodigoCliente(Integer.valueOf(customer.getIdCustomer().toString()));
-        dadosCobranca.setCodigoCliente(3);
+
+
+        dadosCobranca.setCodigoCliente(Integer.valueOf(customer.getIdCustomer().intValue()));
+
         //TODO - NAO TEMOS DEFINICAO DE PESSOA FISICA OU JURIDICA, SETEI MANUALMENTE COMO FISICA SEMPRE
         dadosCobranca.setTipoCliente(1);
         dadosCobranca.setNome(customer.getNameCustomer());
@@ -251,7 +258,7 @@ public class PaymentController {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("mm,yyyy");
         //Date expiration = dateFormat.parse("12,2026");
         //creditCard.setExpirationDate(expiration);
-        creditCard.setValidThru("12/2026");
+        creditCard.setExpirationDate("12/2026");
 
         creditCard.setVendor("Visa");
 

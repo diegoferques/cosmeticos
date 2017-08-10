@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by Vinicius on 23/06/2017.
@@ -36,11 +36,8 @@ public class CreditCard implements Serializable {
     private String securityCode;
 
     //TODO - VALIDADE DO CARTAO DEVERIA SER STRING (EX.: "07/2022")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date expirationDate;
-
-    //TODO - TIVE QUE CRIAR ISSO AQUI PARA ADIANTAR MEUS TESTES
-    private String validThru;
+    @Size(message = "expirationDate must have 7 characters! (EX.: MM/YYYY)", min = 7, max = 7)
+    private String expirationDate;
 
     private String vendor;
 

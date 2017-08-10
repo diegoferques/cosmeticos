@@ -1,8 +1,6 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +97,17 @@ public class CustomerPreLoadConfiguration {
             customerRepository.save(c3);
             customerRepository.save(c4);
             customerRepository.save(c5);
+
+
+            //ADICIONADO PARA TESTAR PELO POSTMAN O CARD RNF76
+            Customer customer = createFakeCustomer();
+            customer.getUser().setUsername("testPaymentPreload-customer1");
+            customer.getUser().setEmail("testPaymentPreload-customer1@email.com");
+            customer.getUser().setPassword("123");
+            customer.setCpf("098.605.789-05");
+
+            customerRepository.save(customer);
+
         } catch (Exception e) {
             log.error("Falha no UserPreLoad", e);
         }
@@ -127,5 +136,21 @@ public class CustomerPreLoadConfiguration {
         //a.getCustomerCollection().add(customer);
         //addressRepository.save(a);
         return a;
+    }
+
+    private Customer createFakeCustomer() {
+        Customer c1 = new Customer();
+        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
+        c1.setCellPhone("(21) 98877-6655");
+        c1.setCpf("098.765.432-10");
+        c1.setDateRegister(Calendar.getInstance().getTime());
+        c1.setGenre('M');
+        c1.setNameCustomer("João da Silva");
+        //c1.setOrderCollection(null);
+        c1.setStatus(Customer.Status.ACTIVE.ordinal());
+        c1.setAddress(createFakeAddress());
+        c1.setUser(createFakeLogin("222", "222@email.com"));
+
+        return c1;
     }
 }
