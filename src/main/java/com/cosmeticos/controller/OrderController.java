@@ -226,12 +226,13 @@ public class OrderController {
     }
 
     @JsonView(ResponseJsonView.OrderControllerFindBy.class)
-    @RequestMapping(path = "/orders/bycustomer", method = RequestMethod.GET)
-    public HttpEntity<OrderResponseBody> findActiveByCustomer(@ModelAttribute Order bindable) {
+    @RequestMapping(path = "/orders/customer/", method = RequestMethod.GET)
+    public HttpEntity<OrderResponseBody> findActiveByCustomer(
+    		@RequestParam(name="email", required=true) String email
+    ) {
 
         try {
-            //List<Order> entitylist = orderService.findBy(bindableQueryObject);
-            List<Order> entitylist = orderService.findActiveByCustomer(bindable.getIdCustomer());
+            List<Order> entitylist = orderService.findActiveByCustomerEmail(email);
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);
