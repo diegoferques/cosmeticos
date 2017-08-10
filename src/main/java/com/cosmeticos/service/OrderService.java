@@ -5,6 +5,7 @@ import static com.cosmeticos.model.Order.Status.*;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -18,11 +19,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by matto on 17/06/2017.
@@ -43,6 +40,9 @@ public class OrderService {
 	@Autowired
 	private PenaltyService penaltyService;
 
+	@Autowired
+	private CreditCardRepository creditCardRepository;
+
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
 	}
@@ -58,6 +58,8 @@ public class OrderService {
 		 * pelo @Valid, portanto devemos buscar o objeto real no banco.
 		 */
 		Customer customer = customerResponsitory.findOne(orderRequest.getOrder().getIdCustomer().getIdCustomer());
+
+		Set<CreditCard> creditCard = orderRequest.getOrder().getCreditCardCollection();
 
 		Professional professional = professionalRepository
 				.findOne(receivedProfessionalServices.getProfessional().getIdProfessional());
@@ -80,6 +82,7 @@ public class OrderService {
 
 			// 6 horas de validade
 					21600000));
+			order.setCreditCardCollection(creditCard);
 
 			// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
 			// estra

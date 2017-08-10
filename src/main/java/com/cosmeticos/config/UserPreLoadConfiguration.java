@@ -37,7 +37,6 @@ public class UserPreLoadConfiguration {
 
         CreditCard ccNovo = new CreditCard();
         ccNovo.setToken("77777");
-        ccNovo.setCardNumber("56629811111112942");
         ccNovo.setSecurityCode("321");
         ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
         ccNovo.setVendor("Visa");
@@ -45,7 +44,6 @@ public class UserPreLoadConfiguration {
 
         User u1 = new User();
         u1.getCreditCardCollection().add(cc);
-        u1.getCreditCardCollection().add(ccNovo);
         u1.setUsername("KILLER");
         u1.setPassword("109809876");
         u1.setEmail("killer@gmail.com");

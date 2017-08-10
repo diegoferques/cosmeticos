@@ -11,6 +11,8 @@ import javax.annotation.PostConstruct;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by matto on 24/06/2017.
@@ -62,6 +64,9 @@ public class OrderPreLoadConfiguration {
         Schedule s2 = new Schedule();
         s2.setScheduleStart(Timestamp.valueOf(LocalDateTime.now()));
 
+        CreditCard creditCard = new CreditCard();
+        creditCard.setLastUsage(Timestamp.valueOf(LocalDateTime.now()));
+
         Order o1 = new Order();
         o1.setStatus(Order.Status.OPEN);
         o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
@@ -69,6 +74,7 @@ public class OrderPreLoadConfiguration {
         o1.setIdCustomer(c1);
         //o1.setIdLocation();
         o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
+
         //o1.setScheduleId(s1);
         orderRepository.save(o1);
 
