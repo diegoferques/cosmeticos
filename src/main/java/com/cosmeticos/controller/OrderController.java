@@ -112,9 +112,7 @@ public class OrderController {
                 voteService.create(order.getProfessionalServices().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
-                log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
-                        order,
-                        new ObjectMapper().writeValueAsString(responseBody));
+                log.info("Order atualizado com sucesso:  [{}].", order);
                 return ok(responseBody);
 
             }
@@ -226,12 +224,13 @@ public class OrderController {
     }
 
     @JsonView(ResponseJsonView.OrderControllerFindBy.class)
-    @RequestMapping(path = "/orders/bycustomer", method = RequestMethod.GET)
-    public HttpEntity<OrderResponseBody> findActiveByCustomer(@ModelAttribute Order bindable) {
+    @RequestMapping(path = "/orders/customer/", method = RequestMethod.GET)
+    public HttpEntity<OrderResponseBody> findActiveByCustomer(
+    		@RequestParam(name="email", required=true) String email
+    ) {
 
         try {
-            //List<Order> entitylist = orderService.findBy(bindableQueryObject);
-            List<Order> entitylist = orderService.findActiveByCustomer(bindable.getIdCustomer());
+            List<Order> entitylist = orderService.findActiveByCustomerEmail(email);
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);

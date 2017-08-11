@@ -33,19 +33,21 @@ public class User implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        @JsonView({
-        	ResponseJsonView.ProfessionalFindAll.class,
-        })
+    @JsonView({
+        ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLogin;
 
-        @JsonView({
-                ResponseJsonView.WalletsFindAll.class,
-                ResponseJsonView.OrderControllerFindBy.class,
-                ResponseJsonView.ProfessionalFindAll.class,
-                ResponseJsonView.ProfessionalUpdate.class
-        })
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @NotEmpty(message = "UserName cannot be empty")
     @Column(unique = true)
     private String username;
@@ -57,7 +59,8 @@ public class User implements Serializable {
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
-            ResponseJsonView.ProfessionalUpdate.class
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     private String email;
 
