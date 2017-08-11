@@ -57,12 +57,10 @@ public class OrderPreLoadConfiguration {
         professionalRepository.save(p1);
 
         Schedule s1 = new Schedule();
-        s1.setStatus(Schedule.Status.ACTIVE);
-        s1.setScheduleDate(Timestamp.valueOf(LocalDateTime.now()));
+        s1.setScheduleStart(Timestamp.valueOf(LocalDateTime.now()));
 
         Schedule s2 = new Schedule();
-        s2.setStatus(Schedule.Status.ACTIVE);
-        s2.setScheduleDate(Timestamp.valueOf(LocalDateTime.now()));
+        s2.setScheduleStart(Timestamp.valueOf(LocalDateTime.now()));
 
         Order o1 = new Order();
         o1.setStatus(Order.Status.OPEN);

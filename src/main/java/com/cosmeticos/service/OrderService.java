@@ -17,15 +17,12 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by matto on 17/06/2017.
@@ -99,12 +96,44 @@ public class OrderService {
 			order.setStatus(Order.Status.OPEN);
 
 			Order newOrder = orderRepository.save(order);
+			// Buscando se o customer que chegou no request esta na wallet
+			
+			addInWallet(professional, customer);
 
-			// Pra ter dado erro la em baixo significa que essa parte aki funcionu ne? isso
+			return newOrder;
+		} else {
+			throw new OrderService.ValidationException(
+					"Service [id=" + receivedProfessionalServices.getService().getIdService()
+							+ "] informado no requst nao esta associado ao profissional " + "id=["
+							+ professional.getIdProfessional() + "] em nosso banco de dados.");
+		}
+
+	}
+
+	/**
+	 * Adiciona o cliente na carteira do profissional se as condicoes forem satisfeitas.
+	 * @param professional
+	 * @param customer
+	 */
+	private void addInWallet(Professional professional, Customer customer) {
+		Optional<Wallet> optionalWallet = Optional.ofNullable(professional.getWallet());
+		Optional<Customer> customerInWallet = Optional.empty();
+		
+		// Verificando se pelo menos existe a wallet.
+		if(optionalWallet.isPresent())
+		{	
+			customerInWallet = professional.getWallet().getCustomers()
+				.stream()
+				.filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
+				.findAny();
+		}
+		
+		// Se nao existe wallet ou se o cliente nao esta na wallet, entao aplicamos a logica de adicionar na wallet.
+		if (!optionalWallet.isPresent() || !customerInWallet.isPresent()) {
 			List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
 
 			int totalOrders = 0;
-
+			//daki pra baixo faz a parada da wallet..... nao.. na vdd.. perai
 			for (int i = 0; i < savedOrders.size(); i++) {
 				Order o = savedOrders.get(i);
 				if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
@@ -114,7 +143,7 @@ public class OrderService {
 			}
 
 			if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho.
-									// pode debugar.
+			// pode debugar.
 			{
 				if (professional.getWallet() == null) {
 					professional.setWallet(new Wallet());
@@ -123,13 +152,6 @@ public class OrderService {
 				professional.getWallet().getCustomers().add(customer);
 				professionalRepository.save(professional);
 			}
-
-			return newOrder;
-		} else {
-			throw new OrderService.ValidationException(
-					"Service [id=" + receivedProfessionalServices.getService().getIdService()
-							+ "] informado no requst nao esta associado ao profissional " + "id=["
-							+ professional.getIdProfessional() + "] em nosso banco de dados.");
 		}
 	}
 
@@ -162,8 +184,16 @@ public class OrderService {
 		}
 
 		if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
-			order.setProfessionalServices(orderRequest.getProfessionalServices());
+
+			Professional p = orderRequest.getProfessionalServices().getProfessional();
+			Service s = orderRequest.getProfessionalServices().getService();
+
+			ProfessionalServices ps = new ProfessionalServices(p, s);
+
+			order.setProfessionalServices(ps);
+
 		}
+
 
 		if (!StringUtils.isEmpty(orderRequest.getScheduleId())) {
 			order.setScheduleId(orderRequest.getScheduleId());
@@ -226,7 +256,22 @@ public class OrderService {
 		log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
 	}
 
-	public void validate(Order order) throws OrderValidationException {
+	/**
+	 *
+	 * @param order
+	 *
+	 * TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a
+	 * OrderValidationException mas tem q alterar  a classe la ainda
+	 * @throws OrderValidationException
+	 * @throws ValidationException
+	 */
+	public void validate(Order order) throws OrderValidationException, ValidationException {//
+
+		// Aqui vc escolhe o que quer usar.
+		validateScheduled1(order);
+		//validateScheduled2(order);
+
+
 
 		Professional professional;
 
@@ -253,6 +298,58 @@ public class OrderService {
 			throw new OrderValidationException();
 		}
 
+	}
+
+	private void validateScheduled1(Order order) throws ValidationException {
+
+		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
+		newOrderScheduleStart.getTime();
+
+
+		/*
+		Nao coloco muitos filtros na query e retorno bastante orders e aplico a logica no if la em baixo.
+		 */
+		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalServices().getProfessional().getIdProfessional());
+		orderRepository.save(orders);
+		for (int i = 0; i < orders.size(); i++) {
+			Order o =  orders.get(i);
+
+			if(o.getScheduleId() != null ) {
+				Date existingOrderStart = o.getScheduleId().getScheduleStart();
+				Date existingOrderEnd  = o.getScheduleId().getScheduleEnd();
+
+				if (existingOrderStart.before(newOrderScheduleStart) &&
+						existingOrderEnd.after(newOrderScheduleStart)) {
+					// conflitou!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					throw new ValidationException("Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+				}
+			}
+		}
+	}
+	private void validateScheduled2(Order order) throws ValidationException {
+
+		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
+		newOrderScheduleStart.getTime();
+
+		ProfessionalServices ps = order.getProfessionalServices();
+		Professional p = ps.getProfessional();
+
+		Long idProfessional = p.getIdProfessional();
+		Date pretendedStart = order.getScheduleId().getScheduleStart();
+		//Date pretendedEnd = order.getScheduleId().getScheduleEnd();
+		/*
+		Aplico mais filtros na query e trago só as orders que interessa.
+
+		Eh sempre a melhor opcao deixar os filtros na responsabilidade do banco.
+		 */
+		List<Order> orders = orderRepository.findScheduledOrdersByProfessionalWithScheduleConflict(idProfessional, pretendedStart);
+		// A query busca tudo que esta conflitando no banco. Se houver resultado, eh pq tem conflito.
+		if(!orders.isEmpty()){
+
+			throw new ValidationException("Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+		}else {
+			newOrderScheduleStart = order.getScheduleId().getScheduleStart();
+		}
 	}
 
 	@Scheduled(cron = "${order.expired.cron}")

@@ -20,8 +20,7 @@ public class ScheduleService {
     public Schedule update(ScheduleRequestBody request)
     {
         Schedule schedule = repository.findOne(request.getIdSchedule());
-        schedule.setScheduleDate(request.getScheduleDate());
-        schedule.setStatus(Schedule.Status.valueOf(request.getStatus()));
+        schedule.setScheduleStart(request.getScheduleStart());
         return repository.save(schedule);
     }
 
@@ -36,6 +35,6 @@ public class ScheduleService {
     }
 
     public List<Schedule> find10Lastest() {
-        return repository.findTop10ByOrderByScheduleDateDesc();
+        return repository.findTop10ByOrderByScheduleStartDesc();
     }
 }
