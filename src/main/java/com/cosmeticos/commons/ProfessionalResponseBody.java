@@ -16,13 +16,15 @@ public class ProfessionalResponseBody {
 
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
-            ResponseJsonView.ProfessionalUpdate.class
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     private String description;
 
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
-            ResponseJsonView.ProfessionalUpdate.class
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     private List<Professional> professionalList = new ArrayList<>(10);
 

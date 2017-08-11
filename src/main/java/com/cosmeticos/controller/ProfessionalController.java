@@ -5,6 +5,7 @@ import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.User;
 import com.cosmeticos.service.ProfessionalService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -36,6 +37,7 @@ public class ProfessionalController {
     @Autowired
     private UserService userService;
 
+    @JsonView(ResponseJsonView.ProfessionalCreate.class)
     @RequestMapping(path = "/professionals", method = RequestMethod.POST)
     public HttpEntity<ProfessionalResponseBody> create(@Valid @RequestBody ProfessionalRequestBody request,
                                                        BindingResult bindingResult) {
@@ -117,9 +119,10 @@ public class ProfessionalController {
 				if (optional.isPresent()) {
 
 					Professional persistentProfessional = optional.get();
+					User user =  request.getProfessional().getUser();
 
 					String emailInDatabase = persistentProfessional.getUser().getEmail();
-					String emailFromRequest = request.getProfessional().getUser().getEmail();
+					String emailFromRequest = user == null ? emailInDatabase : user.getEmail();
 
 					if (emailInDatabase.equals(emailFromRequest)) {
 
@@ -157,6 +160,7 @@ public class ProfessionalController {
 
     }
 
+    @JsonView(ResponseJsonView.ProfessionalFindAll.class)
     @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.GET)
     public HttpEntity<ProfessionalResponseBody> findById(
             @PathVariable String idProfessional) {

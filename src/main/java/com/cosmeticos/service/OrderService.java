@@ -14,17 +14,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.cosmeticos.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Wallet;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
@@ -275,24 +271,27 @@ public class OrderService {
 	 */
 	public void validate(Order order) throws OrderValidationException, ValidationException {//
 
-		// Aqui vc escolhe o que quer usar.
-		validateScheduled1(order);
-		//validateScheduled2(order);
 
-
-
+		Order persistentOrder = null;
 		Professional professional;
 
 		// SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
 		// PARA VERIFICAR SE JA TEM ORDERS
 		if (order.getIdOrder() == null) {
+
 			professional = order.getProfessionalServices().getProfessional();
 
 			// SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
 			// COMO O UPDATE DE STATUS
 		} else {
-			Order requestedOrder = orderRepository.findOne(order.getIdOrder());
-			professional = requestedOrder.getProfessionalServices().getProfessional();
+			order = orderRepository.findOne(order.getIdOrder());
+			professional = order.getProfessionalServices().getProfessional();
+		}
+
+		if(order.getScheduleId() != null) {
+			// Aqui vc escolhe o que quer usar.
+			validateScheduled1(order);
+			//validateScheduled2(order);
 		}
 
 		// List<Order> orderList =

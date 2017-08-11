@@ -112,9 +112,7 @@ public class OrderController {
                 voteService.create(order.getProfessionalServices().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
-                log.info("Order atualizado com sucesso:  [{}] responseJson[{}]",
-                        order,
-                        new ObjectMapper().writeValueAsString(responseBody));
+                log.info("Order atualizado com sucesso:  [{}].", order);
                 return ok(responseBody);
 
             }

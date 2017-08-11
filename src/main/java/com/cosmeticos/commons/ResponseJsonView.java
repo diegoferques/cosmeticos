@@ -23,4 +23,5 @@ public class ResponseJsonView {
     public interface OrderControllerFindBy {}
     public interface ProfessionalFindAll {}
     public interface ProfessionalUpdate {}
+    public interface ProfessionalCreate {}
 }

@@ -4,8 +4,10 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -23,10 +25,18 @@ import java.util.Collection;
 @Entity
 public class Hability implements Serializable {
     private static final long serialVersionUID = 1L;
+
+
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @NotEmpty(message="Hability name cannot be empty")
     @Column(unique = true)
     private String name;
