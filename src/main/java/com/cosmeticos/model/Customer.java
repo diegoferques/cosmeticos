@@ -49,7 +49,7 @@ public class Customer implements Serializable {
     @NotEmpty(message = "cpf was not set!")
     private String cpf;
 
-    private char genre;
+    private Character genre;
 
     //TODO - Troquei o TemporalType de TIMESTAMP para DATE, verificar se essa alteração não tem problema
     //Voltei para TimeStamp

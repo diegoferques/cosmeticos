@@ -719,12 +719,14 @@ public class ProfessionalControllerTests {
 
 		testCreateOK();
 
+		emailUsuario = "onemorecheckALTERADO_PRA_FALHAR@email.com";
+
 		String json = "{\n" +
 				"  \"professional\": {\n" +
 				"    \"idProfessional\": "+ returnOfCreateOK.getIdProfessional() +",\n" +
 				"    \"user\": {\n" +
 				"      \"idLogin\": "+ returnOfCreateOK.getUser().getIdLogin() +",\n" +
-				"      \"email\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
+				"      \"email\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"nameProfessional\": \"Another Repeated Email\"\n" +
 				"  }\n" +

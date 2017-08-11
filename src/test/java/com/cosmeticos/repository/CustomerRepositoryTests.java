@@ -81,7 +81,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("(21) 98877-6655", customer.getCellPhone());
         Assert.assertEquals("098.765.432-10", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals(Character.valueOf('M'), customer.getGenre());
         Assert.assertEquals("Test João da Silva", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
@@ -122,7 +122,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("(21) 98807-2756", customer.getCellPhone());
         Assert.assertEquals("098.330.987-62", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals(Character.valueOf('M'), customer.getGenre());
         Assert.assertEquals("Test Diego Fernandes", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
@@ -164,7 +164,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("(21) 99988-7766", customer.getCellPhone());
         Assert.assertEquals("831.846.135-15", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('F', customer.getGenre());
+        Assert.assertEquals(Character.valueOf('F'), customer.getGenre());
         Assert.assertEquals("Test Maria das Dores", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }
@@ -206,7 +206,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("(21) 99887-7665", customer.getCellPhone());
         Assert.assertEquals("816.810.695-68", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('F', customer.getGenre());
+        Assert.assertEquals(Character.valueOf('F'), customer.getGenre());
         Assert.assertEquals("Test Fernanda Cavalcante", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.INACTIVE.ordinal(), (int)customer.getStatus());
     }
@@ -244,7 +244,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals("(21) 97766-5544", customer.getCellPhone());
         Assert.assertEquals("541.913.254-81", customer.getCpf());
         //Assert.assertEquals("", customer.getDateRegister());
-        Assert.assertEquals('M', customer.getGenre());
+        Assert.assertEquals(Character.valueOf('M'), customer.getGenre());
         Assert.assertEquals("Test José das Couves", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
     }

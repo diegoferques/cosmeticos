@@ -1,17 +1,17 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.cosmeticos.commons.CustomerRequestBody;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.repository.CustomerRepository;
 
 /**
  * Created by matto on 27/05/2017.
@@ -23,19 +23,14 @@ public class CustomerService {
     private CustomerRepository repository;
 
     @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
     private AddressService addressService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
 
     public Optional<Customer> find(Long idCustomer) {
         return Optional.of(repository.findOne(idCustomer));
+    }
+
+    public List<Customer> findBy(Customer probe) {
+        return repository.findAll(Example.of(probe));
     }
 
     public Customer create(CustomerRequestBody request) {
@@ -96,8 +91,9 @@ public class CustomerService {
     public void delete() {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
+    
 
-    public List<Customer> find10Lastest() {
-        return repository.findTop10ByOrderByDateRegisterDesc();
+    public List<Customer> findAll() {
+        return repository.findAll();
     }
 }

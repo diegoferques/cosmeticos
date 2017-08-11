@@ -56,8 +56,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //List<Order> findByStatusNotLike(int s1);
     List<Order> findByStatusNotIn(Collection<Status> status);
 
-	List<Order> findByStatusNotInAndIdCustomer_IdCustomer(Collection<Status> status,
-			Long idCustomer);
+	List<Order> findByStatusNotInAndIdCustomer_user_email(Collection<Status> status,
+			String email);
 
     @Query(value = "" +
             "SELECT o " +

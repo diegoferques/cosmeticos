@@ -29,7 +29,10 @@ public class ProfessionalServices implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     @JoinColumn(name = "idCategory", referencedColumnName = "idCategory", insertable = false, updatable = false)
     @ManyToOne(optional = false)
@@ -37,6 +40,7 @@ public class ProfessionalServices implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })

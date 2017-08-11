@@ -5,6 +5,7 @@ import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
 import com.cosmeticos.service.UserService;
+import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -31,6 +32,9 @@ public class UserController {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    MailSenderService mailSenderService;
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
@@ -176,6 +180,62 @@ public class UserController {
         }
     }
 
+    //TODO - FALTA TERMINAR A CONFIGURACAO DO SMTP E TESTAR COM USUARIO E SENHA
+    //TODO - FALTA CONFIGURAR EMAIL, SENHA SMTP E ETC DO SERVIDOR
+    //TODO - FALTA CRIAR TESTES E VALIDAR
+    //REFERENCIA: https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
+    @RequestMapping(path = "/password_reset", method = RequestMethod.PUT)
+    public HttpEntity<UserResponseBody> passwordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
+
+        try {
+            if (bindingResult.hasErrors()) {
+
+                log.error("Erros na requisicao: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+
+            } else if (request.getEntity().getEmail() == null) {
+
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("E-mail não informado!");
+                log.error("BAD REQUEST: E-mail não informado!");
+                return badRequest().body(responseBody);
+
+            } else if(!service.verifyEmailExists(request.getEntity().getEmail())) {
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("E-mail inexistente.");
+                log.error("NOT FOUND: E-mail inexistente.");
+                return notFound().build();
+
+            } else {
+
+                Optional<User> userOptional = service.passwordReset(request);
+                User updatedUser = userOptional.get();
+
+                Boolean sendEmail = mailSenderService.sendPasswordReset(updatedUser);
+
+                UserResponseBody responseBody = new UserResponseBody();
+
+                if (sendEmail) {
+                    responseBody.setDescription("Uma nova senha foi enviada para o email cadastrado");
+
+                    log.info("Uma nova senha foi enviada para o email cadastrado:  [{}]", updatedUser);
+                    return ok().body(responseBody);
+                } else {
+                    responseBody.setDescription("Houve um erro ao enviar o email com sua nova senha, tente novamente.");
+
+                    log.info("Houve um erro ao enviar o email com sua nova senha, tente novamente.:  [{}]", updatedUser);
+                    return ResponseEntity.status(500).body(responseBody);
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Falha na atualizacao: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
+        }
+
+    }
 
     private boolean validateCreditCards(Set<CreditCard> creditCardCollection) {
         if(CollectionUtils.isEmpty(creditCardCollection))

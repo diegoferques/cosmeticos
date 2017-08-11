@@ -33,10 +33,21 @@ public class User implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
+    @JsonView({
+        ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLogin;
 
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @NotEmpty(message = "UserName cannot be empty")
     @Column(unique = true)
     private String username;
@@ -46,7 +57,10 @@ public class User implements Serializable {
     @Column(unique = true)
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     private String email;
 
@@ -94,7 +108,7 @@ public class User implements Serializable {
        this.getCreditCardCollection().add(cc);
    }
 
-   @JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
+   //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
     public String getPassword() {
         return password;
     }

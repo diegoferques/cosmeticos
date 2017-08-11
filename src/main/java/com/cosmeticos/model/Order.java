@@ -75,6 +75,7 @@ public class Order implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
     @JoinColumns({

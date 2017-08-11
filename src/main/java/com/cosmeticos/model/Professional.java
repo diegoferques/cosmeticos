@@ -42,7 +42,10 @@ public class Professional  implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,45 +53,92 @@ public class Professional  implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     private String nameProfessional;
 
+    @JsonView({
+    	
+    ResponseJsonView.ProfessionalFindAll.class,
+    ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,})
     private String cnpj;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+    	ResponseJsonView.ProfessionalServicesFindAll.class,
+    	ResponseJsonView.ProfessionalFindAll.class,
+    	ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private Character genre;
 
+    @JsonView({    	
+	    ResponseJsonView.ProfessionalFindAll.class,
+	    ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private Date birthDate;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({    	
+	    ResponseJsonView.ProfessionalServicesFindAll.class,
+	    ResponseJsonView.ProfessionalFindAll.class,
+	    ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String cellPhone;
 
     private String specialization;
 
+    @JsonView({
+    	ResponseJsonView.ProfessionalFindAll.class,
+    	ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String typeService;
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
+    @JsonView({
+    	
+    ResponseJsonView.ProfessionalServicesFindAll.class,
+    ResponseJsonView.ProfessionalFindAll.class,
+    ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,})
     private Date dateRegister;
 	
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     @Enumerated
     private Type attendance;
 
-	// TODO incluir @NotNull
-    @JsonManagedReference(value="user-professional")
+    @JsonView({
+        ResponseJsonView.ProfessionalFindAll.class,
+        ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "professional")
     @JoinColumn(name = "idProfessional")
     private Address address;
@@ -102,24 +152,37 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Wallet wallet;
 
-    /**
-     *  @JsonBackReference: Professional deve receber mas nao deve retornar esta lista no json do endopoint professionals/.
-     * Se a client app deseja saber quais servicos todos os profissionais atendem, ele deve
-     * chamar o endpoint professionalservices/
-     */
-    @JsonBackReference(value="professional-professionalservices")
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @JoinTable(name = "PROFESSIONAL_HABILITY", joinColumns = {
             @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional")}, inverseJoinColumns = {
             @JoinColumn(name = "id_hability", referencedColumnName = "id")})
     @ManyToMany(fetch = FetchType.EAGER)
     private  Set<Hability> habilityCollection = new HashSet<>();
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalServicesFindAll.class
+    })
     @Transient
     private Long distance;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class
+    })
     @Transient
     private float evaluation;
 

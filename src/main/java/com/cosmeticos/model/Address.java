@@ -4,8 +4,10 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,24 +22,49 @@ import java.io.Serializable;
 @Entity
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idAddress;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String address;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalUpdate.class,
+    })
     private String cep;
 
     private String neighborhood;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String city;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String state;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String country;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String latitude;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String longitude;
 
     private String complement;

@@ -5,13 +5,11 @@ import static com.cosmeticos.model.Order.Status.*;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +19,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+
+import com.cosmeticos.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
+
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.validation.OrderValidationException;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by matto on 17/06/2017.
@@ -124,22 +137,22 @@ public class OrderService {
 	private void addInWallet(Professional professional, Customer customer) {
 		Optional<Wallet> optionalWallet = Optional.ofNullable(professional.getWallet());
 		Optional<Customer> customerInWallet = Optional.empty();
-		
+
 		// Verificando se pelo menos existe a wallet.
 		if(optionalWallet.isPresent())
-		{	
+		{
 			customerInWallet = professional.getWallet().getCustomers()
 				.stream()
 				.filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
 				.findAny();
 		}
-		
+
 		// Se nao existe wallet ou se o cliente nao esta na wallet, entao aplicamos a logica de adicionar na wallet.
 		if (!optionalWallet.isPresent() || !customerInWallet.isPresent()) {
 			List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
 
 			int totalOrders = 0;
-			//daki pra baixo faz a parada da wallet..... nao.. na vdd.. perai
+
 			for (int i = 0; i < savedOrders.size(); i++) {
 				Order o = savedOrders.get(i);
 				if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
@@ -148,8 +161,7 @@ public class OrderService {
 				}
 			}
 
-			if (totalOrders >= 2)// tirei os breaks daki pq ja sei q aki ta inserindo o wallet com id=2 certinho.
-			// pode debugar.
+			if (totalOrders >= 2)
 			{
 				if (professional.getWallet() == null) {
 					professional.setWallet(new Wallet());
@@ -200,7 +212,6 @@ public class OrderService {
 
 		}
 
-
 		if (!StringUtils.isEmpty(orderRequest.getScheduleId())) {
 			order.setScheduleId(orderRequest.getScheduleId());
 		}
@@ -231,9 +242,10 @@ public class OrderService {
 		penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
 	}
 
-	public List<Order> findActiveByCustomer(Customer idCustomer) {
-		return orderRepository.findByStatusNotInAndIdCustomer_IdCustomer(Arrays.asList(CANCELLED, AUTO_CLOSED, CLOSED),
-				idCustomer.getIdCustomer());
+	public List<Order> findActiveByCustomerEmail(String email) {
+		return orderRepository.findByStatusNotInAndIdCustomer_user_email( //
+				Arrays.asList(CANCELLED, AUTO_CLOSED, CLOSED), //
+				email);
 	}
 
 	public class ValidationException extends Exception {
@@ -273,37 +285,38 @@ public class OrderService {
 	 */
 	public void validate(Order order) throws OrderValidationException, ValidationException {//
 
-		// Aqui vc escolhe o que quer usar.
-		validateScheduled1(order);
-		//validateScheduled2(order);
+        Order persistentOrder = null;
+        Professional professional;
 
+        // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
+        // PARA VERIFICAR SE JA TEM ORDERS
+        if (order.getIdOrder() == null) {
 
+            professional = order.getProfessionalServices().getProfessional();
 
-		Professional professional;
+            // SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
+            // COMO O UPDATE DE STATUS
+        } else {
+            order = orderRepository.findOne(order.getIdOrder());
+            professional = order.getProfessionalServices().getProfessional();
+        }
 
-		// SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
-		// PARA VERIFICAR SE JA TEM ORDERS
+        if(order.getScheduleId() != null) {
+            // Aqui vc escolhe o que quer usar.
+            validateScheduled1(order);
+            //validateScheduled2(order);
+        }
 
-			if (order.getIdOrder() == null) {
-				professional = order.getProfessionalServices().getProfessional();
+        // List<Order> orderList =
+        // orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+        // professional.getIdProfessional(), Order.Status.INPROGRESS,
+        // Order.Status.ACCEPTED);
+        List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+                professional.getIdProfessional());
 
-				// SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
-				// COMO O UPDATE DE STATUS
-			} else {
-				Order requestedOrder = orderRepository.findOne(order.getIdOrder());
-				professional = requestedOrder.getProfessionalServices().getProfessional();
-			}
-
-			// List<Order> orderList =
-			// orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
-			// professional.getIdProfessional(), Order.Status.INPROGRESS,
-			// Order.Status.ACCEPTED);
-			List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
-					professional.getIdProfessional());
-
-			if (!orderList.isEmpty()) {
-				throw new OrderValidationException();
-			}
+		if (!orderList.isEmpty()) {
+			throw new OrderValidationException();
+		}
 
 	}
 

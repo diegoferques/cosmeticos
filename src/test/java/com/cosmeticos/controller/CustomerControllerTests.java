@@ -21,6 +21,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RunWith(SpringRunner.class)
@@ -113,7 +115,10 @@ public class CustomerControllerTests {
 				"      \"idCustomer\":"+ testCreateOK.getIdCustomer() +",\n" +
 				"      \"nameCustomer\":\"Diego Fernandes Marques da Silva\",\n" +
 				"      \"birthDate\":\""+Calendar.getInstance().getTime().getTime()+"\",\n" +
-				"      \"cpf\":\"05406688898\"\n" +
+				"      \"cpf\":\"05406688898\",\n" +
+				"      \"user\": {\n" +
+				"           \"email\":\""+emailTeste+"\"\n" +
+				"      }\n" +
 				"   }\n" +
 				"}";
 
@@ -255,12 +260,13 @@ public class CustomerControllerTests {
 
 	//RNF68
 	@Test
-	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
+	public void testUpdateUserWithWrongEmailBadRequest() throws IOException, URISyntaxException {
 		emailTeste = "emailteste@email.com";
 		testCreateOK();
 
 		Customer c1 = testCreateOK;
 
+		emailTeste = "emailtesteDIFERENTE_DO_QUE_FOI_CRIADO@email.com";
 		String json = "{\n" +
 				"   \"customer\":{\n" +
 				"      \"idCustomer\":"+ c1.getIdCustomer() +",\n" +

@@ -473,7 +473,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -803,7 +803,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -918,7 +918,7 @@ public class OrderControllerTests {
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
-                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -954,7 +954,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +"\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
                 "    }" +
                 "\n}\n" +
