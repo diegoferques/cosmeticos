@@ -1,5 +1,6 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.repository.AddressRepository;
@@ -11,19 +12,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
 
 /**
  * Created by matto on 08/08/2017.
@@ -58,6 +62,80 @@ public class PaymentController {
 
     public enum Language {
         NONE, PORTUGUESE, ENGLISH, SPANISH
+    }
+
+    @RequestMapping(path = "/campainha/superpay/", method = RequestMethod.POST)
+    public HttpEntity<CampainhaSuperpeyResponseBody> create(
+            @RequestParam(name = "numeroTransacao") Long numeroTransacao,
+            @RequestParam(name = "codigoEstabelecimento") Long codigoEstabelecimento,
+            @RequestParam(required = false, name = "campoLivre1") String campoLivre1,
+            @RequestParam(required = false, name = "campoLivre2") String campoLivre2,
+            @RequestParam(required = false, name = "campoLivre3") String campoLivre3,
+            @RequestParam(required = false, name = "campoLivre4") String campoLivre4,
+            @RequestParam(required = false, name = "campoLivre5") String campoLivre5) {
+
+        CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
+        Optional<Order> orderOptional = Optional.ofNullable(orderRepository.findOne(numeroTransacao));
+
+        try {
+
+            if(numeroTransacao == null) {
+
+                responseBody.setDescription("O campo \"numeroTransacao\" é obrigatório.");
+                log.error(responseBody.getDescription());
+
+                return badRequest().body(responseBody);
+
+            } else if(codigoEstabelecimento == null) {
+
+                responseBody.setDescription("O campo \"codigoEstabelecimento\" é obrigatório.");
+                log.error(responseBody.getDescription());
+
+                return badRequest().body(responseBody);
+
+            } else if(codigoEstabelecimento != Long.parseLong(estabelecimento)) {
+
+                responseBody.setDescription("\"codigoEstabelecimento\" desconhecido.");
+                log.error(responseBody.getDescription());
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+
+            } else if(!orderOptional.isPresent()) {
+
+                responseBody.setDescription("Order não encontrado:" + numeroTransacao);
+                log.error(responseBody.getDescription());
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+
+            } else {
+                //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
+                //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
+                Boolean consultaTransacao = this.consultaTransacao(numeroTransacao, codigoEstabelecimento);
+
+                if(consultaTransacao) {
+                    responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID ["+
+                            numeroTransacao +"] foram atualizados com sucesso.");
+                    log.error(responseBody.getDescription());
+                    return ok(responseBody);
+
+                } else {
+                    String errorCode = String.valueOf(System.nanoTime());
+                    responseBody.setDescription("Erro ao consultar a transação de ID ["+ numeroTransacao +"]. Error Code: ["+ errorCode +"].");
+                    log.error(responseBody.getDescription());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+                }
+
+            }
+
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            responseBody.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+        }
     }
 
     private Map<String, Integer> usuarioMap = getFormasPagamento();
@@ -324,5 +402,22 @@ public class PaymentController {
 		*/
 
         return result;
+    }
+
+    private CampainhaSuperpeyResponseBody buildErrorResponse(BindingResult bindingResult) {
+        List<String> errors = bindingResult.getFieldErrors()
+                .stream()
+                .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
+                .collect(Collectors.toList());
+
+        CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
+        responseBody.setDescription(errors.toString());
+        return responseBody;
+    }
+
+    //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
+    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
+    private Boolean consultaTransacao(Long numeroTransacao, Long codigoEstabelecimento) {
+        return true;
     }
 }
