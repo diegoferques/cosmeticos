@@ -21,12 +21,20 @@ public class CategoryPreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data(){
 
+        Category ownerCategory = new Category();
+        ownerCategory.setName("CABELEIREIRA");
+        repository.saveAndFlush(ownerCategory);
+//////////////////
         Category s1 = new Category();
         s1.setName("ESCOVA");
 
+        s1.setOwnerCategory(ownerCategory);
+//////////////////
         Category s2 = new Category();
         s2.setName("HIDRATAÇÃO");
 
+        s2.setOwnerCategory(ownerCategory);
+/////////////////
         Category s3 = new Category();
         s3.setName("PENTEADO");
 

@@ -13,6 +13,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
+
 /**
  *
  * @author magarrett.dias
@@ -40,6 +42,10 @@ public class Category implements Serializable {
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)
     private String name;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ownerCategory_id")
+    private Category ownerCategory;
 
 	@JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
