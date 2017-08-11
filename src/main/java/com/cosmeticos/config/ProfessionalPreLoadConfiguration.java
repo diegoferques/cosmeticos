@@ -72,6 +72,7 @@ public class ProfessionalPreLoadConfiguration {
         address2.setLatitude("-22.750996");
         address2.setLongitude("-43.45973010000001");
 
+
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
         s2.setAddress(address2);

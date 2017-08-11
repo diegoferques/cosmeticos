@@ -35,6 +35,7 @@ public class AddressService {
         a.setState(request.getCustomer().getAddress().getState());
         a.setCountry(request.getCustomer().getAddress().getCountry());
         a.setNeighborhood(request.getCustomer().getAddress().getNeighborhood());
+        a.setComplement(request.getCustomer().getAddress().getComplement());
 
         LocationGoogle geocode = locationService.getGeoCode(a);
         if(geocode  != null) {

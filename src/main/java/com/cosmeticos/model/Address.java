@@ -40,6 +40,8 @@ public class Address implements Serializable {
 
     private String longitude;
 
+    private String complement;
+
     @JsonIgnore
     @OneToOne
     private Customer customer;

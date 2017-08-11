@@ -69,7 +69,8 @@ public class MockingProfessionalServicesControllerTests {
                 "	    \"neighborhood\": \"Rodilândia\",\n" +
                 "	    \"city\": \"Nova Iguaçu\",\n" +
                 "	    \"state\": \"RJ\",\n" +
-                "	    \"country\": \"BR\" \n" +
+                "	    \"country\": \"BR\" ,\n" +
+                "	    \"complement\": \"BR\" \n" +
                 "    },\n" +
                 "    \"birthDate\": 1120705200000,\n" +
                 "    \"cellPhone\": null,\n" +

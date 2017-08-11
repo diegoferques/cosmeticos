@@ -108,6 +108,7 @@ public class ProfessionalRepositoryTests {
         address6.setState("Rio de Janeiro");
         address6.setCountry("Brazil");
         address6.setCep("26083-285");
+        address6.setComplement("HOUSE");
 
         Professional s6 = new Professional();
         s6.setNameProfessional("fubangamaloca");
@@ -127,6 +128,7 @@ public class ProfessionalRepositoryTests {
         address7.setState("Rio de Janeiro");
         address7.setCountry("Brazil");
         address7.setCep("20080-001");
+        address7.setComplement("HOUSE");
 
         Professional s7 = new Professional();
         s7.setNameProfessional("bocada");
