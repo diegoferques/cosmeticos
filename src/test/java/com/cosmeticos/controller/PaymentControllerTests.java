@@ -320,10 +320,11 @@ public class PaymentControllerTests {
 
     }
 
+    //TODO - COMO ESSE TESTE CHAMA A URL DA SUPERPAY, DEVEMOS COLOCAR EM UMA NOVA CLASSE DE TESTES MOCKADA
     @Test
     public void testCampainhaOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        String numeroTransacao = "7";
+        String numeroTransacao = "3";
         String codigoEstabelecimento = "1501698887865";
         String campoLivre1 = "TESTE";
 
@@ -362,6 +363,19 @@ public class PaymentControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.NOT_FOUND, exchange.getStatusCode());
+
+    }
+
+    //TODO - COMO ESSE TESTE CHAMA A URL DA SUPERPAY, DEVEMOS COLOCAR EM UMA NOVA CLASSE DE TESTES MOCKADA
+    @Test
+    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        Long numeroTransacao = 3L;
+
+        Boolean capturaTransacao = paymentController.capturaTransacao(numeroTransacao);
+
+        Assert.assertNotNull(capturaTransacao);
+        Assert.assertEquals(true, capturaTransacao);
 
     }
 

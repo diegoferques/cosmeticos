@@ -64,6 +64,7 @@ public class PaymentController {
         NONE, PORTUGUESE, ENGLISH, SPANISH
     }
 
+    //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/128
     @RequestMapping(path = "/campainha/superpay/", method = RequestMethod.POST)
     public HttpEntity<CampainhaSuperpeyResponseBody> create(
             @RequestParam(name = "numeroTransacao") Long numeroTransacao,
@@ -110,7 +111,7 @@ public class PaymentController {
             } else {
                 //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
                 //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
-                Boolean consultaTransacao = this.consultaTransacao(numeroTransacao, codigoEstabelecimento);
+                Boolean consultaTransacao = this.consultaTransacao(numeroTransacao);
 
                 if(consultaTransacao) {
                     responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID ["+
@@ -153,7 +154,6 @@ public class PaymentController {
 
         Order order = orderRepository.findOne(orderCreated.getIdOrder());
 
-        System.out.println(">>>> Teste RESTv2");//verificar abaixo pq address nao esta indo em order
         TransacaoRequest request = createRequest(order);
 
         ObjectMapper om = new ObjectMapper();
@@ -169,7 +169,6 @@ public class PaymentController {
 
         String response = postJson(urlTransacao, usuarioMap, jsonRequest);
         System.out.println(response);
-        System.out.println("<<<<");
 
         return response;
 
@@ -369,39 +368,102 @@ public class PaymentController {
 
         }
 
-			/*
-			HttpPost post = new HttpPost(url);
+        return result;
+    }
 
-			post.setEntity(new BufferedHttpEntity(
-					new InputStreamEntity(new ByteArrayInputStream(data.getBytes(Charset.forName("UTF-8"))))));
+    //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/118
+    public Boolean capturaTransacao(Long numeroTransacao) throws JsonProcessingException {
 
-			post.setHeader("Accept", "application/json");
-			post.setHeader("Content-Type", "application/json;charset=UTF-8");
-			if (headers != null) {
-				for (Entry<String, String> h : headers.entrySet()) {
-					post.setHeader(h.getKey(), h.getValue());
-				}
-			}
+        RestTemplate restTemplate = restTemplateBuilder.build();
 
-			int connectionTimeout = 63_000;
-			int readTimeout = 10 * connectionTimeout;
-			RequestConfig config = RequestConfig.custom().setConnectTimeout(connectionTimeout)
-					.setSocketTimeout(readTimeout).build();
-			try (CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build()) {
-				HttpResponse response = client.execute(post);
-				log.info("Response status code: "
-						+ (response.getStatusLine() == null ? 0 : response.getStatusLine().getStatusCode()));
+        String urlCapturaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao + "/capturar";
 
-				result = EntityUtils.toString(response.getEntity());
-			}
+        Boolean result;
 
-		} catch (Exception e) {
-			log.error(e.toString());
-			result = e.toString();
-		}
-		*/
+        try {
+
+            ObjectMapper om = new ObjectMapper();
+            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+
+            RequestEntity<RetornoTransacao> entity = RequestEntity
+                    .post(new URI(urlCapturaTransacao))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("usuario", jsonHeader)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(null);
+
+            ResponseEntity<RetornoTransacao> exchange = restTemplate
+                    .exchange(entity, RetornoTransacao.class);
+
+            //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
+            if(exchange.getStatusCode() == HttpStatus.OK) {
+                result = this.updatePaymentStatus(exchange.getBody());
+
+            } else {
+                result = false;
+            }
+
+        } catch (Exception e) {
+            log.error(e.toString());
+
+            result = false;
+        }
 
         return result;
+    }
+
+    //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
+    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
+    //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/129
+    public Boolean consultaTransacao(Long numeroTransacao) throws JsonProcessingException {
+
+        RestTemplate restTemplate = restTemplateBuilder.build();
+
+        String urlConsultaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao;
+
+        Boolean result;
+
+        try {
+
+            ObjectMapper om = new ObjectMapper();
+            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+
+            //Map<String, String> usuarioMap = new HashMap<>();
+            //usuarioMap.put("usuario", jsonHeader);
+
+            HttpHeaders headers = new HttpHeaders();
+            //headers.set("usuario", usuarioMap.get("usuario"));
+            headers.set("usuario", jsonHeader);
+
+            HttpEntity entity = new HttpEntity(headers);
+
+            ResponseEntity<RetornoTransacao> exchange = restTemplate.exchange(
+                    urlConsultaTransacao,
+                    HttpMethod.GET,
+                    entity,
+                    RetornoTransacao.class
+            //        param
+            );
+
+            if(exchange.getStatusCode() == HttpStatus.OK) {
+                result = this.updatePaymentStatus(exchange.getBody());
+
+            } else {
+                result = false;
+            }
+
+        } catch (Exception e) {
+            log.error(e.toString());
+
+            result = false;
+        }
+
+        return result;
+    }
+
+    //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE
+    private Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
+        return true;
     }
 
     private CampainhaSuperpeyResponseBody buildErrorResponse(BindingResult bindingResult) {
@@ -413,11 +475,5 @@ public class PaymentController {
         CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
         responseBody.setDescription(errors.toString());
         return responseBody;
-    }
-
-    //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
-    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
-    private Boolean consultaTransacao(Long numeroTransacao, Long codigoEstabelecimento) {
-        return true;
     }
 }
