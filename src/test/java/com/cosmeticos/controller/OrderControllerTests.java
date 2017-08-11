@@ -166,7 +166,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -316,7 +316,7 @@ public class OrderControllerTests {
                "    \"date\" : 1498324200000,\n" +
                "    \"status\" : 0,\n" +
                "    \"scheduleId\" : {\n" +
-               "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+               "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
@@ -417,7 +417,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -558,7 +558,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -663,7 +663,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \""+Order.Status.OPEN+"\",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -769,7 +769,7 @@ public class OrderControllerTests {
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" + //AQUI PEGO O SCHEDULE JA CRIADO
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime()  +"\"\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime()  +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -788,7 +788,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime(), exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getScheduleDate().getTime());
+        Assert.assertEquals(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime(), exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getScheduleStart().getTime());
 
     }
 
@@ -804,7 +804,6 @@ public class OrderControllerTests {
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
-                "      \"status\" : \""+ Schedule.Status.INACTIVE +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -823,7 +822,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Schedule.Status.INACTIVE, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
     }
 
     @Test
@@ -920,8 +918,7 @@ public class OrderControllerTests {
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                "      \"status\" : \""+ Schedule.Status.ACTIVE +"\"\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -941,7 +938,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Schedule.Status.ACTIVE, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
 
         orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
 
@@ -960,7 +956,6 @@ public class OrderControllerTests {
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                "      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -980,7 +975,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Schedule.Status.DENIED, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
 
         //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
 
@@ -1090,7 +1084,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -1451,7 +1445,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \"" + Order.Status.OPEN + "\",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
@@ -1726,7 +1720,7 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
