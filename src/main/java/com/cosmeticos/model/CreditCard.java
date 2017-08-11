@@ -57,7 +57,6 @@ public class CreditCard implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsage;
 
-    @JsonBackReference(value="order-cc")
     @JoinColumn(name = "id_Order")
     @ManyToOne(optional = false)
     private Order order;

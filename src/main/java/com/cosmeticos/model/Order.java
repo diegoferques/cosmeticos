@@ -79,7 +79,7 @@ public class Order implements Serializable {
     })
     @JoinColumns({
         @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional"),
-			@JoinColumn(name = "id_service", referencedColumnName = "idService") })
+			@JoinColumn(name = "id_category", referencedColumnName = "idCategory") })
 	@ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 
@@ -104,7 +104,6 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
-	@JsonManagedReference(value="order-cc")
 	@OneToMany(mappedBy = "order")
 	private Set<CreditCard> creditCardCollection;
 

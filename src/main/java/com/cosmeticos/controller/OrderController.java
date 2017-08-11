@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -52,10 +53,17 @@ public class OrderController {
             } else {
                 orderService.validate(request.getOrder());
 
-                Order order = orderService.create(request);
-                log.info("Order adicionado com sucesso:  [{}]", order);
-                //return ok().build();
+                Order order = null;
+                try {
+                    order = orderService.create(request);
+                    log.info("Order adicionado com sucesso:  [{}]", order);
+                    //return ok().build();
+                }catch (ConstraintViolationException e){
+                    log.warn("Cartão ja existe", e.getMessage());
+
+                }
                 return ok(new OrderResponseBody(order));
+
             }
         } catch (OrderService.ValidationException e) {
             String errorCode = String.valueOf(System.nanoTime());

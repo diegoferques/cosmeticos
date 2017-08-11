@@ -11,8 +11,6 @@ import javax.annotation.PostConstruct;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by matto on 24/06/2017.
@@ -35,7 +33,7 @@ public class OrderPreLoadConfiguration {
     ProfessionalServicesRepository professionalServicesRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @PostConstruct
     public void insertInitialH2Data() throws URISyntaxException {
@@ -47,8 +45,8 @@ public class OrderPreLoadConfiguration {
         //Schedule s1 = scheduleRepository.findOne(1L);
         //Schedule s2 = scheduleRepository.findOne(2L);
 
-        Service service = new Service();
-        service.setCategory("PEDICURE");
+        Category service = new Category();
+        service.setName("PEDICURE");
         serviceRepository.save(service);
 
         ProfessionalServices ps1 = new ProfessionalServices(p1, service);

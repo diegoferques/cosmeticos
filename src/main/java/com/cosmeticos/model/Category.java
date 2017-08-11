@@ -19,7 +19,8 @@ import java.util.Collection;
  */
 @Data
 @Entity
-public class Service implements Serializable {
+public class Category implements Serializable {
+
     private static final long serialVersionUID = 1L;
 	
     @JsonView({
@@ -29,7 +30,7 @@ public class Service implements Serializable {
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idService;
+    private Long idCategory;
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
@@ -38,27 +39,27 @@ public class Service implements Serializable {
     })
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)
-    private String category;
+    private String name;
 
 	@JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Collection<ProfessionalServices> professionalServicesCollection;
 
 	@Override
     public int hashCode() {
         int hash = 0;
-        hash += (idService != null ? idService.hashCode() : 0);
+        hash += (idCategory != null ? idCategory.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Service)) {
+        if (!(object instanceof Category)) {
             return false;
         }
-        Service other = (Service) object;
-        if ((this.idService == null && other.idService != null) || (this.idService != null && !this.idService.equals(other.idService))) {
+        Category other = (Category) object;
+        if ((this.idCategory == null && other.idCategory != null) || (this.idCategory != null && !this.idCategory.equals(other.idCategory))) {
             return false;
         }
         return true;
@@ -66,7 +67,7 @@ public class Service implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Service[ idService=" + idService + " ]";
+        return "javaapplication2.entity.Category[ idCategory=" + idCategory + " ]";
     }
     
 }

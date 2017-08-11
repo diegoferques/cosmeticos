@@ -11,6 +11,7 @@ import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -59,7 +60,7 @@ public class OrderService {
 		 */
 		Customer customer = customerResponsitory.findOne(orderRequest.getOrder().getIdCustomer().getIdCustomer());
 
-		Set<CreditCard> creditCard = orderRequest.getOrder().getCreditCardCollection();
+		CreditCard creditCard = (CreditCard) orderRequest.getOrder().getCreditCardCollection();
 
 		Professional professional = professionalRepository
 				.findOne(receivedProfessionalServices.getProfessional().getIdProfessional());
@@ -67,49 +68,51 @@ public class OrderService {
 		// Conferindo se o ProfessionalServices recebido realmente esta associado ao
 		// Profissional em nossa base.
 		Optional<ProfessionalServices> persistentProfessionalServices = professional.getProfessionalServicesCollection()
-				.stream().filter(ps -> ps.getService().getIdService()
-						.equals(receivedProfessionalServices.getService().getIdService()))
+				.stream().filter(ps -> ps.getCategory().getIdCategory()
+						.equals(receivedProfessionalServices.getCategory().getIdCategory()))
 				.findFirst();
 
-		if (persistentProfessionalServices.isPresent()) {
-			Order order = new Order();
-			order.setScheduleId(orderRequest.getOrder().getScheduleId());
-			order.setIdLocation(orderRequest.getOrder().getIdLocation());
-			order.setIdCustomer(customer);
-			order.setDate(Calendar.getInstance().getTime());
-			order.setLastUpdate(order.getDate());
-			order.setExpireTime(new Date(order.getDate().getTime() +
 
-			// 6 horas de validade
-					21600000));
-			order.setCreditCardCollection(creditCard);
+			if (persistentProfessionalServices.isPresent()) {
+				Order order = new Order();
+				order.setScheduleId(orderRequest.getOrder().getScheduleId());
+				order.setIdLocation(orderRequest.getOrder().getIdLocation());
+				order.setIdCustomer(customer);
+				order.setDate(Calendar.getInstance().getTime());
+				order.setLastUpdate(order.getDate());
+				order.getCreditCardCollection().add(creditCard);
+				order.setExpireTime(new Date(order.getDate().getTime() +
 
-			// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
-			// estra
-			order.setProfessionalServices(persistentProfessionalServices.get());
+						// 6 horas de validade
+						21600000));
 
-			// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
-			// order.setIdOrder(orderRequest.getOrder().getIdOrder());
+				// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
+				// estra
+				order.setProfessionalServices(persistentProfessionalServices.get());
 
-			// Schedule schedule = new Schedule();
-			// orderRequest.getOrder().getScheduleId()
-			// sale.setScheduleId();
+				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
+				// order.setIdOrder(orderRequest.getOrder().getIdOrder());
 
-			// O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-			order.setStatus(Order.Status.OPEN);
+				// Schedule schedule = new Schedule();
+				// orderRequest.getOrder().getScheduleId()
+				// sale.setScheduleId();
 
-			Order newOrder = orderRepository.save(order);
-			// Buscando se o customer que chegou no request esta na wallet
-			
-			addInWallet(professional, customer);
+				// O STATUS INICIAL SERA DEFINIDO COMO CRIADO
+				order.setStatus(Order.Status.OPEN);
 
-			return newOrder;
-		} else {
-			throw new OrderService.ValidationException(
-					"Service [id=" + receivedProfessionalServices.getService().getIdService()
-							+ "] informado no requst nao esta associado ao profissional " + "id=["
-							+ professional.getIdProfessional() + "] em nosso banco de dados.");
-		}
+				Order newOrder = orderRepository.save(order);
+				// Buscando se o customer que chegou no request esta na wallet
+
+				addInWallet(professional, customer);
+
+				return newOrder;
+			} else {
+				throw new OrderService.ValidationException(
+						"Service [id=" + receivedProfessionalServices.getCategory().getIdCategory()
+								+ "] informado no requst nao esta associado ao profissional " + "id=["
+								+ professional.getIdProfessional() + "] em nosso banco de dados.");
+			}
+
 
 	}
 
@@ -189,7 +192,7 @@ public class OrderService {
 		if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
 
 			Professional p = orderRequest.getProfessionalServices().getProfessional();
-			Service s = orderRequest.getProfessionalServices().getService();
+			Category s = orderRequest.getProfessionalServices().getCategory();
 
 			ProfessionalServices ps = new ProfessionalServices(p, s);
 
@@ -280,26 +283,27 @@ public class OrderService {
 
 		// SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
 		// PARA VERIFICAR SE JA TEM ORDERS
-		if (order.getIdOrder() == null) {
-			professional = order.getProfessionalServices().getProfessional();
 
-			// SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
-			// COMO O UPDATE DE STATUS
-		} else {
-			Order requestedOrder = orderRepository.findOne(order.getIdOrder());
-			professional = requestedOrder.getProfessionalServices().getProfessional();
-		}
+			if (order.getIdOrder() == null) {
+				professional = order.getProfessionalServices().getProfessional();
 
-		// List<Order> orderList =
-		// orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
-		// professional.getIdProfessional(), Order.Status.INPROGRESS,
-		// Order.Status.ACCEPTED);
-		List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
-				professional.getIdProfessional());
+				// SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
+				// COMO O UPDATE DE STATUS
+			} else {
+				Order requestedOrder = orderRepository.findOne(order.getIdOrder());
+				professional = requestedOrder.getProfessionalServices().getProfessional();
+			}
 
-		if (!orderList.isEmpty()) {
-			throw new OrderValidationException();
-		}
+			// List<Order> orderList =
+			// orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+			// professional.getIdProfessional(), Order.Status.INPROGRESS,
+			// Order.Status.ACCEPTED);
+			List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+					professional.getIdProfessional());
+
+			if (!orderList.isEmpty()) {
+				throw new OrderValidationException();
+			}
 
 	}
 

@@ -32,7 +32,7 @@ public class Hability implements Serializable {
     private String name;
 
     @ManyToOne
-    private Service service;
+    private Category category;
 
     public Hability() {
     }

@@ -9,7 +9,7 @@ import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class HabilityControllerTests {
 	private UserRepository userRepository;
 
 	@Autowired
-	private ServiceRepository serviceRepository;
+	private CategoryRepository serviceRepository;
 
 	@Test
 	public void testCreateOK() throws IOException, URISyntaxException {

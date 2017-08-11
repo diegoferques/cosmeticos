@@ -20,7 +20,7 @@ public class ScheduleRequestBody {
     private Long idProfessional;
 
     @NotNull(message = "Service ID was not set!")
-    private Long idService;
+    private Long idCategory;
 
     @NotNull(message = "ScheduleStart cannot be null!")
     private Date scheduleStart;

@@ -613,7 +613,7 @@ public class ProfessionalControllerTests {
 	}
 
 	@Test
-	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
+	public void testBadRequestWhenNewProfessionalOmmitsIdCategory() throws URISyntaxException {
 		String jsonBody = "{\n" +
 				"\t\"professional\":\n" +
 				"\t{\n" +

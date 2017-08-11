@@ -6,7 +6,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.repository.CategoryRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,7 @@ public class ScheduleOrderControllerTest {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -71,7 +71,7 @@ public class ScheduleOrderControllerTest {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -100,7 +100,7 @@ public class ScheduleOrderControllerTest {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"idService\" : " + service.getIdCategory() + ",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -157,9 +157,9 @@ public class ScheduleOrderControllerTest {
 
 
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
         Assert.assertEquals("PEDICURE",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -190,7 +190,7 @@ public class ScheduleOrderControllerTest {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -219,7 +219,7 @@ public class ScheduleOrderControllerTest {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"idService\" : " + service.getIdCategory() + ",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -276,9 +276,9 @@ public class ScheduleOrderControllerTest {
 
 
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
         Assert.assertEquals("PEDICURE",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -296,7 +296,7 @@ public class ScheduleOrderControllerTest {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"idService\" : " + service.getIdCategory() + ",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -360,7 +360,7 @@ public class ScheduleOrderControllerTest {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"idService\" : " + service.getIdCategory() + ",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -417,7 +417,7 @@ public class ScheduleOrderControllerTest {
 
     }
 
-    public String getOrderScheduleJson(Service service, Professional professional, Customer customer) {
+    public String getOrderScheduleJson(Category service, Professional professional, Customer customer) {
 
 
         String jsonCreate = "{\n" +
@@ -431,7 +431,7 @@ public class ScheduleOrderControllerTest {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdService() +",\n" +
+                "        \"idService\" : "+ service.getIdCategory() +",\n" +
                 "        \"category\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +

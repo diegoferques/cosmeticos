@@ -31,9 +31,9 @@ public class ProfessionalServices implements Serializable {
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @JoinColumn(name = "idService", referencedColumnName = "idService", insertable = false, updatable = false)
+    @JoinColumn(name = "idCategory", referencedColumnName = "idCategory", insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private Service service;
+    private Category category;
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
@@ -55,17 +55,17 @@ public class ProfessionalServices implements Serializable {
         this.professionalServicesPK = professionalServicesPK;
     }
 
-    public ProfessionalServices(long idProfessional, long idService) {
-        this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idService);
+    public ProfessionalServices(long idProfessional, long idCategory) {
+        this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idCategory);
     }
 
-    public ProfessionalServices(Professional professional, Service service) {
+    public ProfessionalServices(Professional professional, Category category) {
         this.professionalServicesPK = new ProfessionalServicesPK(
                 professional.getIdProfessional(),
-                service.getIdService());
+                category.getIdCategory());
 
         this.professional = professional;
-        this.service = service;
+        this.category = category;
     }
 
 

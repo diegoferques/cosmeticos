@@ -1,7 +1,7 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.Service;
-import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,28 +13,28 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @Profile("default")
-public class ServicePreLoadConfiguration {
+public class CategoryPreLoadConfiguration {
 
     @Autowired
-    private ServiceRepository repository;
+    private CategoryRepository repository;
 
     @PostConstruct
     public void insertInitialH2Data(){
 
-        Service s1 = new Service();
-        s1.setCategory("ESCOVA");
+        Category s1 = new Category();
+        s1.setName("ESCOVA");
 
-        Service s2 = new Service();
-        s2.setCategory("HIDRATAÇÃO");
+        Category s2 = new Category();
+        s2.setName("HIDRATAÇÃO");
 
-        Service s3 = new Service();
-        s3.setCategory("PENTEADO");
+        Category s3 = new Category();
+        s3.setName("PENTEADO");
 
-        Service s4 = new Service();
-        s4.setCategory("DEPILAÇÃO");
+        Category s4 = new Category();
+        s4.setName("DEPILAÇÃO");
 
-        Service s5 = new Service();
-        s5.setCategory("MASSAGEM");
+         Category s5 = new Category();
+        s5.setName("MASSAGEM");
 
         repository.save(s1);
         repository.save(s2);

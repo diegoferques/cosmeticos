@@ -1,6 +1,6 @@
 package com.cosmeticos.repository;
 
-import com.cosmeticos.model.Service;
+import com.cosmeticos.model.Category;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ServiceRepositoryTest {
+public class CategoryRepositoryTest {
 
         @Autowired
-        private ServiceRepository repository;
+        private CategoryRepository repository;
     private Long id;
 
     /**
@@ -26,20 +26,20 @@ public class ServiceRepositoryTest {
         @Before
         public void setupTests()
         {
-            Service s1 = new Service();
-            s1.setCategory("HAIR 123456");
+            Category s1 = new Category();
+            s1.setName("HAIR 123456");
 
             repository.save(s1);
-id = s1.getIdService();
+            id = s1.getIdCategory();
         }
 
         @Test
         public void testFindServiceCabelo() {
-            Service service = repository.findOne(id);
+            Category service = repository.findOne(id);
             Assert.assertNotNull(service);
 
             // Confere se o Service que retornou confere com o primeiro Service inserido.
-            Assert.assertEquals("HAIR 123456", service.getCategory());
+            Assert.assertEquals("HAIR 123456", service.getName());
         }
 
 }
