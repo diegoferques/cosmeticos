@@ -28,7 +28,7 @@ public class CategoryController {
     @Autowired
     private CategoryService category;
 
-    @RequestMapping(path = "/service", method = RequestMethod.POST)
+    @RequestMapping(path = "/category", method = RequestMethod.POST)
     public HttpEntity<CategoryResponseBody> create(@Valid @RequestBody CategoryRequestBody request, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
@@ -57,7 +57,7 @@ public class CategoryController {
         }
     }
 
-    @RequestMapping(path = "/service", method = RequestMethod.PUT)
+    @RequestMapping(path = "/category", method = RequestMethod.PUT)
     public HttpEntity<CategoryResponseBody> update(@Valid @RequestBody CategoryRequestBody request, BindingResult bindingResult) {
 
         try {
@@ -99,7 +99,7 @@ public class CategoryController {
         }
     }
 
-    @RequestMapping(path = "/service", method = RequestMethod.GET)
+    @RequestMapping(path = "/category", method = RequestMethod.GET)
     public HttpEntity<CategoryResponseBody> findAll() {
 
         try {
@@ -121,7 +121,7 @@ public class CategoryController {
         }
     }
 
-    @RequestMapping(path = "/service/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/category/{id}", method = RequestMethod.GET)
     public HttpEntity<CategoryResponseBody> findById(@PathVariable String id) {
 
         try {

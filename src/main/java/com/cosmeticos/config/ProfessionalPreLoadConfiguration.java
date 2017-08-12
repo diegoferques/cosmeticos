@@ -53,13 +53,13 @@ public class ProfessionalPreLoadConfiguration {
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
         p1.setAttendance(Type.HOME_CARE);
-
         p1.setAddress(address1);
         address1.setProfessional(p1);
 
         // bidirecional reference
         p1.setUser(user1);
         user1.setProfessional(p1);
+        user1.setPersonType(User.PersonType.FÍSICA);
 
         // bidirecional reference
         p1.setWallet(cw1);
@@ -80,7 +80,10 @@ public class ProfessionalPreLoadConfiguration {
         s2.setAddress(address2);
         s2.setUser(user2);
 
+
+
         user2.setProfessional(s2);
+        user2.setPersonType(User.PersonType.FÍSICA);
         address2.setProfessional(s2);
 
 
@@ -95,11 +98,13 @@ public class ProfessionalPreLoadConfiguration {
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
 
+
         s3.setAddress(address3);
         address3.setProfessional(s3);
 
         s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
         user3.setProfessional(s3);
+        user3.setPersonType(User.PersonType.JURÍDICA);
 
         ////////////////////////////////////////
         User user4;
@@ -115,6 +120,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
         user4.setProfessional(s4);
+        user4.setPersonType(User.PersonType.FÍSICA);
 
         ////////////////////////////////////////
         User user5;
@@ -130,6 +136,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
         user5.setProfessional(s5);
+        user5.setPersonType(User.PersonType.JURÍDICA);
 
         repository.save(s2);
         repository.save(s3);
@@ -141,6 +148,7 @@ public class ProfessionalPreLoadConfiguration {
         //com endereços e Locations fictícios.
 
         User user6 = new User("kelly", "123abc", "joana@bol");
+
         Address address6 = new Address();
         address6.setAddress("Travessa Tuviassuiara, 32");
         address6.setNeighborhood("Rodilândia");
@@ -154,8 +162,10 @@ public class ProfessionalPreLoadConfiguration {
         s6.setAddress(address6);
         s6.setUser(user6);
 
+
         address6.setProfessional(s6);
         user6.setProfessional(s6);
+        user6.setPersonType(User.PersonType.JURÍDICA);
 
         repository.save(s6);
 
@@ -173,8 +183,11 @@ public class ProfessionalPreLoadConfiguration {
         s7.setAddress(address7);
         s7.setUser(user7);
 
+
+
         address7.setProfessional(s7);
         user7.setProfessional(s7);
+        user7.setPersonType(User.PersonType.FÍSICA);
 
         repository.save(s7);
 

@@ -1754,6 +1754,7 @@ public class OrderControllerTests {
                 "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
                 "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
                 "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +

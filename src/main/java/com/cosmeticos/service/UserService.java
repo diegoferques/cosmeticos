@@ -46,6 +46,7 @@ public class UserService {
             persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
             persistentUser.setStatus(userFromRequest.getStatus());
             persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
+            persistentUser.setPersonType(userFromRequest.getPersonType());
 
             repository.save(persistentUser);
         }

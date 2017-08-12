@@ -57,6 +57,7 @@ public class UserPreLoadConfiguration {
         u1.setPassword("109809876");
         u1.setEmail("killer@gmail.com");
         u1.setSourceApp("facebook");
+        u1.setPersonType(User.PersonType.FÍSICA);
 
         cc.setOwnerName(u1.getUsername());
         ccNovo.setOwnerName(u1.getUsername());
@@ -74,6 +75,7 @@ public class UserPreLoadConfiguration {
         cc2.setStatus(CreditCard.Status.INACTIVE);
         cc2.setOrder(o2);
 
+
         CreditCard cc3 = new CreditCard();
         cc3.setToken("7772344377");
         cc3.setCardNumber("67730922222223053");
@@ -90,6 +92,8 @@ public class UserPreLoadConfiguration {
         u2.setPassword("1234098765");
         u2.setEmail("namek@gmail.com");
         u2.setSourceApp("google+");
+        u2.setPersonType(User.PersonType.JURÍDICA);
+
 
         cc2.setOwnerName(u2.getUsername());
 
@@ -102,18 +106,24 @@ public class UserPreLoadConfiguration {
         u3.setPassword("12323454");
         u3.setEmail("fulano@gmail.com");
         u3.setSourceApp("gmail");
+        u3.setPersonType(User.PersonType.FÍSICA);
+
 
         User u4 = new User();
         u4.setUsername("KIRA");
         u4.setPassword("09877");
         u4.setEmail("kira@hotmail.com");
         u4.setSourceApp("facebook");
+        u4.setPersonType(User.PersonType.JURÍDICA);
+
 
         User u5 = new User();
         u5.setUsername("CICLANO");
         u5.setPassword("1234");
         u5.setEmail("ciclanor@gmail.com");
         u5.setSourceApp("google+");
+        u5.setPersonType(User.PersonType.FÍSICA);
+
 
         repository.save(u1);
         repository.save(u2);
