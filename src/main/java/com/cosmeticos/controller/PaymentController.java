@@ -177,8 +177,8 @@ public class PaymentController {
     private TransacaoRequest createRequest(Order order) throws ParseException {
 
         //TODO - PRECISAMOS DE ALGO PARECIDO COMO O QUE SEGUE ABAIXO PARA PEGAR OS DADOS DA FORMA DE PAGAMENTO DE ORDER
-        //CreditCard creditCard = order.getPayment().getCreditCard();
-        CreditCard creditCard = this.getCartaoTeste();
+        CreditCard creditCard = order.getPayment().getCreditCard();
+        //CreditCard creditCard = this.getCartaoTeste();
 
         TransacaoRequest request = new TransacaoRequest();
 
