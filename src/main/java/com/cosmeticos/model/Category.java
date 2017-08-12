@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -51,14 +52,23 @@ public class Category implements Serializable {
     @JoinColumn(name = "ownerCategory_id")
     private Category ownerCategory;
 
+
+    @OneToMany(mappedBy = "ownerCategory", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Category> childrenCategories = new HashSet<>();
+
 	@JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Collection<ProfessionalServices> professionalServicesCollection;
 
-	@Override
+    public void addChild(Category s) {
+        getChildrenCategories().add(s);
+        s.setOwnerCategory(this);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idCategory != null ? idCategory.hashCode() : 0);
+        hash += (idCategory != null ? idCategory.hashCode() : name != null ? name.hashCode() : 0);
         return hash;
     }
 
@@ -79,5 +89,5 @@ public class Category implements Serializable {
     public String toString() {
         return "javaapplication2.entity.Category[ idCategory=" + idCategory + " ]";
     }
-    
+
 }

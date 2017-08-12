@@ -54,9 +54,6 @@ public class OrderService {
 	@Autowired
 	private PenaltyService penaltyService;
 
-	@Autowired
-	private CreditCardRepository creditCardRepository;
-
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
 	}

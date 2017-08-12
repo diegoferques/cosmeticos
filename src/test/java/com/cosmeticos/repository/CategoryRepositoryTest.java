@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.concurrent.Callable;
-
 /**
  * Created by Vinicius on 31/05/2017.
  */
@@ -47,22 +45,21 @@ public class CategoryRepositoryTest {
         @Test
         public void testOwnerCategory(){
 
-            Category ownerCategory = new Category();
-            ownerCategory.setName("CABELEIREIRA");
+            Category owner = new Category();
+            owner.setName("testOwnerCategory");
 
-            Category owneredCategory = new Category();
-            owneredCategory.setName("ESCOVISTA");
+            Category child = new Category();
+            child.setName("testOwnerCategory-child");
 
-            owneredCategory.setOwnerCategory(ownerCategory);
+            child.setOwnerCategory(owner);
+            owner.getChildrenCategories().add(child);
 
-            repository.save(owneredCategory);
+            repository.save(owner);
 
-            Category c = repository.findOne(owneredCategory.getIdCategory());
+            Category c = repository.findOne(child.getIdCategory());
             Assert.assertNotNull(c);
             Assert.assertNotNull(c.getOwnerCategory());
-
-
-
+            Assert.assertEquals(c.getOwnerCategory().getIdCategory(), owner.getIdCategory());
         }
 
 }
