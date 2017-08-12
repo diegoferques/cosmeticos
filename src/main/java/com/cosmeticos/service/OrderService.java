@@ -90,7 +90,7 @@ public class OrderService {
 				order.setIdCustomer(customer);
 				order.setDate(Calendar.getInstance().getTime());
 				order.setLastUpdate(order.getDate());
-				order.getCreditCardCollection().add(creditCard);
+				//order.getCreditCardCollection().add(creditCard);
 				order.setExpireTime(new Date(order.getDate().getTime() +
 
 						// 6 horas de validade

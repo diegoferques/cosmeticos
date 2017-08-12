@@ -99,9 +99,9 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -218,9 +218,9 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -295,9 +295,9 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +

@@ -171,9 +171,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -198,6 +198,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -321,9 +322,9 @@ public class OrderControllerTests {
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
                "    \"professionalServices\" : {\n" +
-               "      \"service\" : {\n" +
-               "        \"idService\" : "+service.getIdCategory()+",\n" +
-               "        \"category\" : \"MASSAGISTA\"\n" +
+               "      \"category\" : {\n" +
+               "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+               "        \"name\" : \"MASSAGISTA\"\n" +
                "      },\n" +
                "      \"professional\" : {\n" +
                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -348,7 +349,8 @@ public class OrderControllerTests {
                "      \"idLogin\" : {\n" +
                "        \"username\" : \"KILLER\",\n" +
                "        \"email\" : \"Killer@gmail.com\",\n" +
-               "        \"sourceApp\" : \"facebook\"\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
                "      },\n" +
                "      \"idAddress\" : null\n" +
                "    }\n" +
@@ -422,9 +424,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -449,6 +451,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -478,9 +481,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -505,6 +508,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -563,9 +567,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -668,9 +672,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -695,6 +699,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -854,9 +859,9 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -881,6 +886,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1089,9 +1095,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -1116,6 +1122,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1450,9 +1457,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + category.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + category.getIdCategory() + ",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -1477,6 +1484,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1725,9 +1733,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ category.getIdCategory() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
+                "        \"name\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
