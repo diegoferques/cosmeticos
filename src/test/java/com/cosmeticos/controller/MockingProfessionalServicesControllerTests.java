@@ -91,9 +91,9 @@ public class MockingProfessionalServicesControllerTests {
                 "    \"professionalServicesCollection\": [\n" +
                 "      {\n" +
                 "        \"professional\": null,\n" +
-                "        \"service\": {\n" +
-                "          \"category\": \"testNearbyWithDistance-service\",\n" +
-                "          \"idService\": "+s1.getIdCategory()+"\n" +
+                "        \"category\": {\n" +
+                "          \"name\": \"testNearbyWithDistance-service\",\n" +
+                "          \"idCategory\": "+s1.getIdCategory()+"\n" +
                 "        }\n" +
                 "      }\n" +
                 "    ]\n" +
@@ -121,7 +121,7 @@ public class MockingProfessionalServicesControllerTests {
 
         final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
                 restTemplate.exchange( //
-                        "/professionalservices/nearby/?service.category=testNearbyWithDistance-service" +
+                        "/professionalservices/nearby/?category.name=testNearbyWithDistance-service" +
 
                                 // Coordenadas do cliente: Casa do garry
                                 "&latitude=-22.7331757&longitude=-43.5209273" +

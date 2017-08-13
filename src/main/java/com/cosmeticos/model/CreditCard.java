@@ -2,6 +2,7 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -57,10 +58,11 @@ public class CreditCard implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsage;
 
+/*
     @JoinColumn(name = "id_Order")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     private Order order;
-
+*/
     /*@ManyToOne
     private Professional professional;
 

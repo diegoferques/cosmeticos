@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -105,9 +106,10 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
+    /*
 	@OneToMany(mappedBy = "order")
 	private Set<CreditCard> creditCardCollection;
-
+*/
 
 	public Order() {
 	}
