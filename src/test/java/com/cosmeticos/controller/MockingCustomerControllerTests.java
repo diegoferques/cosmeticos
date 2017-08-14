@@ -83,7 +83,7 @@ public class MockingCustomerControllerTests {
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
-		u.setPersonType(User.PersonType.FÍSICA);
+		u.setPersonType(User.PersonType.FISICA);
 		//u.getCustomerCollection().add(c);
 		return u;
 	}

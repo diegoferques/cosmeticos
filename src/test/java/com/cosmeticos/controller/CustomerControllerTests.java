@@ -74,7 +74,7 @@ public class CustomerControllerTests {
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"123\",\n" +
 				"         \"sourceApp\":null,\n" +
-				"         \"personType\":\"FÍSICA\",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"         \"username\":\""+ email +"\"\n" +
 				"      },\n" +
 				"      \"cpf\":\"05404577726\",\n" +
@@ -234,7 +234,7 @@ public class CustomerControllerTests {
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"a1b2c3\",\n" +
 				"         \"sourceApp\":null,\n" +
-				"         \"personType\":\"JURÍDICA\",\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"         \"username\":\""+ emailTeste +"\"\n" +
 				"      },\n" +
 				"      \"cpf\":\"09840387913\",\n" +

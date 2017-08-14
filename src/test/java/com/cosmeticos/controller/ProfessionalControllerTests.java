@@ -84,7 +84,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"FÍSICA\",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -146,7 +146,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"FÍSICA\",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -481,7 +481,7 @@ public class ProfessionalControllerTests {
 				"    \"user\" : {\n" +
 				"      \"username\" : \"profissional1\",\n" +
 				"      \"password\" : \"123qwe\",\n" +
-				"         \"personType\":\"JURÍDICA\",\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"email\" : \"profissional1@gmail.con\"\n" +
 				"    },\n" +
 				"    \"address\" : { }\n" +
@@ -684,7 +684,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"      \"personType\":\"FÍSICA\",\n" +
+				"      \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"0984068791\",\n" +
@@ -731,7 +731,7 @@ public class ProfessionalControllerTests {
 				"    \"idProfessional\": "+ returnOfCreateOK.getIdProfessional() +",\n" +
 				"    \"user\": {\n" +
 				"      \"idLogin\": "+ returnOfCreateOK.getUser().getIdLogin() +",\n" +
-				"         \"personType\":\"FÍSICA\",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"email\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"nameProfessional\": \"Another Repeated Email\"\n" +
@@ -807,7 +807,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"JURÍDICA\",\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -862,7 +862,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"FÍSICA\",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \"testUpdateAttendanceOK\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -929,7 +929,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"FÍSICA\",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \"aaa\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -989,7 +989,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"JURÍDICA\",\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404276846\",\n" +

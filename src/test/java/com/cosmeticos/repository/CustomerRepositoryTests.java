@@ -67,7 +67,7 @@ public class CustomerRepositoryTests {
         c1.setAddress(address);
 
         u1.setCustomer(c1);
-        u1.setPersonType(User.PersonType.FÍSICA);
+        u1.setPersonType(User.PersonType.FISICA);
         address.setCustomer(c1);
 
         repository.save(c1);
@@ -85,7 +85,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals(Character.valueOf('M'), customer.getGenre());
         Assert.assertEquals("Test João da Silva", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-        Assert.assertEquals(User.PersonType.FÍSICA, u1.getPersonType());
+        Assert.assertEquals(User.PersonType.FISICA, u1.getPersonType());
 
     }
 
@@ -111,7 +111,7 @@ public class CustomerRepositoryTests {
         c2.setUser(u2);
 
         u2.setCustomer(c2);
-        u2.setPersonType(User.PersonType.JURÍDICA);
+        u2.setPersonType(User.PersonType.JURIDICA);
         address2.setCustomer(c2);
 
         repository.save(c2);
@@ -129,7 +129,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals(Character.valueOf('M'), customer.getGenre());
         Assert.assertEquals("Test Diego Fernandes", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-        Assert.assertEquals(User.PersonType.JURÍDICA, u2.getPersonType());
+        Assert.assertEquals(User.PersonType.JURIDICA, u2.getPersonType());
 
     }
 
@@ -155,7 +155,7 @@ public class CustomerRepositoryTests {
         c3.setUser(u3);
 
         u3.setCustomer(c3);
-        u3.setPersonType(User.PersonType.FÍSICA);
+        u3.setPersonType(User.PersonType.FISICA);
         address3.setCustomer(c3);
 
         repository.save(c3);
@@ -174,7 +174,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals(Character.valueOf('F'), customer.getGenre());
         Assert.assertEquals("Test Maria das Dores", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-        Assert.assertEquals(User.PersonType.FÍSICA, u3.getPersonType());
+        Assert.assertEquals(User.PersonType.FISICA, u3.getPersonType());
 
     }
 
@@ -200,7 +200,7 @@ public class CustomerRepositoryTests {
 
         u4.setCustomer(c4);
         address4.setCustomer(c4);
-        u4.setPersonType(User.PersonType.JURÍDICA);
+        u4.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(c4);
 
@@ -219,7 +219,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals(Character.valueOf('F'), customer.getGenre());
         Assert.assertEquals("Test Fernanda Cavalcante", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.INACTIVE.ordinal(), (int)customer.getStatus());
-        Assert.assertEquals(User.PersonType.JURÍDICA, u4.getPersonType());
+        Assert.assertEquals(User.PersonType.JURIDICA, u4.getPersonType());
     }
 
     @Test
@@ -240,7 +240,7 @@ public class CustomerRepositoryTests {
         c5.setUser(u5);
 
         u5.setCustomer(c5);
-        u5.setPersonType(User.PersonType.FÍSICA);
+        u5.setPersonType(User.PersonType.FISICA);
         address5.setCustomer(c5);
 
         repository.save(c5);
@@ -259,7 +259,7 @@ public class CustomerRepositoryTests {
         Assert.assertEquals(Character.valueOf('M'), customer.getGenre());
         Assert.assertEquals("Test José das Couves", customer.getNameCustomer());
         Assert.assertEquals(Customer.Status.ACTIVE.ordinal(), (int)customer.getStatus());
-        Assert.assertEquals(User.PersonType.FÍSICA, u5.getPersonType());
+        Assert.assertEquals(User.PersonType.FISICA, u5.getPersonType());
 
     }
 

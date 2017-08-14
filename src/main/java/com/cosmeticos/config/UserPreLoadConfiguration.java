@@ -57,7 +57,7 @@ public class UserPreLoadConfiguration {
         u1.setPassword("109809876");
         u1.setEmail("killer@gmail.com");
         u1.setSourceApp("facebook");
-        u1.setPersonType(User.PersonType.FÍSICA);
+        u1.setPersonType(User.PersonType.FISICA);
 
         cc.setOwnerName(u1.getUsername());
         ccNovo.setOwnerName(u1.getUsername());
@@ -92,7 +92,7 @@ public class UserPreLoadConfiguration {
         u2.setPassword("1234098765");
         u2.setEmail("namek@gmail.com");
         u2.setSourceApp("google+");
-        u2.setPersonType(User.PersonType.JURÍDICA);
+        u2.setPersonType(User.PersonType.JURIDICA);
 
 
         cc2.setOwnerName(u2.getUsername());
@@ -106,7 +106,7 @@ public class UserPreLoadConfiguration {
         u3.setPassword("12323454");
         u3.setEmail("fulano@gmail.com");
         u3.setSourceApp("gmail");
-        u3.setPersonType(User.PersonType.FÍSICA);
+        u3.setPersonType(User.PersonType.FISICA);
 
 
         User u4 = new User();
@@ -114,7 +114,7 @@ public class UserPreLoadConfiguration {
         u4.setPassword("09877");
         u4.setEmail("kira@hotmail.com");
         u4.setSourceApp("facebook");
-        u4.setPersonType(User.PersonType.JURÍDICA);
+        u4.setPersonType(User.PersonType.JURIDICA);
 
 
         User u5 = new User();
@@ -122,7 +122,7 @@ public class UserPreLoadConfiguration {
         u5.setPassword("1234");
         u5.setEmail("ciclanor@gmail.com");
         u5.setSourceApp("google+");
-        u5.setPersonType(User.PersonType.FÍSICA);
+        u5.setPersonType(User.PersonType.FISICA);
 
 
         repository.save(u1);

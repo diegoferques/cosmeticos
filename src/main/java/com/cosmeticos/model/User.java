@@ -33,7 +33,7 @@ public class User implements Serializable {
 
     public enum PersonType{
 
-        FÍSICA, JURÍDICA
+        FISICA, JURIDICA
 
     }
 

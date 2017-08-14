@@ -59,7 +59,7 @@ public class ProfessionalPreLoadConfiguration {
         // bidirecional reference
         p1.setUser(user1);
         user1.setProfessional(p1);
-        user1.setPersonType(User.PersonType.FÍSICA);
+        user1.setPersonType(User.PersonType.FISICA);
 
         // bidirecional reference
         p1.setWallet(cw1);
@@ -83,7 +83,7 @@ public class ProfessionalPreLoadConfiguration {
 
 
         user2.setProfessional(s2);
-        user2.setPersonType(User.PersonType.FÍSICA);
+        user2.setPersonType(User.PersonType.FISICA);
         address2.setProfessional(s2);
 
 
@@ -104,7 +104,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
         user3.setProfessional(s3);
-        user3.setPersonType(User.PersonType.JURÍDICA);
+        user3.setPersonType(User.PersonType.JURIDICA);
 
         ////////////////////////////////////////
         User user4;
@@ -120,7 +120,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
         user4.setProfessional(s4);
-        user4.setPersonType(User.PersonType.FÍSICA);
+        user4.setPersonType(User.PersonType.FISICA);
 
         ////////////////////////////////////////
         User user5;
@@ -136,7 +136,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
         user5.setProfessional(s5);
-        user5.setPersonType(User.PersonType.JURÍDICA);
+        user5.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(s2);
         repository.save(s3);
@@ -165,7 +165,7 @@ public class ProfessionalPreLoadConfiguration {
 
         address6.setProfessional(s6);
         user6.setProfessional(s6);
-        user6.setPersonType(User.PersonType.JURÍDICA);
+        user6.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(s6);
 
@@ -187,7 +187,7 @@ public class ProfessionalPreLoadConfiguration {
 
         address7.setProfessional(s7);
         user7.setProfessional(s7);
-        user7.setPersonType(User.PersonType.FÍSICA);
+        user7.setPersonType(User.PersonType.FISICA);
 
         repository.save(s7);
 

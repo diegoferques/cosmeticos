@@ -273,7 +273,7 @@ public class UserControllerTest {
                 "\t    \"email\": \"Killer33@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
                 "\t    \"status\": \"GONE\",\n" +
-                "\t    \"personType\":\"FÍSICA\",\n" +
+                "\t    \"personType\":\"FISICA\",\n" +
                 "\t    \"goodByeReason\": \"TESTE ALTERADO\"\n" +
                 "\t    }\n " +
                 "}";
