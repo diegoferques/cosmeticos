@@ -33,9 +33,11 @@ public class CreditCard implements Serializable {
 
     private String ownerName;
 
+    // TODO: Eliminar, nao podemos ter isso registrado.
     @Column(unique = true)
     private String cardNumber;
 
+    // TODO: Eliminar, nao podemos ter isso registrado.
     private String securityCode;
 
     @Temporal(TemporalType.TIMESTAMP)

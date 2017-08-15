@@ -106,7 +106,7 @@ public class Order implements Serializable {
 	private Date expireTime;
 
 	@OneToMany(mappedBy = "order")
-	private Set<CreditCard> creditCardCollection;
+	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 
 	public Order() {
