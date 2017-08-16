@@ -42,7 +42,8 @@ public class ProfessionalServices implements Serializable {
             ResponseJsonView.ProfessionalServicesFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CategoryGetAll.class,
     })
     @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
     @ManyToOne(optional = false)

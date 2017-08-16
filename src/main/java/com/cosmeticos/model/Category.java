@@ -32,6 +32,7 @@ public class Category implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CategoryGetAll.class,
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,11 +44,15 @@ public class Category implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CategoryGetAll.class,
     })
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)
     private String name;
 
+    @JsonView({
+            ResponseJsonView.CategoryGetAll.class,
+    })
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ownerCategory_id")
     private Category ownerCategory;

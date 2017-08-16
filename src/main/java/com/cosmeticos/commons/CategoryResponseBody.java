@@ -1,6 +1,8 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Category;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -13,8 +15,14 @@ import java.util.List;
 @Data
 public class CategoryResponseBody {
 
+    @JsonView({
+            ResponseJsonView.CategoryGetAll.class,
+    })
     private String description;
 
+    @JsonView({
+            ResponseJsonView.CategoryGetAll.class,
+    })
     private List<Category> serviceList = new ArrayList<>(10);
 
 

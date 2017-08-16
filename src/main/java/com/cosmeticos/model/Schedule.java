@@ -49,7 +49,7 @@ public class Schedule implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date scheduleEnd;
