@@ -781,7 +781,6 @@ public class ProfessionalControllerTests {
 		c1.setAddress(createFakeAddress());
 		c1.setUser(UserControllerTest.createFakeUser("222", "222@2.com"));
 		c1.getUser().setProfessional(c1);
-		c1.getCategoryPriceHashSet().add(new CategoryPrice());
 
 		return c1;
 	}

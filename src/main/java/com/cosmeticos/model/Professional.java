@@ -165,14 +165,6 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
     })
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
-    private Set<CategoryPrice> categoryPriceHashSet = new HashSet<>();
-
-    @JsonView({
-            ResponseJsonView.ProfessionalFindAll.class,
-            ResponseJsonView.ProfessionalUpdate.class,
-            ResponseJsonView.ProfessionalCreate.class,
-    })
     @JoinTable(name = "PROFESSIONAL_HABILITY", joinColumns = {
             @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional")}, inverseJoinColumns = {
             @JoinColumn(name = "id_hability", referencedColumnName = "id")})
