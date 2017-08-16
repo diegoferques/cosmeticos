@@ -44,7 +44,7 @@ public class OrderControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -67,11 +67,11 @@ public class OrderControllerTests {
     @Before
     public void setup()
     {
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         if(service == null) {
-            service = new Service();
-            service.setCategory("PEDICURE");
+            service = new Category();
+            service.setName("PEDICURE");
             serviceRepository.save(service);
         }
     }
@@ -144,7 +144,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -172,7 +172,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -292,7 +292,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -322,7 +322,7 @@ public class OrderControllerTests {
                "    },\n" +
                "    \"professionalServices\" : {\n" +
                "      \"service\" : {\n" +
-               "        \"idService\" : "+service.getIdService()+",\n" +
+               "        \"idService\" : "+service.getIdCategory()+",\n" +
                "        \"category\" : \"MASSAGISTA\"\n" +
                "      },\n" +
                "      \"professional\" : {\n" +
@@ -371,9 +371,9 @@ public class OrderControllerTests {
         Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
         Assert.assertEquals("PEDICURE",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -394,7 +394,7 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -423,7 +423,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -479,7 +479,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -539,7 +539,7 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -564,7 +564,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -644,7 +644,7 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -669,7 +669,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -837,7 +837,7 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -855,7 +855,7 @@ public class OrderControllerTests {
                 "    \"status\" : 0,\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1065,7 +1065,7 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1090,7 +1090,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1179,7 +1179,7 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1262,9 +1262,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category category = serviceRepository.findByName("PEDICURE");
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1273,7 +1273,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1352,9 +1352,9 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category category = serviceRepository.findByName("PEDICURE");
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1363,7 +1363,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1396,7 +1396,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
+        String jsonCreate2 = this.getOrderCreateJson(category, professional, c2);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1426,9 +1426,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category category = serviceRepository.findByName("PEDICURE");
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1451,7 +1451,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"idService\" : " + category.getIdCategory() + ",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1564,9 +1564,9 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category category = serviceRepository.findByName("PEDICURE");
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1575,7 +1575,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1608,7 +1608,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
+        String jsonCreate2 = this.getOrderCreateJson(category, professional, c2);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1646,9 +1646,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category category = serviceRepository.findByName("PEDICURE");
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1657,7 +1657,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
         System.out.println(jsonCreate);
 
         RequestEntity<String> entity =  RequestEntity
@@ -1713,7 +1713,7 @@ public class OrderControllerTests {
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
-    public String getOrderCreateJson(Service service, Professional professional, Customer customer) {
+    public String getOrderCreateJson(Category category, Professional professional, Customer customer) {
 
         String jsonCreate = "{\n" +
                 "  \"order\" : {\n" +
@@ -1726,7 +1726,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdService() +",\n" +
+                "        \"idService\" : "+ category.getIdCategory() +",\n" +
                 "        \"category\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +

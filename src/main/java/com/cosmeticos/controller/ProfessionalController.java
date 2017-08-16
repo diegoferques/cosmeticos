@@ -251,7 +251,7 @@ public class ProfessionalController {
         Set<ProfessionalServices> psCollection = request.getProfessional().getProfessionalServicesCollection();
 
         for (ProfessionalServices ps : psCollection) {
-            if (ps.getService().getIdService() == null) {
+            if (ps.getCategory().getIdCategory() == null) {
                 return false;
             }
         }

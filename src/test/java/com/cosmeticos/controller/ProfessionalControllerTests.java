@@ -613,7 +613,7 @@ public class ProfessionalControllerTests {
 	}
 
 	@Test
-	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
+	public void testBadRequestWhenNewProfessionalOmmitsIdCategory() throws URISyntaxException {
 		String jsonBody = "{\n" +
 				"\t\"professional\":\n" +
 				"\t{\n" +
@@ -758,6 +758,7 @@ public class ProfessionalControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+		a.setComplement("HOUSE");
 
 		return a;
 	}

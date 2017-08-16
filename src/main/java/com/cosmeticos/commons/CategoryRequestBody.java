@@ -1,6 +1,6 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Service;
+import com.cosmeticos.model.Category;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -9,8 +9,8 @@ import javax.validation.Valid;
  * Created by Vinicius on 31/05/2017.
  */
 @Data
-public class ServiceRequestBody {
+public class CategoryRequestBody {
 
     @Valid
-    private Service entity;
+    private Category entity;
 }

@@ -123,6 +123,7 @@ public class MockingProfessionalControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+		a.setComplement("HOUSE");
 
 		return a;
 	}

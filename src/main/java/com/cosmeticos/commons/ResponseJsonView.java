@@ -24,4 +24,5 @@ public class ResponseJsonView {
     public interface ProfessionalFindAll {}
     public interface ProfessionalUpdate {}
     public interface ProfessionalCreate {}
+	public interface CategoryGetAll {	}
 }

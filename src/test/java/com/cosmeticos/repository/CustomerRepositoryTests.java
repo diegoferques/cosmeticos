@@ -282,6 +282,7 @@ public class CustomerRepositoryTests {
         a.setCountry("BRA");
         a.setNeighborhood("Austin");
         a.setState("RJ");
+        a.setComplement("HOUSE");
         //a.getCustomerCollection().add(customer);
         addressRepository.save(a);
         return a;

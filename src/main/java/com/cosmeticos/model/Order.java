@@ -6,27 +6,20 @@ package com.cosmeticos.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Basic;
+import javax.persistence.*;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
+import org.hibernate.annotations.*;
 
 /**
  *
@@ -87,7 +80,7 @@ public class Order implements Serializable {
     })
     @JoinColumns({
         @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional"),
-			@JoinColumn(name = "id_service", referencedColumnName = "idService") })
+			@JoinColumn(name = "id_category", referencedColumnName = "idCategory") })
 	@ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 
@@ -110,8 +103,12 @@ public class Order implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class
     })
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date expireTime;	
-	
+	private Date expireTime;
+
+	@OneToMany(mappedBy = "order")
+	private Set<CreditCard> creditCardCollection = new HashSet<>();
+
+
 	public Order() {
 	}
 

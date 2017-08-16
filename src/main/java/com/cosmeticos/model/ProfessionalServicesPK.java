@@ -20,20 +20,20 @@ public class ProfessionalServicesPK implements Serializable {
     private long idProfessional;
 
     @Basic(optional = false)
-    @Column(name = "idService")
-    private long idService;
+    @Column(name = "idCategory")
+    private long idCategory;
 
     public ProfessionalServicesPK() {
     }
 
-    public ProfessionalServicesPK(long idProfessional, long idService) {
+    public ProfessionalServicesPK(long idProfessional, long idCategory) {
         this.idProfessional = idProfessional;
-        this.idService = idService;
+        this.idCategory = idCategory;
     }
 
     public ProfessionalServicesPK(ProfessionalServices ps) {
         this.idProfessional = ps.getProfessional().getIdProfessional();
-        this.idService = ps.getService().getIdService();
+        this.idCategory = ps.getCategory().getIdCategory();
     }
 
     public long getIdProfessional() {
@@ -44,19 +44,19 @@ public class ProfessionalServicesPK implements Serializable {
         this.idProfessional = idProfessional;
     }
 
-    public long getIdService() {
-        return idService;
+    public long getIdCategory() {
+        return idCategory;
     }
 
-    public void setIdService(long idService) {
-        this.idService = idService;
+    public void setIdCategory(long idCategory) {
+        this.idCategory = idCategory;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (int) idProfessional;
-        hash += (int) idService;
+        hash += (int) idCategory;
         return hash;
     }
 
@@ -70,7 +70,7 @@ public class ProfessionalServicesPK implements Serializable {
         if (this.idProfessional != other.idProfessional) {
             return false;
         }
-        if (this.idService != other.idService) {
+        if (this.idCategory != other.idCategory) {
             return false;
         }
         return true;
@@ -78,7 +78,7 @@ public class ProfessionalServicesPK implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.ProfessionalServicesPK[ idProfessional=" + idProfessional + ", idService=" + idService + " ]";
+        return "javaapplication2.entity.ProfessionalServicesPK[ idProfessional=" + idProfessional + ", idCategory=" + idCategory + " ]";
     }
     
 }

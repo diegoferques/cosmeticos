@@ -20,7 +20,7 @@ import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Hability;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.Role;
-import com.cosmeticos.model.Service;
+import com.cosmeticos.model.Category;
 import com.cosmeticos.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -121,8 +121,8 @@ public class JsonizerTest222 {
     public void jsonizeHability() throws JsonProcessingException {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
-        Service s = new Service();
-        s.setCategory("s");
+        Category s = new Category();
+        s.setName("s");
 
         Professional p = new Professional();
         p.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1991, 10, 21, 0, 0, 0)));
@@ -134,7 +134,7 @@ public class JsonizerTest222 {
 
         Hability h = new Hability();
         h.setName("h");
-        h.setService(s);
+        h.setCategory(s);
         h.getProfessionalCollection().add(p);
 
         HabilityRequestBody requestBody = new HabilityRequestBody();
@@ -150,8 +150,8 @@ public class JsonizerTest222 {
     public void jsonizeService() throws Exception {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
-        Service r= new Service();
-        r.setIdService((long)1);
+        Category r= new Category();
+        r.setIdCategory((long)1);
 
         String json = om.writeValueAsString(r);
 
@@ -166,7 +166,7 @@ public class JsonizerTest222 {
         scheduleRequest.setScheduleStart(Calendar.getInstance().getTime());
         scheduleRequest.setIdCustomer(1L);
         scheduleRequest.setIdProfessional(1L);
-        scheduleRequest.setIdService(1L);
+        scheduleRequest.setIdCategory(1L);
 
         String json = om.writeValueAsString(scheduleRequest);
 

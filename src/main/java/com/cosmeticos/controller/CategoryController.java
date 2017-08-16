@@ -1,9 +1,12 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.ServiceRequestBody;
-import com.cosmeticos.commons.ServiceResponseBody;
-import com.cosmeticos.model.Service;
-import com.cosmeticos.service.ServiceBeanService;
+import com.cosmeticos.commons.CategoryRequestBody;
+import com.cosmeticos.commons.CategoryResponseBody;
+import com.cosmeticos.commons.ResponseJsonView;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.service.CategoryService;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -23,22 +26,22 @@ import static org.springframework.http.ResponseEntity.*;
  */
 @Slf4j
 @RestController
-public class ServiceController {
+public class CategoryController {
 
     @Autowired
-    private ServiceBeanService service;
+    private CategoryService category;
 
     @RequestMapping(path = "/service", method = RequestMethod.POST)
-    public HttpEntity<ServiceResponseBody> create(@Valid @RequestBody ServiceRequestBody request, BindingResult bindingResult) {
+    public HttpEntity<CategoryResponseBody> create(@Valid @RequestBody CategoryRequestBody request, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                Service s = service.create(request);
+                Category s = category.create(request);
                 log.info("Service adicionado com sucesso:  [{}]", s);
 
-                ServiceResponseBody responseBody = new ServiceResponseBody();
+                CategoryResponseBody responseBody = new CategoryResponseBody();
 
                 responseBody.setDescription("Success");
                 responseBody.getServiceList().add(s);
@@ -50,7 +53,7 @@ public class ServiceController {
         }catch(Exception e){
 
             log.error("Falha no cadastro: {}", e.getMessage(), e);
-            ServiceResponseBody responseBody = new ServiceResponseBody();
+            CategoryResponseBody responseBody = new CategoryResponseBody();
             responseBody.setDescription(e.getMessage());
 
             return ResponseEntity.status(500).body(responseBody);
@@ -58,7 +61,7 @@ public class ServiceController {
     }
 
     @RequestMapping(path = "/service", method = RequestMethod.PUT)
-    public HttpEntity<ServiceResponseBody> update(@Valid @RequestBody ServiceRequestBody request, BindingResult bindingResult) {
+    public HttpEntity<CategoryResponseBody> update(@Valid @RequestBody CategoryRequestBody request, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors()) {
@@ -66,19 +69,19 @@ public class ServiceController {
                 log.error("Erros na requisicao: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
 
-            } else if (request.getEntity().getIdService() == null) {
+            } else if (request.getEntity().getIdCategory() == null) {
 
-                ServiceResponseBody responseBody = new ServiceResponseBody();
+                CategoryResponseBody responseBody = new CategoryResponseBody();
                 responseBody.setDescription("Entity ID must to be set!");
                 return badRequest().body(responseBody);
 
             } else {
-                Optional<Service> optional = service.update(request);
+                Optional<Category> optional = category.update(request);
 
                 if (optional.isPresent()) {
-                    Service updatedService = optional.get();
+                    Category updatedService = optional.get();
 
-                    ServiceResponseBody responseBody = new ServiceResponseBody();
+                    CategoryResponseBody responseBody = new CategoryResponseBody();
                     responseBody.getServiceList().add(updatedService);
 
                     log.info("Service atualizado com sucesso:  [{}]", updatedService);
@@ -86,26 +89,28 @@ public class ServiceController {
 
                 } else {
 
-                    log.error("Service nao encontrada: idService[{}]", request.getEntity().getIdService());
+                    log.error("Service nao encontrada: idService[{}]", request.getEntity().getIdCategory());
                     return notFound().build();
 
                 }
             }
         } catch (Exception e) {
             log.error("Falha na atualizacao: {}", e.getMessage(), e);
-            ServiceResponseBody responseBody = new ServiceResponseBody();
+            CategoryResponseBody responseBody = new CategoryResponseBody();
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
     }
 
+
+    @JsonView(ResponseJsonView.CategoryGetAll.class)
     @RequestMapping(path = "/service", method = RequestMethod.GET)
-    public HttpEntity<ServiceResponseBody> findAll() {
+    public HttpEntity<CategoryResponseBody> findAll() {
 
         try {
-            List<Service> entitylist = service.findAll();
+            List<Category> entitylist = category.findAll();
 
-            ServiceResponseBody responseBody = new ServiceResponseBody();
+            CategoryResponseBody responseBody = new CategoryResponseBody();
             responseBody.setServiceList(entitylist);
             responseBody.setDescription("All Services retrieved.");
 
@@ -115,22 +120,22 @@ public class ServiceController {
 
         } catch (Exception e) {
             log.error("Falha no BUSCAR TODOS: {}", e.getMessage(), e);
-            ServiceResponseBody responseBody = new ServiceResponseBody();
+            CategoryResponseBody responseBody = new CategoryResponseBody();
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
     }
 
     @RequestMapping(path = "/service/{id}", method = RequestMethod.GET)
-    public HttpEntity<ServiceResponseBody> findById(@PathVariable String id) {
+    public HttpEntity<CategoryResponseBody> findById(@PathVariable String id) {
 
         try {
-            Optional<Service> optional = service.find(Long.valueOf(id));
+            Optional<Category> optional = category.find(Long.valueOf(id));
 
             if (optional.isPresent()) {
 
-                Service foundService = optional.get();
-                ServiceResponseBody response = new ServiceResponseBody();
+                Category foundService = optional.get();
+                CategoryResponseBody response = new CategoryResponseBody();
                 response.setDescription("Service succesfully retrieved");
                 response.getServiceList().add(foundService);
 
@@ -143,19 +148,19 @@ public class ServiceController {
             }
         } catch (Exception e) {
             log.error("Falha na busca por ID: {}", e.getMessage(), e);
-            ServiceResponseBody responseBody = new ServiceResponseBody();
+            CategoryResponseBody responseBody = new CategoryResponseBody();
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
     }
 
-    private ServiceResponseBody buildErrorResponse(BindingResult bindingResult) {
+    private CategoryResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
                 .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
                 .collect(Collectors.toList());
 
-        ServiceResponseBody responseBody = new ServiceResponseBody();
+        CategoryResponseBody responseBody = new CategoryResponseBody();
         responseBody.setDescription(errors.toString());
         return responseBody;
     }
