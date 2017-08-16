@@ -85,6 +85,7 @@ public class Order implements Serializable {
 	@ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 
+
 	@JoinColumn(name = "idLocation", referencedColumnName = "id")
 	@ManyToOne(optional = true)
 	private Location idLocation;

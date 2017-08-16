@@ -4,10 +4,7 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Hability;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
@@ -55,6 +52,8 @@ public class ProfessionalControllerTests {
 	private Professional returnOfCreateOKWithAddress = null;
 
 	private String emailUsuario = null;
+
+	private String rule = null;
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -782,6 +781,7 @@ public class ProfessionalControllerTests {
 		c1.setAddress(createFakeAddress());
 		c1.setUser(UserControllerTest.createFakeUser("222", "222@2.com"));
 		c1.getUser().setProfessional(c1);
+		c1.getCategoryPriceHashSet().add(new CategoryPrice());
 
 		return c1;
 	}
@@ -1020,5 +1020,7 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals("professionalServicesRNF58", professional.getNameProfessional());
 		Assert.assertEquals(email, professional.getUser().getEmail());
 	}
+
+
 
 }
