@@ -211,7 +211,7 @@ public class OrderService {
 			ProfessionalServices ps = new ProfessionalServices(p, s);
 
 			professionalServicesRepository.save(ps);
-			
+
 			order.setProfessionalServices(ps);
 
 		}

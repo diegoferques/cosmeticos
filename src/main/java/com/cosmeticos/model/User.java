@@ -31,6 +31,12 @@ public class User implements Serializable {
 
     }
 
+    public enum PersonType{
+
+        FISICA, JURIDICA
+
+    }
+
         private static final long serialVersionUID = 1L;
 
     @JsonView({
@@ -90,6 +96,10 @@ public class User implements Serializable {
     @OneToOne(mappedBy = "user")
     @JoinColumn(name = "idUser")
     private Professional professional;
+
+
+    @Enumerated(EnumType.STRING)
+    private PersonType personType;
 
 
     public User() {

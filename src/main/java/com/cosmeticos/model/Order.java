@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
