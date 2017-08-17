@@ -108,7 +108,9 @@ public class Order implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class
     })
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date expireTime;	
+	private Date expireTime;
+
+	private Payment payment;	
 	
 	public Order() {
 	}
@@ -158,5 +160,4 @@ public class Order implements Serializable {
 	public String toString() {
 		return "javaapplication2.entity.Order[ idOrder=" + idOrder + " ]";
 	}
-
 }
