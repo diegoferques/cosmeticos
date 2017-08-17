@@ -172,9 +172,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -323,9 +323,9 @@ public class OrderControllerTests {
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
                "    \"professionalServices\" : {\n" +
-               "      \"service\" : {\n" +
-               "        \"idService\" : "+service.getIdCategory()+",\n" +
-               "        \"category\" : \"MASSAGISTA\"\n" +
+               "      \"category\" : {\n" +
+               "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+               "        \"name\" : \"MASSAGISTA\"\n" +
                "      },\n" +
                "      \"professional\" : {\n" +
                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -425,9 +425,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -481,9 +481,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -567,9 +567,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -674,9 +674,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -862,9 +862,9 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -1099,9 +1099,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdCategory()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -1386,6 +1386,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
 
+
         ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
                 .exchange(entity, OrderResponseBody.class);
 
@@ -1466,9 +1467,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -1743,9 +1744,9 @@ public class OrderControllerTests {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ category.getIdCategory() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
+                "        \"name\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +

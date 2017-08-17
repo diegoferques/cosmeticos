@@ -74,7 +74,7 @@ public class ScheduleOrderControllerTest {
 
 
         Category service = new Category();
-        service.setName("PEDICURE");
+        service.setName("PEDICUREscheduledOrderOk");
         serviceRepository.save(service);
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
@@ -104,9 +104,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -163,7 +162,7 @@ public class ScheduleOrderControllerTest {
 
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
-        Assert.assertEquals("PEDICURE",
+        Assert.assertEquals("PEDICUREscheduledOrderOk",
                 exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
@@ -227,9 +226,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -304,9 +302,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -368,9 +365,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -439,9 +435,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdCategory() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +

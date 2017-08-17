@@ -84,8 +84,8 @@ public class ProfessionalServicesControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"idService\": "+s1.getIdCategory()+"\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+s1.getIdCategory()+"\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -104,7 +104,7 @@ public class ProfessionalServicesControllerTests {
 
 		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionalservices?service.category=FOOBAR",
+						"/professionalservices?category.name=FOOBAR",
 						HttpMethod.GET, //
 						null,
 						ProfessionalServicesResponseBody.class);
