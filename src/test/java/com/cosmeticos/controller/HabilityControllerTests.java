@@ -32,8 +32,8 @@ public class HabilityControllerTests {
 				"  \"hability\" : {\n" +
 				"    \"name\" : \"h\",\n" +
 				"\t\n" +
-				"    \"service\" : {\n" +
-				"      \"idService\" : 1\n" +
+				"    \"category\" : {\n" +
+				"      \"idCategory\" : 1\n" +
 				"    },\n" +
 				"\t\n" +
 				"    \"professionalCollection\" : [ {\n" +

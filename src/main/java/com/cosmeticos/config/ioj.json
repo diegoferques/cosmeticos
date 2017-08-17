@@ -18,9 +18,9 @@
     "cnpj": "1234567890",
     "professionalServicesCollection": [
       {
-        "service": {
-          "idService": null,
-          "category": "PODOLOGO"
+        "category": {
+          "idCategory": null,
+          "name": "PODOLOGO"
         },
         "professional": null
       }

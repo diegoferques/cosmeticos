@@ -194,6 +194,7 @@ public class Professional  implements Serializable {
         this.user = user;
     }
 
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -218,5 +219,5 @@ public class Professional  implements Serializable {
     public String toString() {
         return "javaapplication2.entity.Professional[ idProfessional=" + idProfessional + " ]";
     }
-    
+
 }

@@ -15,6 +15,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  *
@@ -32,6 +35,7 @@ public class Category implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CategoryGetAll.class,
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,11 +47,15 @@ public class Category implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CategoryGetAll.class,
     })
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)
     private String name;
 
+    @JsonView({
+            ResponseJsonView.CategoryGetAll.class,
+    })
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ownerCategory_id")
     private Category ownerCategory;
@@ -56,9 +64,9 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "ownerCategory", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Category> childrenCategories = new HashSet<>();
 
-	@JsonIgnore
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private Collection<ProfessionalServices> professionalServicesCollection;
+    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
     public void addChild(Category s) {
         getChildrenCategories().add(s);

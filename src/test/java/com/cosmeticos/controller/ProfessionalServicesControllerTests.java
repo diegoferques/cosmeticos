@@ -104,7 +104,7 @@ public class ProfessionalServicesControllerTests {
 
 		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionalservices?service.category=FOOBAR",
+						"/professionalservices?category.name=FOOBAR",
 						HttpMethod.GET, //
 						null,
 						ProfessionalServicesResponseBody.class);

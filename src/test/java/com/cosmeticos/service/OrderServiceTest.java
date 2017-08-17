@@ -70,6 +70,8 @@ public class OrderServiceTest {
         serviceRepository.save(serviceProgramador);
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, serviceProgramador);
+        professionalServicesRepository.save(ps1);
+        
         professional.getProfessionalServicesCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico

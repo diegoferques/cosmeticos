@@ -2,6 +2,7 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardResponseBody;
+import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CreditCardRepository;
@@ -13,11 +14,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestClientException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -50,33 +52,38 @@ public class CreditCardControllerTests {
     @Test
     public void fazerTesteDeBuscaPara1CartaoPeloEmail() throws ParseException {
 
-        // ta retornando vazio.. deve ser por causa do codigo q coloquei la
-        final ResponseEntity<CreditCardResponseBody> getExchange = //
-                restTemplate.exchange( //
-                        //"/creditCard?user.email=ciclanor@gmail.com",
-                        "/creditCard?user.email=namek@gmail.com",
-                        HttpMethod.GET, //
-                        null,
-                        CreditCardResponseBody.class);
 
-        Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
+        try {
+            // ta retornando vazio.. deve ser por causa do codigo q coloquei la
+            final ResponseEntity<CreditCardResponseBody> getExchange = //
+                    restTemplate.exchange( //
+                            //"/creditCard?user.email=ciclanor@gmail.com",
+                            "/creditCard?user.email=namek@gmail.com",
+                            HttpMethod.GET, //
+                            null,
+                            CreditCardResponseBody.class);
 
-        CreditCardResponseBody response = getExchange.getBody();
+            Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
 
-        List<CreditCard> entityList = response.getCreditCardList();
-        System.out.println(entityList);
-        Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
+            CreditCardResponseBody response = getExchange.getBody();
 
-        for (int i = 0; i < entityList.size(); i++) {
-            CreditCard cc =  entityList.get(i);
+            List<CreditCard> entityList = response.getCreditCardList();
+            System.out.println(entityList);
+            Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
 
-            User u = cc.getUser();
-            //cc.setUser(u);
+            for (int i = 0; i < entityList.size(); i++) {
+                CreditCard cc =  entityList.get(i);
 
-            Assert.assertNotNull("CreditoCard deve ter User", cc);
-            //Assert.assertEquals(getExchange, u.getEmail());
+                User u = cc.getUser();
+                //cc.setUser(u);
 
-        }//continua ai rsrskkkkkk...
+                Assert.assertNotNull("CreditoCard deve ter User", cc);
+                //Assert.assertEquals(getExchange, u.getEmail());
+
+            }//continua ai rsrskkkkkk...
+        } catch (RestClientException e) {
+            Assert.fail(e.getMessage());
+        }
 
 
     }
@@ -111,24 +118,18 @@ public class CreditCardControllerTests {
         }
     }
     @Test
-    public void testeDeBuscaPeloEmail() throws ParseException {
+    public void testeDeBuscaPeloEmail() throws ParseException, URISyntaxException {
 
-        final ResponseEntity<CreditCardResponseBody> getExchange = //
-                restTemplate.exchange( //
-                        //"/creditCard?user.email=ciclanor@gmail.com",
-                        "/creditCard?user.email=",
-                        HttpMethod.GET, //
-                        null,
-                        CreditCardResponseBody.class);
+        RequestEntity<Void> entity =  RequestEntity
+                //"/creditCard?user.email=ciclanor@gmail.com",
+                .get(new URI("/creditCard?user.email="))
+                .accept(MediaType.APPLICATION_JSON)
+                .build();
 
-            CreditCardResponseBody responseBody = new CreditCardResponseBody();
-            List<CreditCard> entityList = responseBody.getCreditCardList();
-            if (entityList.isEmpty()) {
+        ResponseEntity<Void> getExchange = restTemplate
+                .exchange(entity, Void.class);
 
                 Assert.assertEquals(HttpStatus.NOT_FOUND, getExchange.getStatusCode());
-
-            }
-
 
         }
 
