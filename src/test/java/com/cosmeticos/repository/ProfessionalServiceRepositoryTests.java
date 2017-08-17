@@ -2,6 +2,7 @@ package com.cosmeticos.repository;
 
 import java.util.HashSet;
 
+import com.cosmeticos.model.Category;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Service;
 
 /**
  * Created by matto on 26/05/2017.
@@ -27,7 +27,7 @@ public class ProfessionalServiceRepositoryTests {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
     
     @Autowired
     private ProfessionalServicesRepository professionalServicesRepository;
@@ -45,8 +45,8 @@ public class ProfessionalServiceRepositoryTests {
         Professional p = ProfessionalControllerTests.createFakeProfessional();
         professionalRepository.save(p);
         
-        Service s = new Service();
-        s.setCategory("cat");
+        Category s = new Category();
+        s.setName("cat");
         s.setProfessionalServicesCollection(new HashSet<>());
         serviceRepository.save(s);
         
@@ -58,8 +58,8 @@ public class ProfessionalServiceRepositoryTests {
         
         /////////// Inserindo outro
 
-        Service s2 = new Service();
-        s2.setCategory("cat2");
+        Category s2 = new Category();
+        s2.setName("cat2");
         s.setProfessionalServicesCollection(new HashSet<>());
         
         serviceRepository.save(s2);

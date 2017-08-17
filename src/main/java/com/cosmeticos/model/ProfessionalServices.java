@@ -37,7 +37,7 @@ public class ProfessionalServices implements Serializable {
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-   // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
+    // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
     private Long professionalServicesId;
 
     @JsonView({
@@ -48,15 +48,16 @@ public class ProfessionalServices implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
     })
-    @JoinColumn(name = "id_service", referencedColumnName = "idService")
+    @JoinColumn(name = "id_category", referencedColumnName = "idCategory")
     @ManyToOne(optional=false)
-    private Service service;
+    private Category category;
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CategoryGetAll.class,
     })
     @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional")
     @ManyToOne(optional=false)
@@ -68,19 +69,19 @@ public class ProfessionalServices implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
     private Set<PriceRule> priceRule = new HashSet<>();
-    
+
     @Override
     public String toString() {
         return "javaapplication2.entity.ProfessionalServices[ id=" + professionalServicesId+ " ]";
     }
 
-	public ProfessionalServices(Professional p, Service s) {
+	public ProfessionalServices(Professional p, Category s) {
 		this.professional = p;
-		this.service = s;
-		
+		this.category = s;
+
 		this.professional.getProfessionalServicesCollection().add(this);
-		this.service.getProfessionalServicesCollection().add(this);
-		
+		this.category.getProfessionalServicesCollection().add(this);
+
 	}
 
 	public ProfessionalServices() {

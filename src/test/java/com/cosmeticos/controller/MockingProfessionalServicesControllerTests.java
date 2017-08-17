@@ -6,8 +6,8 @@ import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Service;
-import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.service.LocationService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,15 +39,15 @@ public class MockingProfessionalServicesControllerTests {
     private LocationService locationService;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     //@Ignore
     @Test
     public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 
 
-        Service s1 = new Service();
-        s1.setCategory("testNearbyWithDistance-service");
+        Category s1 = new Category();
+        s1.setName("testNearbyWithDistance-service");
         serviceRepository.save(s1);
 
         LocationGoogle sourceLocation = new LocationGoogle();
@@ -69,7 +69,8 @@ public class MockingProfessionalServicesControllerTests {
                 "	    \"neighborhood\": \"Rodilândia\",\n" +
                 "	    \"city\": \"Nova Iguaçu\",\n" +
                 "	    \"state\": \"RJ\",\n" +
-                "	    \"country\": \"BR\" \n" +
+                "	    \"country\": \"BR\" ,\n" +
+                "	    \"complement\": \"BR\" \n" +
                 "    },\n" +
                 "    \"birthDate\": 1120705200000,\n" +
                 "    \"cellPhone\": null,\n" +
@@ -92,7 +93,7 @@ public class MockingProfessionalServicesControllerTests {
                 "        \"professional\": null,\n" +
                 "        \"service\": {\n" +
                 "          \"category\": \"testNearbyWithDistance-service\",\n" +
-                "          \"idService\": "+s1.getIdService()+"\n" +
+                "          \"idService\": "+s1.getIdCategory()+"\n" +
                 "        }\n" +
                 "      }\n" +
                 "    ]\n" +
@@ -139,10 +140,10 @@ public class MockingProfessionalServicesControllerTests {
             ProfessionalServices ps =  entityList.get(i);
 
             Professional p = ps.getProfessional();
-            Service s = ps.getService();
+            Category s = ps.getCategory();
 
             Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
-            Assert.assertEquals("testNearbyWithDistance-service", s.getCategory());
+            Assert.assertEquals("testNearbyWithDistance-service", s.getName());
             Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
         }
     }

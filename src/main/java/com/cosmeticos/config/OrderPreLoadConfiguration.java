@@ -33,7 +33,7 @@ public class OrderPreLoadConfiguration {
     ProfessionalServicesRepository professionalServicesRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @PostConstruct
     public void insertInitialH2Data() throws URISyntaxException {
@@ -45,8 +45,8 @@ public class OrderPreLoadConfiguration {
         //Schedule s1 = scheduleRepository.findOne(1L);
         //Schedule s2 = scheduleRepository.findOne(2L);
 
-        Service service = new Service();
-        service.setCategory("PEDICURE");
+        Category service = new Category();
+        service.setName("PEDICURE");
         serviceRepository.save(service);
 
         ProfessionalServices ps1 = new ProfessionalServices(p1, service);
@@ -61,6 +61,9 @@ public class OrderPreLoadConfiguration {
         Schedule s2 = new Schedule();
         s2.setScheduleStart(Timestamp.valueOf(LocalDateTime.now()));
 
+        CreditCard creditCard = new CreditCard();
+        creditCard.setLastUsage(Timestamp.valueOf(LocalDateTime.now()));
+
         Order o1 = new Order();
         o1.setStatus(Order.Status.OPEN);
         o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
@@ -68,6 +71,7 @@ public class OrderPreLoadConfiguration {
         o1.setIdCustomer(c1);
         //o1.setIdLocation();
         o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
+
         //o1.setScheduleId(s1);
         orderRepository.save(o1);
 

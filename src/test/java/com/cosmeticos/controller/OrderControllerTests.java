@@ -44,7 +44,7 @@ public class OrderControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -67,11 +67,11 @@ public class OrderControllerTests {
     @Before
     public void setup()
     {
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         if(service == null) {
-            service = new Service();
-            service.setCategory("PEDICURE");
+            service = new Category();
+            service.setName("PEDICURE");
             serviceRepository.save(service);
         }
     }
@@ -144,8 +144,8 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -173,7 +173,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -293,8 +293,8 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -324,7 +324,7 @@ public class OrderControllerTests {
                "    },\n" +
                "    \"professionalServices\" : {\n" +
                "      \"service\" : {\n" +
-               "        \"idService\" : "+service.getIdService()+",\n" +
+               "        \"idService\" : "+service.getIdCategory()+",\n" +
                "        \"category\" : \"MASSAGISTA\"\n" +
                "      },\n" +
                "      \"professional\" : {\n" +
@@ -373,9 +373,9 @@ public class OrderControllerTests {
         Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
         Assert.assertEquals("PEDICURE",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -396,8 +396,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -426,7 +426,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -482,7 +482,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -542,8 +542,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -568,7 +568,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -648,8 +648,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -674,7 +675,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -842,8 +843,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -861,7 +863,7 @@ public class OrderControllerTests {
                 "    \"status\" : 0,\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1071,8 +1073,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1097,7 +1100,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
+                "        \"idService\" : "+service.getIdCategory()+",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1186,8 +1189,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1270,8 +1274,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1361,8 +1366,8 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1436,8 +1441,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1462,7 +1467,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
+                "        \"idService\" : " + service.getIdCategory() + ",\n" +
                 "        \"category\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1575,8 +1580,8 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1658,8 +1663,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdService());
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1726,7 +1731,7 @@ public class OrderControllerTests {
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
-    public String getOrderCreateJson(Service service, Professional professional, Customer customer) {
+    public String getOrderCreateJson(Category category, Professional professional, Customer customer) {
 
         String jsonCreate = "{\n" +
                 "  \"order\" : {\n" +
@@ -1739,7 +1744,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdService() +",\n" +
+                "        \"idService\" : "+ category.getIdCategory() +",\n" +
                 "        \"category\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +

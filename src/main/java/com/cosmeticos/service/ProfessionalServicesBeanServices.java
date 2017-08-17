@@ -1,6 +1,7 @@
 package com.cosmeticos.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class ProfessionalServicesBeanServices {
 
         ProfessionalServices ps = new ProfessionalServices();
         ps.setProfessional(request.getEntity().getProfessional());
-        ps.setService(request.getEntity().getService());
+        ps.setCategory(request.getEntity().getCategory());
 
         return repository.save(ps);
     }

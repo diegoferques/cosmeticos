@@ -1,7 +1,9 @@
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -31,8 +33,11 @@ public class CreditCard implements Serializable {
 
     private String ownerName;
 
+    // TODO: Eliminar, nao podemos ter isso registrado.
+    @Column(unique = true)
     private String cardNumber;
 
+    // TODO: Eliminar, nao podemos ter isso registrado.
     private String securityCode;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -48,7 +53,15 @@ public class CreditCard implements Serializable {
     @ManyToOne(optional = false)
     private User user;
 
+    @JsonView({
+            ResponseJsonView.OrderControllerFindBy.class
+    })
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastUsage;
 
+    @JoinColumn(name = "id_Order")
+    @ManyToOne(optional = false)
+    private Order order;
 
     /*@ManyToOne
     private Professional professional;

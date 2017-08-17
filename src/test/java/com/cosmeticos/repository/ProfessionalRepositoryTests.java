@@ -109,6 +109,7 @@ public class ProfessionalRepositoryTests {
         address6.setState("Rio de Janeiro");
         address6.setCountry("Brazil");
         address6.setCep("26083-285");
+        address6.setComplement("HOUSE");
 
         Professional s6 = new Professional();
         s6.setNameProfessional("fubangamaloca");
@@ -128,6 +129,7 @@ public class ProfessionalRepositoryTests {
         address7.setState("Rio de Janeiro");
         address7.setCountry("Brazil");
         address7.setCep("20080-001");
+        address7.setComplement("HOUSE");
 
         Professional s7 = new Professional();
         s7.setNameProfessional("bocada");
@@ -169,20 +171,17 @@ public class ProfessionalRepositoryTests {
     
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
     @Autowired
     private ProfessionalServicesRepository professionalServicesRepository;
     @Test
     public void addProfessionalService()
     {
 		Professional p1 = repository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
-        Service s1 = serviceRepository.findWithSpecialties(1L);
+        Category s1 = serviceRepository.findWithSpecialties(1L);
 
        
         ProfessionalServices ps1 = new ProfessionalServices(p1, s1);
-    	
-        s1.addProfessionalService(ps1);
-        p1.addProfessionalService(ps1);
 
         repository.save(p1);
     }

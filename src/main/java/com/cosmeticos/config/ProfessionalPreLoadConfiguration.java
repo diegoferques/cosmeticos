@@ -74,6 +74,7 @@ public class ProfessionalPreLoadConfiguration {
         address2.setLatitude("-22.750996");
         address2.setLongitude("-43.45973010000001");
 
+
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
         s2.setAddress(address2);
@@ -103,8 +104,8 @@ public class ProfessionalPreLoadConfiguration {
         ////////////////////////////////////////
         User user4;
         Address address4 = new Address();
-        address4.setLatitude("-22,9111");
-        address4.setLongitude("-43,1826");
+        address4.setLatitude("-22.9111");
+        address4.setLongitude("-43.1826");
 
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");

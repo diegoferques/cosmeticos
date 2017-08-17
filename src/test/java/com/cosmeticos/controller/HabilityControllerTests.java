@@ -1,32 +1,21 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.commons.ScheduleResponseBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
-import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ServiceRepository;
-import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 
 
 @RunWith(SpringRunner.class)
@@ -43,8 +32,8 @@ public class HabilityControllerTests {
 				"  \"hability\" : {\n" +
 				"    \"name\" : \"h\",\n" +
 				"\t\n" +
-				"    \"service\" : {\n" +
-				"      \"idService\" : 1\n" +
+				"    \"category\" : {\n" +
+				"      \"idCategory\" : 1\n" +
 				"    },\n" +
 				"\t\n" +
 				"    \"professionalCollection\" : [ {\n" +

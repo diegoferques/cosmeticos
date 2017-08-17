@@ -61,6 +61,7 @@ public class CustomerControllerTests {
 				"         \"country\":null,\n" +
 				"         \"idAddress\":null,\n" +
 				"         \"neighborhood\":null,\n" +
+				"         \"complement\":null,\n" +
 				"         \"state\":null\n" +
 				"      },\n" +
 				"      \"birthDate\":1310353200000,\n" +
@@ -219,6 +220,7 @@ public class CustomerControllerTests {
 				"         \"country\":null,\n" +
 				"         \"idAddress\":null,\n" +
 				"         \"neighborhood\":null,\n" +
+				"         \"complement\":null,\n" +
 				"         \"state\":null\n" +
 				"      },\n" +
 				"      \"birthDate\":1310353200000,\n" +
@@ -313,6 +315,7 @@ public class CustomerControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+		a.setComplement("HOUSE");
 		//a.getCustomerCollection().add(customer);
 		return a;
 	}

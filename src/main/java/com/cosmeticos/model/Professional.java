@@ -194,10 +194,6 @@ public class Professional  implements Serializable {
         this.user = user;
     }
 
-	public void addProfessionalService(ProfessionalServices ps1) {
-		professionalServicesCollection.add(ps1);
-		ps1.setProfessional(this);
-	}
     
     @Override
     public int hashCode() {
