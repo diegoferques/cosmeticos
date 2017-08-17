@@ -17,6 +17,7 @@ import java.util.Optional;
 import com.cosmeticos.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +26,7 @@ import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.validation.OrderValidationException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +49,9 @@ public class OrderService {
 
 	@Autowired
 	private PenaltyService penaltyService;
+
+	@Autowired
+	private ProfessionalServicesRepository professionalServicesRepository;
 
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
@@ -194,6 +199,8 @@ public class OrderService {
 
 			ProfessionalServices ps = new ProfessionalServices(p, s);
 
+			professionalServicesRepository.save(ps);
+			
 			order.setProfessionalServices(ps);
 
 		}

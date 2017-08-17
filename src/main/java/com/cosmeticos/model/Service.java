@@ -13,6 +13,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 /**
  *
  * @author magarrett.dias
@@ -46,8 +48,13 @@ public class Service implements Serializable {
 
 	@JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")
-    private Collection<ProfessionalServices> professionalServicesCollection;
+    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
+	public void addProfessionalService(ProfessionalServices ps1) {
+		professionalServicesCollection.add(ps1);
+		ps1.setService(this);
+	}
+    
 	@Override
     public int hashCode() {
         int hash = 0;
@@ -72,5 +79,5 @@ public class Service implements Serializable {
     public String toString() {
         return "javaapplication2.entity.Service[ idService=" + idService + " ]";
     }
-    
+
 }

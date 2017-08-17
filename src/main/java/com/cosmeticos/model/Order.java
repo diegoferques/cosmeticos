@@ -85,9 +85,7 @@ public class Order implements Serializable {
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @JoinColumns({
-        @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional"),
-			@JoinColumn(name = "id_service", referencedColumnName = "idService") })
+    @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalServicesId")
 	@ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 

@@ -71,7 +71,10 @@ public class ScheduleOrderControllerTest {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Service service = new Service();
+        service.setCategory("PEDICURE");
+        serviceRepository.save(service);
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -190,7 +193,11 @@ public class ScheduleOrderControllerTest {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Service service = new Service();
+        service.setCategory("scheduledOrderPutOk-service");
+        serviceRepository.save(service);
+        
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -277,7 +284,7 @@ public class ScheduleOrderControllerTest {
 
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
-        Assert.assertEquals("PEDICURE",
+        Assert.assertEquals("scheduledOrderPutOk-service",
                 exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);

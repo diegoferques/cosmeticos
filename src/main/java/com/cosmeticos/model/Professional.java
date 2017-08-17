@@ -194,6 +194,11 @@ public class Professional  implements Serializable {
         this.user = user;
     }
 
+	public void addProfessionalService(ProfessionalServices ps1) {
+		professionalServicesCollection.add(ps1);
+		ps1.setProfessional(this);
+	}
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -218,5 +223,5 @@ public class Professional  implements Serializable {
     public String toString() {
         return "javaapplication2.entity.Professional[ idProfessional=" + idProfessional + " ]";
     }
-    
+
 }

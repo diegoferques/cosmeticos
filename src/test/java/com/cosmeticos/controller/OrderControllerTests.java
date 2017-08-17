@@ -145,6 +145,7 @@ public class OrderControllerTests {
 
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -293,6 +294,7 @@ public class OrderControllerTests {
 
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -395,6 +397,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -540,6 +543,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -645,6 +649,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -838,6 +843,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1066,6 +1072,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1180,6 +1187,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1263,6 +1271,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1353,6 +1362,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1427,6 +1437,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1565,6 +1576,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1647,6 +1659,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Service service = serviceRepository.findByCategory("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdService());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
