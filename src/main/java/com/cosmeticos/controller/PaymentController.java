@@ -253,8 +253,6 @@ public class PaymentController {
 
         DadosCobranca dadosCobranca = new DadosCobranca();
 
-
-
         dadosCobranca.setCodigoCliente(Integer.valueOf(customer.getIdCustomer().intValue()));
 
         //TODO - NAO TEMOS DEFINICAO DE PESSOA FISICA OU JURIDICA, SETEI MANUALMENTE COMO FISICA SEMPRE

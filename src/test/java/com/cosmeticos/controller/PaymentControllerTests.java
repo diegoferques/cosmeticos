@@ -148,13 +148,6 @@ public class PaymentControllerTests {
         Customer customer2 = customerRepository.findOne(customer.getIdCustomer());
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
-        /*
-        Customer customer = CustomerControllerTests.createFakeCustomer();
-        customer.getUser().setUsername("testPaymentOk-customer1");
-        customer.getUser().setEmail("testPaymentOk-customer1@email.com");
-        customer.getUser().setPassword("123");
-        customer.setCpf("123.605.789-05");
-        */
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername("testPaymentOk-professional");
@@ -300,7 +293,7 @@ public class PaymentControllerTests {
 
         ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
                 .exchange(entity, OrderResponseBody.class);
-        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO NEM ACIMA E NEM ABAIXO
+        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
         //-- checar se o seu teste esta incluindo address no json
         Assert.assertNotNull(exchangeCreate);
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
@@ -309,6 +302,7 @@ public class PaymentControllerTests {
         Order order = exchangeCreate.getBody().getOrderList().get(0);
         Order order1 = orderRepository.findOne(order.getIdOrder());
 
+        //TODO - OS DO ENDERECO NAO ESTAO VINDO
         Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
 
         /************ FIM DAS PRE_CONDICOES **********************************/
