@@ -71,7 +71,12 @@ public class ScheduleOrderControllerTest {
         professionalRepository.save(professional);
 
 
-        Category service = serviceRepository.findByName("PEDICURE");
+
+
+        Category service = new Category();
+        service.setName("PEDICUREscheduledOrderOk");
+        serviceRepository.save(service);
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -99,9 +104,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -158,7 +162,7 @@ public class ScheduleOrderControllerTest {
 
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
-        Assert.assertEquals("PEDICURE",
+        Assert.assertEquals("PEDICUREscheduledOrderOk",
                 exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
@@ -190,7 +194,11 @@ public class ScheduleOrderControllerTest {
         professionalRepository.save(professional);
 
 
-        Category service = serviceRepository.findByName("PEDICURE");
+        Category service = new Category();
+        service.setName("scheduledOrderPutOk-service");
+        serviceRepository.save(service);
+
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -218,9 +226,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -277,7 +284,7 @@ public class ScheduleOrderControllerTest {
 
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
-        Assert.assertEquals("PEDICURE",
+        Assert.assertEquals("scheduledOrderPutOk-service",
                 exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
@@ -295,9 +302,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -359,9 +365,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdCategory() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -430,9 +435,8 @@ public class ScheduleOrderControllerTest {
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdCategory() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +

@@ -38,7 +38,7 @@ public class CategoryControllerTests {
 
         final ResponseEntity<CategoryResponseBody> exchange = //
                 restTemplate.exchange( //
-                        "/category/", //
+                        "/categories/", //
                         HttpMethod.POST, //
                         new HttpEntity(request), // Body
                         CategoryResponseBody.class);

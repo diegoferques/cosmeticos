@@ -152,9 +152,6 @@ public class ProfessionalService {
 			receivedProfessionalServices.stream().forEach(ps -> {
 				ps.setProfessional(newProfessional);
 
-				ProfessionalServicesPK pk = new ProfessionalServicesPK(ps);
-				ps.setProfessionalServicesPK(pk);
-
 				newProfessional.getProfessionalServicesCollection().add(ps);
 			});
 		}

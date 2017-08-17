@@ -38,7 +38,7 @@ public class HabilityRepositoryTests {
 
         Hability h1 = new Hability();
         h1.setName("Escova Progressiva 1234");
-        h1.setCategory(serviceRepository.findOne(1L)); // Foi criado no PreLoad
+        h1.setCategory(serviceRepository.findWithSpecialties(1L)); // Foi criado no PreLoad
         h1.getProfessionalCollection().add(professionalRepository.findOne(1L)); // Foi criado no PreLoad
 
         habilityRepository.save(h1);

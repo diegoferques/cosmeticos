@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
@@ -31,6 +32,7 @@ import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.validation.OrderValidationException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +56,9 @@ public class OrderService {
 	@Autowired
 	private PenaltyService penaltyService;
 
+	@Autowired
+	private ProfessionalServicesRepository professionalServicesRepository;
+
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
 	}
@@ -70,7 +75,7 @@ public class OrderService {
 		 */
 		Customer customer = customerResponsitory.findOne(orderRequest.getOrder().getIdCustomer().getIdCustomer());
 
-		CreditCard creditCard = orderRequest.getOrder().getCreditCardCollection().iterator().next();
+		// Checaremos Order.PAymentTypeCreditCard creditCard = orderRequest.getOrder().getCreditCardCollection().iterator().next();
 
 		Professional professional = professionalRepository
 				.findOne(receivedProfessionalServices.getProfessional().getIdProfessional());
@@ -90,7 +95,7 @@ public class OrderService {
 				order.setIdCustomer(customer);
 				order.setDate(Calendar.getInstance().getTime());
 				order.setLastUpdate(order.getDate());
-				order.getCreditCardCollection().add(creditCard);
+				//order.getCreditCardCollection().add(creditCard);
 				order.setExpireTime(new Date(order.getDate().getTime() +
 
 						// 6 horas de validade
@@ -205,6 +210,8 @@ public class OrderService {
 
 			ProfessionalServices ps = new ProfessionalServices(p, s);
 
+			professionalServicesRepository.save(ps);
+			
 			order.setProfessionalServices(ps);
 
 		}

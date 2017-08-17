@@ -93,9 +93,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -154,9 +154,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -579,10 +579,10 @@ public class ProfessionalControllerTests {
 				"\t\t[\n" +
 				"\t\t\t{\n" +
 				"\t\t\t\t\"professional\":null,\n" +
-				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t\"category\":\n" +
 				"\t\t\t\t{\n" +
-				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\",\n" +
-				"\t\t\t\t\t\"idService\":4\n" +
+				"\t\t\t\t\t\"name\":\"HAIR REMOVAL\",\n" +
+				"\t\t\t\t\t\"idCategory\":4\n" +
 				"\t\t\t\t}\n" +
 				"\t\t\t}\n" +
 				"\t\t]\n" +
@@ -637,11 +637,11 @@ public class ProfessionalControllerTests {
 				"\t\t[\n" +
 				"\t\t\t{\n" +
 				"\t\t\t\t\"professional\":null,\n" +
-				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t\"category\":\n" +
 				"\t\t\t\t{\n" +
 				// id omitido. Se um request desse chega, ha risco de insercao em cascada, o q nao pode acontecer
 				// pq apenas o admin insere service
-				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\""+
+				"\t\t\t\t\t\"name\":\"HAIR REMOVAL\""+
 				"\t\t\t\t}\n" +
 				"\t\t\t}\n" +
 				"\t\t]\n" +
@@ -689,9 +689,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -810,9 +810,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +

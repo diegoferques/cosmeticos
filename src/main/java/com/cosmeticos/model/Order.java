@@ -5,9 +5,7 @@
 package com.cosmeticos.model;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
 import javax.persistence.CascadeType;
@@ -78,10 +76,8 @@ public class Order implements Serializable {
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @JoinColumns({
-        @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional"),
-			@JoinColumn(name = "id_category", referencedColumnName = "idCategory") })
-	@ManyToOne(optional = false)
+    @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalServicesId")
+    @ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 
 	@JoinColumn(name = "idLocation", referencedColumnName = "id")
@@ -105,7 +101,10 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
-	@OneToMany(mappedBy = "order")
+	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
+			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
+			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 
