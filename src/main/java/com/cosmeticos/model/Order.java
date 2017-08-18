@@ -116,10 +116,12 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
-    /*
+	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
+			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
+			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
 	@OneToMany(mappedBy = "order")
-	private Set<CreditCard> creditCardCollection;
-*/
+	private Set<CreditCard> creditCardCollection = new HashSet<>();
+
 
 	public Order() {
 	}
