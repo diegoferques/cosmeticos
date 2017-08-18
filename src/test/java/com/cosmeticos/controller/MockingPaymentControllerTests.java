@@ -303,6 +303,7 @@ public class MockingPaymentControllerTests {
         Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
 
     }
+
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
