@@ -119,7 +119,7 @@ public class Order implements Serializable {
 	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
 			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	@OneToMany(mappedBy = "order")
+	@ManyToMany(mappedBy = "order")
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 
