@@ -166,6 +166,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -317,7 +318,8 @@ public class OrderControllerTests {
                "  \"order\" : {\n" +
                "    \"date\" : 1498324200000,\n" +
                "    \"status\" : 0,\n" +
-               "    \"scheduleId\" : {\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
+                "    \"scheduleId\" : {\n" +
                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
@@ -420,6 +422,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -476,6 +479,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -561,6 +565,7 @@ public class OrderControllerTests {
         String json = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
@@ -668,6 +673,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \""+Order.Status.OPEN+"\",\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -861,6 +867,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+",\n" +
@@ -1094,6 +1101,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -1463,6 +1471,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \"" + Order.Status.OPEN + "\",\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -1741,6 +1750,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
