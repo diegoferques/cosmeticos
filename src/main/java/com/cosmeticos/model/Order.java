@@ -4,9 +4,21 @@
  */
 package com.cosmeticos.model;
 
+import java.io.Serializable;
+import java.util.*;
+
+import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Data;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,8 +35,13 @@ import java.util.Set;
 @Table(name = "[ORDER]")
 public class Order implements Serializable {
 
-	public enum Status {
-		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED, EXPIRED
+
+    public enum Status {
+		OPEN, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, SCHEDULED, INPROGRESS, ACCEPTED, EXPIRED, READY2CHARGE
+	}
+
+	public enum PayType{
+    	CASH, CREDITCARD
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -55,6 +72,16 @@ public class Order implements Serializable {
 	@Column(name = "status")
     @Enumerated(EnumType.STRING)
 	private Status status;
+
+	@JsonView({
+			ResponseJsonView.OrderControllerCreate.class,
+			ResponseJsonView.OrderControllerUpdate.class,
+			ResponseJsonView.OrderControllerFindBy.class
+	})
+	@Basic(optional = false)
+	@Column(name = "payment_Type")
+	@Enumerated(EnumType.STRING)
+	private PayType paymentType;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
@@ -98,7 +125,7 @@ public class Order implements Serializable {
 	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
 			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "order")
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 	private Payment payment;

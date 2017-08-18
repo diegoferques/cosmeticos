@@ -68,6 +68,7 @@ public class Category implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
+
     public void addChild(Category s) {
         getChildrenCategories().add(s);
         s.setOwnerCategory(this);
