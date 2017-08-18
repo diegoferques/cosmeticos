@@ -8,21 +8,21 @@ import java.util.List;
 @Data
 public class RetornoTransacao {
 
-    public Integer numeroTransacao;
-    public String codigoEstabelecimento;
-    public Integer codigoFormaPagamento;
-    public Integer valor;
-    public Integer valorDesconto;
-    public Integer parcelas;
-    public Integer statusTransacao;
-    public String autorizacao;
-    public String codigoTransacaoOperadora;
-    //public String dataTransacaoOperadora;
-    public String dataAprovacaoOperadora;
-    public String numeroComprovanteVenda;
-    public String nsu;
-    public String mensagemVenda;
-    public String urlPagamento;
-    public List<String> cartoesUtilizados = null;
+    private Integer numeroTransacao;
+    private String codigoEstabelecimento;
+    private Integer codigoFormaPagamento;
+    private Integer valor;
+    private Integer valorDesconto;
+    private Integer parcelas;
+    private Integer statusTransacao;
+    private String autorizacao;
+    private String codigoTransacaoOperadora;
+//  private String dataTransacaoOperadora;
+    private String dataAprovacaoOperadora;
+    private String numeroComprovanteVenda;
+    private String nsu;
+    private String mensagemVenda;
+    private String urlPagamento;
+    private List<String> cartoesUtilizados = null;
 
 }

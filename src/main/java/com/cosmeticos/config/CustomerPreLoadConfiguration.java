@@ -150,7 +150,7 @@ public class CustomerPreLoadConfiguration {
         //c1.setOrderCollection(null);
         c1.setStatus(Customer.Status.ACTIVE.ordinal());
         c1.setAddress(createFakeAddress());
-        c1.setUser(createFakeLogin("222", "222@email.com"));
+        c1.setUser(createFakeLogin("222", "222@email.com", User.PersonType.FISICA));
 
         return c1;
     }

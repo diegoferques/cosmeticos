@@ -134,7 +134,7 @@ public class PaymentService {
             log.error(e.toString());
         }
 
-        return Optional.of(retornoTransacao);
+        return Optional.ofNullable(retornoTransacao);
     }
 
     //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE

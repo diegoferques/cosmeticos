@@ -111,11 +111,11 @@ public class PaymentController {
             } else {
                 //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
                 //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
-                Optional<RetornoTransacao> consultaTransacao = paymentService.consultaTransacao(numeroTransacao);
+                Optional<RetornoTransacao> retornoConsulta = paymentService.consultaTransacao(numeroTransacao);
 
-                if(consultaTransacao.isPresent()) {
+                if(retornoConsulta.isPresent()) {
 
-                    Boolean updateStatus = paymentService.updatePaymentStatus(consultaTransacao.get());
+                    Boolean updateStatus = paymentService.updatePaymentStatus(retornoConsulta.get());
 
                     if(updateStatus) {
                         responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID ["+
@@ -161,7 +161,8 @@ public class PaymentController {
         return formasPagamento;
     }
 
-    public String sendRequest(Order orderCreated) throws ParseException, JsonProcessingException {
+    //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
+    public Optional<RetornoTransacao> sendRequest(Order orderCreated) throws ParseException, JsonProcessingException {
 
         Order order = orderRepository.findOne(orderCreated.getIdOrder());
 
@@ -178,13 +179,14 @@ public class PaymentController {
         System.out.println(jsonHeader);
         System.out.println(jsonRequest);
 
-        String response = postJson(urlTransacao, usuarioMap, jsonRequest);
-        System.out.println(response);
+        //String response = postJson(urlTransacao, usuarioMap, jsonRequest);
+        Optional<RetornoTransacao> retornoTransacao = postJson(urlTransacao, usuarioMap, jsonRequest);
 
-        return response;
+        return retornoTransacao;
 
     }
 
+    //MONTAMOS A REQUISICAO PARA ENVIAR PARA A SUPERPAY
     private TransacaoRequest createRequest(Order order) throws ParseException {
 
         //TODO - PRECISAMOS DE ALGO PARECIDO COMO O QUE SEGUE ABAIXO PARA PEGAR OS DADOS DA FORMA DE PAGAMENTO DE ORDER
@@ -215,6 +217,7 @@ public class PaymentController {
         return request;
     }
 
+    //MONTAMOS A TRANSACAO PARA UTILIZAR NA REQUISICAO
     private Transacao getTransacao(Order order) {
 
         Transacao transacao = new Transacao();
@@ -234,6 +237,7 @@ public class PaymentController {
         return transacao;
     }
 
+    //MONTAMOS OS DADOS DO CARTAO PARA UTILIZAR NA REQUISICAO
     private DadosCartao getDadosCartao(CreditCard creditCard) {
         //TODO - COMO NAO TEMOS COMO PEGAR OS DADOS DO CARTAO UTILIZADO PARA PAGAMENTO EM ORDER, SETEI MANUALMENTE
         DadosCartao dadosCartao = new DadosCartao();
@@ -245,12 +249,13 @@ public class PaymentController {
         return dadosCartao;
     }
 
+    //PEGAMOS OS ITENS DO PEDIDO PARA UTILIZAR NA REQUISICAO
     private List<ItemPedido> getItensDoPedido(ProfessionalServices professionalServices) {
 
         List<ItemPedido> itensDoPedido = new ArrayList<>();
         ItemPedido item = new ItemPedido();
-        item.setCodigoProduto(professionalServices.getService().getIdService().toString());
-        item.setNomeProduto(professionalServices.getService().getCategory());
+        item.setCodigoProduto(professionalServices.getCategory().getIdCategory().toString());
+        item.setNomeProduto(professionalServices.getCategory().getName());
         //item.setCodigoCategoria("1");
         //item.setNomeCategoria("Categoria de testes");
         //item.setQuantidadeProduto(1);
@@ -260,6 +265,7 @@ public class PaymentController {
         return itensDoPedido;
     }
 
+    //PEGAMOS OS DADOS DA COBRANCA PARA UTILIZAR NA REQUISICAO
     private DadosCobranca getDadosCobranca(Customer customer) {
 
         DadosCobranca dadosCobranca = new DadosCobranca();
@@ -292,6 +298,7 @@ public class PaymentController {
         return dadosCobranca;
     }
 
+    //PEGAMOS OS DADOS DA ENTREGA PARA UTILIZAR NA REQUISICAO
     private DadosEntrega getDadosEntrega(Customer customer) {
 
         DadosEntrega dadosEntrega = new DadosEntrega();
@@ -313,6 +320,7 @@ public class PaymentController {
         return dadosEntrega;
     }
 
+    //PEGAMOS O ENDERECO DA COBRANCA PARA UTILIZAR NA REQUISICAO
     private Endereco getEnderecoCobranca(Address orderAddress) {
         //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO NEM ACIMA E NEM ABAIXO
         Address address = addressRepository.findOne(orderAddress.getIdAddress());
@@ -333,6 +341,7 @@ public class PaymentController {
         return enderecoCobranca;
     }
 
+    //GERAMOS UM CARTAO DE TESTE DA SUPERPAY PARA USAR NOS TESTES
     public CreditCard getCartaoTeste() throws ParseException {
 
         CreditCard creditCard = new CreditCard();
@@ -340,21 +349,36 @@ public class PaymentController {
         creditCard.setCardNumber("0000000000000001");
         creditCard.setSecurityCode("123");
 
-        //TODO - FOI NECESSARIO FAZER O QUE SEGUE ABAIXO NESTE CARTAO TESTE, MAS DEVERIA SER STRING, POIS EH MES/ANO
         //SimpleDateFormat dateFormat = new SimpleDateFormat("mm,yyyy");
         //Date expiration = dateFormat.parse("12,2026");
         //creditCard.setExpirationDate(expiration);
-        creditCard.setExpirationDate("12/2026");
+        //new Date(2026,12,01);
+        //new LocalDate(2026,12, 01).get();
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/yyyy");
+        creditCard.setExpirationDate(dateFormatter.parse(2026 + "/" + 12));
 
         creditCard.setVendor("Visa");
 
         return creditCard;
     }
 
-    private String postJson(String url, Map<String, String> headers, String data) {
+    //AQUI ENVIAMOS A REQUISICAO PARA A SUPERPAY
+    //DEVERIA SER PRIVADO, MAS COMO PRECISAMOS MOCKAR NO TESTE, TIVE QUE DEIXAR PUBLICO
+
+    /**
+     * ATENÇÃO: NÃO USAR ESTE MÉTODO, SÓ ESTÁ PÚBLICO PARA MOCKAR EM MockingPaymentControllerTests!
+     *
+     * @param url
+     * @param headers
+     * @param data
+     * @return Optional<RetornoTransacao>
+     */
+    public Optional<RetornoTransacao> postJson(String url, Map<String, String> headers, String data) {
         RestTemplate restTemplate = restTemplateBuilder.build();
 
-        String result = "";
+        RetornoTransacao retornoTransacao;
+
         System.out.println("HEADERS: " + headers);
         System.out.println("BODY: " + data);
 
@@ -366,20 +390,20 @@ public class PaymentController {
                     .accept(MediaType.APPLICATION_JSON)
                     .body(data);
 
-            ResponseEntity<String> exchange = restTemplate
-                    .exchange(entity, String.class);
+            ResponseEntity<RetornoTransacao> exchange = restTemplate
+                    .exchange(entity, RetornoTransacao.class);
 
-            result = exchange.getBody();
+            retornoTransacao = exchange.getBody();
 
         } catch (Exception e) {
             log.error(e.toString());
-            result = e.toString();
-
+            retornoTransacao = null;
         }
 
-        return result;
+        return Optional.ofNullable(retornoTransacao);
     }
 
+    //AQUI CAPTURAMOS A TRANSACAO NA SUPERPAY
     public Boolean capturaTransacao(Long numeroTransacao) throws JsonProcessingException {
 
         //COLOQUEI TODA A LOGICA E COMUNICACAO COM A SUPERPAY DENTRO DE PAYMENTSERVICE
