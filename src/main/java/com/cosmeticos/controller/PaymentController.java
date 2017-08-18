@@ -111,19 +111,30 @@ public class PaymentController {
             } else {
                 //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
                 //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
-                Boolean consultaTransacao = this.consultaTransacao(numeroTransacao);
+                Optional<RetornoTransacao> consultaTransacao = paymentService.consultaTransacao(numeroTransacao);
 
-                if(consultaTransacao) {
-                    responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID ["+
-                            numeroTransacao +"] foram atualizados com sucesso.");
-                    log.error(responseBody.getDescription());
-                    return ok(responseBody);
+                if(consultaTransacao.isPresent()) {
+
+                    Boolean updateStatus = paymentService.updatePaymentStatus(consultaTransacao.get());
+
+                    if(updateStatus) {
+                        responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID ["+
+                                numeroTransacao +"] foram atualizados com sucesso.");
+                        log.error(responseBody.getDescription());
+                        return ok(responseBody);
+
+                    } else {
+                        String errorCode = String.valueOf(System.nanoTime());
+                        responseBody.setDescription("Erro ao atualizar o status do pagamento da transação de ID ["+ numeroTransacao +"]. Error Code: ["+ errorCode +"].");
+                        log.error(responseBody.getDescription());
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+                    }
 
                 } else {
                     String errorCode = String.valueOf(System.nanoTime());
-                    responseBody.setDescription("Erro ao consultar a transação de ID ["+ numeroTransacao +"]. Error Code: ["+ errorCode +"].");
+                    responseBody.setDescription("Transação com ID ["+ numeroTransacao +"] não encontrada na Superpay. Error Code: ["+ errorCode +"].");
                     log.error(responseBody.getDescription());
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
                 }
 
             }
@@ -177,8 +188,8 @@ public class PaymentController {
     private TransacaoRequest createRequest(Order order) throws ParseException {
 
         //TODO - PRECISAMOS DE ALGO PARECIDO COMO O QUE SEGUE ABAIXO PARA PEGAR OS DADOS DA FORMA DE PAGAMENTO DE ORDER
-        CreditCard creditCard = order.getPayment().getCreditCard();
-        //CreditCard creditCard = this.getCartaoTeste();
+        //CreditCard creditCard = order.getPayment().getCreditCard();
+        CreditCard creditCard = this.getCartaoTeste();
 
         TransacaoRequest request = new TransacaoRequest();
 
@@ -369,99 +380,10 @@ public class PaymentController {
         return result;
     }
 
-    //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/118
     public Boolean capturaTransacao(Long numeroTransacao) throws JsonProcessingException {
 
-        RestTemplate restTemplate = restTemplateBuilder.build();
-
-        String urlCapturaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao + "/capturar";
-
-        Boolean result;
-
-        try {
-
-            ObjectMapper om = new ObjectMapper();
-            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
-
-            RequestEntity<RetornoTransacao> entity = RequestEntity
-                    .post(new URI(urlCapturaTransacao))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("usuario", jsonHeader)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(null);
-
-            ResponseEntity<RetornoTransacao> exchange = restTemplate
-                    .exchange(entity, RetornoTransacao.class);
-
-            //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
-            if(exchange.getStatusCode() == HttpStatus.OK) {
-                result = this.updatePaymentStatus(exchange.getBody());
-
-            } else {
-                result = false;
-            }
-
-        } catch (Exception e) {
-            log.error(e.toString());
-
-            result = false;
-        }
-
-        return result;
-    }
-
-    //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
-    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
-    //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/129
-    public Boolean consultaTransacao(Long numeroTransacao) throws JsonProcessingException {
-
-        RestTemplate restTemplate = restTemplateBuilder.build();
-
-        String urlConsultaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao;
-
-        Boolean result;
-
-        try {
-
-            ObjectMapper om = new ObjectMapper();
-            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
-
-            //Map<String, String> usuarioMap = new HashMap<>();
-            //usuarioMap.put("usuario", jsonHeader);
-
-            HttpHeaders headers = new HttpHeaders();
-            //headers.set("usuario", usuarioMap.get("usuario"));
-            headers.set("usuario", jsonHeader);
-
-            HttpEntity entity = new HttpEntity(headers);
-
-            ResponseEntity<RetornoTransacao> exchange = restTemplate.exchange(
-                    urlConsultaTransacao,
-                    HttpMethod.GET,
-                    entity,
-                    RetornoTransacao.class
-            //        param
-            );
-
-            if(exchange.getStatusCode() == HttpStatus.OK) {
-                result = this.updatePaymentStatus(exchange.getBody());
-
-            } else {
-                result = false;
-            }
-
-        } catch (Exception e) {
-            log.error(e.toString());
-
-            result = false;
-        }
-
-        return result;
-    }
-
-    //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE
-    private Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
-        return true;
+        //COLOQUEI TODA A LOGICA E COMUNICACAO COM A SUPERPAY DENTRO DE PAYMENTSERVICE
+        return paymentService.capturaTransacaoSuperpay(numeroTransacao);
     }
 
     private CampainhaSuperpeyResponseBody buildErrorResponse(BindingResult bindingResult) {

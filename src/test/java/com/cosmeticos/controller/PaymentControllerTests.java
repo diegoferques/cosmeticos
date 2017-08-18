@@ -360,18 +360,7 @@ public class PaymentControllerTests {
 
     }
 
-    //TODO - COMO ESSE TESTE CHAMA A URL DA SUPERPAY, DEVEMOS COLOCAR EM UMA NOVA CLASSE DE TESTES MOCKADA
-    @Test
-    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        Long numeroTransacao = 3L;
-
-        Boolean capturaTransacao = paymentController.capturaTransacao(numeroTransacao);
-
-        Assert.assertNotNull(capturaTransacao);
-        Assert.assertEquals(true, capturaTransacao);
-
-    }
 
 
     public ResponseEntity<CampainhaSuperpeyResponseBody> executaCampainha(
