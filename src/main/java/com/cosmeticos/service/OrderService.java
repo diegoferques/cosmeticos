@@ -12,17 +12,25 @@ import java.util.*;
 
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CreditCardRepository;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
 import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.Wallet;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.validation.OrderValidationException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +55,7 @@ public class OrderService {
 	private PenaltyService penaltyService;
 
 	@Autowired
-	private CreditCardRepository creditCardRepository;
-
-
+	private ProfessionalServicesRepository professionalServicesRepository;
 
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
@@ -67,7 +73,7 @@ public class OrderService {
 		 */
 		Customer customer = customerResponsitory.findOne(orderRequest.getOrder().getIdCustomer().getIdCustomer());
 
-		//CreditCard creditCard = (CreditCard) orderRequest.getOrder().getCreditCardCollection();
+		// Checaremos Order.PAymentTypeCreditCard creditCard = orderRequest.getOrder().getCreditCardCollection().iterator().next();
 
 		Professional professional = professionalRepository
 				.findOne(receivedProfessionalServices.getProfessional().getIdProfessional());
@@ -208,6 +214,8 @@ public class OrderService {
 			Category s = orderRequest.getProfessionalServices().getCategory();
 
 			ProfessionalServices ps = new ProfessionalServices(p, s);
+
+			professionalServicesRepository.save(ps);
 
 			order.setProfessionalServices(ps);
 

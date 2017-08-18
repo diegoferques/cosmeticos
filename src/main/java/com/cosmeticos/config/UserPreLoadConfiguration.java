@@ -41,7 +41,6 @@ public class UserPreLoadConfiguration {
         cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
-        //cc.setOrder(o1);
 
         CreditCard ccNovo = new CreditCard();
         ccNovo.setToken("77777");
@@ -49,7 +48,6 @@ public class UserPreLoadConfiguration {
         ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
         ccNovo.setVendor("Visa");
         ccNovo.setStatus(CreditCard.Status.ACTIVE);
-        //ccNovo.setOrder(o1);
 
         User u1 = new User();
         u1.getCreditCardCollection().add(cc);
@@ -73,8 +71,6 @@ public class UserPreLoadConfiguration {
         cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
         cc2.setVendor("Master");
         cc2.setStatus(CreditCard.Status.INACTIVE);
-        //cc2.setOrder(o2);
-
 
         CreditCard cc3 = new CreditCard();
         cc3.setToken("7772344377");
@@ -83,7 +79,6 @@ public class UserPreLoadConfiguration {
         cc3.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
         cc3.setVendor("Master");
         cc3.setStatus(CreditCard.Status.ACTIVE);
-        //cc3.setOrder(o2);
 
         User u2 = new User();
 

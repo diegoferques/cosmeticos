@@ -134,7 +134,6 @@ public class JsonizerTest222 {
 
         Hability h = new Hability();
         h.setName("h");
-        h.setCategory(s);
         h.getProfessionalCollection().add(p);
 
         HabilityRequestBody requestBody = new HabilityRequestBody();
@@ -166,7 +165,6 @@ public class JsonizerTest222 {
         scheduleRequest.setScheduleStart(Calendar.getInstance().getTime());
         scheduleRequest.setIdCustomer(1L);
         scheduleRequest.setIdProfessional(1L);
-        scheduleRequest.setIdCategory(1L);
 
         String json = om.writeValueAsString(scheduleRequest);
 

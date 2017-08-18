@@ -9,6 +9,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -26,12 +28,21 @@ public class CreditCard implements Serializable {
 
     private static final long serialVersionUID = 1l;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCreditCard;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class
+    })
     private String token;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class
+    })
     private String ownerName;
 
     // TODO: Eliminar, nao podemos ter isso registrado.
@@ -41,30 +52,37 @@ public class CreditCard implements Serializable {
     // TODO: Eliminar, nao podemos ter isso registrado.
     private String securityCode;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class
+    })
     @Temporal(TemporalType.TIMESTAMP)
     private Date expirationDate;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class
+    })
     private String vendor;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class
+    })
     @Enumerated
     private Status status;
 
-    @JsonBackReference(value="user-cc")
     @JoinColumn(name = "id_user")
     @ManyToOne(optional = false)
     private User user;
 
     @JsonView({
+            ResponseJsonView.CreditCardFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsage;
 
-/*
-    @JoinColumn(name = "id_Order")
-    @ManyToOne(optional = true)
-    private Order order;
-*/
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
+    private Collection<Order> orders = new ArrayList<>();
+
     /*@ManyToOne
     private Professional professional;
 

@@ -51,9 +51,8 @@ public class OrderPreLoadConfiguration {
 
         ProfessionalServices ps1 = new ProfessionalServices(p1, service);
 
-        p1.getProfessionalServicesCollection().add(ps1);
-
         //Atualizando associando o Profeissional ao Servico
+        professionalServicesRepository.save(ps1);
         professionalRepository.save(p1);
 
         Schedule s1 = new Schedule();

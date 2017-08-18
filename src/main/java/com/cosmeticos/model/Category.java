@@ -15,6 +15,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  *
@@ -61,9 +64,9 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "ownerCategory", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Category> childrenCategories = new HashSet<>();
 
-	@JsonIgnore
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private Collection<ProfessionalServices> professionalServicesCollection;
+    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
 
 
     public void addChild(Category s) {

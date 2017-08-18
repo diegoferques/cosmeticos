@@ -28,11 +28,16 @@ public class CategoryRepositoryTest {
         @Before
         public void setupTests()
         {
-            Category s1 = new Category();
-            s1.setName("HAIR 123456");
 
-            repository.save(s1);
-            id = s1.getIdCategory();
+            Category category = repository.findByName("HAIR 123456");
+
+            if(category == null) {
+                category = new Category();
+                category.setName("HAIR 123456");
+                repository.save(category);
+            }
+
+            id = category.getIdCategory();
         }
 
         @Test

@@ -10,8 +10,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -19,12 +23,9 @@ import java.util.Collection;
  */
 @Data
 @Entity
+//@SequenceGenerator(name = "myseq", sequenceName = "MY_SEQ", initialValue = 1, allocationSize = 1)
 public class ProfessionalServices implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    @JsonIgnore // Nao precisamos exibir este atributo pro cliente.
-    @EmbeddedId
-    protected ProfessionalServicesPK professionalServicesPK;
 
     @JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
@@ -34,8 +35,21 @@ public class ProfessionalServices implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
     })
-    @JoinColumn(name = "idCategory", referencedColumnName = "idCategory", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
+    private Long professionalServicesId;
+
+    @JsonView({
+            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
+    @JoinColumn(name = "id_category", referencedColumnName = "idCategory")
+    @ManyToOne(optional=false)
     private Category category;
 
     @JsonView({
@@ -45,59 +59,32 @@ public class ProfessionalServices implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.CategoryGetAll.class,
     })
-    @JoinColumn(name = "idProfessional", referencedColumnName = "idProfessional", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional")
+    @ManyToOne(optional=false)
     private Professional professional;
 
     @JsonIgnore // As vendas serao obtidas por endpoint especifico.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
     private Collection<Order> orderCollection;
 
-    public ProfessionalServices() {
-    }
-
-    public ProfessionalServices(ProfessionalServicesPK professionalServicesPK) {
-        this.professionalServicesPK = professionalServicesPK;
-    }
-
-    public ProfessionalServices(long idProfessional, long idCategory) {
-        this.professionalServicesPK = new ProfessionalServicesPK(idProfessional, idCategory);
-    }
-
-    public ProfessionalServices(Professional professional, Category category) {
-        this.professionalServicesPK = new ProfessionalServicesPK(
-                professional.getIdProfessional(),
-                category.getIdCategory());
-
-        this.professional = professional;
-        this.category = category;
-    }
-
-
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (professionalServicesPK != null ? professionalServicesPK.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProfessionalServices)) {
-            return false;
-        }
-        ProfessionalServices other = (ProfessionalServices) object;
-        if ((this.professionalServicesPK == null && other.professionalServicesPK != null) || (this.professionalServicesPK != null && !this.professionalServicesPK.equals(other.professionalServicesPK))) {
-            return false;
-        }
-        return true;
-    }
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
+    private Set<PriceRule> priceRule = new HashSet<>();
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.ProfessionalServices[ professionalServicesPK=" + professionalServicesPK+ " ]";
+        return "javaapplication2.entity.ProfessionalServices[ id=" + professionalServicesId+ " ]";
     }
+
+	public ProfessionalServices(Professional p, Category s) {
+		this.professional = p;
+		this.category = s;
+
+		this.professional.getProfessionalServicesCollection().add(this);
+		this.category.getProfessionalServicesCollection().add(this);
+
+	}
+
+	public ProfessionalServices() {
+	}
 
 }

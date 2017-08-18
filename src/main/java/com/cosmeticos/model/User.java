@@ -60,7 +60,6 @@ public class User implements Serializable {
 
     private String password;
 
-    @Column(unique = true)
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -68,6 +67,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
     })
+    @Column(unique = true)
     private String email;
 
     private String sourceApp;
@@ -83,7 +83,6 @@ public class User implements Serializable {
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
-    @JsonManagedReference(value="user-cc")
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();

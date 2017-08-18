@@ -145,6 +145,7 @@ public class OrderControllerTests {
 
 
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -173,8 +174,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -295,6 +295,7 @@ public class OrderControllerTests {
 
 
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -399,6 +400,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -428,8 +430,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -486,8 +487,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -548,6 +548,7 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -573,8 +574,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"PEDICURE\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -653,7 +653,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
+
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -679,8 +681,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -848,7 +849,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
+
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1078,7 +1081,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
+
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1194,7 +1199,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
+
         Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1277,9 +1284,11 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Category category = serviceRepository.findByName("PEDICURE");
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1288,7 +1297,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1367,9 +1376,10 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Category category = serviceRepository.findByName("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1378,13 +1388,14 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
+
 
         ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
                 .exchange(entity, OrderResponseBody.class);
@@ -1411,7 +1422,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(category, professional, c2);
+        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1441,9 +1452,10 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Category category = serviceRepository.findByName("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1467,7 +1479,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : " + category.getIdCategory() + ",\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
                 "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
@@ -1581,9 +1593,10 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Category category = serviceRepository.findByName("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1592,7 +1605,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1625,7 +1638,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(category, professional, c2);
+        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1663,9 +1676,10 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Category category = serviceRepository.findByName("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -1674,7 +1688,7 @@ public class OrderControllerTests {
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
-        String jsonCreate = this.getOrderCreateJson(category, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
         System.out.println(jsonCreate);
 
         RequestEntity<String> entity =  RequestEntity

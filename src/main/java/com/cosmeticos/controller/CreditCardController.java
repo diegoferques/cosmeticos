@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ public class CreditCardController {
     @Autowired
     private UserService userService;
 
-    //@JsonView(ResponseJsonView.CreditCardFindAll.class)
+    @JsonView(ResponseJsonView.CreditCardFindAll.class)
     @RequestMapping(path = "/creditCard", method = RequestMethod.GET)
     public HttpEntity<CreditCardResponseBody> findAll(@ModelAttribute CreditCard ccAtributeAUX)
     {
@@ -47,7 +48,7 @@ public class CreditCardController {
             CreditCardResponseBody responseBody = new CreditCardResponseBody();
 
                 if (entitylist.isEmpty()) {
-                    return notFound().build();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
                 } else {
                     //CreditCardResponseBody responseBody = new CreditCardResponseBody();
                     responseBody.setCreditCardList(entitylist);
