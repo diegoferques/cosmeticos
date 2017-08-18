@@ -286,7 +286,7 @@ public class OrderService {
 	 */
 	public void validate(Order order) throws OrderValidationException, ValidationException {//
 
-        Order persistentOrder = null;
+		Long idOrder = 0L;
         Professional professional;
 
         // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
@@ -300,6 +300,7 @@ public class OrderService {
         } else {
             order = orderRepository.findOne(order.getIdOrder());
             professional = order.getProfessionalServices().getProfessional();
+            idOrder = order.getIdOrder();
         }
 
         if(order.getScheduleId() != null) {
@@ -312,11 +313,11 @@ public class OrderService {
 		//Order.Status.ACCEPTED,
 		//Order.Status.INPROGRESS, professional.getIdProfessional());
 
-
         List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
-                professional.getIdProfessional(), order.getIdOrder());
+                professional.getIdProfessional(), idOrder);
 
 		if (!orderList.isEmpty()) {
+			// Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
 			throw new OrderValidationException();
 		}
 

@@ -420,6 +420,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
