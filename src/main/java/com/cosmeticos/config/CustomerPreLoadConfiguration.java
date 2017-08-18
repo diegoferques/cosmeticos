@@ -38,7 +38,7 @@ public class CustomerPreLoadConfiguration {
             //c1.setOrderCollection(null);
             c1.setStatus(Customer.Status.ACTIVE.ordinal());
             c1.setAddress(this.createFakeAddress());
-            c1.setUser(this.createFakeLogin("josilva","josilva@bol.com"));
+            c1.setUser(this.createFakeLogin("josilva","josilva@bol.com", User.PersonType.JURIDICA));
 
             Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
             Customer c2 = new Customer();
@@ -51,7 +51,7 @@ public class CustomerPreLoadConfiguration {
             //c2.setOrderCollection(null);
             c2.setStatus(Customer.Status.ACTIVE.ordinal());
             c2.setAddress(this.createFakeAddress());
-            c2.setUser(this.createFakeLogin("loverboy", "diegoferques33@bol.com"));
+            c2.setUser(this.createFakeLogin("loverboy", "diegoferques33@bol.com", User.PersonType.FISICA));
 
             Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
             Customer c3 = new Customer();
@@ -64,7 +64,7 @@ public class CustomerPreLoadConfiguration {
             //c3.setOrderCollection(null);
             c3.setStatus(Customer.Status.ACTIVE.ordinal());
             c3.setAddress(this.createFakeAddress());
-            c3.setUser(this.createFakeLogin("madores", "madores@bol.com"));
+            c3.setUser(this.createFakeLogin("madores", "madores@bol.com", User.PersonType.FISICA));
 
             Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
             Customer c4 = new Customer();
@@ -77,7 +77,7 @@ public class CustomerPreLoadConfiguration {
             //c4.setOrderCollection(null);
             c4.setStatus(Customer.Status.INACTIVE.ordinal());
             c4.setAddress(this.createFakeAddress());
-            c4.setUser(this.createFakeLogin("fernandacal", "fecal@bol2.com"));
+            c4.setUser(this.createFakeLogin("fernandacal", "fecal@bol2.com", User.PersonType.JURIDICA));
 
             Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
             Customer c5 = new Customer();
@@ -90,7 +90,7 @@ public class CustomerPreLoadConfiguration {
             //c5.setOrderCollection(null);
             c5.setStatus(Customer.Status.ACTIVE.ordinal());
             c5.setAddress(this.createFakeAddress());
-            c5.setUser(this.createFakeLogin("diegoferequest","diegoferques@bol.com"));
+            c5.setUser(this.createFakeLogin("diegoferequest","diegoferques@bol.com", User.PersonType.FISICA));
 
             customerRepository.save(c1);
             customerRepository.save(c2);
@@ -113,13 +113,14 @@ public class CustomerPreLoadConfiguration {
         }
     }
 
-    private User createFakeLogin(String username, String email) {
+    private User createFakeLogin(String username, String email, User.PersonType personType) {
         User u = new User();
         u.setEmail(email);
         //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
         u.setUsername(username);
+        u.setPersonType(personType);
         //u.getCustomerCollection().add(c);
         //userRepository.save(u);
         return u;

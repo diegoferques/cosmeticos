@@ -1,13 +1,20 @@
 package com.cosmeticos.config;
 
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ServiceRepository;
 import com.cosmeticos.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.Professional.Type;
+import com.cosmeticos.model.User;
+import com.cosmeticos.model.Wallet;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
@@ -32,7 +39,7 @@ public class ProfessionalPreLoadConfiguration {
     private WalletRepository customerWalletRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -56,13 +63,14 @@ public class ProfessionalPreLoadConfiguration {
 
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
-
+        p1.setAttendance(Type.HOME_CARE);
         p1.setAddress(address1);
         address1.setProfessional(p1);
 
         // bidirecional reference
         p1.setUser(user1);
         user1.setProfessional(p1);
+        user1.setPersonType(User.PersonType.FISICA);
 
         // bidirecional reference
         p1.setWallet(cw1);
@@ -77,12 +85,16 @@ public class ProfessionalPreLoadConfiguration {
         address2.setLatitude("-22.750996");
         address2.setLongitude("-43.45973010000001");
 
+
         Professional s2 = new Professional();
         s2.setNameProfessional("Diego");
         s2.setAddress(address2);
         s2.setUser(user2);
 
+
+
         user2.setProfessional(s2);
+        user2.setPersonType(User.PersonType.FISICA);
         address2.setProfessional(s2);
 
 
@@ -97,17 +109,19 @@ public class ProfessionalPreLoadConfiguration {
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
 
+
         s3.setAddress(address3);
         address3.setProfessional(s3);
 
         s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
         user3.setProfessional(s3);
+        user3.setPersonType(User.PersonType.JURIDICA);
 
         ////////////////////////////////////////
         User user4;
         Address address4 = new Address();
-        address4.setLatitude("-22,9111");
-        address4.setLongitude("-43,1826");
+        address4.setLatitude("-22.9111");
+        address4.setLongitude("-43.1826");
 
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");
@@ -117,6 +131,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
         user4.setProfessional(s4);
+        user4.setPersonType(User.PersonType.FISICA);
 
         ////////////////////////////////////////
         User user5;
@@ -132,6 +147,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
         user5.setProfessional(s5);
+        user5.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(s2);
         repository.save(s3);
@@ -143,6 +159,7 @@ public class ProfessionalPreLoadConfiguration {
         //com endereços e Locations fictícios.
 
         User user6 = new User("kelly", "123abc", "joana@bol");
+
         Address address6 = new Address();
         address6.setAddress("Travessa Tuviassuiara, 32");
         address6.setNeighborhood("Rodilândia");
@@ -156,8 +173,10 @@ public class ProfessionalPreLoadConfiguration {
         s6.setAddress(address6);
         s6.setUser(user6);
 
+
         address6.setProfessional(s6);
         user6.setProfessional(s6);
+        user6.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(s6);
 
@@ -177,6 +196,7 @@ public class ProfessionalPreLoadConfiguration {
 
         address7.setProfessional(s7);
         user7.setProfessional(s7);
+        user7.setPersonType(User.PersonType.FISICA);
 
         repository.save(s7);
 
@@ -189,15 +209,15 @@ public class ProfessionalPreLoadConfiguration {
 
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("MASSOTERAPEUTA");
+        Category category = categoryRepository.findByName("MASSOTERAPEUTA");
 
-        if(service == null) {
-            service = new Service();
-            service.setCategory("MASSOTERAPEUTA");
-            serviceRepository.save(service);
+        if(category == null) {
+            category = new Category();
+            category.setName("MASSOTERAPEUTA");
+            categoryRepository.save(category);
         }
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
         professional.getProfessionalServicesCollection().add(ps1);
 

@@ -48,6 +48,7 @@ public class MockingUserControllerTests {
                 "\t    \"password\": \"abcd1234\",\n" +
                 "\t    \"email\": \"diegoferques@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
+                "\t    \"personType\":\"FISICA\",\n" +
                 "\t    \"status\": \"ACTIVE\"\n" +
                 "\t}\n" +
                 "\t\n" +

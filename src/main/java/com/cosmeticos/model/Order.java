@@ -4,29 +4,15 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -81,12 +67,11 @@ public class Order implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @JoinColumns({
-        @JoinColumn(name = "id_professional", referencedColumnName = "idProfessional"),
-			@JoinColumn(name = "id_service", referencedColumnName = "idService") })
-	@ManyToOne(optional = false)
+    @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalServicesId")
+    @ManyToOne(optional = false)
 	private ProfessionalServices professionalServices;
 
 	@JoinColumn(name = "idLocation", referencedColumnName = "id")
@@ -110,8 +95,14 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
-	private Payment payment;	
-	
+	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
+			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
+			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
+	@ManyToMany(fetch = FetchType.EAGER)
+	private Set<CreditCard> creditCardCollection = new HashSet<>();
+
+	private Payment payment;
+
 	public Order() {
 	}
 
@@ -160,4 +151,5 @@ public class Order implements Serializable {
 	public String toString() {
 		return "javaapplication2.entity.Order[ idOrder=" + idOrder + " ]";
 	}
+
 }

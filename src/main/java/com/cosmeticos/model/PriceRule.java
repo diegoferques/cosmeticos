@@ -4,17 +4,24 @@
  */
 package com.cosmeticos.model;
 
-import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
 
 /**
  *
@@ -23,31 +30,27 @@ import java.util.Collection;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @Entity
-public class Hability implements Serializable {
+public class PriceRule implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    @JsonView({
-            ResponseJsonView.ProfessionalCreate.class,
-    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonView({
-            ResponseJsonView.ProfessionalCreate.class,
-    })
     @NotEmpty(message="Hability name cannot be empty")
-    @Column(unique = true)
     private String name;
 
+    @NotNull
+    private Long price;
+    
     @ManyToOne
-    private Category category;
+    private ProfessionalServices professionalCategory;
 
-    public Hability() {
+    public PriceRule() {
     }
 
-    public Hability(String name) {
+    public PriceRule(String name) {
         this.name = name;
     }
 
@@ -72,10 +75,10 @@ public class Hability implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Hability)) {
+        if (!(object instanceof PriceRule)) {
             return false;
         }
-        Hability other = (Hability) object;
+        PriceRule other = (PriceRule) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 
                 return false;

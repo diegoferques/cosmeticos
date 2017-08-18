@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Professional;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -11,6 +12,10 @@ import javax.validation.Valid;
 @Data
 public class ProfessionalRequestBody {
 
+    @JsonView(
+            {
+                    ResponseJsonView.ProfessionalCreate.class,
+            })
     @Valid
     private Professional professional;
 }

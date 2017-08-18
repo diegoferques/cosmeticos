@@ -1,7 +1,9 @@
 package com.cosmeticos.config;
 
 import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Order;
 import com.cosmeticos.model.User;
+import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +22,15 @@ public class UserPreLoadConfiguration {
     @Autowired
      private UserRepository repository;
 
-
+    @Autowired
+    private OrderRepository orderRepository;
 
     @PostConstruct
     public void insertInitialH2Data(){
+
+        Order o1 = orderRepository.findOne(1L);
+
+        Order o2 = orderRepository.findOne(2L);
 
         CreditCard cc = new CreditCard();
         cc.setToken("4321");
@@ -36,7 +43,6 @@ public class UserPreLoadConfiguration {
 
         CreditCard ccNovo = new CreditCard();
         ccNovo.setToken("77777");
-        ccNovo.setCardNumber("56629811111112942");
         ccNovo.setSecurityCode("321");
         //ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
         ccNovo.setExpirationDate("03/2018");
@@ -45,11 +51,11 @@ public class UserPreLoadConfiguration {
 
         User u1 = new User();
         u1.getCreditCardCollection().add(cc);
-        u1.getCreditCardCollection().add(ccNovo);
         u1.setUsername("KILLER");
         u1.setPassword("109809876");
         u1.setEmail("killer@gmail.com");
         u1.setSourceApp("facebook");
+        u1.setPersonType(User.PersonType.FISICA);
 
         cc.setOwnerName(u1.getUsername());
         ccNovo.setOwnerName(u1.getUsername());
@@ -67,6 +73,14 @@ public class UserPreLoadConfiguration {
         cc2.setVendor("Master");
         cc2.setStatus(CreditCard.Status.INACTIVE);
 
+        CreditCard cc3 = new CreditCard();
+        cc3.setToken("7772344377");
+        cc3.setCardNumber("67730922222223053");
+        cc3.setSecurityCode("123");
+        cc3.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
+        cc3.setVendor("Master");
+        cc3.setStatus(CreditCard.Status.ACTIVE);
+
         User u2 = new User();
 
         u2.getCreditCardCollection().add(cc2);
@@ -74,6 +88,8 @@ public class UserPreLoadConfiguration {
         u2.setPassword("1234098765");
         u2.setEmail("namek@gmail.com");
         u2.setSourceApp("google+");
+        u2.setPersonType(User.PersonType.JURIDICA);
+
 
         cc2.setOwnerName(u2.getUsername());
 
@@ -86,18 +102,24 @@ public class UserPreLoadConfiguration {
         u3.setPassword("12323454");
         u3.setEmail("fulano@gmail.com");
         u3.setSourceApp("gmail");
+        u3.setPersonType(User.PersonType.FISICA);
+
 
         User u4 = new User();
         u4.setUsername("KIRA");
         u4.setPassword("09877");
         u4.setEmail("kira@hotmail.com");
         u4.setSourceApp("facebook");
+        u4.setPersonType(User.PersonType.JURIDICA);
+
 
         User u5 = new User();
         u5.setUsername("CICLANO");
         u5.setPassword("1234");
         u5.setEmail("ciclanor@gmail.com");
         u5.setSourceApp("google+");
+        u5.setPersonType(User.PersonType.FISICA);
+
 
         repository.save(u1);
         repository.save(u2);

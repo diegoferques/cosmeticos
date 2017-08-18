@@ -2,10 +2,13 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.User;
 import com.cosmeticos.service.ProfessionalService;
 import com.cosmeticos.service.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ public class ProfessionalController {
     @Autowired
     private UserService userService;
 
+    @JsonView(ResponseJsonView.ProfessionalCreate.class)
     @RequestMapping(path = "/professionals", method = RequestMethod.POST)
     public HttpEntity<ProfessionalResponseBody> create(@Valid @RequestBody ProfessionalRequestBody request,
                                                        BindingResult bindingResult) {
@@ -97,6 +101,7 @@ public class ProfessionalController {
         }
     }
 
+    @JsonView(ResponseJsonView.ProfessionalUpdate.class)
     @RequestMapping(path = "/professionals", method = RequestMethod.PUT)
     public HttpEntity<ProfessionalResponseBody> update(@RequestBody ProfessionalRequestBody request, BindingResult bindingResult) {
 
@@ -108,33 +113,33 @@ public class ProfessionalController {
                 log.error("Entidade a ser alterada esta nula.");
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                Optional<Professional> optional = service.update(request);
+            	
+            	Optional<Professional> optional = service.find(request.getProfessional().getIdProfessional());
 
-                if (optional.isPresent()) {
+				if (optional.isPresent()) {
 
-                    String userEmail = "";
-                    if(request.getProfessional().getUser() != null) {
-                        userEmail = request.getProfessional().getUser().getEmail();
-                    }
+					Professional persistentProfessional = optional.get();
+					User user =  request.getProfessional().getUser();
 
-                    if(userService.verifyEmailExists(userEmail)) {
+					String emailInDatabase = persistentProfessional.getUser().getEmail();
+					String emailFromRequest = user == null ? emailInDatabase : user.getEmail();
 
-                        ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
-                        responseBody.setDescription("E-mail já existente.");
-                        log.error("Nao e permitido atualizar profissional para um email já existente.");
+					if (emailInDatabase.equals(emailFromRequest)) {
 
-                        return badRequest().body(responseBody);
+						optional = service.update(request);
 
-                    } else {
+						Professional professional = optional.get();
 
-                        Professional Professional = optional.get();
+						ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
+						log.info("Professional atualizado com sucesso: id[{}]", professional.getIdProfessional());
+						return ok(responseBody);
+					} else {
+						ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+						responseBody.setDescription("E-mail já existente.");
+						log.error("Nao e permitido atualizar profissional para um email já existente.");
 
-                        ProfessionalResponseBody responseBody = new ProfessionalResponseBody(Professional);
-                        log.info("Professional atualizado com sucesso:  [{}] responseJson[{}]",
-                                Professional,
-                                new ObjectMapper().writeValueAsString(responseBody));
-                        return ok(responseBody);
-                    }
+						return badRequest().body(responseBody);
+					}
 
                 } else {
                     log.info("Professional inexistente:  [{}]",
@@ -155,6 +160,7 @@ public class ProfessionalController {
 
     }
 
+    @JsonView(ResponseJsonView.ProfessionalFindAll.class)
     @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.GET)
     public HttpEntity<ProfessionalResponseBody> findById(
             @PathVariable String idProfessional) {
@@ -207,6 +213,7 @@ public class ProfessionalController {
      *                          atributos da classe.
      * @return
      */
+    @JsonView(ResponseJsonView.ProfessionalFindAll.class)
     @RequestMapping(path = "/professionals", method = RequestMethod.GET)
     public HttpEntity<ProfessionalResponseBody> findAll(@ModelAttribute Professional professionalProbe) {
 
@@ -244,7 +251,7 @@ public class ProfessionalController {
         Set<ProfessionalServices> psCollection = request.getProfessional().getProfessionalServicesCollection();
 
         for (ProfessionalServices ps : psCollection) {
-            if (ps.getService().getIdService() == null) {
+            if (ps.getCategory().getIdCategory() == null) {
                 return false;
             }
         }

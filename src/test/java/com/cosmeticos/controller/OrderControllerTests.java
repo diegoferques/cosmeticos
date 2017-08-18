@@ -44,7 +44,7 @@ public class OrderControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -67,11 +67,11 @@ public class OrderControllerTests {
     @Before
     public void setup()
     {
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
 
         if(service == null) {
-            service = new Service();
-            service.setCategory("PEDICURE");
+            service = new Category();
+            service.setName("PEDICURE");
             serviceRepository.save(service);
         }
     }
@@ -144,7 +144,8 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -166,14 +167,13 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -198,6 +198,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -292,7 +293,8 @@ public class OrderControllerTests {
         professionalRepository.save(professional);
 
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -316,14 +318,14 @@ public class OrderControllerTests {
                "    \"date\" : 1498324200000,\n" +
                "    \"status\" : 0,\n" +
                "    \"scheduleId\" : {\n" +
-               "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+               "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
                "    \"professionalServices\" : {\n" +
-               "      \"service\" : {\n" +
-               "        \"idService\" : "+service.getIdService()+",\n" +
-               "        \"category\" : \"MASSAGISTA\"\n" +
+               "      \"category\" : {\n" +
+               "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+               "        \"name\" : \"MASSAGISTA\"\n" +
                "      },\n" +
                "      \"professional\" : {\n" +
                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -348,7 +350,8 @@ public class OrderControllerTests {
                "      \"idLogin\" : {\n" +
                "        \"username\" : \"KILLER\",\n" +
                "        \"email\" : \"Killer@gmail.com\",\n" +
-               "        \"sourceApp\" : \"facebook\"\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
                "      },\n" +
                "      \"idAddress\" : null\n" +
                "    }\n" +
@@ -371,9 +374,9 @@ public class OrderControllerTests {
         Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getService());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
         Assert.assertEquals("PEDICURE",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getService().getCategory());
+                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -394,7 +397,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -417,14 +421,13 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -449,6 +452,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -473,14 +477,13 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -505,6 +508,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -539,7 +543,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -558,14 +563,13 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -644,7 +648,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -663,14 +669,13 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \""+Order.Status.OPEN+"\",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -695,6 +700,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -769,7 +775,7 @@ public class OrderControllerTests {
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" + //AQUI PEGO O SCHEDULE JA CRIADO
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime()  +"\"\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime()  +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -788,7 +794,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime(), exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getScheduleDate().getTime());
+        Assert.assertEquals(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 10, 30, 0)).getTime(), exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getScheduleStart().getTime());
 
     }
 
@@ -803,8 +809,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
-                "      \"status\" : \""+ Schedule.Status.INACTIVE +"\"\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -823,7 +828,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Schedule.Status.INACTIVE, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
     }
 
     @Test
@@ -839,7 +843,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -856,9 +862,9 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -883,6 +889,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -920,8 +927,7 @@ public class OrderControllerTests {
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                "      \"status\" : \""+ Schedule.Status.ACTIVE +"\"\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -941,7 +947,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Schedule.Status.ACTIVE, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
 
         orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
 
@@ -958,9 +963,8 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +"\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                "      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -980,7 +984,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Schedule.Status.DENIED, exchangeUpdate.getBody().getOrderList().get(0).getScheduleId().getStatus());
 
         //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
 
@@ -1071,7 +1074,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1090,14 +1095,14 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+service.getIdService()+",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -1122,6 +1127,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1185,7 +1191,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1268,7 +1276,9 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1358,7 +1368,8 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1376,6 +1387,7 @@ public class OrderControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
+
 
         ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
                 .exchange(entity, OrderResponseBody.class);
@@ -1432,7 +1444,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1451,14 +1464,14 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \"" + Order.Status.OPEN + "\",\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : 1499706000000,\n" +
+                "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : " + service.getIdService() + ",\n" +
-                "        \"category\" : \"MASSAGISTA\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
+                "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
@@ -1483,6 +1496,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1570,7 +1584,8 @@ public class OrderControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1652,7 +1667,8 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service service = serviceRepository.findByCategory("PEDICURE");
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, service);
 
@@ -1719,21 +1735,21 @@ public class OrderControllerTests {
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
-    public String getOrderCreateJson(Service service, Professional professional, Customer customer) {
+    public String getOrderCreateJson(Category category, Professional professional, Customer customer) {
 
         String jsonCreate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdService() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
+                "        \"name\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
@@ -1760,6 +1776,7 @@ public class OrderControllerTests {
                 "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
                 "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
                 "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +

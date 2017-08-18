@@ -12,6 +12,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,15 +26,11 @@ import java.util.List;
 @Entity
 public class Schedule implements Serializable {
 
-
-    public enum Status
-    {
-        ACTIVE, INACTIVE, DENIED
-    }
-
     private static final long serialVersionUID = 1L;
 
+
     @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
@@ -41,17 +39,34 @@ public class Schedule implements Serializable {
     private Long scheduleId;
 
     @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    private Date scheduleDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date scheduleStart;
 
     @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+    })
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date scheduleEnd;
+
+    @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @Enumerated
-    private Status status;
+    private String title;
+
+    @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
+    private String description;
 
     @JsonIgnore
     @OneToMany(mappedBy = "scheduleId")
@@ -61,7 +76,7 @@ public class Schedule implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (scheduleId != null ? scheduleId.hashCode() :
-                scheduleDate != null ? scheduleDate.hashCode() : 0);
+                scheduleStart != null ? scheduleStart.hashCode() : 0);
         return hash;
     }
 

@@ -21,6 +21,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RunWith(SpringRunner.class)
@@ -59,6 +61,7 @@ public class CustomerControllerTests {
 				"         \"country\":null,\n" +
 				"         \"idAddress\":null,\n" +
 				"         \"neighborhood\":null,\n" +
+				"         \"complement\":null,\n" +
 				"         \"state\":null\n" +
 				"      },\n" +
 				"      \"birthDate\":1310353200000,\n" +
@@ -71,6 +74,7 @@ public class CustomerControllerTests {
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"123\",\n" +
 				"         \"sourceApp\":null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"         \"username\":\""+ email +"\"\n" +
 				"      },\n" +
 				"      \"cpf\":\"05404577726\",\n" +
@@ -112,7 +116,10 @@ public class CustomerControllerTests {
 				"      \"idCustomer\":"+ testCreateOK.getIdCustomer() +",\n" +
 				"      \"nameCustomer\":\"Diego Fernandes Marques da Silva\",\n" +
 				"      \"birthDate\":\""+Calendar.getInstance().getTime().getTime()+"\",\n" +
-				"      \"cpf\":\"05406688898\"\n" +
+				"      \"cpf\":\"05406688898\",\n" +
+				"      \"user\": {\n" +
+				"           \"email\":\""+emailTeste+"\"\n" +
+				"      }\n" +
 				"   }\n" +
 				"}";
 
@@ -214,6 +221,7 @@ public class CustomerControllerTests {
 				"         \"country\":null,\n" +
 				"         \"idAddress\":null,\n" +
 				"         \"neighborhood\":null,\n" +
+				"         \"complement\":null,\n" +
 				"         \"state\":null\n" +
 				"      },\n" +
 				"      \"birthDate\":1310353200000,\n" +
@@ -226,6 +234,7 @@ public class CustomerControllerTests {
 				"         \"idLogin\":null,\n" +
 				"         \"password\":\"a1b2c3\",\n" +
 				"         \"sourceApp\":null,\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"         \"username\":\""+ emailTeste +"\"\n" +
 				"      },\n" +
 				"      \"cpf\":\"09840387913\",\n" +
@@ -253,12 +262,13 @@ public class CustomerControllerTests {
 
 	//RNF68
 	@Test
-	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
+	public void testUpdateUserWithWrongEmailBadRequest() throws IOException, URISyntaxException {
 		emailTeste = "emailteste@email.com";
 		testCreateOK();
 
 		Customer c1 = testCreateOK;
 
+		emailTeste = "emailtesteDIFERENTE_DO_QUE_FOI_CRIADO@email.com";
 		String json = "{\n" +
 				"   \"customer\":{\n" +
 				"      \"idCustomer\":"+ c1.getIdCustomer() +",\n" +
@@ -307,6 +317,7 @@ public class CustomerControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+		a.setComplement("HOUSE");
 		//a.getCustomerCollection().add(customer);
 		return a;
 	}

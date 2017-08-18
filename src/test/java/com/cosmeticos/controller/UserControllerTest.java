@@ -51,6 +51,7 @@ public class UserControllerTest {
                 "\t\t\"username\": \"KILLER7\",\n" +
                 "\t    \"password\": \"109809876\",\n" +
                 "\t    \"email\": \"Killer@gmail.com\",\n" +
+                "\t    \"personType\":\"FÍSICA\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
                 "\t    \"creditCardCollection\": [\n" +
                 "\t\t    {\n" +
@@ -94,6 +95,7 @@ public class UserControllerTest {
                 "\t    \"password\": \"109809876\",\n" +
                 "\t    \"email\": \"Killer@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
+                "\t      \"personType\":\"FÍSICA\",\n" +
                 "\t    \"creditCardCollection\": [\n" +
                 "\t\t    {\n" +
                 "      \"idCreditCard\": 2,\n"+
@@ -182,6 +184,7 @@ public class UserControllerTest {
                 "\t    \"password\": \"109809876\",\n" +
                 "\t    \"email\": \"Killer33@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
+                "\t    \"personType\":\"FÍSICA\",\n" +
                 "\t    \"creditCardCollection\": [\n" +
                 "\t\t    {\n" +
                 "            \"idCreditCard\": "+ idToken1234 +",\n"+
@@ -272,6 +275,7 @@ public class UserControllerTest {
                 "\t    \"email\": \"Killer33@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
                 "\t    \"status\": \"GONE\",\n" +
+                "\t    \"personType\":\"FISICA\",\n" +
                 "\t    \"goodByeReason\": \"TESTE ALTERADO\"\n" +
                 "\t    }\n " +
                 "}";

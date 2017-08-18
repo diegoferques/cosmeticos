@@ -25,12 +25,9 @@ public class ProfessionalServicesBeanServices {
 
     public ProfessionalServices create(ProfessionalservicesRequestBody request){
 
-        long idProfessional = request.getEntity().getProfessional().getIdProfessional();
-        long idService = request.getEntity().getService().getIdService();
-
-        ProfessionalServices ps = new ProfessionalServices(idProfessional, idService);
+        ProfessionalServices ps = new ProfessionalServices();
         ps.setProfessional(request.getEntity().getProfessional());
-        ps.setService(request.getEntity().getService());
+        ps.setCategory(request.getEntity().getCategory());
 
         return repository.save(ps);
     }

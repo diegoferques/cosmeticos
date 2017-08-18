@@ -2,31 +2,25 @@ package com.cosmeticos.service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
+import com.cosmeticos.model.*;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.controller.CustomerControllerTests;
 import com.cosmeticos.controller.ProfessionalControllerTests;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Service;
+import com.cosmeticos.model.Category;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
-import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.repository.CategoryRepository;
 
 /**
  * Created by Vinicius on 15/07/2017.
@@ -48,7 +42,7 @@ public class OrderServiceTest {
     private ProfessionalServicesRepository professionalServicesRepository;
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private CategoryRepository serviceRepository;
 
     @Autowired
     private OrderService orderService;
@@ -71,11 +65,13 @@ public class OrderServiceTest {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        Service serviceProgramador = new Service();
-        serviceProgramador.setCategory("PROGRAMADOR");
+        Category serviceProgramador = new Category();
+        serviceProgramador.setName("PROGRAMADOR");
         serviceRepository.save(serviceProgramador);
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, serviceProgramador);
+        professionalServicesRepository.save(ps1);
+        
         professional.getProfessionalServicesCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico

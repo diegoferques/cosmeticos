@@ -1,9 +1,9 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ServiceRequestBody;
-import com.cosmeticos.commons.ServiceResponseBody;
-import com.cosmeticos.model.Service;
+import com.cosmeticos.commons.CategoryRequestBody;
+import com.cosmeticos.commons.CategoryResponseBody;
+import com.cosmeticos.model.Category;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ServiceControllerTests {
+public class CategoryControllerTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -29,19 +29,19 @@ public class ServiceControllerTests {
     @Test
     public void testCreateServiceOK() {
 
-        Service s = new Service();
+        Category s = new Category();
 
-        s.setCategory("CONTENTMANAGER");
+        s.setName("CONTENTMANAGER");
 
-        ServiceRequestBody request = new ServiceRequestBody();
+        CategoryRequestBody request = new CategoryRequestBody();
         request.setEntity(s);
 
-        final ResponseEntity<ServiceResponseBody> exchange = //
+        final ResponseEntity<CategoryResponseBody> exchange = //
                 restTemplate.exchange( //
-                        "/service/", //
+                        "/categories/", //
                         HttpMethod.POST, //
                         new HttpEntity(request), // Body
-                        ServiceResponseBody.class);
+                        CategoryResponseBody.class);
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());

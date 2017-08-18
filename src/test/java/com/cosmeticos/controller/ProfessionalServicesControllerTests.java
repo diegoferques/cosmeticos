@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.repository.ServiceRepository;
+import com.cosmeticos.repository.CategoryRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +22,8 @@ import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Service;
+import com.cosmeticos.model.Category;
 import com.cosmeticos.model.User;
-import org.springframework.util.StringUtils;
 
 
 @RunWith(SpringRunner.class)
@@ -35,7 +34,7 @@ public class ProfessionalServicesControllerTests {
 	private TestRestTemplate restTemplate;
 
 	@Autowired
-	private ServiceRepository serviceRepository;
+	private CategoryRepository serviceRepository;
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -56,8 +55,8 @@ public class ProfessionalServicesControllerTests {
 	@Test
 	public void testExampleApiFindByProfessionalServicesServiceCategoryMadeInPreLoads() throws ParseException, URISyntaxException {
 
-		Service s1 = new Service();
-		s1.setCategory("FOOBAR");
+		Category s1 = new Category();
+		s1.setName("FOOBAR");
 
 		serviceRepository.save(s1);
 
@@ -85,8 +84,8 @@ public class ProfessionalServicesControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"idService\": "+s1.getIdService()+"\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+s1.getIdCategory()+"\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -105,7 +104,7 @@ public class ProfessionalServicesControllerTests {
 
 		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionalservices?service.category=FOOBAR",
+						"/professionalservices?category.name=FOOBAR",
 						HttpMethod.GET, //
 						null,
 						ProfessionalServicesResponseBody.class);
@@ -122,10 +121,10 @@ public class ProfessionalServicesControllerTests {
 			ProfessionalServices ps =  entityList.get(i);
 
 			Professional p = ps.getProfessional();
-			Service s = ps.getService();
+			Category s = ps.getCategory();
 
 			Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
-			Assert.assertEquals("FOOBAR", s.getCategory());
+			//Assert.assertEquals("FOOBAR", s.getName());
 
 		}
 

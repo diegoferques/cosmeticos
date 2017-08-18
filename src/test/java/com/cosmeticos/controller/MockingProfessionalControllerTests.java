@@ -111,6 +111,7 @@ public class MockingProfessionalControllerTests {
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
+		u.setPersonType(User.PersonType.FISICA);
 
 		return u;
 	}
@@ -123,6 +124,7 @@ public class MockingProfessionalControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+		a.setComplement("HOUSE");
 
 		return a;
 	}

@@ -1,6 +1,7 @@
 package com.cosmeticos.repository;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
     List<Order> findByStatus(Order.Status status);
+
 
     List<Order> findByProfessionalServices_Professional_idProfessional(Long idProfessional);
 
@@ -54,6 +56,39 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //List<Order> findByStatusNotLike(int s1);
     List<Order> findByStatusNotIn(Collection<Status> status);
 
-	List<Order> findByStatusNotInAndIdCustomer_IdCustomer(Collection<Status> status,
-			Long idCustomer);
+	List<Order> findByStatusNotInAndIdCustomer_user_email(Collection<Status> status,
+			String email);
+
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalServices ps " +
+            "join fetch ps.professional p " +
+            "WHERE p.idProfessional = ?1 " +
+            "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
+    List<Order> findByProfessionalServices_Professional_idProfessionalAndDateOrDate(
+            Long idProfessional);
+
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalServices ps " +
+            "join fetch ps.professional p " +
+            "WHERE p.idProfessional = ?1 " +
+            "AND  o.status in( 'SCHEDULED', 'INPROGRESS' )")
+    List<Order> findScheduledOrdersByProfessional(Long idProfessional);
+
+
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalServices ps " +
+            "join fetch ps.professional p " +
+            "WHERE p.idProfessional = ?1 " +
+            "AND  o.status in( 'SCHEDULED', 'INPROGRESS' ) " +
+            "AND ?2 between o.scheduleId.scheduleStart and o.scheduleId.scheduleEnd")
+    List<Order> findScheduledOrdersByProfessionalWithScheduleConflict(Long idProfessional, Date pretendedStart);
+
+
+
 }

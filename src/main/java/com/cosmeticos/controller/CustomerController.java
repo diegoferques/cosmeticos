@@ -2,7 +2,9 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Professional;
 import com.cosmeticos.service.CustomerService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,35 +80,42 @@ public class CustomerController {
                                                    BindingResult bindingResult) {
 
         try {
-            if(bindingResult.hasErrors()) {
-                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
-                return badRequest().body(buildErrorResponse(bindingResult));
+			if (bindingResult.hasErrors()) {
+				log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+				return badRequest().body(buildErrorResponse(bindingResult));
 
-            } else {
+			} else {
 
-                String userEmail = "";
-                if(request.getCustomer().getUser() != null) {
-                    userEmail = request.getCustomer().getUser().getEmail();
-                }
+				Optional<Customer> optional = service.find(request.getCustomer().getIdCustomer());
 
-                if(userService.verifyEmailExists(userEmail)) {
+				if (optional.isPresent()) {
 
-                    CustomerResponseBody responseBody = new CustomerResponseBody();
-                    responseBody.setDescription("E-mail já existente.");
-                    log.error("Nao e permitido atualizar usuario para um email pre-existentes.");
+					Customer persistentCustomer = optional.get();
 
-                    return badRequest().body(responseBody);
+					String emailInDatabase = persistentCustomer.getUser().getEmail();
+					String emailFromRequest = request.getCustomer().getUser().getEmail();
 
-                } else {
-                    Customer customer = service.update(request);
+					if (emailInDatabase.equals(emailFromRequest)) {
 
-                    CustomerResponseBody responseBody = new CustomerResponseBody(customer);
-                    log.info("Customer atualizado com sucesso:  [{}] responseJson[{}]",
-                            customer,
-                            new ObjectMapper().writeValueAsString(responseBody));
-                    return ok(responseBody);
-                }
-            }
+						optional = Optional.ofNullable(service.update(request));
+
+						Customer customer = optional.get();
+
+						CustomerResponseBody responseBody = new CustomerResponseBody(customer);
+						log.info("Customer atualizado com sucesso: id[{}]", customer.getIdCustomer());
+						return ok(responseBody);
+					} else {
+						CustomerResponseBody responseBody = new CustomerResponseBody();
+						responseBody.setDescription("E-mail já existente.");
+						log.error("Nao e permitido atualizar cliente para um email já existente.");
+
+						return badRequest().body(responseBody);
+					}
+				} else {
+					log.info("Customer inexistente:  [{}]", request.getCustomer());
+					return ResponseEntity.notFound().build();
+				}
+			}
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -122,11 +131,11 @@ public class CustomerController {
     }
 
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
-    public HttpEntity<CustomerResponseBody> findById(@PathVariable String idCustomer) {
+    public HttpEntity<CustomerResponseBody> findById(@PathVariable Long idCustomer) {
 
         try {
 
-            Optional<Customer> customer = service.find(Long.valueOf(idCustomer));
+            Optional<Customer> customer = service.find(idCustomer);
 
             if (customer.isPresent()) {
 
@@ -137,6 +146,38 @@ public class CustomerController {
                 return ok(response);
             } else {
                 log.error("Nenhum registro encontrado para o id: {}", idCustomer);
+                return notFound().build();
+            }
+
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            CustomerResponseBody response = new CustomerResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na exibição do Customer: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @RequestMapping(path = "/customers/", method = RequestMethod.GET)
+    public HttpEntity<CustomerResponseBody> findById(@ModelAttribute Customer customer) {
+
+        try {
+
+            List<Customer> customers = service.findBy(customer);
+
+            if (!customers.isEmpty()) {
+
+                log.info(customers.size() + " encontrados: [{}]", customer);
+                CustomerResponseBody response = new CustomerResponseBody();
+                response.setCustomerList(customers);
+
+                //return ok().body(response);
+                return ok(response);
+            } else {
+                log.error("Nenhum registro encontrado para customer: {}", customer);
                 return notFound().build();
             }
 
@@ -168,10 +209,10 @@ public class CustomerController {
     }
 
     @RequestMapping(path = "/customers", method = RequestMethod.GET)
-    public HttpEntity<CustomerResponseBody> findLastest10() {
+    public HttpEntity<CustomerResponseBody> findAll() {
 
         try {
-            List<Customer> entitylist = service.find10Lastest();
+            List<Customer> entitylist = service.findAll();
 
             CustomerResponseBody responseBody = new CustomerResponseBody();
             responseBody.setCustomerList(entitylist);

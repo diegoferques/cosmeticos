@@ -84,6 +84,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -93,9 +94,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -145,6 +146,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -154,9 +156,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -479,6 +481,7 @@ public class ProfessionalControllerTests {
 				"    \"user\" : {\n" +
 				"      \"username\" : \"profissional1\",\n" +
 				"      \"password\" : \"123qwe\",\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"email\" : \"profissional1@gmail.con\"\n" +
 				"    },\n" +
 				"    \"address\" : { }\n" +
@@ -535,6 +538,7 @@ public class ProfessionalControllerTests {
 				"    \"user\" : {\n" +
 				"      \"username\" : \"profissional1\",\n" +
 				"      \"password\" : \"123qwe\",\n" +
+				"         \"personType\":\"FÍSICA\",\n" +
 				"      \"email\" : \"profissional1@gmail.con\"\n" +
 				"    },\n" +
 				"    \"address\" : { }\n" +
@@ -579,10 +583,10 @@ public class ProfessionalControllerTests {
 				"\t\t[\n" +
 				"\t\t\t{\n" +
 				"\t\t\t\t\"professional\":null,\n" +
-				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t\"category\":\n" +
 				"\t\t\t\t{\n" +
-				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\",\n" +
-				"\t\t\t\t\t\"idService\":4\n" +
+				"\t\t\t\t\t\"name\":\"HAIR REMOVAL\",\n" +
+				"\t\t\t\t\t\"idCategory\":4\n" +
 				"\t\t\t\t}\n" +
 				"\t\t\t}\n" +
 				"\t\t]\n" +
@@ -613,7 +617,7 @@ public class ProfessionalControllerTests {
 	}
 
 	@Test
-	public void testBadRequestWhenNewProfessionalOmmitsIdService() throws URISyntaxException {
+	public void testBadRequestWhenNewProfessionalOmmitsIdCategory() throws URISyntaxException {
 		String jsonBody = "{\n" +
 				"\t\"professional\":\n" +
 				"\t{\n" +
@@ -637,11 +641,11 @@ public class ProfessionalControllerTests {
 				"\t\t[\n" +
 				"\t\t\t{\n" +
 				"\t\t\t\t\"professional\":null,\n" +
-				"\t\t\t\t\"service\":\n" +
+				"\t\t\t\t\"category\":\n" +
 				"\t\t\t\t{\n" +
 				// id omitido. Se um request desse chega, ha risco de insercao em cascada, o q nao pode acontecer
 				// pq apenas o admin insere service
-				"\t\t\t\t\t\"category\":\"HAIR REMOVAL\""+
+				"\t\t\t\t\t\"name\":\"HAIR REMOVAL\""+
 				"\t\t\t\t}\n" +
 				"\t\t\t}\n" +
 				"\t\t]\n" +
@@ -680,6 +684,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"      \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"0984068791\",\n" +
@@ -689,9 +694,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -719,12 +724,15 @@ public class ProfessionalControllerTests {
 
 		testCreateOK();
 
+		emailUsuario = "onemorecheckALTERADO_PRA_FALHAR@email.com";
+
 		String json = "{\n" +
 				"  \"professional\": {\n" +
 				"    \"idProfessional\": "+ returnOfCreateOK.getIdProfessional() +",\n" +
 				"    \"user\": {\n" +
 				"      \"idLogin\": "+ returnOfCreateOK.getUser().getIdLogin() +",\n" +
-				"      \"email\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
+				"         \"personType\":\"FISICA\",\n" +
+				"      \"email\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"nameProfessional\": \"Another Repeated Email\"\n" +
 				"  }\n" +
@@ -756,6 +764,7 @@ public class ProfessionalControllerTests {
 		a.setCountry("BRA");
 		a.setNeighborhood("Austin");
 		a.setState("RJ");
+		a.setComplement("HOUSE");
 
 		return a;
 	}
@@ -798,6 +807,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -807,9 +817,9 @@ public class ProfessionalControllerTests {
 				"    \"professionalServicesCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
-				"        \"service\": {\n" +
-				"          \"category\": \"HYDRATION\",\n" +
-				"          \"idService\": 2\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"HYDRATION\",\n" +
+				"          \"idCategory\": 2\n" +
 				"        }\n" +
 				"      }\n" +
 				"    ]\n" +
@@ -852,6 +862,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \"testUpdateAttendanceOK\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -918,6 +929,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \"aaa\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -977,6 +989,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404276846\",\n" +

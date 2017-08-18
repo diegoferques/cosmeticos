@@ -110,6 +110,7 @@ public class ProfessionalServicesController {
         }
     }
 
+    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
     @RequestMapping(path = "/professionalservices/nearby/", method = RequestMethod.GET)
     public HttpEntity<ProfessionalServicesResponseBody> nearby(
             @ModelAttribute ProfessionalServices bindableQueryObject,

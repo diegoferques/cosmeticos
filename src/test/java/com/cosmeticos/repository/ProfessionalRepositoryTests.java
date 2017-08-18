@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by matto on 26/05/2017.
@@ -108,6 +109,7 @@ public class ProfessionalRepositoryTests {
         address6.setState("Rio de Janeiro");
         address6.setCountry("Brazil");
         address6.setCep("26083-285");
+        address6.setComplement("HOUSE");
 
         Professional s6 = new Professional();
         s6.setNameProfessional("fubangamaloca");
@@ -127,6 +129,7 @@ public class ProfessionalRepositoryTests {
         address7.setState("Rio de Janeiro");
         address7.setCountry("Brazil");
         address7.setCep("20080-001");
+        address7.setComplement("HOUSE");
 
         Professional s7 = new Professional();
         s7.setNameProfessional("bocada");
@@ -164,6 +167,26 @@ public class ProfessionalRepositoryTests {
         Assert.assertEquals("20080-001", p2.get(0).getAddress().getCep());
 
     }
+
+    
+
+    @Autowired
+    private CategoryRepository serviceRepository;
+    @Autowired
+    private ProfessionalServicesRepository professionalServicesRepository;
+    @Test
+    public void addProfessionalService()
+    {
+		Professional p1 = repository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
+        Category s1 = serviceRepository.findWithSpecialties(1L);
+
+       
+        ProfessionalServices ps1 = new ProfessionalServices(p1, s1);
+
+        repository.save(p1);
+    }
+    
+    
 
     /*
     @Test
