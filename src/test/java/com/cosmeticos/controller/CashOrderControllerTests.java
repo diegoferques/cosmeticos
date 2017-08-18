@@ -58,6 +58,8 @@ public class CashOrderControllerTests {
         professionalRepository.save(professional);
 
         Category category = categoryRepository.findByName("PEDICURE");
+        category = categoryRepository.findWithSpecialties(category.getIdCategory());
+
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, category);
 
