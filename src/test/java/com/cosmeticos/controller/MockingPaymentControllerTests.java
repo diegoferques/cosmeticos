@@ -25,9 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +58,9 @@ public class MockingPaymentControllerTests {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    ProfessionalServicesRepository professionalServicesRepository;
+
     @MockBean
     private PaymentController paymentController;
 
@@ -69,7 +70,7 @@ public class MockingPaymentControllerTests {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
         Mockito.when(
-                paymentController.postJson(Mockito.any(), Mockito.any(), Mockito.any())
+                paymentController.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
         /*
@@ -147,10 +148,12 @@ public class MockingPaymentControllerTests {
         customerRepository.save(customer);
         professionalRepository.save(professional);
 
-
         Category category = categoryRepository.findByName("PEDICURE");
+        category = categoryRepository.findWithSpecialties(category.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        //ADICIONADO PARA TESTAR O NULLPOINTER
+        //professionalServicesRepository.save(ps1);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -227,15 +230,16 @@ public class MockingPaymentControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                //"      \"status\" : \"ACTIVE\",\n" +
+                //"      \"orderCollection\" : [ ]\n" +
+                //"    },\n" +
+
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ category.getIdCategory() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+category.getIdCategory()+"\n" +
+                //"        \"category\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +

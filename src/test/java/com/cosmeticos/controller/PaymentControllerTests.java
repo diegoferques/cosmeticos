@@ -10,6 +10,7 @@ import com.cosmeticos.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -66,6 +65,23 @@ public class PaymentControllerTests {
             category.setName("PEDICURE");
             categoryRepository.save(category);
         }
+    }
+
+    //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
+    @Ignore
+    @Test
+    public void testCampainhaOk() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        String numeroTransacao = "3";
+        String codigoEstabelecimento = "1501698887865";
+        String campoLivre1 = "TESTE";
+
+        ResponseEntity<CampainhaSuperpeyResponseBody> exchange = this.executaCampainha(
+                numeroTransacao, codigoEstabelecimento, campoLivre1);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
     }
 
     @Test
@@ -121,6 +137,8 @@ public class PaymentControllerTests {
         return exchange;
     }
 
+    //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
+    @Ignore
     @Test
     public void testPaymentOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
@@ -199,10 +217,12 @@ public class PaymentControllerTests {
         customerRepository.save(customer);
         professionalRepository.save(professional);
 
-
         Category category = categoryRepository.findByName("PEDICURE");
+        category = categoryRepository.findWithSpecialties(category.getIdCategory());
 
         ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        //ADICIONADO PARA TESTAR O NULLPOINTER
+        //professionalServicesRepository.save(ps1);
 
         professional.getProfessionalServicesCollection().add(ps1);
 
@@ -279,15 +299,16 @@ public class PaymentControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                //"      \"status\" : \"ACTIVE\",\n" +
+                //"      \"orderCollection\" : [ ]\n" +
+                //"    },\n" +
+
                 "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ category.getIdCategory() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+category.getIdCategory()+"\n" +
+                //"        \"category\" : \"PEDICURE\"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
@@ -356,6 +377,19 @@ public class PaymentControllerTests {
 
     }
 
+    //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
+    @Ignore
+    @Test
+    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        Long numeroTransacao = 14L;
+
+        Boolean capturaTransacao = paymentController.capturaTransacao(numeroTransacao);
+
+        Assert.assertNotNull(capturaTransacao);
+        Assert.assertEquals(true, capturaTransacao);
+
+    }
 
 
 }

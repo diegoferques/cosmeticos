@@ -64,6 +64,7 @@ public class PaymentController {
         NONE, PORTUGUESE, ENGLISH, SPANISH
     }
 
+    //NO MANUAL DA SUPERPAY NAO INFORMA O QUE VEM EM CAMPOLIVRE E EH OPCIONAL, COM ISSO, NAO FACO NADA COM ELES.
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/128
     @RequestMapping(path = "/campainha/superpay/", method = RequestMethod.POST)
     public HttpEntity<CampainhaSuperpeyResponseBody> create(
@@ -244,7 +245,9 @@ public class PaymentController {
         dadosCartao.setNomePortador(creditCard.getOwnerName());
         dadosCartao.setNumeroCartao(creditCard.getCardNumber());
         dadosCartao.setCodigoSeguranca(creditCard.getSecurityCode());
-        dadosCartao.setDataValidade(creditCard.getExpirationDate());
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/yyyy");
+        dadosCartao.setDataValidade(dateFormatter.format(creditCard.getExpirationDate()));
 
         return dadosCartao;
     }
@@ -355,8 +358,8 @@ public class PaymentController {
         //new Date(2026,12,01);
         //new LocalDate(2026,12, 01).get();
 
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/yyyy");
-        creditCard.setExpirationDate(dateFormatter.parse(2026 + "/" + 12));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        creditCard.setExpirationDate(sdf.parse("01/12/2026"));
 
         creditCard.setVendor("Visa");
 
