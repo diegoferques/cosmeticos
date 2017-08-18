@@ -80,7 +80,7 @@ public class CreditCard implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsage;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
     private Collection<Order> orders = new ArrayList<>();
 
     /*@ManyToOne
