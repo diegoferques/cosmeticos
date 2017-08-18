@@ -8,25 +8,17 @@ import static com.cosmeticos.model.Order.Status.EXPIRED;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CreditCardRepository;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Wallet;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
@@ -53,6 +45,11 @@ public class OrderService {
 
 	@Autowired
 	private PenaltyService penaltyService;
+
+	@Autowired
+	private CreditCardRepository creditCardRepository;
+
+
 
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
@@ -90,6 +87,7 @@ public class OrderService {
 				order.setIdCustomer(customer);
 				order.setDate(Calendar.getInstance().getTime());
 				order.setLastUpdate(order.getDate());
+				order.setPaymentType(orderRequest.getOrder().getPaymentType());
 //				order.getCreditCardCollection().add(creditCard);
 				order.setExpireTime(new Date(order.getDate().getTime() +
 
@@ -180,6 +178,12 @@ public class OrderService {
 
 		if (Order.Status.EXPIRED == order.getStatus()) {
 			throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
+		}
+
+		if(Order.Status.READY2CHARGE == order.getStatus()){
+			if(Order.PayType.CASH == order.getPaymentType()){
+				order.setStatus(orderRequest.getStatus());
+			}
 		}
 
 		if (!StringUtils.isEmpty(orderRequest.getDate())) {
@@ -303,13 +307,14 @@ public class OrderService {
             validateScheduled1(order);
             //validateScheduled2(order);
         }
+		//List<Order> orderListId =
+		//orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+		//Order.Status.ACCEPTED,
+		//Order.Status.INPROGRESS, professional.getIdProfessional());
 
-        // List<Order> orderList =
-        // orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
-        // professional.getIdProfessional(), Order.Status.INPROGRESS,
-        // Order.Status.ACCEPTED);
+
         List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
-                professional.getIdProfessional());
+                professional.getIdProfessional(), order.getIdOrder());
 
 		if (!orderList.isEmpty()) {
 			throw new OrderValidationException();
