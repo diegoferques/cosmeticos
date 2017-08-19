@@ -115,6 +115,8 @@ public class Order implements Serializable {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
 	//TODO - PRECISA RESOVLER ISSO AQUI, POIS TIVE QUE COMENTAR ABAIXO E VOLTAR PARA COMO ERA ANTES, POIS DAVA O ERRO ABAIXO:
 	//java.lang.IllegalStateException: Failed to load ApplicationContext
+	//Caused by: org.hibernate.AnnotationException: Associations marked as mappedBy must not define database mappings
+	//like @JoinTable or @JoinColumn: com.cosmeticos.model.Order.creditCardCollection
 	//FALHAVAM TODOS OS TESTES E O PROJETO NAO EXECUTAVA
 	//@ManyToMany(mappedBy = "order")
 	@ManyToMany(fetch = FetchType.EAGER)
