@@ -4,21 +4,9 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.*;
-
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
-import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -125,7 +113,11 @@ public class Order implements Serializable {
 	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
 			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	@ManyToMany(mappedBy = "order")
+	//TODO - PRECISA RESOVLER ISSO AQUI, POIS TIVE QUE COMENTAR ABAIXO E VOLTAR PARA COMO ERA ANTES, POIS DAVA O ERRO ABAIXO:
+	//java.lang.IllegalStateException: Failed to load ApplicationContext
+	//FALHAVAM TODOS OS TESTES E O PROJETO NAO EXECUTAVA
+	//@ManyToMany(mappedBy = "order")
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 	private Payment payment;
