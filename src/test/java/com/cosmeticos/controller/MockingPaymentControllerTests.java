@@ -230,6 +230,7 @@ public class MockingPaymentControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \""+ Order.PayType.CREDITCARD +"\",\n" +
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 //"      \"status\" : \"ACTIVE\",\n" +
