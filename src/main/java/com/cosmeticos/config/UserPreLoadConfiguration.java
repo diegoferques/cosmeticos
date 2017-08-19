@@ -46,6 +46,7 @@ public class UserPreLoadConfiguration {
         ccNovo.setToken("77777");
         ccNovo.setSecurityCode("321");
         ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
+        //ccNovo.setExpirationDate("03/2018");
         ccNovo.setVendor("Visa");
         ccNovo.setStatus(CreditCard.Status.ACTIVE);
 
@@ -69,6 +70,7 @@ public class UserPreLoadConfiguration {
         cc2.setCardNumber("67730922222223053");
         cc2.setSecurityCode("123");
         cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
+        //cc2.setExpirationDate("12/2018");
         cc2.setVendor("Master");
         cc2.setStatus(CreditCard.Status.INACTIVE);
 
