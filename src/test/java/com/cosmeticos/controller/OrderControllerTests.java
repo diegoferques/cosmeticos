@@ -166,6 +166,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -173,8 +174,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -199,6 +199,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -317,7 +318,8 @@ public class OrderControllerTests {
                "  \"order\" : {\n" +
                "    \"date\" : 1498324200000,\n" +
                "    \"status\" : 0,\n" +
-               "    \"scheduleId\" : {\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
+                "    \"scheduleId\" : {\n" +
                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
@@ -350,7 +352,8 @@ public class OrderControllerTests {
                "      \"idLogin\" : {\n" +
                "        \"username\" : \"KILLER\",\n" +
                "        \"email\" : \"Killer@gmail.com\",\n" +
-               "        \"sourceApp\" : \"facebook\"\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
                "      },\n" +
                "      \"idAddress\" : null\n" +
                "    }\n" +
@@ -419,6 +422,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -426,8 +430,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -452,6 +455,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -475,6 +479,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -482,8 +487,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -508,6 +512,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -560,6 +565,7 @@ public class OrderControllerTests {
         String json = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"status\" : 0,\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
@@ -568,8 +574,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -668,6 +673,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \""+Order.Status.OPEN+"\",\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -675,8 +681,7 @@ public class OrderControllerTests {
                 "    },\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
+                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
@@ -701,6 +706,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -861,6 +867,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"professionalServices\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+",\n" +
@@ -889,6 +896,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1093,6 +1101,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -1126,6 +1135,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1461,6 +1471,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : \"" + Order.Status.OPEN + "\",\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : 1499706000000,\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -1494,6 +1505,7 @@ public class OrderControllerTests {
                 "      \"idLogin\" : {\n" +
                 "        \"username\" : \"KILLER\",\n" +
                 "        \"email\" : \"Killer@gmail.com\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +
@@ -1738,6 +1750,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
                 "      \"status\" : \"ACTIVE\",\n" +
@@ -1773,6 +1786,7 @@ public class OrderControllerTests {
                 "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
                 "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
                 "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
                 "        \"sourceApp\" : \"facebook\"\n" +
                 "      },\n" +
                 "      \"idAddress\" : null\n" +

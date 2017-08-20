@@ -4,10 +4,7 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Hability;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
@@ -56,6 +53,8 @@ public class ProfessionalControllerTests {
 
 	private String emailUsuario = null;
 
+	private String rule = null;
+
 	/**
 	 * Inicializa o H2 com dados iniciais.
 	 */
@@ -84,6 +83,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -145,6 +145,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -479,6 +480,7 @@ public class ProfessionalControllerTests {
 				"    \"user\" : {\n" +
 				"      \"username\" : \"profissional1\",\n" +
 				"      \"password\" : \"123qwe\",\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"email\" : \"profissional1@gmail.con\"\n" +
 				"    },\n" +
 				"    \"address\" : { }\n" +
@@ -535,6 +537,7 @@ public class ProfessionalControllerTests {
 				"    \"user\" : {\n" +
 				"      \"username\" : \"profissional1\",\n" +
 				"      \"password\" : \"123qwe\",\n" +
+				"         \"personType\":\"FÍSICA\",\n" +
 				"      \"email\" : \"profissional1@gmail.con\"\n" +
 				"    },\n" +
 				"    \"address\" : { }\n" +
@@ -680,6 +683,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"      \"personType\":\"FISICA\",\n" +
 				"      \"username\": \""+ returnOfCreateOK.getUser().getEmail() +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"0984068791\",\n" +
@@ -726,6 +730,7 @@ public class ProfessionalControllerTests {
 				"    \"idProfessional\": "+ returnOfCreateOK.getIdProfessional() +",\n" +
 				"    \"user\": {\n" +
 				"      \"idLogin\": "+ returnOfCreateOK.getUser().getIdLogin() +",\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"email\": \""+ emailUsuario +"\"\n" +
 				"    },\n" +
 				"    \"nameProfessional\": \"Another Repeated Email\"\n" +
@@ -801,6 +806,7 @@ public class ProfessionalControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -855,6 +861,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \"testUpdateAttendanceOK\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -921,6 +928,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": 1,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
 				"      \"username\": \"aaa\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -980,6 +988,7 @@ public class ProfessionalControllerTests {
 				//"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"JURIDICA\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404276846\",\n" +
@@ -1010,5 +1019,7 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals("professionalServicesRNF58", professional.getNameProfessional());
 		Assert.assertEquals(email, professional.getUser().getEmail());
 	}
+
+
 
 }

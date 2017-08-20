@@ -62,15 +62,9 @@ public class OrderController {
             } else {
                 orderService.validate(request.getOrder());
 
-                Order order = null;
-                try {
-                    order = orderService.create(request);
+                    Order order = orderService.create(request);
                     log.info("Order adicionado com sucesso:  [{}]", order);
                     //return ok().build();
-                }catch (ConstraintViolationException e){
-                    log.warn("Cartão ja existe", e.getMessage());
-
-                }
                 return ok(new OrderResponseBody(order));
 
             }

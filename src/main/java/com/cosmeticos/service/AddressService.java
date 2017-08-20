@@ -3,6 +3,7 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -28,6 +29,9 @@ public class AddressService {
 
     public Address createFromCustomer(CustomerRequestBody request) {
         Address a = new Address();
+        Customer customer = request.getCustomer();
+        Address address = customer.getAddress();
+        String complement = address.getComplement();
 
         a.setAddress(request.getCustomer().getAddress().getAddress());
         a.setCep(request.getCustomer().getAddress().getCep());
@@ -35,7 +39,7 @@ public class AddressService {
         a.setState(request.getCustomer().getAddress().getState());
         a.setCountry(request.getCustomer().getAddress().getCountry());
         a.setNeighborhood(request.getCustomer().getAddress().getNeighborhood());
-        a.setComplement(request.getCustomer().getAddress().getComplement());
+        a.setComplement(complement);
 
         LocationGoogle geocode = locationService.getGeoCode(a);
         if(geocode  != null) {

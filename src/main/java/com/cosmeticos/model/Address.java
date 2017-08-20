@@ -67,6 +67,9 @@ public class Address implements Serializable {
     })
     private String longitude;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     private String complement;
 
     @JsonIgnore

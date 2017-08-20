@@ -26,8 +26,9 @@ public class OrderStatusHandler {
 		statusChangeMatrix.put(OPEN, new Status[] { ACCEPTED, SCHEDULED, CANCELLED, EXPIRED });
 		statusChangeMatrix.put(ACCEPTED, new Status[] { INPROGRESS, CANCELLED  });
 		statusChangeMatrix.put(SCHEDULED, new Status[] { INPROGRESS, CANCELLED });
-		statusChangeMatrix.put(INPROGRESS, new Status[] { SEMI_CLOSED, CANCELLED });
-		statusChangeMatrix.put(SEMI_CLOSED, new Status[] { CLOSED });
+		statusChangeMatrix.put(INPROGRESS, new Status[] { READY2CHARGE, SEMI_CLOSED, CANCELLED });
+		statusChangeMatrix.put(READY2CHARGE, new Status[] { SEMI_CLOSED });
+		statusChangeMatrix.put(SEMI_CLOSED, new Status[] { CLOSED, AUTO_CLOSED });
 
 	}
 	

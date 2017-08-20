@@ -102,7 +102,6 @@ public class CategoryController {
         }
     }
 
-
     @JsonView(ResponseJsonView.CategoryGetAll.class)
     @RequestMapping(path = "/categories", method = RequestMethod.GET)
     public HttpEntity<CategoryResponseBody> findAll() {

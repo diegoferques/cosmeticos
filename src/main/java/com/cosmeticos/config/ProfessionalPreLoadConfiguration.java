@@ -1,5 +1,7 @@
 package com.cosmeticos.config;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
@@ -9,14 +11,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Category;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.Professional.Type;
+import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.model.User;
 import com.cosmeticos.model.Wallet;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.*;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -33,7 +37,10 @@ public class ProfessionalPreLoadConfiguration {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private WalletRepository customerWalletRepository;
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProfessionalRepository professionalRepository;
 
     @PostConstruct
     public void insertInitialH2Data()
@@ -55,16 +62,13 @@ public class ProfessionalPreLoadConfiguration {
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
         p1.setAttendance(Type.HOME_CARE);
-        p1.setDateRegister(Calendar.getInstance().getTime());
-        p1.setEvaluation(5);
-        p1.setStatus(Professional.Status.ACTIVE);
-
         p1.setAddress(address1);
         address1.setProfessional(p1);
 
         // bidirecional reference
         p1.setUser(user1);
         user1.setProfessional(p1);
+        user1.setPersonType(User.PersonType.FISICA);
 
         // bidirecional reference
         p1.setWallet(cw1);
@@ -85,7 +89,10 @@ public class ProfessionalPreLoadConfiguration {
         s2.setAddress(address2);
         s2.setUser(user2);
 
+
+
         user2.setProfessional(s2);
+        user2.setPersonType(User.PersonType.FISICA);
         address2.setProfessional(s2);
 
 
@@ -100,11 +107,13 @@ public class ProfessionalPreLoadConfiguration {
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
 
+
         s3.setAddress(address3);
         address3.setProfessional(s3);
 
         s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
         user3.setProfessional(s3);
+        user3.setPersonType(User.PersonType.JURIDICA);
 
         ////////////////////////////////////////
         User user4;
@@ -120,6 +129,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
         user4.setProfessional(s4);
+        user4.setPersonType(User.PersonType.FISICA);
 
         ////////////////////////////////////////
         User user5;
@@ -135,6 +145,7 @@ public class ProfessionalPreLoadConfiguration {
 
         s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
         user5.setProfessional(s5);
+        user5.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(s2);
         repository.save(s3);
@@ -146,6 +157,7 @@ public class ProfessionalPreLoadConfiguration {
         //com endereços e Locations fictícios.
 
         User user6 = new User("kelly", "123abc", "joana@bol");
+
         Address address6 = new Address();
         address6.setAddress("Travessa Tuviassuiara, 32");
         address6.setNeighborhood("Rodilândia");
@@ -159,8 +171,10 @@ public class ProfessionalPreLoadConfiguration {
         s6.setAddress(address6);
         s6.setUser(user6);
 
+
         address6.setProfessional(s6);
         user6.setProfessional(s6);
+        user6.setPersonType(User.PersonType.JURIDICA);
 
         repository.save(s6);
 
@@ -176,13 +190,80 @@ public class ProfessionalPreLoadConfiguration {
         Professional s7 = new Professional();
         s7.setNameProfessional("Kdoba");
         s7.setAddress(address7);
+
         s7.setUser(user7);
 
         address7.setProfessional(s7);
         user7.setProfessional(s7);
+        user7.setPersonType(User.PersonType.FISICA);
 
         repository.save(s7);
 
+        //ADICIONADO PARA TESTAR PELO POSTMAN O CARD RNF76
+        Professional professional = createFakeProfessional();
+        professional.getUser().setUsername("testPaymentPreload-professional");
+        professional.getUser().setEmail("testPaymentPreload-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("098.605.789-06");
+
+        professionalRepository.save(professional);
+
+        Category category = categoryRepository.findByName("MASSOTERAPEUTA");
+
+        if(category == null) {
+            category = new Category();
+            category.setName("MASSOTERAPEUTA");
+            categoryRepository.save(category);
+        }
+
+        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+
+        professional.getProfessionalServicesCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
 
     }
+
+    public static Professional createFakeProfessional() {
+        Professional c1 = new Professional();
+        c1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
+        c1.setCellPhone("(21) 98877-6655");
+        c1.setCnpj("098.765.432-10");
+        c1.setDateRegister(Calendar.getInstance().getTime());
+        c1.setGenre('M');
+        c1.setNameProfessional("João da Silva");
+        //c1.setOrderCollection(null);
+        c1.setStatus(Professional.Status.ACTIVE);
+        c1.setAddress(createFakeAddress());
+        c1.setUser(createFakeUser("222", "222@2.com"));
+        c1.getUser().setProfessional(c1);
+
+        return c1;
+    }
+
+    public static User createFakeUser(String username, String email) {
+        User u = new User();
+        u.setEmail(email);
+        //u.setUser(1234L);
+        u.setPassword("123qwe");
+        u.setSourceApp("google+");
+        u.setUsername(username);
+        //u.getCustomerCollection().add(c);
+        //userRepository.save(u);
+        return u;
+    }
+
+    static Address createFakeAddress() {
+        Address a = new Address();
+        a.setAddress("Rua Perlita");
+        a.setCep("0000000");
+        a.setCity("RJO");
+        a.setCountry("BRA");
+        a.setNeighborhood("Austin");
+        a.setState("RJ");
+
+        return a;
+    }
+
 }
