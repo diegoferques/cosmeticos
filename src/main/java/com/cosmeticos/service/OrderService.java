@@ -1,13 +1,40 @@
 package com.cosmeticos.service;
 
+import static com.cosmeticos.model.Order.Status.AUTO_CLOSED;
+import static com.cosmeticos.model.Order.Status.CANCELLED;
+import static com.cosmeticos.model.Order.Status.CLOSED;
+import static com.cosmeticos.model.Order.Status.EXPIRED;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
+
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.Wallet;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.validation.OrderValidationException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -79,7 +106,8 @@ public class OrderService {
 				order.setIdCustomer(customer);
 				order.setDate(Calendar.getInstance().getTime());
 				order.setLastUpdate(order.getDate());
-				//order.getCreditCardCollection().add(creditCard);
+				order.setPaymentType(orderRequest.getOrder().getPaymentType());
+//				order.getCreditCardCollection().add(creditCard);
 				order.setExpireTime(new Date(order.getDate().getTime() +
 
 						// 6 horas de validade
@@ -174,6 +202,12 @@ public class OrderService {
 
 		if (Order.Status.EXPIRED == order.getStatus()) {
 			throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
+		}
+
+		if(Order.Status.READY2CHARGE == order.getStatus()){
+			if(Order.PayType.CASH == order.getPaymentType()){
+				order.setStatus(orderRequest.getStatus());
+			}
 		}
 
 		if (!StringUtils.isEmpty(orderRequest.getDate())) {
@@ -282,7 +316,7 @@ public class OrderService {
 	 */
 	public void validate(Order order) throws OrderValidationException, ValidationException {//
 
-        Order persistentOrder = null;
+		Long idOrder = 0L;
         Professional professional;
 
         // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
@@ -296,6 +330,7 @@ public class OrderService {
         } else {
             order = orderRepository.findOne(order.getIdOrder());
             professional = order.getProfessionalServices().getProfessional();
+            idOrder = order.getIdOrder();
         }
 
         if(order.getScheduleId() != null) {
@@ -303,15 +338,16 @@ public class OrderService {
             validateScheduled1(order);
             //validateScheduled2(order);
         }
+		//List<Order> orderListId =
+		//orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+		//Order.Status.ACCEPTED,
+		//Order.Status.INPROGRESS, professional.getIdProfessional());
 
-        // List<Order> orderList =
-        // orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
-        // professional.getIdProfessional(), Order.Status.INPROGRESS,
-        // Order.Status.ACCEPTED);
         List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
-                professional.getIdProfessional());
+                professional.getIdProfessional(), idOrder);
 
 		if (!orderList.isEmpty()) {
+			// Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
 			throw new OrderValidationException();
 		}
 

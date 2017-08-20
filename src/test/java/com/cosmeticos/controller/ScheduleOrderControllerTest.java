@@ -99,6 +99,7 @@ public class ScheduleOrderControllerTest {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 01, 12, 10)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
@@ -221,6 +222,7 @@ public class ScheduleOrderControllerTest {
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 14, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +

@@ -69,6 +69,7 @@ public class OrderPreLoadConfiguration {
         o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o1.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o1.setIdCustomer(c1);
+        o1.setPaymentType(Order.PayType.CASH);
         //o1.setIdLocation();
         o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
 
@@ -80,6 +81,8 @@ public class OrderPreLoadConfiguration {
         o2.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o2.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o2.setIdCustomer(c1);
+        o2.setPaymentType(Order.PayType.CASH);
+
         //o2.setIdLocation();
         o2.setProfessionalServices(ps1);
         //o2.setScheduleId(s1);
@@ -90,6 +93,8 @@ public class OrderPreLoadConfiguration {
         o3.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o3.setIdCustomer(c1);
+        o3.setPaymentType(Order.PayType.CASH);
+
         //o3.setIdLocation();
         o3.setProfessionalServices(ps1);
         //o3.setScheduleId(s1);
@@ -100,6 +105,8 @@ public class OrderPreLoadConfiguration {
         o4.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o4.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o4.setIdCustomer(c1);
+        o4.setPaymentType(Order.PayType.CASH);
+
         //o4.setIdLocation();
         o4.setProfessionalServices(ps1);
         //o4.setScheduleId(s1);
@@ -113,6 +120,8 @@ public class OrderPreLoadConfiguration {
         o5.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o5.setIdCustomer(c1);
         //o5.setIdLocation();
+        o5.setPaymentType(Order.PayType.CASH);
+
         o5.setProfessionalServices(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
@@ -124,6 +133,8 @@ public class OrderPreLoadConfiguration {
         o6.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setIdCustomer(c1);
+        o6.setPaymentType(Order.PayType.CASH);
+
         //o6.setIdLocation();
         o6.setProfessionalServices(ps1);
         o6.setScheduleId(s1);
@@ -135,6 +146,8 @@ public class OrderPreLoadConfiguration {
         o7.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setIdCustomer(c1);
+        o7.setPaymentType(Order.PayType.CASH);
+
         //o5.setIdLocation();
         o7.setProfessionalServices(ps1);
         o7.setScheduleId(s2);
