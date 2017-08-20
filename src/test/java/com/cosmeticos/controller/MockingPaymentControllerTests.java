@@ -40,6 +40,9 @@ public class MockingPaymentControllerTests {
     @MockBean
     PaymentService paymentService;
 
+    @MockBean
+    private PaymentController paymentController;
+
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -61,8 +64,6 @@ public class MockingPaymentControllerTests {
     @Autowired
     ProfessionalServicesRepository professionalServicesRepository;
 
-    @MockBean
-    private PaymentController paymentController;
 
     @Test
     public void testPaymentOk() throws URISyntaxException, ParseException, JsonProcessingException {

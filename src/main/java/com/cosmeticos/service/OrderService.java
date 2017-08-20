@@ -1,19 +1,24 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.controller.PaymentController;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.validation.OrderValidationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,6 +33,9 @@ import static com.cosmeticos.model.Order.Status.*;
 @org.springframework.stereotype.Service
 public class OrderService {
 
+	@Value("${order.payment.secheduled.startDay}")
+	private String daysToStartPayment;
+
 	@Autowired
 	private OrderRepository orderRepository;
 
@@ -39,6 +47,12 @@ public class OrderService {
 
 	@Autowired
 	private PenaltyService penaltyService;
+
+	@Autowired
+	private PaymentController paymentController;
+
+	@Autowired
+	private PaymentService paymentService;
 
 	@Autowired
 	private ProfessionalServicesRepository professionalServicesRepository;
@@ -160,7 +174,7 @@ public class OrderService {
 		}
 	}
 
-	public Order update(OrderRequestBody request) {
+	public Order update(OrderRequestBody request) throws Exception {
 		Order orderRequest = request.getOrder();
 		Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
@@ -216,11 +230,90 @@ public class OrderService {
 			order.setScheduleId(orderRequest.getScheduleId());
 		}
 
+		//AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
 		if (orderRequest.getStatus() == Order.Status.ACCEPTED) {
+			this.sendPaymentRequest(orderRequest);
+		}
 
+		//AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
+		if (orderRequest.getStatus() == Order.Status.SCHEDULED) {
+			this.validateScheduledAndsendPaymentRequest(orderRequest);
 		}
 
 		return orderRepository.save(order);
+	}
+
+	private void validateScheduledAndsendPaymentRequest(Order orderRequest) throws Exception {
+
+		int daysToStart = Integer.parseInt(daysToStartPayment);
+
+		//INSTANCIAMOS O CALENDARIO
+		Calendar c = Calendar.getInstance();
+
+		//DATA ATUAL
+		//EX.: 20/08/2017
+		Date now = c.getTime();
+
+		//PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
+		Date scheduleDateStart = orderRequest.getScheduleId().getScheduleStart();
+
+		//ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
+		c.setTime(scheduleDateStart);
+
+		//VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
+		c.add(Calendar.DATE, -daysToStart);
+
+		//DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
+		Date dateToStartPayment = c.getTime();
+
+		//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
+		if (now.after(dateToStartPayment)) {
+			sendPaymentRequest(orderRequest);
+		}
+	}
+
+	private void sendPaymentRequest(Order orderRequest) throws Exception {
+
+		try {
+			Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentController.sendRequest(orderRequest);
+
+			if(retornoTransacaoSuperpay.isPresent()) {
+
+				//VALIDAMOS SE VEIO O STATUS QUE ESPERAMOS
+				//1 = Pago e Capturado | 2 = Pago e não Capturado (O CORRETO SERIA 1, POIS FAREMOS A CAPTURA POSTERIORMENTE)
+				if(retornoTransacaoSuperpay.get().getStatusTransacao() == 1 ||
+						retornoTransacaoSuperpay.get().getStatusTransacao() == 2) {
+
+					//ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
+					//OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
+					Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.get());
+
+					if (updateStatusPagamento == false) {
+						//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
+						log.error("Erro ao enviar a requisição de pagamento");
+						throw new Exception("Erro ao enviar a requisição de pagamento");
+					}
+
+				//SE NAO VIER O STATUS DO PAGAMENTO 1 OU 2, VAMOS LANCAR UMA EXCECAO COM O STATUS VINDO DA SUPERPAY
+				} else {
+					//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO O STATUS FOR OUTRO
+					//TODO - SE FOR MESMO RETORNAR O CODIGO DO STATUS DO PAGAMENTO, PODERIA RETORNAR A MENSAGEM, NAO O CODIGO
+					log.error("Erro ao efetuar o pagamentos {}", retornoTransacaoSuperpay.get().getStatusTransacao());
+					throw new Exception("Erro ao efetuar o pagamento: " + retornoTransacaoSuperpay.get().getStatusTransacao());
+				}
+
+			} else {
+				//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO NO PAGAMENTO NA SUPERPAY
+				log.error("Erro ao enviar a requisição de pagamento");
+				throw new Exception("Erro ao enviar a requisição de pagamento");
+			}
+
+		} catch (ParseException e) {
+			throw new Exception("ParseException", e);
+
+		} catch (JsonProcessingException e) {
+			throw new Exception("JsonProcessingException", e);
+		}
 	}
 
 	public String delete() {
