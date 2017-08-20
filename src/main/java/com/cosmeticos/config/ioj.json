@@ -1,30 +1,37 @@
 {
-  "professional": {
-    "genre": null,
-    "birthDate": 350535600000,
-    "cellPhone": null,
-    "dateRegister": null,
-    "status": null,
-    "user": {
-      "idLogin": null,
-      "username": "aNem@gmail.com",
-      "password": "123432",
-      "email": "aNem@gmail.com",
-      "sourceApp": null
-    },
-    "address": null,
-    "idProfessional": null,
-    "nameProfessional": "aName",
-    "cnpj": "1234567890",
-    "professionalServicesCollection": [
-      {
-        "category": {
-          "idCategory": null,
-          "name": "PODOLOGO"
-        },
-        "professional": null
-      }
-    ],
-    "location": 90023191
-  }
+	"description": "All Services retrieved.",
+	"professionalServicesList": [
+		{
+			"professionalCategoryId": 1,
+			"category": {
+				"idCategory": 1,
+				"name": "CABELEIREIRA"
+			},
+			"professional": {
+				"idProfessional": 1,
+				"nameProfessional": "Garry",
+				"dateRegister": 1503202354882,
+				"status": 1,
+				"attendance": "HOME_CARE",
+				"distance": 1458
+			},
+			"priceRuleList": [
+				{
+					"id": 1,
+					"name": "Cabelo Longo",
+					"price": 20000
+				},
+				{
+					"id": 2,
+					"name": "Cabelo curto",
+					"price": 10000
+				},
+				{
+					"id": 3,
+					"name": "Cabelo Medio",
+					"price": 15000
+				}
+			]
+		}
+	]
 }

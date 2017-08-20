@@ -18,8 +18,10 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 
@@ -34,13 +36,25 @@ public class PriceRule implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    @JsonView({
+    	ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalServicesFindAll.class,
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonView({
+    	ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalServicesFindAll.class,
+    })
     @NotEmpty(message="Hability name cannot be empty")
     private String name;
 
+    @JsonView({
+    	ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalServicesFindAll.class,
+    })
     @NotNull
     private Long price;
     

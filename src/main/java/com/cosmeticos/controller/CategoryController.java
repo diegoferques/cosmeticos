@@ -44,7 +44,7 @@ public class CategoryController {
                 CategoryResponseBody responseBody = new CategoryResponseBody();
 
                 responseBody.setDescription("Success");
-                responseBody.getServiceList().add(s);
+                responseBody.getCategoryList().add(s);
 
                 return ok().body(responseBody);
 
@@ -82,7 +82,7 @@ public class CategoryController {
                     Category updatedService = optional.get();
 
                     CategoryResponseBody responseBody = new CategoryResponseBody();
-                    responseBody.getServiceList().add(updatedService);
+                    responseBody.getCategoryList().add(updatedService);
 
                     log.info("Service atualizado com sucesso:  [{}]", updatedService);
                     return ok().body(responseBody);
@@ -111,7 +111,7 @@ public class CategoryController {
             List<Category> entitylist = category.findAll();
 
             CategoryResponseBody responseBody = new CategoryResponseBody();
-            responseBody.setServiceList(entitylist);
+            responseBody.setCategoryList(entitylist);
             responseBody.setDescription("All Services retrieved.");
 
             log.info("{} Services successfully retrieved.", entitylist.size());
@@ -137,7 +137,7 @@ public class CategoryController {
                 Category foundService = optional.get();
                 CategoryResponseBody response = new CategoryResponseBody();
                 response.setDescription("Service succesfully retrieved");
-                response.getServiceList().add(foundService);
+                response.getCategoryList().add(foundService);
 
                 log.info("Busca de Service com exito: [{}]", foundService);
 

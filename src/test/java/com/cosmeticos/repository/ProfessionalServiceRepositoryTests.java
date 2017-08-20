@@ -68,7 +68,7 @@ public class ProfessionalServiceRepositoryTests {
 
         professionalServicesRepository.save(ps2);
 
-        org.junit.Assert.assertEquals(Long.valueOf(2), ps2.getProfessionalServicesId());
+        org.junit.Assert.assertEquals(Long.valueOf(2), ps2.getProfessionalCategoryId());
         org.junit.Assert.assertEquals(2, p.getProfessionalServicesCollection().size());
     }   
 }

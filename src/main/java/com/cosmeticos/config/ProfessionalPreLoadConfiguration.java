@@ -1,5 +1,7 @@
 package com.cosmeticos.config;
 
+import java.util.Calendar;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,9 @@ public class ProfessionalPreLoadConfiguration {
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
         p1.setAttendance(Type.HOME_CARE);
+        p1.setDateRegister(Calendar.getInstance().getTime());
+        p1.setEvaluation(5);
+        p1.setStatus(Professional.Status.ACTIVE);
 
         p1.setAddress(address1);
         address1.setProfessional(p1);

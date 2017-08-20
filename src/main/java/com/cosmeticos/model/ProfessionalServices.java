@@ -4,18 +4,25 @@
  */
 package com.cosmeticos.model;
 
-import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
 
 /**
  *
@@ -38,9 +45,9 @@ public class ProfessionalServices implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
-    private Long professionalServicesId;
+    private Long professionalCategoryId;
 
-    @JsonView({
+	@JsonView({
             ResponseJsonView.ProfessionalServicesFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
@@ -67,12 +74,16 @@ public class ProfessionalServices implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
     private Collection<Order> orderCollection;
 
+    @JsonView({
+    	ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalServicesFindAll.class,
+    })
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
-    private Set<PriceRule> priceRule = new HashSet<>();
+    private Set<PriceRule> priceRuleList = new HashSet<>();
 
-    @Override
+	@Override
     public String toString() {
-        return "javaapplication2.entity.ProfessionalServices[ id=" + professionalServicesId+ " ]";
+        return "javaapplication2.entity.ProfessionalServices[ id=" + professionalCategoryId+ " ]";
     }
 
 	public ProfessionalServices(Professional p, Category s) {
@@ -85,6 +96,11 @@ public class ProfessionalServices implements Serializable {
 	}
 
 	public ProfessionalServices() {
+	}
+
+	public void addPriceRule(PriceRule pr1) {
+		priceRuleList.add(pr1);
+		pr1.setProfessionalCategory(this);
 	}
 
 }

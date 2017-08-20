@@ -1,6 +1,9 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.repository.CategoryRepository;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,16 +27,24 @@ public class HabilityControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@Test
 	public void testCreateOK() throws IOException, URISyntaxException {
 
+
+        Category category = new Category();
+        category.setName("PEDICURE");
+        categoryRepository.save(category);
+        
 		String content = "{\n" +
 				"  \"hability\" : {\n" +
 				"    \"name\" : \"h\",\n" +
 				"\t\n" +
 				"    \"category\" : {\n" +
-				"      \"idCategory\" : 1\n" +
+				"      \"idCategory\" : "+category.getIdCategory()+"\n" +
 				"    },\n" +
 				"\t\n" +
 				"    \"professionalCollection\" : [ {\n" +

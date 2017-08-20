@@ -40,11 +40,21 @@ public class ProfessionalServicesPreLoadConfiguration {
         pr1.setName("Cabelo curto");
         pr1.setPrice(10000L);
 
+        PriceRule pr2 = new PriceRule();
+        pr2.setName("Cabelo Medio");
+        pr2.setPrice(15000L);
+
+        PriceRule pr3 = new PriceRule();
+        pr3.setName("Cabelo Longo");
+        pr3.setPrice(20000L);
+
         Professional p1 = professionalRepository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
         Category s1 = serviceRepository.findWithSpecialties(1L);
 
         ProfessionalServices ps1 = new ProfessionalServices(p1, s1);
-        ps1.getPriceRule().add(pr1);
+        ps1.addPriceRule(pr1);
+        ps1.addPriceRule(pr2);
+        ps1.addPriceRule(pr3);
 
 
         professionalRepository.save(p1);
@@ -70,7 +80,10 @@ public class ProfessionalServicesPreLoadConfiguration {
         Category s4 = serviceRepository.findWithSpecialties(4L);
 
         ProfessionalServices ps4 = new ProfessionalServices(p4, s4);
-
+        ps4.addPriceRule(pr1);
+        ps4.addPriceRule(pr2);
+        ps4.addPriceRule(pr3);
+        
         professionalServicesRepository.save(ps4);
 
         /////////////////////////////////////////////////////////
