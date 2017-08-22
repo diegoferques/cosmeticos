@@ -16,7 +16,7 @@
     "idProfessional": null,
     "nameProfessional": "aName",
     "cnpj": "1234567890",
-    "professionalServicesCollection": [
+    "professionalCategoryCollection": [
       {
         "category": {
           "idCategory": null,

@@ -1,8 +1,6 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.commons.WalletResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
@@ -17,12 +15,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -53,7 +47,7 @@ public class WalletControllerTests {
 	}
 
 	/**
-	 * Depende dos inserts feitos no ServicePreLoadConfiguration e ProfessionalServicesPreLoadConfiguration.
+	 * Depende dos inserts feitos no ServicePreLoadConfiguration e ProfessionalCategoryPreLoadConfiguration.
 	 * Ignore este teste se o profile de execucao usado nao for o default.
 	 * Este endopint testa o ModelAttribute do controller e a api Example do spring-data.
 	 * Ver card https://trello.com/c/OMGE90IV

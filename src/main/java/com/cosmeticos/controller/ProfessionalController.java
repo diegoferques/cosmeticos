@@ -4,7 +4,8 @@ import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.ProfessionalCategory;
+import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.model.User;
 import com.cosmeticos.service.ProfessionalService;
 import com.cosmeticos.service.UserService;
@@ -248,9 +249,9 @@ public class ProfessionalController {
      */
     private boolean hasService(ProfessionalRequestBody request) {
 
-        Set<ProfessionalServices> psCollection = request.getProfessional().getProfessionalServicesCollection();
+        Set<ProfessionalCategory> psCollection = request.getProfessional().getProfessionalCategoryCollection();
 
-        for (ProfessionalServices ps : psCollection) {
+        for (ProfessionalCategory ps : psCollection) {
             if (ps.getCategory().getIdCategory() == null) {
                 return false;
             }

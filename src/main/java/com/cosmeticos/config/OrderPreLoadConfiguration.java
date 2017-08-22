@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * Created by matto on 24/06/2017.
  */
 
-@DependsOn({"professionalServicesPreLoadConfiguration"})
+@DependsOn({"professionalCategoryPreLoadConfiguration"})
 @Configuration
 @Profile("default")
 public class OrderPreLoadConfiguration {
@@ -30,7 +30,7 @@ public class OrderPreLoadConfiguration {
     private CustomerRepository customerRepository;
 
     @Autowired
-    ProfessionalServicesRepository professionalServicesRepository;
+    ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CategoryRepository serviceRepository;
@@ -49,10 +49,10 @@ public class OrderPreLoadConfiguration {
         service.setName("PEDICURE");
         serviceRepository.save(service);
 
-        ProfessionalServices ps1 = new ProfessionalServices(p1, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(p1, service);
 
         //Atualizando associando o Profeissional ao Servico
-        professionalServicesRepository.save(ps1);
+        professionalCategoryRepository.save(ps1);
         professionalRepository.save(p1);
 
         Schedule s1 = new Schedule();
@@ -71,7 +71,7 @@ public class OrderPreLoadConfiguration {
         o1.setIdCustomer(c1);
         o1.setPaymentType(Order.PayType.CASH);
         //o1.setIdLocation();
-        o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
+        o1.setProfessionalCategory(p1.getProfessionalCategoryCollection().iterator().next());
 
         //o1.setScheduleId(s1);
         orderRepository.save(o1);
@@ -84,7 +84,7 @@ public class OrderPreLoadConfiguration {
         o2.setPaymentType(Order.PayType.CASH);
 
         //o2.setIdLocation();
-        o2.setProfessionalServices(ps1);
+        o2.setProfessionalCategory(ps1);
         //o2.setScheduleId(s1);
         orderRepository.save(o2);
 
@@ -96,7 +96,7 @@ public class OrderPreLoadConfiguration {
         o3.setPaymentType(Order.PayType.CASH);
 
         //o3.setIdLocation();
-        o3.setProfessionalServices(ps1);
+        o3.setProfessionalCategory(ps1);
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
 
@@ -108,7 +108,7 @@ public class OrderPreLoadConfiguration {
         o4.setPaymentType(Order.PayType.CASH);
 
         //o4.setIdLocation();
-        o4.setProfessionalServices(ps1);
+        o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
         o4.setStatus(Order.Status.SEMI_CLOSED);
 
@@ -122,7 +122,7 @@ public class OrderPreLoadConfiguration {
         //o5.setIdLocation();
         o5.setPaymentType(Order.PayType.CASH);
 
-        o5.setProfessionalServices(ps1);
+        o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
         orderRepository.save(o5);
@@ -136,7 +136,7 @@ public class OrderPreLoadConfiguration {
         o6.setPaymentType(Order.PayType.CASH);
 
         //o6.setIdLocation();
-        o6.setProfessionalServices(ps1);
+        o6.setProfessionalCategory(ps1);
         o6.setScheduleId(s1);
         orderRepository.save(o6);
 
@@ -149,7 +149,7 @@ public class OrderPreLoadConfiguration {
         o7.setPaymentType(Order.PayType.CASH);
 
         //o5.setIdLocation();
-        o7.setProfessionalServices(ps1);
+        o7.setProfessionalCategory(ps1);
         o7.setScheduleId(s2);
         orderRepository.save(o7);
 
