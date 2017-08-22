@@ -59,7 +59,7 @@ public class MockingPaymentControllerTests {
     private OrderRepository orderRepository;
 
     @Autowired
-    ProfessionalServicesRepository professionalServicesRepository;
+    ProfessionalCategoryRepository professionalServicesRepository;
 
     @MockBean
     private PaymentController paymentController;
@@ -151,11 +151,11 @@ public class MockingPaymentControllerTests {
         Category category = categoryRepository.findByName("PEDICURE");
         category = categoryRepository.findWithSpecialties(category.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
         //ADICIONADO PARA TESTAR O NULLPOINTER
         //professionalServicesRepository.save(ps1);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -237,7 +237,7 @@ public class MockingPaymentControllerTests {
                 //"      \"orderCollection\" : [ ]\n" +
                 //"    },\n" +
 
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+category.getIdCategory()+"\n" +
                 //"        \"category\" : \"PEDICURE\"\n" +

@@ -217,9 +217,9 @@ public class ProfessionalPreLoadConfiguration {
             categoryRepository.save(category);
         }
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
