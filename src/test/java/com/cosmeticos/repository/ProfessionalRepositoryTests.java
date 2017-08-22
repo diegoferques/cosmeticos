@@ -167,29 +167,6 @@ public class ProfessionalRepositoryTests {
 
     }
 
-    
-
-    @Autowired
-    private CategoryRepository serviceRepository;
-    @Autowired
-    private ProfessionalCategoryRepository professionalCategoryRepository;
-    @Test
-    public void addProfessionalCategory()
-    {
-
-        Professional p1 =  repository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
-
-        Category s1 = serviceRepository.findWithSpecialties(1L);
-
-        repository.save(p1);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(p1, s1);
-
-        professionalCategoryRepository.save(ps1);
-    }
-    
-    
-
     /*
     @Test
     public void testFindByNameEqualKdoba() {
