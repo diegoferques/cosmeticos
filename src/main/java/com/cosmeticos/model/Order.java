@@ -91,9 +91,9 @@ public class Order implements Serializable {
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalServicesId")
+    @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalCategoryId")
     @ManyToOne(optional = false)
-	private ProfessionalServices professionalServices;
+	private ProfessionalCategory professionalCategory;
 
 	@JoinColumn(name = "idLocation", referencedColumnName = "id")
 	@ManyToOne(optional = true)
@@ -119,7 +119,7 @@ public class Order implements Serializable {
 	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
 			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	@ManyToMany(mappedBy = "order")
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 
@@ -138,10 +138,10 @@ public class Order implements Serializable {
 		this.status = status;
 	}
 
-	public Order(Customer idCustomer, ProfessionalServices professionalServices, Schedule scheduleId) {
+	public Order(Customer idCustomer, ProfessionalCategory professionalCategory, Schedule scheduleId) {
 		this();
 		this.idCustomer = idCustomer;
-		this.professionalServices = professionalServices;
+		this.professionalCategory = professionalCategory;
 		this.scheduleId = scheduleId;
 	}
 

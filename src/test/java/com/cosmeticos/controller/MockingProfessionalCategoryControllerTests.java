@@ -2,10 +2,10 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
+import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.model.Category;
 import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.service.LocationService;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class MockingProfessionalServicesControllerTests {
+public class MockingProfessionalCategoryControllerTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -88,7 +88,7 @@ public class MockingProfessionalServicesControllerTests {
                 "    \"idProfessional\": null,\n" +
                 "    \"location\": 506592589,\n" +
                 "    \"nameProfessional\": \"aaa\",\n" +
-                "    \"professionalServicesCollection\": [\n" +
+                "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
                 "        \"professional\": null,\n" +
                 "        \"category\": {\n" +
@@ -119,9 +119,9 @@ public class MockingProfessionalServicesControllerTests {
         Assert.assertNotNull(professional.getAddress().getLatitude());
         Assert.assertNotNull(professional.getAddress().getLongitude());
 
-        final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
+        final ResponseEntity<ProfessionalCategoryResponseBody> getExchange = //
                 restTemplate.exchange( //
-                        "/professionalservices/nearby/?category.name=testNearbyWithDistance-service" +
+                        "/professionalcategories/nearby/?category.name=testNearbyWithDistance-service" +
 
                                 // Coordenadas do cliente: Casa do garry
                                 "&latitude=-22.7331757&longitude=-43.5209273" +
@@ -129,15 +129,15 @@ public class MockingProfessionalServicesControllerTests {
                                 "&radius=6000",
                         HttpMethod.GET, //
                         null,
-                        ProfessionalServicesResponseBody.class);
+                        ProfessionalCategoryResponseBody.class);
 
-        List<ProfessionalServices> entityList = getExchange.getBody().getProfessionalServicesList();
+        List<ProfessionalCategory> entityList = getExchange.getBody().getProfessionalCategoryList();
 
         Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
         Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
 
         for (int i = 0; i < entityList.size(); i++) {
-            ProfessionalServices ps =  entityList.get(i);
+            ProfessionalCategory ps =  entityList.get(i);
 
             Professional p = ps.getProfessional();
             Category s = ps.getCategory();

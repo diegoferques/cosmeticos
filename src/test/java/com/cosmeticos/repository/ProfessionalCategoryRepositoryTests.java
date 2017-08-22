@@ -3,6 +3,7 @@ package com.cosmeticos.repository;
 import java.util.HashSet;
 
 import com.cosmeticos.model.Category;
+import com.cosmeticos.model.ProfessionalCategory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
 
 /**
  * Created by matto on 26/05/2017.
@@ -21,7 +21,7 @@ import com.cosmeticos.model.ProfessionalServices;
 @ActiveProfiles("treta")
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProfessionalServiceRepositoryTests {
+public class ProfessionalCategoryRepositoryTests {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -30,7 +30,7 @@ public class ProfessionalServiceRepositoryTests {
     private CategoryRepository serviceRepository;
     
     @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Before
     public void setupTests() {
@@ -47,28 +47,28 @@ public class ProfessionalServiceRepositoryTests {
         
         Category s = new Category();
         s.setName("cat");
-        s.setProfessionalServicesCollection(new HashSet<>());
+        s.setProfessionalCategoryCollection(new HashSet<>());
         serviceRepository.save(s);
         
         
-        ProfessionalServices ps1 = new ProfessionalServices(p, s);
+        ProfessionalCategory ps1 = new ProfessionalCategory(p, s);
 
-        professionalServicesRepository.save(ps1);
+        professionalCategoryRepository.save(ps1);
         
         
         /////////// Inserindo outro
 
         Category s2 = new Category();
         s2.setName("cat2");
-        s.setProfessionalServicesCollection(new HashSet<>());
+        s.setProfessionalCategoryCollection(new HashSet<>());
         
         serviceRepository.save(s2);
 
-        ProfessionalServices ps2= new ProfessionalServices(p, s2);
+        ProfessionalCategory ps2= new ProfessionalCategory(p, s2);
 
-        professionalServicesRepository.save(ps2);
+        professionalCategoryRepository.save(ps2);
 
-        org.junit.Assert.assertEquals(Long.valueOf(2), ps2.getProfessionalServicesId());
-        org.junit.Assert.assertEquals(2, p.getProfessionalServicesCollection().size());
+        org.junit.Assert.assertEquals(Long.valueOf(2), ps2.getProfessionalCategoryId());
+        org.junit.Assert.assertEquals(2, p.getProfessionalCategoryCollection().size());
     }   
 }

@@ -61,9 +61,9 @@ public class CashOrderControllerTests {
         category = categoryRepository.findWithSpecialties(category.getIdCategory());
 
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -76,7 +76,7 @@ public class CashOrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"paymentType\" : \"CASH\",\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+category.getIdCategory()+",\n" +
                 "        \"name\" : \"MASSAGISTA\"\n" +

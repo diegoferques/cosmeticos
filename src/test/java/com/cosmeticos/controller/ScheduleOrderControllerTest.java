@@ -78,9 +78,9 @@ public class ScheduleOrderControllerTest {
         serviceRepository.save(service);
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -104,7 +104,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 01, 12, 10)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -161,10 +161,10 @@ public class ScheduleOrderControllerTest {
 
 
 
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory());
         Assert.assertEquals("PEDICUREscheduledOrderOk",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
+                exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -201,9 +201,9 @@ public class ScheduleOrderControllerTest {
 
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -227,7 +227,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 14, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -284,10 +284,10 @@ public class ScheduleOrderControllerTest {
 
 
 
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory());
         Assert.assertEquals("scheduledOrderPutOk-service",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
+                exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -303,7 +303,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleEnd\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 16, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -366,7 +366,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 15, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -436,7 +436,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleEnd\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 16, 00, 0)).getTime() +"\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +

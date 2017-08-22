@@ -22,20 +22,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatus(Order.Status status);
 
 
-    List<Order> findByProfessionalServices_Professional_idProfessional(Long idProfessional);
+    List<Order> findByProfessionalCategory_Professional_idProfessional(Long idProfessional);
 
-    List<Order> findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
+    List<Order> findByStatusOrStatusAndProfessionalCategory_Professional_idProfessional(
             Order.Status s1, Order.Status s2, Long idProfessional);
 
     @Query(value = "" +
             "SELECT o " +
             "FROM Order o " +
-            "join fetch o.professionalServices ps " +
+            "join fetch o.professionalCategory ps " +
             "join fetch ps.professional p " +
             "WHERE p.idProfessional = ?1 " +
             "AND o.idOrder != ?2 " +
             "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
-    List<Order> findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+    List<Order> findByProfessionalCategory_Professional_idProfessionalAndStatusOrStatus(
             Long idProfessional, Long idOrder);
     
     /*
@@ -63,17 +63,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "" +
             "SELECT o " +
             "FROM Order o " +
-            "join fetch o.professionalServices ps " +
+            "join fetch o.professionalCategory ps " +
             "join fetch ps.professional p " +
             "WHERE p.idProfessional = ?1 " +
             "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
-    List<Order> findByProfessionalServices_Professional_idProfessionalAndDateOrDate(
+    List<Order> findByProfessionalCategory_Professional_idProfessionalAndDateOrDate(
             Long idProfessional);
 
     @Query(value = "" +
             "SELECT o " +
             "FROM Order o " +
-            "join fetch o.professionalServices ps " +
+            "join fetch o.professionalCategory ps " +
             "join fetch ps.professional p " +
             "WHERE p.idProfessional = ?1 " +
             "AND  o.status in( 'SCHEDULED', 'INPROGRESS' )")
@@ -83,7 +83,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "" +
             "SELECT o " +
             "FROM Order o " +
-            "join fetch o.professionalServices ps " +
+            "join fetch o.professionalCategory ps " +
             "join fetch ps.professional p " +
             "WHERE p.idProfessional = ?1 " +
             "AND  o.status in( 'SCHEDULED', 'INPROGRESS' ) " +

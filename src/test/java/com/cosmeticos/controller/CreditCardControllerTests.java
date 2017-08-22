@@ -2,8 +2,6 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardResponseBody;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.UserRepository;
@@ -23,7 +21,6 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 /**

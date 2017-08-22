@@ -3,10 +3,10 @@ package com.cosmeticos.config;
 import com.cosmeticos.model.Category;
 import com.cosmeticos.model.PriceRule;
 import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.repository.CategoryRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ProfessionalServicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 @Configuration
 @DependsOn({"professionalPreLoadConfiguration", "categoryPreLoadConfiguration"})
 @Profile("default")
-public class ProfessionalServicesPreLoadConfiguration {
+public class ProfessionalCategoryPreLoadConfiguration {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -30,7 +30,7 @@ public class ProfessionalServicesPreLoadConfiguration {
     private CategoryRepository serviceRepository;
 
     @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Transactional
     @PostConstruct
@@ -43,43 +43,43 @@ public class ProfessionalServicesPreLoadConfiguration {
         Professional p1 = professionalRepository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
         Category s1 = serviceRepository.findWithSpecialties(1L);
 
-        ProfessionalServices ps1 = new ProfessionalServices(p1, s1);
-        ps1.getPriceRule().add(pr1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(p1, s1);
+        pr1.setProfessionalCategory(ps1);
+//        ps1.getPriceRule().add(pr1);
 
-
-        professionalRepository.save(p1);
+        professionalCategoryRepository.save(ps1);
 
         /////////////////////////////////////////////////////////
         Professional p2 = professionalRepository.findOne(2L);        // Criamos o Usuario que nao existe no banco.
         Category s2 = serviceRepository.findWithSpecialties(2L);
 
-        ProfessionalServices ps2 = new ProfessionalServices(p2, s2);
+        ProfessionalCategory ps2 = new ProfessionalCategory(p2, s2);
 
-        professionalServicesRepository.save(ps2);
+        professionalCategoryRepository.save(ps2);
 
         /////////////////////////////////////////////////////////
         Professional p3 = professionalRepository.findOne(3L);        // Criamos o Usuario que nao existe no banco.
         Category s3 = serviceRepository.findWithSpecialties(3L);
 
-        ProfessionalServices ps3 = new ProfessionalServices(p3, s3);
+        ProfessionalCategory ps3 = new ProfessionalCategory(p3, s3);
 
-        professionalServicesRepository.save(ps3);
+        professionalCategoryRepository.save(ps3);
 
         /////////////////////////////////////////////////////////
         Professional p4 = professionalRepository.findOne(4L);        // Criamos o Usuario que nao existe no banco.
         Category s4 = serviceRepository.findWithSpecialties(4L);
 
-        ProfessionalServices ps4 = new ProfessionalServices(p4, s4);
+        ProfessionalCategory ps4 = new ProfessionalCategory(p4, s4);
 
-        professionalServicesRepository.save(ps4);
+        professionalCategoryRepository.save(ps4);
 
         /////////////////////////////////////////////////////////
         Professional p5 = professionalRepository.findOne(5L);        // Criamos o Usuario que nao existe no banco.
         Category s5 = serviceRepository.findWithSpecialties(5L);
 
-        ProfessionalServices ps5 = new ProfessionalServices(p5, s5);
+        ProfessionalCategory ps5 = new ProfessionalCategory(p5, s5);
 
-        professionalServicesRepository.save(ps5);
+        professionalCategoryRepository.save(ps5);
     }
 
 }

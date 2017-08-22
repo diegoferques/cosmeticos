@@ -19,7 +19,7 @@ import com.cosmeticos.model.Category;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ProfessionalServicesRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.CategoryRepository;
 
 /**
@@ -39,7 +39,7 @@ public class OrderServiceTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CategoryRepository serviceRepository;
@@ -69,10 +69,10 @@ public class OrderServiceTest {
         serviceProgramador.setName("PROGRAMADOR");
         serviceRepository.save(serviceProgramador);
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, serviceProgramador);
-        professionalServicesRepository.save(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, serviceProgramador);
+        professionalCategoryRepository.save(ps1);
         
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -84,7 +84,7 @@ public class OrderServiceTest {
         o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
-        o3.setProfessionalServices(ps1);
+        o3.setProfessionalCategory(ps1);
         o3.setPaymentType(Order.PayType.CASH);
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
@@ -96,7 +96,7 @@ public class OrderServiceTest {
         o4.setLastUpdate(Timestamp.valueOf(ldt1.minusDays(3)));
         o4.setIdCustomer(c1);
         //o4.setIdLocation();
-        o4.setProfessionalServices(ps1);
+        o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
         o4.setStatus(Order.Status.SEMI_CLOSED);
         o4.setPaymentType(Order.PayType.CASH);
@@ -110,7 +110,7 @@ public class OrderServiceTest {
         o5.setIdCustomer(c1);
         o5.setLastUpdate(Timestamp.valueOf(ldt2.minusDays(8)));
         //o5.setIdLocation();
-        o5.setProfessionalServices(ps1);
+        o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
         o5.setPaymentType(Order.PayType.CASH);
