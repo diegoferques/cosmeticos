@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -44,9 +42,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private PenaltyService penaltyService;
 
     @Autowired
     private VoteService voteService;

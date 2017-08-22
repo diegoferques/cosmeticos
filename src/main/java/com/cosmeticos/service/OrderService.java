@@ -186,7 +186,7 @@ public class OrderService {
 			throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
 		}
 
-		if(Order.Status.READY2CHARGE == order.getStatus()){
+		if(Order.Status.ACCEPTED == order.getStatus()){
 			if(Order.PayType.CASH == order.getPaymentType()){
 				order.setStatus(orderRequest.getStatus());
 			}

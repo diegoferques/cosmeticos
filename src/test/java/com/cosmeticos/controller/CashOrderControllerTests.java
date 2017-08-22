@@ -1,9 +1,8 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.*;
-import com.cosmeticos.repository.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +15,16 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Calendar;
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.model.Category;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.repository.CategoryRepository;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 
 /**
  * Created by Vinicius on 17/08/2017.
@@ -28,10 +32,6 @@ import java.util.Calendar;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CashOrderControllerTests {
-
-    private Order orderRestultFrom_createOrderOk = null;
-    private Order orderRestultFrom_testUpdateOk = null;
-
 
     @Autowired
     private TestRestTemplate restTemplate;
