@@ -406,22 +406,45 @@ public class MockingPaymentControllerTests {
     }
 
 
+    @MockBean
+    private RestTemplateBuilder restTemplateBuilder;
+
+    @Mock
+    private RestTemplate restTemplated;
+
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
-        optionalFakeRetornoTransacao.get().setStatusTransacao(HttpStatus.CONFLICT.ordinal());
 
+        ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
+
+        // Primeiro moca o RestTemplate
+        Mockito.when (
+                restTemplated.exchange(Mockito.anyObject(), RetornoTransacao.class)
+	    ).thenReturn(response);
+
+        // Depois moca o restTemplateBuilder de modo que ele construa o RestTemplate mocado que vc mocou acima
         Mockito.when(
-                paymentService.consultaTransacao(Mockito.any())
-        ).thenReturn(optionalFakeRetornoTransacao);
+                restTemplateBuilder.build()
+	    ).thenReturn(restTemplated);
+
+       // Mockito.when(
+       //         paymentService.consultaTransacao(Mockito.any())
+       // ).thenReturn(optionalFakeRetornoTransacao);
 
 
         //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
         //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
 
-//SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+
+
+        // TODO: vinicius fazer o request ao endpoint que dispara o pagamento: montar o json e fazer put pra order/ com status ACCEPTED ou SCHEDULED (escolhe um dos dois pois qq um dos dois dispara o pagamento)
+
+        //Assert.assertEquals(HttpStatus.CONFLICT, response.getStatusCodeValue());
+
+        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername("testConflictedOrder-customer1");
         c1.getUser().setEmail("testConflictedOrder-customer1@email.com");
@@ -509,7 +532,7 @@ public class MockingPaymentControllerTests {
         Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode());
 
 
-        Assert.assertEquals(HttpStatus.CONFLICT.ordinal(), optionalFakeRetornoTransacao.get().getStatusTransacao().hashCode());
+        //Assert.assertEquals(HttpStatus.CONFLICT.ordinal(), response.getStatusCodeValue());
 
 
 
