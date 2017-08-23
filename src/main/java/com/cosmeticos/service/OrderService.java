@@ -63,7 +63,7 @@ public class OrderService {
 
 	public Order create(OrderRequestBody orderRequest) throws ValidationException {
 
-		ProfessionalServices receivedProfessionalServices = orderRequest.getOrder().getProfessionalServices();
+		ProfessionalServices receivedProfessionalServices = orderRequest.getOrder().getProfessionalCategory();
 
 		/*
 		 * Buscando o cliente que foi informado no request. Do que chega no request, so
@@ -102,7 +102,7 @@ public class OrderService {
 
 				// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
 				// estra
-				order.setProfessionalServices(persistentProfessionalServices.get());
+				order.setProfessionalCategory(persistentProfessionalServices.get());
 
 				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
 				// order.setIdOrder(orderRequest.getOrder().getIdOrder());
@@ -156,7 +156,7 @@ public class OrderService {
 
 			for (int i = 0; i < savedOrders.size(); i++) {
 				Order o = savedOrders.get(i);
-				if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
+				if (o.getProfessionalCategory().getProfessional().getIdProfessional() == professional
 						.getIdProfessional()) {
 					totalOrders++;
 				}
@@ -208,16 +208,16 @@ public class OrderService {
 			order.setIdLocation(orderRequest.getIdLocation());
 		}
 
-		if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
+		if (!StringUtils.isEmpty(orderRequest.getProfessionalCategory())) {
 
-			Professional p = orderRequest.getProfessionalServices().getProfessional();
-			Category s = orderRequest.getProfessionalServices().getCategory();
+			Professional p = orderRequest.getProfessionalCategory().getProfessional();
+			Category s = orderRequest.getProfessionalCategory().getCategory();
 
 			ProfessionalServices ps = new ProfessionalServices(p, s);
 
 			professionalServicesRepository.save(ps);
 
-			order.setProfessionalServices(ps);
+			order.setProfessionalCategory(ps);
 
 		}
 
@@ -301,13 +301,13 @@ public class OrderService {
         // PARA VERIFICAR SE JA TEM ORDERS
         if (order.getIdOrder() == null) {
 
-            professional = order.getProfessionalServices().getProfessional();
+            professional = order.getProfessionalCategory().getProfessional();
 
             // SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
             // COMO O UPDATE DE STATUS
         } else {
             order = orderRepository.findOne(order.getIdOrder());
-            professional = order.getProfessionalServices().getProfessional();
+            professional = order.getProfessionalCategory().getProfessional();
             idOrder = order.getIdOrder();
         }
 
@@ -340,7 +340,7 @@ public class OrderService {
 		/*
 		Nao coloco muitos filtros na query e retorno bastante orders e aplico a logica no if la em baixo.
 		 */
-		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalServices().getProfessional().getIdProfessional());
+		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalCategory().getProfessional().getIdProfessional());
 		orderRepository.save(orders);
 		for (int i = 0; i < orders.size(); i++) {
 			Order o =  orders.get(i);
@@ -362,7 +362,7 @@ public class OrderService {
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
 		newOrderScheduleStart.getTime();
 
-		ProfessionalServices ps = order.getProfessionalServices();
+		ProfessionalServices ps = order.getProfessionalCategory();
 		Professional p = ps.getProfessional();
 
 		Long idProfessional = p.getIdProfessional();

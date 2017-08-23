@@ -375,10 +375,10 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory());
         Assert.assertEquals("PEDICURE",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
+                exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 

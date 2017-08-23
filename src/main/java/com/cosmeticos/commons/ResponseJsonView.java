@@ -25,4 +25,5 @@ public class ResponseJsonView {
     public interface ProfessionalUpdate {}
     public interface ProfessionalCreate {}
 	public interface CategoryGetAll {	}
+	public interface ScheduleByProfessionalInRunningOrders {}
 }

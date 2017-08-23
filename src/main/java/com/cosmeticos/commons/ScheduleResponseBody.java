@@ -1,6 +1,8 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Schedule;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -12,14 +14,20 @@ import java.util.List;
 @Data
 public class ScheduleResponseBody {
 
-    private String description;
+	@JsonView({ 
+		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
+	})
+	private String description;
 
-    private List<Schedule> scheduleList = new ArrayList<>(10);
+	@JsonView({ 
+		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
+	})
+	private List<Schedule> scheduleList = new ArrayList<>(10);
 
-    public ScheduleResponseBody() {
-    }
+	public ScheduleResponseBody() {
+	}
 
-    public ScheduleResponseBody(Schedule schedule) {
-        this.scheduleList.add(schedule);
-    }
+	public ScheduleResponseBody(Schedule schedule) {
+		this.scheduleList.add(schedule);
+	}
 }

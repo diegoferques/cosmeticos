@@ -71,7 +71,7 @@ public class ProfessionalServices implements Serializable {
     private Professional professional;
 
     @JsonIgnore // As vendas serao obtidas por endpoint especifico.
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
     private Collection<Order> orderCollection;
 
     @JsonView({

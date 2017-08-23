@@ -87,7 +87,7 @@ public class Order implements Serializable {
     })
     @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalCategoryId")
     @ManyToOne(optional = false)
-	private ProfessionalServices professionalServices;
+	private ProfessionalServices professionalCategory;
 
 	@JoinColumn(name = "idLocation", referencedColumnName = "id")
 	@ManyToOne(optional = true)
@@ -142,7 +142,7 @@ public class Order implements Serializable {
 	public Order(Customer idCustomer, ProfessionalServices professionalServices, Schedule scheduleId) {
 		this();
 		this.idCustomer = idCustomer;
-		this.professionalServices = professionalServices;
+		this.professionalCategory = professionalServices;
 		this.scheduleId = scheduleId;
 	}
 

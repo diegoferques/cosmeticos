@@ -4,19 +4,24 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
 
 /**
  *
@@ -32,7 +37,8 @@ public class Schedule implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+    		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +47,8 @@ public class Schedule implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+    		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date scheduleStart;
@@ -50,6 +57,7 @@ public class Schedule implements Serializable {
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
+    		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date scheduleEnd;
@@ -57,14 +65,16 @@ public class Schedule implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+    		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
     })
     private String title;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+    		ResponseJsonView.ScheduleByProfessionalInRunningOrders.class 
     })
     private String description;
 

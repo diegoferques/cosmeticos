@@ -71,7 +71,7 @@ public class OrderPreLoadConfiguration {
         o1.setIdCustomer(c1);
         o1.setPaymentType(Order.PayType.CASH);
         //o1.setIdLocation();
-        o1.setProfessionalServices(p1.getProfessionalServicesCollection().iterator().next());
+        o1.setProfessionalCategory(p1.getProfessionalServicesCollection().iterator().next());
 
         //o1.setScheduleId(s1);
         orderRepository.save(o1);
@@ -84,7 +84,7 @@ public class OrderPreLoadConfiguration {
         o2.setPaymentType(Order.PayType.CASH);
 
         //o2.setIdLocation();
-        o2.setProfessionalServices(ps1);
+        o2.setProfessionalCategory(ps1);
         //o2.setScheduleId(s1);
         orderRepository.save(o2);
 
@@ -96,7 +96,7 @@ public class OrderPreLoadConfiguration {
         o3.setPaymentType(Order.PayType.CASH);
 
         //o3.setIdLocation();
-        o3.setProfessionalServices(ps1);
+        o3.setProfessionalCategory(ps1);
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
 
@@ -108,7 +108,7 @@ public class OrderPreLoadConfiguration {
         o4.setPaymentType(Order.PayType.CASH);
 
         //o4.setIdLocation();
-        o4.setProfessionalServices(ps1);
+        o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
         o4.setStatus(Order.Status.SEMI_CLOSED);
 
@@ -122,7 +122,7 @@ public class OrderPreLoadConfiguration {
         //o5.setIdLocation();
         o5.setPaymentType(Order.PayType.CASH);
 
-        o5.setProfessionalServices(ps1);
+        o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
         orderRepository.save(o5);
@@ -136,7 +136,7 @@ public class OrderPreLoadConfiguration {
         o6.setPaymentType(Order.PayType.CASH);
 
         //o6.setIdLocation();
-        o6.setProfessionalServices(ps1);
+        o6.setProfessionalCategory(ps1);
         o6.setScheduleId(s1);
         orderRepository.save(o6);
 
@@ -149,9 +149,52 @@ public class OrderPreLoadConfiguration {
         o7.setPaymentType(Order.PayType.CASH);
 
         //o5.setIdLocation();
-        o7.setProfessionalServices(ps1);
+        o7.setProfessionalCategory(ps1);
         o7.setScheduleId(s2);
         orderRepository.save(o7);
+
+        //Scheduled Order
+        Order o8 = new Order();
+        o8.setStatus(Order.Status.INPROGRESS);
+        o8.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o8.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o8.setIdCustomer(c1);
+        o8.setPaymentType(Order.PayType.CREDITCARD);
+        o8.setProfessionalCategory(ps1);
+
+        Schedule s8 = new Schedule();
+        s8.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(5)));
+        o8.setScheduleId(s8);
+        
+        orderRepository.save(o8);
+
+        //Scheduled Order
+        Order o9 = new Order();
+        o9.setStatus(Order.Status.ACCEPTED);
+        o9.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o9.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o9.setIdCustomer(c1);
+        o9.setPaymentType(Order.PayType.CREDITCARD);
+        o9.setProfessionalCategory(ps1);
+
+        Schedule s9 = new Schedule();
+        s9.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(8)));
+        o9.setScheduleId(s9);
+        orderRepository.save(o9);
+
+        //Scheduled Order
+        Order o10 = new Order();
+        o10.setStatus(Order.Status.SCHEDULED);
+        o10.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o10.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o10.setIdCustomer(c1);
+        o10.setPaymentType(Order.PayType.CREDITCARD);
+        o10.setProfessionalCategory(ps1);
+
+        Schedule s10 = new Schedule();
+        s10.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusDays(2)));
+        o10.setScheduleId(s10);
+        orderRepository.save(o10);
 
     }
 }

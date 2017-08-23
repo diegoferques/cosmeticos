@@ -206,7 +206,7 @@ public class PaymentController {
         DadosCartao dadosCartao = this.getDadosCartao(creditCard);
         request.setDadosCartao(dadosCartao);
 
-        List<ItemPedido> itensDoPedido = this.getItensDoPedido(order.getProfessionalServices());
+        List<ItemPedido> itensDoPedido = this.getItensDoPedido(order.getProfessionalCategory());
         request.setItensDoPedido(itensDoPedido);
 
         DadosCobranca dadosCobranca = this.getDadosCobranca(order.getIdCustomer());

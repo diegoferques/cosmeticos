@@ -161,10 +161,10 @@ public class ScheduleOrderControllerTest {
 
 
 
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory());
         Assert.assertEquals("PEDICUREscheduledOrderOk",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
+                exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
@@ -284,10 +284,10 @@ public class ScheduleOrderControllerTest {
 
 
 
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices());
-        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory());
+        Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory());
         Assert.assertEquals("scheduledOrderPutOk-service",
-                exchange.getBody().getOrderList().get(0).getProfessionalServices().getCategory().getName());
+                exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory().getName());
 
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 

@@ -37,4 +37,13 @@ public class ScheduleService {
     public List<Schedule> find10Lastest() {
         return repository.findTop10ByOrderByScheduleStartDesc();
     }
+
+    /**
+     * Retorna agendamentos associados a orders iniciadas de um profissional.
+     * @param idProfessional
+     * @return
+     */
+	public List<Schedule> findByProfessional(Long idProfessional) {
+		return repository.findByProfessional(idProfessional);
+	}
 }
