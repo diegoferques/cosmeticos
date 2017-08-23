@@ -404,20 +404,39 @@ public class MockingPaymentControllerTests {
     }
 
 
+    @MockBean
+    private RestTemplateBuilder restTemplateBuilder;
+
+    @Mock
+    private RestTemplate restTemplate;
+
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
-        optionalFakeRetornoTransacao.get().setStatusTransacao(HttpStatus.CONFLICT.ordinal());
 
+        ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
+
+        // Primeiro moca o RestTemplate
+        Mockito.when (
+                restTemplate.exchange(Mockito.anyObject(), RetornoTransacao.class)
+	    ).thenReturn(response);
+
+        // Depois moca o restTemplateBuilder de modo que ele construa o RestTemplate mocado que vc mocou acima
         Mockito.when(
-                paymentService.consultaTransacao(Mockito.any())
-        ).thenReturn(optionalFakeRetornoTransacao);
+                restTemplateBuilder.build()
+	    ).thenReturn(restTemplate);
+
+       // Mockito.when(
+       //         paymentService.consultaTransacao(Mockito.any())
+       // ).thenReturn(optionalFakeRetornoTransacao);
 
         //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
         //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
 
+
+        // TODO: vinicius fazer o request ao endpoint que dispara o pagamento: montar o json e fazer put pra order/ com status ACCEPTED ou SCHEDULED (escolhe um dos dois pois qq um dos dois dispara o pagamento)
 
         Assert.assertNotNull(optionalFakeRetornoTransacao);
         Assert.assertEquals(HttpStatus.CONFLICT, optionalFakeRetornoTransacao.get().getStatusTransacao());
