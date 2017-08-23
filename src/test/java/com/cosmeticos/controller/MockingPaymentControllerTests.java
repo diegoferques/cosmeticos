@@ -29,7 +29,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -415,13 +417,187 @@ public class MockingPaymentControllerTests {
                 paymentService.consultaTransacao(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
+
         //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
         //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
 
+//SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testConflictedOrder-customer1");
+        c1.getUser().setEmail("testConflictedOrder-customer1@email.com");
+        c1.getUser().setPassword("123");
+        c1.setCpf("123.456.789-01");
 
-        Assert.assertNotNull(optionalFakeRetornoTransacao);
-        Assert.assertEquals(HttpStatus.CONFLICT, optionalFakeRetornoTransacao.get().getStatusTransacao());
+        Customer c2 = CustomerControllerTests.createFakeCustomer();
+        c2.getUser().setUsername("testConflictedOrder-customer2");
+        c2.getUser().setEmail("testConflictedOrder-customer2@email.com");
+        c2.getUser().setPassword("123");
+        c2.setCpf("123.456.789-02");
+
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testConflictedOrder-professional");
+        professional.getUser().setEmail("testConflictedOrder-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.456.789-03");
+
+        customerRepository.save(c1);
+        customerRepository.save(c2);
+        professionalRepository.save(professional);
+
+        Category service = categoryRepository.findByName("PEDICURE");
+        service = categoryRepository.findWithSpecialties(service.getIdCategory());
+
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+        //-------
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate);
 
 
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+
+        Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
+        //-------
+
+        //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
+        ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
+                createdOrder.getIdOrder(), Order.Status.ACCEPTED);
+
+        Assert.assertNotNull(exchangeUpdateAccepted);
+        Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
+
+        Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
+        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getStatus());
+        //-------
+
+        //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
+        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
+
+        RequestEntity<String> entity2 =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate2);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate2 = restTemplate
+                .exchange(entity2, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate2);
+        Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode());
+
+
+        Assert.assertEquals(HttpStatus.CONFLICT.ordinal(), optionalFakeRetornoTransacao.get().getStatusTransacao().hashCode());
+
+
+
+
+        //-------
+
+
+
+    }
+    public String getOrderCreateJson(Category category, Professional professional, Customer customer, PriceRule priceRule) {
+
+        String jsonCreate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \"CASH\",\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"status\" : \"ACTIVE\",\n" +
+                "      \"orderCollection\" : [ ]\n" +
+                "    },\n" +
+                "    \"professionalCategory\" : {\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
+                "        \"name\" : \"PEDICURE\"\n" +
+                "      },\n" +
+                "       \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
+                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
+                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
+                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
+                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
+                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
+                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
+                "        \"personType\":\"FÍSICA\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                "      \"idAddress\" : null\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        return jsonCreate;
+
+    }
+
+    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, Order.Status status) throws URISyntaxException {
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ orderId +",\n" +
+                "    \"status\" : \""+ status +"\"\n" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders")) // put pra atualizar o que inserimos la em cima
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        return exchangeUpdate;
     }
 }
