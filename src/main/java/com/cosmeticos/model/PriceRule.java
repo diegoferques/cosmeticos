@@ -8,12 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -36,16 +31,17 @@ public class PriceRule implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idPrice;
 
-    @NotEmpty(message="Hability name cannot be empty")
+    @NotEmpty(message="price name cannot be empty")
     private String name;
 
     @NotNull
     private Long price;
-    
-    @ManyToOne
-    private ProfessionalServices professionalCategory;
+
+    @JoinColumn(name = "professionalCategory_Id", referencedColumnName = "professionalCategoryId")
+    @ManyToOne(optional = false)
+    private ProfessionalCategory professionalCategory;
 
     public PriceRule() {
     }
@@ -54,18 +50,19 @@ public class PriceRule implements Serializable {
         this.name = name;
     }
 
-
+/*
     /**
      * Nao retornamos esse dado no json.
-     */
+
     @JsonIgnore
-    @ManyToMany(mappedBy = "habilityCollection")
+    @ManyToMany(mappedBy = "priceCollection")
     private Collection<Professional> professionalCollection = new ArrayList<>();
+*/
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() :
+        hash += (idPrice != null ? idPrice.hashCode() :
 
                 // Name eh unique, portanto nao preciso ter medo de usa-lo como hash.
                 name != null ? name.hashCode() : 0);
@@ -79,7 +76,7 @@ public class PriceRule implements Serializable {
             return false;
         }
         PriceRule other = (PriceRule) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.idPrice == null && other.idPrice != null) || (this.idPrice != null && !this.idPrice.equals(other.idPrice))) {
 
                 return false;
         }
@@ -88,7 +85,7 @@ public class PriceRule implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Hability[ id=" + id + " ]";
+        return "javaapplication2.entity.Hability[ id=" + idPrice + " ]";
     }
     
 }

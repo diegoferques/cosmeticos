@@ -109,7 +109,7 @@ public class OrderController {
                 //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
 
                 //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
-                voteService.create(order.getProfessionalServices().getProfessional().getUser(), request.getVote());
+                voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
                 log.info("Order atualizado com sucesso:  [{}].", order);

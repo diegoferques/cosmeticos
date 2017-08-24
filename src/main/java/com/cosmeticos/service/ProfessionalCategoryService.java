@@ -1,38 +1,38 @@
 package com.cosmeticos.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 
-import com.cosmeticos.commons.ProfessionalservicesRequestBody;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.repository.ProfessionalServicesRepository;
+import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.model.ProfessionalCategory;
 
 /**
  * Created by Vinicius on 21/06/2017.
  */
 @org.springframework.stereotype.Service
-public class ProfessionalServicesBeanServices {
+public class ProfessionalCategoryService {
 
     @Autowired
-    private ProfessionalServicesRepository repository;
+    private ProfessionalCategoryRepository repository;
 
-    public ProfessionalServices create(ProfessionalservicesRequestBody request){
+    public ProfessionalCategory create(ProfessionalCategoryRequestBody request){
 
-        ProfessionalServices ps = new ProfessionalServices();
+        ProfessionalCategory ps = new ProfessionalCategory();
         ps.setProfessional(request.getEntity().getProfessional());
         ps.setCategory(request.getEntity().getCategory());
+        ps.setPriceRule(request.getEntity().getPriceRule());
 
         return repository.save(ps);
     }
 
-    public Optional<ProfessionalServices> find(Long id){
+    public Optional<ProfessionalCategory> find(Long id){
         return Optional.ofNullable(repository.findOne(id));
     }
 
@@ -40,9 +40,9 @@ public class ProfessionalServicesBeanServices {
         throw new UnsupportedOperationException("Excluir de acordo com o Status. ");
     }
 
-    public List<ProfessionalServices> findAll() {
+    public List<ProfessionalCategory> findAll() {
 
-        Iterable<ProfessionalServices> result = repository.findAll();
+        Iterable<ProfessionalCategory> result = repository.findAll();
 
         return StreamSupport.stream(result.spliterator(), false)
                 .collect(Collectors.toList());
@@ -51,24 +51,24 @@ public class ProfessionalServicesBeanServices {
 
     /**
      * Usa a api Example do spring-data.
-     * @param professionalServicesProbe
+     * @param professionalCategoryProbe
      * @return
      */
-    public List<ProfessionalServices> findAllBy(ProfessionalServices professionalServicesProbe) {
-        return this.repository.findAll(Example.of(professionalServicesProbe));
+    public List<ProfessionalCategory> findAllBy(ProfessionalCategory professionalCategoryProbe) {
+        return this.repository.findAll(Example.of(professionalCategoryProbe));
     }
 
     //TODO - VERIFICAR SE TEM UMA FORMA MELHOR DE FAZER, ACHEI MUITO TRABALHOSO COMO ESTA ATUALMENTE
     //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
-    public List<ProfessionalServices> getNearby(ProfessionalServices Service, String latitude, String longitude, String radius) {
+    public List<ProfessionalCategory> getNearby(ProfessionalCategory Service, String latitude, String longitude, String radius) {
 
-        List<ProfessionalServices> professionalServicesList = repository.findAll(Example.of(Service));
-        List<ProfessionalServices> professionalServices = new ArrayList<>();
+        List<ProfessionalCategory> professionalCategoryList = repository.findAll(Example.of(Service));
+        List<ProfessionalCategory> professionalServices = new ArrayList<>();
 
         //ACHEI MELHOR PARSEAR SOMENTE UMA VEZ, POR ISSO CRIEI ESSA VARIAVEL
         Double distanciaLimite = Double.parseDouble(radius);
 
-        for (ProfessionalServices psl: professionalServicesList) {
+        for (ProfessionalCategory psl: professionalCategoryList) {
 
             if (psl.getProfessional().getAddress() != null) {
 

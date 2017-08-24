@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.ProfessionalServices;
+import com.cosmeticos.controller.ProfessionalCategoryController;
+import com.cosmeticos.model.ProfessionalCategory;
 
 /**
  * Visa determinar que campos serao retornados de uma classe no json de acordo com um contexto.
@@ -12,10 +13,10 @@ public class ResponseJsonView {
 
 	/**
      * Especifica que campos da entidade o endpoint mapeado por
-     * {@link com.cosmeticos.controller.ProfessionalServicesController#findAll(ProfessionalServices)}
+     * {@link ProfessionalCategoryController#findAll(ProfessionalCategory)}
      * serializara no json.
      */
-    public interface ProfessionalServicesFindAll {}
+    public interface ProfessionalCategoryFindAll {}
     public interface WalletsFindAll {}
     public interface CreditCardFindAll{}
     public interface OrderControllerCreate {}

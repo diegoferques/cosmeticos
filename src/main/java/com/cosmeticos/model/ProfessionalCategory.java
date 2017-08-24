@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,11 +25,11 @@ import java.util.Set;
 @Data
 @Entity
 //@SequenceGenerator(name = "myseq", sequenceName = "MY_SEQ", initialValue = 1, allocationSize = 1)
-public class ProfessionalServices implements Serializable {
+public class ProfessionalCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -38,10 +39,10 @@ public class ProfessionalServices implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
-    private Long professionalServicesId;
+    private Long professionalCategoryId;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -53,7 +54,7 @@ public class ProfessionalServices implements Serializable {
     private Category category;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -64,27 +65,30 @@ public class ProfessionalServices implements Serializable {
     private Professional professional;
 
     @JsonIgnore // As vendas serao obtidas por endpoint especifico.
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalServices")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
     private Collection<Order> orderCollection;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
     private Set<PriceRule> priceRule = new HashSet<>();
 
+
     @Override
     public String toString() {
-        return "javaapplication2.entity.ProfessionalServices[ id=" + professionalServicesId+ " ]";
+        return "javaapplication2.entity.ProfessionalCategory[ id=" + professionalCategoryId+ " ]";
     }
 
-	public ProfessionalServices(Professional p, Category s) {
+	public ProfessionalCategory(Professional p, Category s) {
 		this.professional = p;
 		this.category = s;
 
-		this.professional.getProfessionalServicesCollection().add(this);
-		this.category.getProfessionalServicesCollection().add(this);
+		this.professional.getProfessionalCategoryCollection().add(this);
+		this.category.getProfessionalCategoryCollection().add(this);
 
 	}
 
-	public ProfessionalServices() {
+
+	public ProfessionalCategory() {
 	}
 
 }

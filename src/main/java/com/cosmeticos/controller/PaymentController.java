@@ -206,7 +206,7 @@ public class PaymentController {
         DadosCartao dadosCartao = this.getDadosCartao(creditCard);
         request.setDadosCartao(dadosCartao);
 
-        List<ItemPedido> itensDoPedido = this.getItensDoPedido(order.getProfessionalServices());
+        List<ItemPedido> itensDoPedido = this.getItensDoPedido(order.getProfessionalCategory());
         request.setItensDoPedido(itensDoPedido);
 
         DadosCobranca dadosCobranca = this.getDadosCobranca(order.getIdCustomer());
@@ -253,7 +253,7 @@ public class PaymentController {
     }
 
     //PEGAMOS OS ITENS DO PEDIDO PARA UTILIZAR NA REQUISICAO
-    private List<ItemPedido> getItensDoPedido(ProfessionalServices professionalServices) {
+    private List<ItemPedido> getItensDoPedido(ProfessionalCategory professionalServices) {
 
         List<ItemPedido> itensDoPedido = new ArrayList<>();
         ItemPedido item = new ItemPedido();

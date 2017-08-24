@@ -7,20 +7,14 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Vinicius on 15/07/2017.
@@ -28,9 +22,6 @@ import java.util.Date;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OrderServiceTest {
-
-    @Value("${order.payment.secheduled.startDay}")
-    private String daysToStartPayment;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -42,7 +33,7 @@ public class OrderServiceTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CategoryRepository serviceRepository;
@@ -72,10 +63,10 @@ public class OrderServiceTest {
         serviceProgramador.setName("PROGRAMADOR");
         serviceRepository.save(serviceProgramador);
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, serviceProgramador);
-        professionalServicesRepository.save(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, serviceProgramador);
+        professionalCategoryRepository.save(ps1);
         
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -87,7 +78,7 @@ public class OrderServiceTest {
         o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
-        o3.setProfessionalServices(ps1);
+        o3.setProfessionalCategory(ps1);
         o3.setPaymentType(Order.PayType.CASH);
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
@@ -99,7 +90,7 @@ public class OrderServiceTest {
         o4.setLastUpdate(Timestamp.valueOf(ldt1.minusDays(3)));
         o4.setIdCustomer(c1);
         //o4.setIdLocation();
-        o4.setProfessionalServices(ps1);
+        o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
         o4.setStatus(Order.Status.SEMI_CLOSED);
         o4.setPaymentType(Order.PayType.CASH);
@@ -113,17 +104,16 @@ public class OrderServiceTest {
         o5.setIdCustomer(c1);
         o5.setLastUpdate(Timestamp.valueOf(ldt2.minusDays(8)));
         //o5.setIdLocation();
-        o5.setProfessionalServices(ps1);
+        o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
         o5.setPaymentType(Order.PayType.CASH);
         orderRepository.save(o5);
-                    }
+    }
 
 
     @Test
     public void testUpdateStatus(){
-
 
         orderService.updateStatus();
             o3 = orderRepository.findOne(o3.getIdOrder());
@@ -134,84 +124,5 @@ public class OrderServiceTest {
 
             Assert.assertEquals(Order.Status.AUTO_CLOSED, o5.getStatus());
             Assert.assertEquals(Order.Status.OPEN, o3.getStatus());
-    }
-
-    //TESTE SOMENTE PARA VERIFICAR O TRATAMENTO DAS DATAS
-    @Ignore
-    @Test
-    public void testCompareDates() {
-
-        int daysToStart = ((int) Integer.parseInt(daysToStartPayment));
-        System.out.println("VALUE: " + daysToStart);
-
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-        //INSTANCIAMOS O CALENDARIO
-        Calendar c = Calendar.getInstance();
-
-        //DATA ATUAL
-        Date now = new Date();
-        System.out.println("DATA ATUAL: " + dateFormat.format(now));
-
-        //ATRIBUIMOS A DATA ATUAL AO CALENDARIO
-        c.setTime(now);
-
-        Date dataIgual = c.getTime();
-        System.out.println("DATA IGUAL: " + dateFormat.format(now));
-
-        //VOLTAMOS 2 DIAS NO CALENDARIO BASEADO NA DATA ATUAL
-        c.add(Calendar.DATE, -daysToStart);
-
-        //DATA ATUAL MENOS 2 DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
-        Date dateToStartPayment = c.getTime();
-        System.out.println("DATA ATUAL MENOS 2 DIAS: " + dateFormat.format(dateToStartPayment));
-
-        //AVANCAMOS 4 DIAS NO CALENDARIO BASEADO NA DATA ATUAL
-        c.add(Calendar.DATE, 4);
-
-        //DATA ATUAL MENOS 2 DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
-        Date dateMaisDias = c.getTime();
-        System.out.println("DATA ATUAL MAIS 2 DIAS: " + dateFormat.format(dateMaisDias));
-
-        //SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO
-        if (now.after(dateToStartPayment)) {
-            System.out.println("DATA ATUAL É POSTERIOR A DATA PARA INICIAR O PAGAMENTO");
-        } else {
-            System.out.println("DATA ATUAL !NÃO! É POSTERIOR A DATA PARA INICIAR O PAGAMENTO");
-        }
-
-        if (now.after(dataIgual)) {
-            System.out.println("DATA ATUAL É POSTERIOR A DATA IGUAL");
-        } else {
-            System.out.println("DATA ATUAL !NÃO! É POSTERIOR A DATA IGUAL");
-        }
-
-        //SE A DATA ATUAL FOR ANTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO
-        if (now.before(dateToStartPayment)) {
-            System.out.println("DATA ATUAL É ANTERIOR A DATA PARA INICIAR O PAGAMENTO");
-        } else {
-            System.out.println("DATA ATUAL !NÃO! É ANTERIOR A DATA PARA INICIAR O PAGAMENTO");
-        }
-
-        //SE A DATA ATUAL FOR ANTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO
-        if (now.before(dateMaisDias)) {
-            System.out.println("DATA ATUAL É ANTERIOR A DATA MAIS DIAS");
-        } else {
-            System.out.println("DATA ATUAL !NÃO! É ANTERIOR A DATA PARA MAIS DIAS");
-        }
-
-        //SE A DATA ATUAL FOR IGUAL A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO
-        if (now.equals(dataIgual)) {
-            System.out.println("DATA ATUAL É IGUAL A DATA INFORMADA");
-        } else {
-            System.out.println("DATA ATUAL !NÃO! É IGUAL A DATA INFORMADA");
-        }
-
-        //SE A DATA ATUAL FOR IGUAL A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO
-        if (now.equals(dateMaisDias)) {
-            System.out.println("DATA ATUAL É IGUAL A DATA MAIS DIAS");
-        } else {
-            System.out.println("DATA ATUAL !NÃO! É IGUAL A DATA MAIS DIAS");
-        }
     }
 }

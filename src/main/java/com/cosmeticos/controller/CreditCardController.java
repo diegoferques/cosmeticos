@@ -1,10 +1,8 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CreditCardResponseBody;
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.ProfessionalServices;
 import com.cosmeticos.service.CreditCardService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -20,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 /**

@@ -7,8 +7,8 @@ import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ProfessionalServicesRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class OrderService {
 	private PaymentService paymentService;
 
 	@Autowired
-	private ProfessionalServicesRepository professionalServicesRepository;
+	private ProfessionalCategoryRepository professionalCategoryRepository;
 
 	public Optional<Order> find(Long idOrder) {
 		return Optional.of(orderRepository.findOne(idOrder));
@@ -63,7 +63,7 @@ public class OrderService {
 
 	public Order create(OrderRequestBody orderRequest) throws ValidationException {
 
-		ProfessionalServices receivedProfessionalServices = orderRequest.getOrder().getProfessionalServices();
+		ProfessionalCategory receivedProfessionalCategory = orderRequest.getOrder().getProfessionalCategory();
 
 		/*
 		 * Buscando o cliente que foi informado no request. Do que chega no request, so
@@ -76,13 +76,13 @@ public class OrderService {
 		// Checaremos Order.PAymentTypeCreditCard creditCard = orderRequest.getOrder().getCreditCardCollection().iterator().next();
 
 		Professional professional = professionalRepository
-				.findOne(receivedProfessionalServices.getProfessional().getIdProfessional());
+				.findOne(receivedProfessionalCategory.getProfessional().getIdProfessional());
 
 		// Conferindo se o ProfessionalServices recebido realmente esta associado ao
 		// Profissional em nossa base.
-		Optional<ProfessionalServices> persistentProfessionalServices = professional.getProfessionalServicesCollection()
+		Optional<ProfessionalCategory> persistentProfessionalServices = professional.getProfessionalCategoryCollection()
 				.stream().filter(ps -> ps.getCategory().getIdCategory()
-						.equals(receivedProfessionalServices.getCategory().getIdCategory()))
+						.equals(receivedProfessionalCategory.getCategory().getIdCategory()))
 				.findFirst();
 
 
@@ -102,7 +102,7 @@ public class OrderService {
 
 				// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
 				// estra
-				order.setProfessionalServices(persistentProfessionalServices.get());
+				order.setProfessionalCategory(persistentProfessionalServices.get());
 
 				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
 				// order.setIdOrder(orderRequest.getOrder().getIdOrder());
@@ -122,7 +122,7 @@ public class OrderService {
 				return newOrder;
 			} else {
 				throw new OrderService.ValidationException(
-						"Service [id=" + receivedProfessionalServices.getCategory().getIdCategory()
+						"Service [id=" + receivedProfessionalCategory.getCategory().getIdCategory()
 								+ "] informado no requst nao esta associado ao profissional " + "id=["
 								+ professional.getIdProfessional() + "] em nosso banco de dados.");
 			}
@@ -156,7 +156,7 @@ public class OrderService {
 
 			for (int i = 0; i < savedOrders.size(); i++) {
 				Order o = savedOrders.get(i);
-				if (o.getProfessionalServices().getProfessional().getIdProfessional() == professional
+				if (o.getProfessionalCategory().getProfessional().getIdProfessional() == professional
 						.getIdProfessional()) {
 					totalOrders++;
 				}
@@ -214,16 +214,16 @@ public class OrderService {
 			order.setIdLocation(orderRequest.getIdLocation());
 		}
 
-		if (!StringUtils.isEmpty(orderRequest.getProfessionalServices())) {
+		if (!StringUtils.isEmpty(orderRequest.getProfessionalCategory())) {
 
-			Professional p = orderRequest.getProfessionalServices().getProfessional();
-			Category s = orderRequest.getProfessionalServices().getCategory();
+			Professional p = orderRequest.getProfessionalCategory().getProfessional();
+			Category s = orderRequest.getProfessionalCategory().getCategory();
 
-			ProfessionalServices ps = new ProfessionalServices(p, s);
+			ProfessionalCategory ps = new ProfessionalCategory(p, s);
 
-			professionalServicesRepository.save(ps);
+			professionalCategoryRepository.save(ps);
 
-			order.setProfessionalServices(ps);
+			order.setProfessionalCategory(ps);
 
 		}
 
@@ -388,13 +388,13 @@ public class OrderService {
         // PARA VERIFICAR SE JA TEM ORDERS
         if (order.getIdOrder() == null) {
 
-            professional = order.getProfessionalServices().getProfessional();
+            professional = order.getProfessionalCategory().getProfessional();
 
             // SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
             // COMO O UPDATE DE STATUS
         } else {
             order = orderRepository.findOne(order.getIdOrder());
-            professional = order.getProfessionalServices().getProfessional();
+            professional = order.getProfessionalCategory().getProfessional();
             idOrder = order.getIdOrder();
         }
 
@@ -408,7 +408,7 @@ public class OrderService {
 		//Order.Status.ACCEPTED,
 		//Order.Status.INPROGRESS, professional.getIdProfessional());
 
-        List<Order> orderList = orderRepository.findByProfessionalServices_Professional_idProfessionalAndStatusOrStatus(
+        List<Order> orderList = orderRepository.findByProfessionalCategory_Professional_idProfessionalAndStatusOrStatus(
                 professional.getIdProfessional(), idOrder);
 
 		if (!orderList.isEmpty()) {
@@ -427,7 +427,7 @@ public class OrderService {
 		/*
 		Nao coloco muitos filtros na query e retorno bastante orders e aplico a logica no if la em baixo.
 		 */
-		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalServices().getProfessional().getIdProfessional());
+		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalCategory().getProfessional().getIdProfessional());
 		orderRepository.save(orders);
 		for (int i = 0; i < orders.size(); i++) {
 			Order o =  orders.get(i);
@@ -449,7 +449,7 @@ public class OrderService {
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
 		newOrderScheduleStart.getTime();
 
-		ProfessionalServices ps = order.getProfessionalServices();
+		ProfessionalCategory ps = order.getProfessionalCategory();
 		Professional p = ps.getProfessional();
 
 		Long idProfessional = p.getIdProfessional();
