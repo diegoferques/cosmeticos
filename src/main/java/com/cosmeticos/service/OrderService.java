@@ -180,7 +180,8 @@ public class OrderService {
 
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(order.getStatus() == orderRequest.getStatus()) {
-			throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+			//throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+			throw new OrderValidationException();
 		}
 
 		if (Order.Status.CLOSED == order.getStatus()) {
@@ -272,48 +273,46 @@ public class OrderService {
 		}
 	}
 
-	private void sendPaymentRequest(Order orderRequest) throws Exception {
+	private void sendPaymentRequest(Order orderRequest) throws ParseException, JsonProcessingException, Exception {
 
-		try {
-			Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentController.sendRequest(orderRequest);
+		Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentController.sendRequest(orderRequest);
 
-			if(retornoTransacaoSuperpay.isPresent()) {
+		if(retornoTransacaoSuperpay.isPresent()) {
 
-				//VALIDAMOS SE VEIO O STATUS QUE ESPERAMOS
-				//1 = Pago e Capturado | 2 = Pago e não Capturado (O CORRETO SERIA 1, POIS FAREMOS A CAPTURA POSTERIORMENTE)
-				if(retornoTransacaoSuperpay.get().getStatusTransacao() == 1 ||
-						retornoTransacaoSuperpay.get().getStatusTransacao() == 2) {
+			//VALIDAMOS SE VEIO O STATUS QUE ESPERAMOS
+			//1 = Pago e Capturado | 2 = Pago e não Capturado (O CORRETO SERIA 2, POIS FAREMOS A CAPTURA POSTERIORMENTE)
+			if(retornoTransacaoSuperpay.get().getStatusTransacao() == 2 ||
+					retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
 
-					//ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
-					//OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
-					Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.get());
-
-					if (updateStatusPagamento == false) {
-						//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
-						log.error("Erro ao enviar a requisição de pagamento");
-						throw new Exception("Erro ao enviar a requisição de pagamento");
-					}
-
-				//SE NAO VIER O STATUS DO PAGAMENTO 1 OU 2, VAMOS LANCAR UMA EXCECAO COM O STATUS VINDO DA SUPERPAY
-				} else {
-					//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO O STATUS FOR OUTRO
-					//TODO - SE FOR MESMO RETORNAR O CODIGO DO STATUS DO PAGAMENTO, PODERIA RETORNAR A MENSAGEM, NAO O CODIGO
-					log.error("Erro ao efetuar o pagamentos {}", retornoTransacaoSuperpay.get().getStatusTransacao());
-					throw new Exception("Erro ao efetuar o pagamento: " + retornoTransacaoSuperpay.get().getStatusTransacao());
+				//SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
+				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
+					log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
 				}
 
-			} else {
-				//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO NO PAGAMENTO NA SUPERPAY
-				log.error("Erro ao enviar a requisição de pagamento");
-				throw new Exception("Erro ao enviar a requisição de pagamento");
+				//ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
+				//OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
+				Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.get());
+
+				if (updateStatusPagamento == false) {
+					//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
+					log.error("Erro salvar o status do pagamento");
+					throw new Exception("Erro salvar o status do pagamento");
+				}
+
+			//SE NAO VIER O STATUS DO PAGAMENTO 1 OU 2, VAMOS LANCAR UMA EXCECAO COM O STATUS VINDO DA SUPERPAY
+			}else {
+				//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO O STATUS FOR OUTRO
+				//TODO - SE FOR MESMO RETORNAR O CODIGO DO STATUS DO PAGAMENTO, PODERIA RETORNAR A MENSAGEM, NAO O CODIGO
+				throw new Exception("Erro ao efetuar o pagamento: " + retornoTransacaoSuperpay.get().getStatusTransacao());
 			}
 
-		} catch (ParseException e) {
-			throw new Exception("ParseException", e);
-
-		} catch (JsonProcessingException e) {
-			throw new Exception("JsonProcessingException", e);
+		} else {
+			//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO NO PAGAMENTO NA SUPERPAY
+			log.error("Erro ao enviar a requisição de pagamento");
+			throw new Exception("Erro ao enviar a requisição de pagamento");
 		}
+
+
 	}
 
 	public String delete() {

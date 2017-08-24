@@ -9,7 +9,6 @@ import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -133,7 +131,7 @@ public class OrderController {
             String errorCode = String.valueOf(System.nanoTime());
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
-            orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
+            orderResponseBody.setDescription(e.getMessage());
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
