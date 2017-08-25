@@ -236,14 +236,10 @@ public class OrderService {
 			this.sendPaymentRequest(orderRequest);
 		}
 
-		//TIVE QUE COMENTAR A VALIDACAO ABAIXO POIS ESTAVA DANDO O ERRO ABAIXO:
-        //QUANDO VAMOS ATUALIZAR PARA SCHEDULED, AINDA NAO TEMOS OS DADOS QUE VAO SER ATUALIZADOS
-		//-- VALIDANDO O COMENTARIO ACIMA --//
 		//AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
 		if (orderRequest.getStatus() == Order.Status.SCHEDULED) {
 			this.validateScheduledAndsendPaymentRequest(orderRequest);
 		}
-
 
 		return orderRepository.save(order);
 	}
@@ -279,6 +275,47 @@ public class OrderService {
 		}
 	}
 
+	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
+	//BRANCH: RNF101
+	@Scheduled(cron = "${order.payment.secheduled.cron}")
+	private void findScheduledOrdersValidateAndsendPaymentRequest() throws Exception {
+
+		List<Order> orderList = orderRepository.findByStatus(Order.Status.SCHEDULED);
+
+		int daysToStart = Integer.parseInt(daysToStartPayment);
+
+		//INSTANCIAMOS O CALENDARIO
+		Calendar c = Calendar.getInstance();
+
+		//DATA ATUAL
+		//EX.: 20/08/2017
+		Date now = c.getTime();
+
+		for (Order order: orderList) {
+			if(Payment.Status.PAGO_E_NAO_CAPTURADO == order.getPayment().getStatus()) {
+
+				//PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
+				Date scheduleDateStart = order.getScheduleId().getScheduleStart();
+
+				//ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
+				c.setTime(scheduleDateStart);
+
+				//VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
+				c.add(Calendar.DATE, -daysToStart);
+
+				//DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
+				Date dateToStartPayment = c.getTime();
+
+				//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
+				if (now.after(dateToStartPayment)) {
+					sendPaymentRequest(order);
+				}
+			}
+		}
+
+	}
+
+	//TODO - ACHO QUE ESSE METODO MERECE UMA ATENCAO ESPECIAL PARA MELHORIAS NOS SEUS TRATAMENTOS DE ERROS E VALIDACOES
 	private void sendPaymentRequest(Order orderRequest) throws ParseException, JsonProcessingException, Exception {
 
 		Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentController.sendRequest(orderRequest);
