@@ -99,6 +99,7 @@ public class OrderService {
 				// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
 				// estra
 				order.setProfessionalCategory(persistentProfessionalServices.get());
+				order.getProfessionalCategory().setPriceRule(receivedProfessionalCategory.getPriceRule());
 
 				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
 				// order.setIdOrder(orderRequest.getOrder().getIdOrder());

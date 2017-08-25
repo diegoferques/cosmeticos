@@ -54,7 +54,11 @@ public class OrderController {
                 orderService.validate(request.getOrder());
 
                     Order order = orderService.create(request);
-                    log.info("Order adicionado com sucesso:  [{}]", order);
+                    log.info("Order adicionado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                            " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                            "{price: "+order.getProfessionalCategory().getPriceRule()+"}, " +
+                            "{status atual: "+order.getStatus()+"}]");
+
                     //return ok().build();
                 return ok(new OrderResponseBody(order));
 
