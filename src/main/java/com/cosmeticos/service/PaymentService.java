@@ -85,6 +85,10 @@ public class PaymentService {
                 result = false;
             }
 
+            if(exchange.getStatusCode() == HttpStatus.CONFLICT){
+                log.warn("Conflitou");
+            }
+
         } catch (Exception e) {
             log.error(e.toString());
 
@@ -126,6 +130,10 @@ public class PaymentService {
         } else {
             retornoTransacao = null;
 
+        }
+
+        if(exchange.getStatusCode() == HttpStatus.CONFLICT){
+            log.warn("Conflitou");
         }
 
         return Optional.ofNullable(retornoTransacao);
