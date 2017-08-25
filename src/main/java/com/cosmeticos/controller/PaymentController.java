@@ -4,6 +4,7 @@ import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.repository.AddressRepository;
+import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.service.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,6 +48,9 @@ public class PaymentController {
 
     @Value("${superpay.senha}")
     private String senha;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Autowired
     private PaymentService paymentService;
@@ -209,10 +213,13 @@ public class PaymentController {
         List<ItemPedido> itensDoPedido = this.getItensDoPedido(order.getProfessionalCategory());
         request.setItensDoPedido(itensDoPedido);
 
-        DadosCobranca dadosCobranca = this.getDadosCobranca(order.getIdCustomer());
+        //TIVE QUE ADICIONAR ISSO AQUI PARA CONSEGUIR PEGAR E PASSAR OS DADOS DE USER, POIS O DE ORDER ESTA COMO NULL
+        Customer customer = customerRepository.findOne(order.getIdCustomer().getIdCustomer());
+
+        DadosCobranca dadosCobranca = this.getDadosCobranca(customer);
         request.setDadosCobranca(dadosCobranca);
 
-        DadosEntrega dadosEntrega = this.getDadosEntrega(order.getIdCustomer());
+        DadosEntrega dadosEntrega = this.getDadosEntrega(customer);
         request.setDadosEntrega(dadosEntrega);
 
         return request;
