@@ -236,15 +236,21 @@ public class OrderService {
 			this.sendPaymentRequest(orderRequest);
 		}
 
+		//TIVE QUE COMENTAR A VALIDACAO ABAIXO POIS ESTAVA DANDO O ERRO ABAIXO:
+        //QUANDO VAMOS ATUALIZAR PARA SCHEDULED, AINDA NAO TEMOS OS DADOS QUE VAO SER ATUALIZADOS
+		//-- VALIDANDO O COMENTARIO ACIMA --//
 		//AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
 		if (orderRequest.getStatus() == Order.Status.SCHEDULED) {
 			this.validateScheduledAndsendPaymentRequest(orderRequest);
 		}
 
+
 		return orderRepository.save(order);
 	}
 
 	private void validateScheduledAndsendPaymentRequest(Order orderRequest) throws Exception {
+
+	    Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
 		int daysToStart = Integer.parseInt(daysToStartPayment);
 
@@ -256,7 +262,7 @@ public class OrderService {
 		Date now = c.getTime();
 
 		//PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
-		Date scheduleDateStart = orderRequest.getScheduleId().getScheduleStart();
+		Date scheduleDateStart = order.getScheduleId().getScheduleStart();
 
 		//ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
 		c.setTime(scheduleDateStart);
@@ -266,7 +272,7 @@ public class OrderService {
 
 		//DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
 		Date dateToStartPayment = c.getTime();
-
+        //TODO - DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
 		//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
 		if (now.after(dateToStartPayment)) {
 			sendPaymentRequest(orderRequest);
@@ -282,12 +288,19 @@ public class OrderService {
 			//VALIDAMOS SE VEIO O STATUS QUE ESPERAMOS
 			//1 = Pago e Capturado | 2 = Pago e não Capturado (O CORRETO SERIA 2, POIS FAREMOS A CAPTURA POSTERIORMENTE)
 			if(retornoTransacaoSuperpay.get().getStatusTransacao() == 2 ||
-					retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
+					retornoTransacaoSuperpay.get().getStatusTransacao() == 1 ||
+                    //TIVE QUE ADICIONAR O STATUS 31 (Transação já Paga), ENQUANTO NAO FAZEMOS AS VALIDACOES DOS STATUS
+					retornoTransacaoSuperpay.get().getStatusTransacao() == 31) {
 
 				//SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
 				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
 					log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
 				}
+
+                //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
+                if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
+                    log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
+                }
 
 				//ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
 				//OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
@@ -300,7 +313,7 @@ public class OrderService {
 				}
 
 			//SE NAO VIER O STATUS DO PAGAMENTO 1 OU 2, VAMOS LANCAR UMA EXCECAO COM O STATUS VINDO DA SUPERPAY
-			}else {
+			} else {
 				//TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO O STATUS FOR OUTRO
 				//TODO - SE FOR MESMO RETORNAR O CODIGO DO STATUS DO PAGAMENTO, PODERIA RETORNAR A MENSAGEM, NAO O CODIGO
 				throw new Exception("Erro ao efetuar o pagamento: " + retornoTransacaoSuperpay.get().getStatusTransacao());

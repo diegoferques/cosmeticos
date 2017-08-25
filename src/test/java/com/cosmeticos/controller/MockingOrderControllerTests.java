@@ -4,7 +4,6 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.PaymentService;
 import org.junit.Assert;
@@ -33,9 +32,6 @@ public class MockingOrderControllerTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    @Autowired
-    ProfessionalServicesRepository professionalServicesRepository;
 
     @MockBean
     private OrderService orderService;

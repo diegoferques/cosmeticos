@@ -169,6 +169,8 @@ public class ScheduleOrderControllerTest {
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
     }
+
+    //MOCK
     @Test
     public void scheduledOrderPutOk() throws URISyntaxException {
 

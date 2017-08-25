@@ -3,7 +3,9 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.*;
+import com.cosmeticos.repository.CategoryRepository;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 
 /**
  * Created by Vinicius on 17/08/2017.
@@ -149,6 +148,7 @@ public class CashOrderControllerTests {
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         OrderResponseBody responseBodyDoPut = exchangeUpdate.getBody();
+        //ERRO AQUI ABAIXO, VERIFICAR
         Order orderAtualizada = responseBodyDoPut.getOrderList().get(0);
 
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
