@@ -135,7 +135,8 @@ public class OrderController {
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
+            //TODO - FAZER ISSO EM TODAS OS CATCHS DE ORDER VALIDATION EXCEPION
+            return ResponseEntity.status(e.getStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

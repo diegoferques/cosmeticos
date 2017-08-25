@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
@@ -181,7 +182,7 @@ public class OrderService {
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(order.getStatus() == orderRequest.getStatus()) {
 			//throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
-			throw new OrderValidationException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+			throw new OrderValidationException(HttpStatus.CONFLICT, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
 		}
 
 		if (Order.Status.CLOSED == order.getStatus()) {
@@ -248,6 +249,11 @@ public class OrderService {
 		if (orderRequest.getStatus() == Order.Status.SCHEDULED) {
 			this.validateScheduledAndsendPaymentRequest(orderRequest);
 		}
+
+		//TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
+		//HTTPSTATUS DEFINIDO PARA CADA STATUS DE PAGAMENTO DA SUPERPAY
+		//CARD: https://trello.com/c/fyPMjNJI/113-adequar-status-do-pagamento-do-superpay-aos-nossos-status-da-order
+		//BRANCH: RNF101
 
 		return orderRepository.save(order);
 	}
