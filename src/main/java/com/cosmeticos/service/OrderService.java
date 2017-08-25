@@ -236,12 +236,36 @@ public class OrderService {
 			this.sendPaymentRequest(orderRequest);
 		}
 
+		//AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
+		if (orderRequest.getStatus() == Order.Status.READY2CHARGE) {
+			if(orderRequest.getPaymentType() == Order.PayType.CREDITCARD) {
+				this.validateReady2ChargeAndSendPaymentCapture(orderRequest.getIdOrder());
+			}
+		}
+
 		//AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
 		if (orderRequest.getStatus() == Order.Status.SCHEDULED) {
 			this.validateScheduledAndsendPaymentRequest(orderRequest);
 		}
 
 		return orderRepository.save(order);
+	}
+
+	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
+	//BRANCH: RNF101
+	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
+	private void validateReady2ChargeAndSendPaymentCapture(Long idOrder) throws JsonProcessingException {
+
+		Optional<RetornoTransacao> retornoConsultaTransacao = paymentService.consultaTransacao(idOrder);
+
+		if(retornoConsultaTransacao.isPresent()) {
+
+			//SE O STATUS ESTIVER NA SUPERPAY COMO PAGO E NAO CAPTURADO, ENTAO ENVIAMOS O PEDIDO DE CAPTURA
+			if (retornoConsultaTransacao.get().getStatusTransacao() == 2) {
+				paymentService.capturaTransacaoSuperpay(idOrder);
+			}
+		}
+
 	}
 
 	private void validateScheduledAndsendPaymentRequest(Order orderRequest) throws Exception {
@@ -277,8 +301,22 @@ public class OrderService {
 
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
+	//TODO - ACHEI NECESSARIO CRIAR UM CRON PARA PEDIDOS QUE AINDA ESTAO EM READY2CHARGE POR ALGUM ERRO OCORRIDO
+	@Scheduled(cron = "${order.payment.ready2charge.cron}")
+	private void findReady2ChargeOrdersCron() throws Exception {
+
+		List<Order> orderList = orderRepository.findByStatus(Order.Status.READY2CHARGE);
+
+		for (Order order: orderList) {
+			this.validateReady2ChargeAndSendPaymentCapture(order.getIdOrder());
+		}
+
+	}
+
+	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
+	//BRANCH: RNF101
 	@Scheduled(cron = "${order.payment.secheduled.cron}")
-	private void findScheduledOrdersValidateAndsendPaymentRequest() throws Exception {
+	private void findScheduledOrdersValidateAndSendPaymentRequest() throws Exception {
 
 		List<Order> orderList = orderRepository.findByStatus(Order.Status.SCHEDULED);
 

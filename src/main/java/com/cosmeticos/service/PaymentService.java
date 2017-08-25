@@ -51,6 +51,7 @@ public class PaymentService {
 
     //TODO - CRIAR AS ROTINAS PARA SALVAR NO BANCO O QUE FOR NECESSARIO DO RETORNO DO PAGAMENTO NO GATEWAY DE PAGAMENTO
 
+    //TODO - TEMOS QUE DEFINIR LOGO SE VAMOS USAR ORDER ID PARA CRIAR OS PEDIDOS NA SUPERPAY OU SE VAMOS USAR PAYMENT ID
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/118
     public Boolean capturaTransacaoSuperpay(Long numeroTransacao) throws JsonProcessingException {
 
@@ -77,6 +78,7 @@ public class PaymentService {
 
             //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
             if(exchange.getStatusCode() == HttpStatus.OK) {
+                //TODO - ESSA CHAMADA PARA ATUALIZAR STATUS DEVE FICAR AQUI OU DENTRO DO METODO QUE O CHAMOU? SE DER ERRO?
                 result = this.updatePaymentStatus(exchange.getBody());
 
             } else {

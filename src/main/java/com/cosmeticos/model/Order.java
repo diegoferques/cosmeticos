@@ -4,19 +4,8 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.*;
-
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
 
 import javax.persistence.*;
@@ -80,7 +69,7 @@ public class Order implements Serializable {
 	@Basic(optional = false)
 	@Column(name = "payment_Type")
 	@Enumerated(EnumType.STRING)
-	private PayType paymentType;
+	private PayType paymentType; //PQ NAO CRIARAM O NOME IGUAL? Rs
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
