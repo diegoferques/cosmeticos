@@ -192,6 +192,7 @@ public class OrderService {
 			throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
 		}
 
+		//TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
 		if(Order.Status.READY2CHARGE == order.getStatus()){
 			if(Order.PayType.CASH == order.getPaymentType()){
 				order.setStatus(orderRequest.getStatus());

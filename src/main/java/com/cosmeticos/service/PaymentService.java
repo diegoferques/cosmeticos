@@ -94,8 +94,7 @@ public class PaymentService {
         return result;
     }
 
-    //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
-    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
+    //VERIFICAMOS NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/129
     public Optional<RetornoTransacao> consultaTransacao(Long numeroTransacao) throws JsonProcessingException {
 
@@ -105,35 +104,28 @@ public class PaymentService {
 
         RetornoTransacao retornoTransacao;
 
-        try {
+        ObjectMapper om = new ObjectMapper();
+        String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
 
-            ObjectMapper om = new ObjectMapper();
-            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("usuario", jsonHeader);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("usuario", jsonHeader);
+        HttpEntity entity = new HttpEntity(headers);
 
-            HttpEntity entity = new HttpEntity(headers);
+        ResponseEntity<RetornoTransacao> exchange = restTemplate.exchange(
+                urlConsultaTransacao,
+                HttpMethod.GET,
+                entity,
+                RetornoTransacao.class
+                //        param
+        );
 
-            ResponseEntity<RetornoTransacao> exchange = restTemplate.exchange(
-                    urlConsultaTransacao,
-                    HttpMethod.GET,
-                    entity,
-                    RetornoTransacao.class
-                    //        param
-            );
+        if(exchange.getStatusCode() == HttpStatus.OK) {
+            retornoTransacao = exchange.getBody();
 
-            if(exchange.getStatusCode() == HttpStatus.OK) {
-                retornoTransacao = exchange.getBody();
-
-            } else {
-                retornoTransacao = null;
-
-            }
-
-        } catch (Exception e) {
+        } else {
             retornoTransacao = null;
-            log.error(e.toString());
+
         }
 
         return Optional.ofNullable(retornoTransacao);
