@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 /**
@@ -53,49 +54,33 @@ public class PaymentService {
 
     //TODO - TEMOS QUE DEFINIR LOGO SE VAMOS USAR ORDER ID PARA CRIAR OS PEDIDOS NA SUPERPAY OU SE VAMOS USAR PAYMENT ID
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/118
-    public Boolean capturaTransacaoSuperpay(Long numeroTransacao) throws JsonProcessingException {
+    public ResponseEntity<RetornoTransacao> capturaTransacaoSuperpay(Long numeroTransacao) throws JsonProcessingException, URISyntaxException {
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
         String urlCapturaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao + "/capturar";
 
-        Boolean result;
+        ObjectMapper om = new ObjectMapper();
+        String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
 
-        try {
+        //ESTAVA ANALISANDO E PUDE PERCEBER QUE RetornoTransacao E RetornoCaptura POSSUEM OS MESMOS ATRIBUTOS
+        //ENTAO, JOGUEI TUDO EM RetornoTransacao
+        RequestEntity<RetornoTransacao> entity = RequestEntity
+        //RequestEntity<RetornoCaptura> entity = RequestEntity
+                .post(new URI(urlCapturaTransacao))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("usuario", jsonHeader)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(null);
 
-            ObjectMapper om = new ObjectMapper();
-            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+        ResponseEntity<RetornoTransacao> exchange = restTemplate
+                .exchange(entity, RetornoTransacao.class);
 
-            RequestEntity<RetornoTransacao> entity = RequestEntity
-                    .post(new URI(urlCapturaTransacao))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("usuario", jsonHeader)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(null);
-
-            ResponseEntity<RetornoTransacao> exchange = restTemplate
-                    .exchange(entity, RetornoTransacao.class);
-
-            //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
-            if(exchange.getStatusCode() == HttpStatus.OK) {
-                //TODO - ESSA CHAMADA PARA ATUALIZAR STATUS DEVE FICAR AQUI OU DENTRO DO METODO QUE O CHAMOU? SE DER ERRO?
-                result = this.updatePaymentStatus(exchange.getBody());
-
-            } else {
-                result = false;
-            }
-
-            if(exchange.getStatusCode() == HttpStatus.CONFLICT){
-                log.warn("Conflitou");
-            }
-
-        } catch (Exception e) {
-            log.error(e.toString());
-
-            result = false;
+        if(exchange.getStatusCode() == HttpStatus.CONFLICT){
+            log.warn("Conflitou");
         }
 
-        return result;
+        return exchange;
     }
 
     //VERIFICAMOS NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
@@ -141,6 +126,7 @@ public class PaymentService {
 
     //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE
     public Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
+
         return true;
     }
 }

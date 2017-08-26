@@ -6,7 +6,9 @@ import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,6 +57,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -413,11 +419,55 @@ public class PaymentController {
         return Optional.ofNullable(retornoTransacao);
     }
 
-    //AQUI CAPTURAMOS A TRANSACAO NA SUPERPAY
-    public Boolean capturaTransacao(Long numeroTransacao) throws JsonProcessingException {
+    //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
+    //BRANCH: RNF101
+    //TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
+    public Boolean validatePaymentStatusAndSendCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
 
-        //COLOQUEI TODA A LOGICA E COMUNICACAO COM A SUPERPAY DENTRO DE PAYMENTSERVICE
-        return paymentService.capturaTransacaoSuperpay(numeroTransacao);
+        //Payment payment = paymentRepository.findOne(order.getPayment().getId());
+
+        Boolean validateAndCapture = false;
+
+        if(order.getStatus() == Order.Status.READY2CHARGE) {
+
+            Optional<RetornoTransacao> retornoConsultaTransacao = paymentService.consultaTransacao(order.getIdOrder());
+
+            if (retornoConsultaTransacao.isPresent()) {
+
+                //SE O STATUS ESTIVER NA SUPERPAY COMO PAGO E NAO CAPTURADO, ENTAO ENVIAMOS O PEDIDO DE CAPTURA
+                if (retornoConsultaTransacao.get().getStatusTransacao() == 2) {
+                    ResponseEntity<RetornoTransacao> exchange = this.capturaTransacao(order.getIdOrder());
+                    validateAndCapture = true;
+                } else {
+                    log.error("Status do pagamento na Superpay não permite captura");
+                }
+            }
+
+        } else {
+            throw new OrderValidationException(HttpStatus.FORBIDDEN, "Status da Order não permite efetuar captura do pagamento");
+        }
+
+        return validateAndCapture;
+
+    }
+
+    //MUDEI DE PUBLIC PARA PRIVATE, AGORA TEMOS QUE CHAMAR O VALIDATE ANTES DE ENVIAR PARA A SUPERPAY
+    //DEVERA SER VISTO SOMENTE PELA CLASSE
+    //AQUI CAPTURAMOS A TRANSACAO NA SUPERPAY E, CASO RETORNE HTTP STATUS 200(OK), ATUALIZAMOS O STATUS DE PAYMENT DA ORDER
+    private ResponseEntity<RetornoTransacao> capturaTransacao(Long numeroTransacao) throws JsonProcessingException, URISyntaxException {
+
+        ResponseEntity<RetornoTransacao> exchange = paymentService.capturaTransacaoSuperpay(numeroTransacao);
+
+        if(exchange.getStatusCode() == HttpStatus.OK) {
+
+            Boolean result = paymentService.updatePaymentStatus(exchange.getBody());
+
+            if (result == false) {
+                log.error("Erro ao atualizar o status de Order ID {} após capturar na Superpay", numeroTransacao);
+            }
+        }
+
+        return exchange;
     }
 
     private CampainhaSuperpeyResponseBody buildErrorResponse(BindingResult bindingResult) {

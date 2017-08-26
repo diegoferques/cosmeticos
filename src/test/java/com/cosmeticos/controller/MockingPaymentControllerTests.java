@@ -8,6 +8,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -317,15 +317,25 @@ public class MockingPaymentControllerTests {
     }
 
     @Test
-    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {
+    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
+
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao();
 
         Mockito.when(
-                paymentController.capturaTransacao(Mockito.any())
-        ).thenReturn(true);
+                paymentService.consultaTransacao(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
 
-        Long numeroTransacao = 3L;
+        Mockito.when(
+                paymentService.capturaTransacaoSuperpay(Mockito.any())
+        ).thenReturn(responseEntityFakeRetornoTransacao);
 
-        Boolean capturaTransacao = paymentController.capturaTransacao(numeroTransacao);
+
+        //validatePaymentStatusAndSendCapture
+
+        Order order = orderRepository.findOne(3L);
+
+        Boolean capturaTransacao = paymentController.validatePaymentStatusAndSendCapture(order);
 
         Assert.assertNotNull(capturaTransacao);
         Assert.assertEquals(true, capturaTransacao);
@@ -360,6 +370,14 @@ public class MockingPaymentControllerTests {
     }
 
     private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao() {
+        return Optional.of(this.getFakeRetornoTransacao());
+    }
+
+    private ResponseEntity<RetornoTransacao> getResponseEntityFakeRetornoTransacao() {
+        return ResponseEntity.ok(this.getFakeRetornoTransacao());
+    }
+
+    private RetornoTransacao getFakeRetornoTransacao() {
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");
@@ -379,8 +397,7 @@ public class MockingPaymentControllerTests {
         cartaoUtilizado.add("000000******0001");
         retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
 
-        return Optional.of(retornoTransacao);
-
+        return retornoTransacao;
     }
 
     public ResponseEntity<CampainhaSuperpeyResponseBody> executaCampainha(

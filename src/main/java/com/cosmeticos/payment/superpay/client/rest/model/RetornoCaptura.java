@@ -8,6 +8,7 @@ import java.util.Map;
 
 @Data
 public class RetornoCaptura {
+
     private Integer numeroTransacao;
     private String codigoEstabelecimento;
     private Integer codigoFormaPagamento;

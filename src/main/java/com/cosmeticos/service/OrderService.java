@@ -19,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
+import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,6 +38,9 @@ public class OrderService {
 
 	@Value("${order.payment.secheduled.startDay}")
 	private String daysToStartPayment;
+
+	@Value("${order.payment.secheduled.daysBeforeStartToNotification}")
+	private String daysBeforeStartToNotification;
 
 	@Autowired
 	private OrderRepository orderRepository;
@@ -238,16 +243,16 @@ public class OrderService {
 			this.sendPaymentRequest(orderRequest);
 		}
 
-		//AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-		if (orderRequest.getStatus() == Order.Status.READY2CHARGE) {
-			if(orderRequest.getPaymentType() == Order.PayType.CREDITCARD) {
-				this.validateReady2ChargeAndSendPaymentCapture(orderRequest.getIdOrder());
-			}
-		}
-
 		//AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
 		if (orderRequest.getStatus() == Order.Status.SCHEDULED) {
 			this.validateScheduledAndsendPaymentRequest(orderRequest);
+		}
+
+		//AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
+		if (orderRequest.getStatus() == Order.Status.READY2CHARGE) {
+			if(orderRequest.getPaymentType() == Order.PayType.CREDITCARD) {
+				this.sendPaymentCapture(order);
+			}
 		}
 
 		//TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
@@ -261,17 +266,32 @@ public class OrderService {
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
 	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
-	private void validateReady2ChargeAndSendPaymentCapture(Long idOrder) throws JsonProcessingException {
+	private void sendPaymentCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
 
+		//ACHEI MELHOR COMENTAR ABAIXO E UTILIZAR O PROXIMO
+		/*
 		Optional<RetornoTransacao> retornoConsultaTransacao = paymentService.consultaTransacao(idOrder);
 
 		if(retornoConsultaTransacao.isPresent()) {
 
 			//SE O STATUS ESTIVER NA SUPERPAY COMO PAGO E NAO CAPTURADO, ENTAO ENVIAMOS O PEDIDO DE CAPTURA
 			if (retornoConsultaTransacao.get().getStatusTransacao() == 2) {
-				paymentService.capturaTransacaoSuperpay(idOrder);
+				ResponseEntity<RetornoTransacao> exchange = paymentService.capturaTransacaoSuperpay(idOrder);
 			}
 		}
+		*/
+
+		//ACHEI MELHOR COLOCAR ESSA RESPONSABILIDADE DENTRO DE PAYMENTSERVICE, (OPS, CONTROLLER)
+		Boolean paymentCapture = paymentController.validatePaymentStatusAndSendCapture(order);
+
+		//DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
+		//POIS O CRON PEGA TODOS OS READY2CHARGE E ENVIA PARA ESTE METODO, SE DER ALGUM ERRO, TEMOS QUE FAZER ALGO
+		//CASO CONTRARIO, VAI FICAR TENTANDO CAPTURAR E NUNCA VAI CONSEGUIR ATE CADUCAR!
+		/*
+		if(!paymentCapture) {
+
+		}
+		*/
 
 	}
 
@@ -280,6 +300,9 @@ public class OrderService {
 	    Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
 		int daysToStart = Integer.parseInt(daysToStartPayment);
+		int daysBeforeStart = Integer.parseInt(daysBeforeStartToNotification);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 		//INSTANCIAMOS O CALENDARIO
 		Calendar c = Calendar.getInstance();
@@ -291,6 +314,8 @@ public class OrderService {
 		//PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
 		Date scheduleDateStart = order.getScheduleId().getScheduleStart();
 
+
+		//--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS COBRANCAS ---//
 		//ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
 		c.setTime(scheduleDateStart);
 
@@ -299,23 +324,80 @@ public class OrderService {
 
 		//DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
 		Date dateToStartPayment = c.getTime();
-        //TODO - DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
+
+
+		//--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS NOTIFICACOES AO CLIENTE CASO FALHE ---//
+		//ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
+		c.setTime(scheduleDateStart);
+
+		//VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
+		c.add(Calendar.DATE, -daysBeforeStart);
+
+		//UM DIA ANTES PARA NOTIFICAR AO CLIENTE SE DER ERRO NA RESERVA NO CARTAO E SUGERIR TROCAR PARA DINHEIRO
+		Date dateToStartNotification = c.getTime();
+
+
+        //TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
+		if(sdf.format(now).equals(sdf.format(dateToStartNotification))) {
+			//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
+			if(!sendPaymentRequest(orderRequest)) {
+				//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
+				log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
+			}
+
+		//TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
+		} else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
+			//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
+			if(!sendPaymentRequest(orderRequest)) {
+				//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
+				log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
+						" forma de pagamento seja alterado para dinheiro");
+			}
+
+		//TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
 		//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
-		if (now.after(dateToStartPayment)) {
+		} else if (now.after(dateToStartPayment)) {
+			//AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
 			sendPaymentRequest(orderRequest);
+
+		//TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
+		} else {
+			log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + orderRequest.getIdOrder());
 		}
+
 	}
 
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
 	//TODO - ACHEI NECESSARIO CRIAR UM CRON PARA PEDIDOS QUE AINDA ESTAO EM READY2CHARGE POR ALGUM ERRO OCORRIDO
 	@Scheduled(cron = "${order.payment.ready2charge.cron}")
-	private void findReady2ChargeOrdersCron() throws Exception {
+	private void findReady2ChargeOrdersAndSendPaymentCron() throws Exception {
 
 		List<Order> orderList = orderRepository.findByStatus(Order.Status.READY2CHARGE);
 
 		for (Order order: orderList) {
-			this.validateReady2ChargeAndSendPaymentCapture(order.getIdOrder());
+			this.sendPaymentCapture(order);
+		}
+
+	}
+
+	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
+	//BRANCH: RNF101
+	//TODO - ACHEI NECESSARIO CRIAR UM CRON PARA PEDIDOS QUE AINDA ESTAO EM ACCEPTED POR ALGUM ERRO OCORRIDO SEM PAYMENT
+	//SE FOR USAR ESSE CRON, SERA NECESSARIO DESCOMENTAR AQUI E EM PROPERTIES
+	//@Scheduled(cron = "${order.payment.accepted.cron}")
+	private void findAcceptedOrdersAndSendPaymentCron() throws Exception {
+
+		List<Order> orderList = orderRepository.findByStatus(Order.Status.ACCEPTED);
+
+		for (Order order: orderList) {
+			//TODO - URGENTE: SE DER ALGUM ERRO NA HORA DE EFETUAR A RESERVA QUANDO MUDAR O STATUS PARA ACCEPTED...
+			//AQUI FARIAMOS A RETENTATIVA NO CRON, POREM, EM QUAL SITUACAO DEVEMOS EFETUAR A TENTATIVA NOVAMENTE...
+			//E EM QUAL DEVEMOS TOMAR OUTRAS ATITUDES, BEM COMO NAO PERMITIR A CONTINUIDADE DE ORDER SE NAO PAGAR EM DINHEIRO
+			if (order.getPayment() == null) {
+				this.sendPaymentCapture(order);
+			}
+
 		}
 
 	}
@@ -328,6 +410,9 @@ public class OrderService {
 		List<Order> orderList = orderRepository.findByStatus(Order.Status.SCHEDULED);
 
 		int daysToStart = Integer.parseInt(daysToStartPayment);
+		int daysBeforeStart = Integer.parseInt(daysBeforeStartToNotification);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 		//INSTANCIAMOS O CALENDARIO
 		Calendar c = Calendar.getInstance();
@@ -351,9 +436,43 @@ public class OrderService {
 				//DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
 				Date dateToStartPayment = c.getTime();
 
-				//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
-				if (now.after(dateToStartPayment)) {
+
+				//--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS NOTIFICACOES AO CLIENTE CASO FALHE ---//
+				//ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
+				c.setTime(scheduleDateStart);
+
+				//VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
+				c.add(Calendar.DATE, -daysBeforeStart);
+
+				//UM DIA ANTES PARA NOTIFICAR AO CLIENTE SE DER ERRO NA RESERVA NO CARTAO E SUGERIR TROCAR PARA DINHEIRO
+				Date dateToStartNotification = c.getTime();
+
+				//TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
+				if(sdf.format(now).equals(sdf.format(dateToStartNotification))) {
+					//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
+					if(!sendPaymentRequest(order)) {
+						//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
+						log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
+					}
+
+					//TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
+				} else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
+					//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
+					if(!sendPaymentRequest(order)) {
+						//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
+						log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
+								" forma de pagamento seja alterado para dinheiro");
+					}
+
+					//TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
+					//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
+				} else if (now.after(dateToStartPayment)) {
+					//AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
 					sendPaymentRequest(order);
+
+					//TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
+				} else {
+					log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + order.getIdOrder());
 				}
 			}
 		}
@@ -361,7 +480,9 @@ public class OrderService {
 	}
 
 	//TODO - ACHO QUE ESSE METODO MERECE UMA ATENCAO ESPECIAL PARA MELHORIAS NOS SEUS TRATAMENTOS DE ERROS E VALIDACOES
-	private void sendPaymentRequest(Order orderRequest) throws ParseException, JsonProcessingException, Exception {
+	private Boolean sendPaymentRequest(Order orderRequest) throws ParseException, JsonProcessingException, Exception {
+
+		Boolean senPaymentStatus = false;
 
 		Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentController.sendRequest(orderRequest);
 
@@ -377,11 +498,18 @@ public class OrderService {
 				//SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
 				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
 					log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
+					senPaymentStatus = true;
+				}
+
+				//SE FOR PAGO E NAO CAPTURADO, CORREU TUDO CERTO!
+				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 2) {
+					senPaymentStatus = true;
 				}
 
                 //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
-                if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
+                if (retornoTransacaoSuperpay.get().getStatusTransacao() == 31) {
                     log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
+					senPaymentStatus = true;
                 }
 
 				//ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
@@ -407,6 +535,7 @@ public class OrderService {
 			throw new Exception("Erro ao enviar a requisição de pagamento");
 		}
 
+		return senPaymentStatus;
 
 	}
 
