@@ -1846,6 +1846,10 @@ public class OrderControllerTests {
         Assert.assertTrue((float)3.0 == vote);
         //-------
     }
+
+    /*
+     * RNF119
+     */
     @Test
     public void updateScheduledOrderOkToOrderStatusScheduledBadRequest() throws URISyntaxException {
 

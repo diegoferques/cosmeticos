@@ -143,7 +143,7 @@ public class OrderController {
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
 
-            MDC.put("erroCode", errorCode);
+            MDC.put("errorCode", errorCode);
             MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
