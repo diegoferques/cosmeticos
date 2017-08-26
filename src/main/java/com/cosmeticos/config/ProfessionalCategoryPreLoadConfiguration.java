@@ -45,11 +45,16 @@ public class ProfessionalCategoryPreLoadConfiguration {
 
         ProfessionalCategory ps1 = new ProfessionalCategory(p1, s1);
         pr1.setProfessionalCategory(ps1);
-//        ps1.getPriceRule().add(pr1);
+//      ps1.getPriceRule().add(pr1);
 
         professionalCategoryRepository.save(ps1);
 
         /////////////////////////////////////////////////////////
+
+        PriceRule pr2 = new PriceRule();
+        pr2.setName("Cabelo curto");
+        pr2.setPrice(10000L);
+
         Professional p2 = professionalRepository.findOne(2L);        // Criamos o Usuario que nao existe no banco.
         Category s2 = serviceRepository.findWithSpecialties(2L);
 
