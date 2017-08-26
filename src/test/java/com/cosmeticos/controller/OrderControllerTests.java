@@ -1450,7 +1450,7 @@ public class OrderControllerTests {
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername("testConflictedOrder-professional");
-        professional.getUser().setEmail("testConflictedOrder-professional@email.com");
+        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
 

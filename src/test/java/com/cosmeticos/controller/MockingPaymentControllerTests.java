@@ -12,20 +12,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,7 +40,7 @@ import java.util.Optional;
 public class MockingPaymentControllerTests {
 
     @MockBean
-    PaymentService paymentService;
+    private PaymentService paymentService;
 
     @MockBean
     private PaymentController paymentController;
@@ -406,40 +402,27 @@ public class MockingPaymentControllerTests {
         return exchange;
     }
 
-
-    @MockBean
-    private RestTemplateBuilder restTemplateBuilder;
-
-    @Mock
-    private RestTemplate restTemplated;
-
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
         //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
+
+
+        Mockito.doReturn(true).when(paymentService).updatePaymentStatus(
+                Mockito.anyObject()
+        );
 
         ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
-
-        // Primeiro moca o RestTemplate
-        Mockito.when (
-                restTemplated.exchange(Mockito.anyObject(), RetornoTransacao.class)
-	    ).thenReturn(response);
-
-        // Depois moca o restTemplateBuilder de modo que ele construa o RestTemplate mocado que vc mocou acima
-        Mockito.when(
-                restTemplateBuilder.build()
-	    ).thenReturn(restTemplated);
-
-       // Mockito.when(
-       //         paymentService.consultaTransacao(Mockito.any())
-       // ).thenReturn(optionalFakeRetornoTransacao);
-
-
-        //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
-        //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
-
-
+        Mockito.doReturn(response).when(paymentService).doConsultaTransacaoRequest(
+                Mockito.anyObject(),
+                Mockito.anyObject()
+        );
 
         // TODO: vinicius fazer o request ao endpoint que dispara o pagamento: montar o json e fazer put pra order/ com status ACCEPTED ou SCHEDULED (escolhe um dos dois pois qq um dos dois dispara o pagamento)
 

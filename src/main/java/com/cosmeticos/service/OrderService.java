@@ -410,7 +410,8 @@ public class OrderService {
 		Long idOrder = 0L;
         Professional professional;
 
-		validateScheduledBadRequest(order);
+		if(order.getScheduleId() != null)
+			validateScheduledBadRequest(order);
 
         // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
         // PARA VERIFICAR SE JA TEM ORDERS

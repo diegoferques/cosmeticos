@@ -72,8 +72,7 @@ public class PaymentService {
                     .accept(MediaType.APPLICATION_JSON)
                     .body(null);
 
-            ResponseEntity<RetornoTransacao> exchange = restTemplate
-                    .exchange(entity, RetornoTransacao.class);
+            ResponseEntity<RetornoTransacao> exchange = doConsultaTransacaoRequest(restTemplate, entity);
 
             //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
             if(exchange.getStatusCode() == HttpStatus.OK) {
@@ -94,6 +93,10 @@ public class PaymentService {
         }
 
         return result;
+    }
+
+    public ResponseEntity<RetornoTransacao> doConsultaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
+        return restTemplate.exchange(entity, RetornoTransacao.class);
     }
 
     //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO

@@ -3,8 +3,10 @@ package com.cosmeticos;
 import com.cosmeticos.controller.ControllersInterceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -15,6 +17,18 @@ public class Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
+	}
+
+	/**
+	 *
+	 * @param restTemplateBuilder Como RestTemplateBuilder ja eh um @Service internamente pelo spring, inclui-lo como argumento
+	 *                            de um metodo @Bean faz o parametro restTemplateBuilder sofrer autowire.
+	 * @return
+	 */
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder)
+	{
+		return restTemplateBuilder.build();
 	}
 
 	/**
