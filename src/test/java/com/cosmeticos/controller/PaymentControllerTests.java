@@ -394,4 +394,244 @@ public class PaymentControllerTests {
     }
 
 
+    @Test
+    public void testPaymentOkFromMockedTest() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        /*
+         PRE-CONDICOES para o teste:
+         Criamos um Customer qualquer.
+         Criamos um Profissional qualquer e o associamos a um Service.
+         Salvamos tudo no banco.
+         Criamos uma Order
+         */
+
+        //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
+
+        String emailCustomer = "testPaymentOk-customer1@email.com";
+
+        String jsonCustomerCreate = "{\n" +
+                "   \"customer\":{\n" +
+                "      \"address\":{\n" +
+                "         \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
+                "         \"cep\":\"26083-275\",\n" +
+                "         \"city\":\"Nova Iguaçu\",\n" +
+                "         \"country\":\"BR\",\n" +
+                "         \"neighborhood\":\"Rodilândia\",\n" +
+                "         \"state\":\"RJ\"\n" +
+                "      },\n" +
+                "      \"birthDate\":1310353200000,\n" +
+                "      \"cellPhone\":null,\n" +
+                "      \"dateRegister\":null,\n" +
+                "      \"genre\":null,\n" +
+                "      \"status\":null,\n" +
+                "      \"user\":{\n" +
+                "         \"email\":\""+ emailCustomer +"\",\n" +
+                "         \"idLogin\":null,\n" +
+                "         \"password\":\"123\",\n" +
+                "         \"sourceApp\":null,\n" +
+                "         \"username\":\""+ emailCustomer +"\"\n" +
+                "      },\n" +
+                "      \"cpf\":\"123.605.789-05\",\n" +
+                "      \"idAddress\":null,\n" +
+                "      \"idCustomer\":null,\n" +
+                "      \"idLogin\":null,\n" +
+                "      \"nameCustomer\":\"testPaymentOk-customer1\"\n" +
+                "   }\n" +
+                "}";
+
+        System.out.println(jsonCustomerCreate);
+
+        RequestEntity<String> entityCustomer =  RequestEntity
+                .post(new URI("/customers"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCustomerCreate);
+
+        ResponseEntity<CustomerResponseBody> exchange = restTemplate
+                .exchange(entityCustomer, CustomerResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals("testPaymentOk-customer1", exchange.getBody().getCustomerList().get(0).getNameCustomer());
+
+        //ABAIXO SEGUE O CUSTOMER QUE FOI RETORNADO APOS CRIAR ACIMA, NOTE QUE O ID DE ADDRESS RETORNADO FOI 15
+        Customer customer = exchange.getBody().getCustomerList().get(0);
+
+        //TODO - AO BUSCAR NO BANCO O CUSTOMER PELO ID, O ADDRESS RETORNADO NAO EH O MESMO QUE FOI CRIADO INICIALMENTE
+        //ABAIXO SEGUE O CUSTOMER QUE BUSCAMOS NO BANCO PELO ID DO CUSTOMER CRIADO ACIMA, O ID DE ADDRESS RETORNADO FOI 7
+        Customer customer2 = customerRepository.findOne(customer.getIdCustomer());
+
+        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
+
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testPaymentOk-professional");
+        professional.getUser().setEmail("testPaymentOk-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.605.789-06");
+
+        customerRepository.save(customer);
+        professionalRepository.save(professional);
+
+        Category category = categoryRepository.findByName("PEDICURE");
+        category = categoryRepository.findWithSpecialties(category.getIdCategory());
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
+        //ADICIONADO PARA TESTAR O NULLPOINTER
+        //professionalServicesRepository.save(ps1);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalRepository.save(professional);
+
+        /*
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"status\" : \"ACTIVE\",\n" +
+                "      \"orderCollection\" : [ ]\n" +
+                "    },\n" +
+                "    \"professionalServices\" : {\n" +
+                "      \"service\" : {\n" +
+                "        \"idService\" : "+ service.getIdService() +",\n" +
+                "        \"category\" : \"PEDICURE\"\n" +
+                "      },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
+                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
+                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
+                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
+                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
+                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
+                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                //"      \"idAddress\" : null\n" +
+                "       \"idAddress\": { \n" +
+                "   	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
+                "   	    \"cep\": \"26083-275\",\n" +
+                "   	    \"neighborhood\": \"Rodilândia\",\n" +
+                "   	    \"city\": \"Nova Iguaçu\",\n" +
+                "   	    \"state\": \"RJ\",\n" +
+                "   	    \"country\": \"BR\" \n" +
+                "       },\n" +
+                "       \"address\": { \n" +
+                "   	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
+                "   	    \"cep\": \"26083-275\",\n" +
+                "   	    \"neighborhood\": \"Rodilândia\",\n" +
+                "   	    \"city\": \"Nova Iguaçu\",\n" +
+                "   	    \"state\": \"RJ\",\n" +
+                "   	    \"country\": \"BR\" \n" +
+                "       }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        */
+
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \""+ Order.PayType.CREDITCARD +"\",\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                //"      \"status\" : \"ACTIVE\",\n" +
+                //"      \"orderCollection\" : [ ]\n" +
+                //"    },\n" +
+
+                "    \"professionalCategory\" : {\n" +
+                "      \"category\" : {\n" +
+                "        \"idCategory\" : "+category.getIdCategory()+"\n" +
+                //"        \"category\" : \"PEDICURE\"\n" +
+                "      },\n" +
+                "      \"professional\" : {\n" +
+                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
+                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
+                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
+                "        \"genre\" : \"F\",\n" +
+                "        \"birthDate\" : 688010400000,\n" +
+                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "        \"dateRegister\" : 1499195092952,\n" +
+                "        \"status\" : 0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"idLocation\" : null,\n" +
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
+                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
+                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
+                "      \"genre\" : \"F\",\n" +
+                "      \"birthDate\" : 688010400000,\n" +
+                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
+                "      \"dateRegister\" : 1499195092952,\n" +
+                "      \"status\" : 0,\n" +
+                "      \"idLogin\" : {\n" +
+                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
+                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
+                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
+                "        \"sourceApp\" : \"facebook\"\n" +
+                "      },\n" +
+                "      \"idAddress\" : "+ customer.getAddress().getIdAddress() +",\n" +
+                "      \"address\": { \n" +
+                "   	    \"idAddress\": "+ customer.getAddress().getIdAddress() +"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        System.out.println(jsonCreateOrder);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreateOrder);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
+        //-- checar se o seu teste esta incluindo address no json
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Order order = exchangeCreate.getBody().getOrderList().get(0);
+        Order order1 = orderRepository.findOne(order.getIdOrder());
+
+        //TODO - OS DO ENDERECO NAO ESTAO VINDO
+        Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
+
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
+
+        Assert.assertNotNull(retornoTransacao.isPresent());
+        Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
+        Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
+
+    }
+
+
 }
