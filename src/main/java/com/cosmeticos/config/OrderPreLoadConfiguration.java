@@ -164,13 +164,14 @@ public class OrderPreLoadConfiguration {
 
         Schedule s8 = new Schedule();
         s8.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(5)));
+        s8.setScheduleEnd(Timestamp.valueOf(LocalDateTime.now().plusHours(7)));// 2 horas de trabalho.
         o8.setScheduleId(s8);
         
         orderRepository.save(o8);
 
         //Scheduled Order
         Order o9 = new Order();
-        o9.setStatus(Order.Status.ACCEPTED);
+        o9.setStatus(Order.Status.SCHEDULED);
         o9.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setIdCustomer(c1);
@@ -179,6 +180,7 @@ public class OrderPreLoadConfiguration {
 
         Schedule s9 = new Schedule();
         s9.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(8)));
+        s9.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusMinutes(30))); // meia hora de trabalho.
         o9.setScheduleId(s9);
         orderRepository.save(o9);
 
@@ -193,6 +195,7 @@ public class OrderPreLoadConfiguration {
 
         Schedule s10 = new Schedule();
         s10.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusDays(2)));
+        s10.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(4)));//4h de servico
         o10.setScheduleId(s10);
         orderRepository.save(o10);
 

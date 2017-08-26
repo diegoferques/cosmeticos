@@ -1,5 +1,6 @@
 package com.cosmeticos.config;
 
+import static java.time.LocalDateTime.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -63,6 +64,7 @@ public class ProfessionalPreLoadConfiguration {
         p1.setNameProfessional("Garry");
         p1.setAttendance(Type.HOME_CARE);
         p1.setAddress(address1);
+        p1.setDateRegister(Timestamp.valueOf(now()));
         address1.setProfessional(p1);
 
         // bidirecional reference
@@ -88,6 +90,7 @@ public class ProfessionalPreLoadConfiguration {
         s2.setNameProfessional("Diego");
         s2.setAddress(address2);
         s2.setUser(user2);
+        s2.setDateRegister(Timestamp.valueOf(now()));
 
 
 
@@ -106,6 +109,7 @@ public class ProfessionalPreLoadConfiguration {
 
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
+        s3.setDateRegister(Timestamp.valueOf(now()));
 
 
         s3.setAddress(address3);
@@ -123,6 +127,7 @@ public class ProfessionalPreLoadConfiguration {
 
         Professional s4 = new Professional();
         s4.setNameProfessional("Vinicius");
+        s4.setDateRegister(Timestamp.valueOf(now()));
 
         s4.setAddress(address4);
         address4.setProfessional(s4);
@@ -139,6 +144,7 @@ public class ProfessionalPreLoadConfiguration {
 
         Professional s5 = new Professional();
         s5.setNameProfessional("Habib");
+        s5.setDateRegister(Timestamp.valueOf(now()));
 
         s5.setAddress(address5);
         address5.setProfessional(s5);
@@ -170,6 +176,7 @@ public class ProfessionalPreLoadConfiguration {
         s6.setNameProfessional("Kelly");
         s6.setAddress(address6);
         s6.setUser(user6);
+        s6.setDateRegister(Timestamp.valueOf(now()));
 
 
         address6.setProfessional(s6);
@@ -190,6 +197,7 @@ public class ProfessionalPreLoadConfiguration {
         Professional s7 = new Professional();
         s7.setNameProfessional("Kdoba");
         s7.setAddress(address7);
+        s7.setDateRegister(Timestamp.valueOf(now()));
 
         s7.setUser(user7);
 

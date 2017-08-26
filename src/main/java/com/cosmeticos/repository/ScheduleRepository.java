@@ -37,6 +37,6 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
             "join o.professionalCategory pc " +
             "join pc.professional p " +
             "WHERE p.idProfessional = ?1 " +
-            "AND  o.status in( 'INPROGRESS', 'ACCEPTED', 'SCHEDULED' )")
+            "AND  o.status in( 'INPROGRESS', 'SCHEDULED' )")
 	List<Schedule> findByProfessional(Long idProfessional);
 }

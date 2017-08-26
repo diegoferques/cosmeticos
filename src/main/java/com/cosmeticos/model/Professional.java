@@ -100,11 +100,10 @@ public class Professional  implements Serializable {
     private String typeService;
 
     @JsonView({
-    	
-    ResponseJsonView.ProfessionalServicesFindAll.class,
-    ResponseJsonView.ProfessionalFindAll.class,
-    ResponseJsonView.ProfessionalUpdate.class,
-            ResponseJsonView.ProfessionalCreate.class,})
+        ResponseJsonView.ProfessionalServicesFindAll.class,
+        ResponseJsonView.ProfessionalFindAll.class,
+        ResponseJsonView.ProfessionalUpdate.class,
+        ResponseJsonView.ProfessionalCreate.class,})
     private Date dateRegister;
 	
     @JsonView({
