@@ -45,11 +45,16 @@ public class OrderPreLoadConfiguration {
         //Schedule s1 = scheduleRepository.findOne(1L);
         //Schedule s2 = scheduleRepository.findOne(2L);
 
+        PriceRule pr1 = new PriceRule();
+        pr1.setName("Cabelo curto");
+        pr1.setPrice(10000L);
+
         Category service = new Category();
         service.setName("PEDICURE");
         serviceRepository.save(service);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(p1, service);
+        pr1.setProfessionalCategory(ps1);
 
         //Atualizando associando o Profeissional ao Servico
         professionalCategoryRepository.save(ps1);

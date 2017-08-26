@@ -11,6 +11,7 @@ import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,6 @@ public class OrderController {
                     Order order = orderService.create(request);
                     log.info("Order adicionado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
                             " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            "{price: "+order.getProfessionalCategory().getPriceRule()+"}, " +
                             "{status atual: "+order.getStatus()+"}]");
 
                     //return ok().build();
@@ -107,9 +107,11 @@ public class OrderController {
                 if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
                 }
+
                 orderService.validate(request.getOrder());
 
                 Order order = orderService.update(request);
+
                 //TODO - SETANDO CUSTOMER E PROFESSIONAL COMO NULL, NUNCA CONSEGUIREI ADICIONAR O VOTO AO PROFESSIONAL/USER DE ORDER
                 //order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
                 //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
@@ -118,7 +120,9 @@ public class OrderController {
                 voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
-                log.info("Order atualizado com sucesso:  [{}].", order);
+                log.info("Order atualizado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                        " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                        "{status atual: "+order.getStatus()+"}]");
                 return ok(responseBody);
 
             }
@@ -139,9 +143,12 @@ public class OrderController {
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
 
+            MDC.put("erroCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
+
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
+            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

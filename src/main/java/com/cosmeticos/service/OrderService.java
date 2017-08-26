@@ -1,27 +1,18 @@
 package com.cosmeticos.service;
 
-import static com.cosmeticos.model.Order.Status.AUTO_CLOSED;
-import static com.cosmeticos.model.Order.Status.CANCELLED;
-import static com.cosmeticos.model.Order.Status.CLOSED;
-import static com.cosmeticos.model.Order.Status.EXPIRED;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
+import com.cosmeticos.model.*;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
 import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalCategory;
-import com.cosmeticos.model.Wallet;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
@@ -30,6 +21,8 @@ import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.validation.OrderValidationException;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static com.cosmeticos.model.Order.Status.*;
 
 /**
  * Created by matto on 17/06/2017.
@@ -100,6 +93,15 @@ public class OrderService {
 				// estra
 				order.setProfessionalCategory(persistentProfessionalServices.get());
 				order.getProfessionalCategory().setPriceRule(receivedProfessionalCategory.getPriceRule());
+
+				//possibilidade de colocar um if a partir daki.
+				/*
+				MDC.put("price", receivedProfessionalCategory.getPriceRule()
+						.stream()
+						.findFirst()
+						.get()
+						.getPrice().toString());
+				*/
 
 				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
 				// order.setIdOrder(orderRequest.getOrder().getIdOrder());
@@ -222,6 +224,8 @@ public class OrderService {
 			order.setScheduleId(orderRequest.getScheduleId());
 		}
 
+
+
 		return orderRepository.save(order);
 	}
 
@@ -294,6 +298,8 @@ public class OrderService {
 		Long idOrder = 0L;
         Professional professional;
 
+		validateScheduledBadRequest(order);
+
         // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
         // PARA VERIFICAR SE JA TEM ORDERS
         if (order.getIdOrder() == null) {
@@ -306,13 +312,16 @@ public class OrderService {
             order = orderRepository.findOne(order.getIdOrder());
             professional = order.getProfessionalCategory().getProfessional();
             idOrder = order.getIdOrder();
+			MDC.put("idOrder", idOrder.toString());
         }
 
-        if(order.getScheduleId() != null) {
-            // Aqui vc escolhe o que quer usar.
-            validateScheduled1(order);
-            //validateScheduled2(order);
-        }
+		if(order.getScheduleId() != null) {
+			// Aqui vc escolhe o que quer usar.
+			validateScheduled1(order);
+			//validateScheduled2(order);
+		}
+
+
 		//List<Order> orderListId =
 		//orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
 		//Order.Status.ACCEPTED,
@@ -323,22 +332,24 @@ public class OrderService {
 
 		if (!orderList.isEmpty()) {
 			// Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-			throw new OrderValidationException();
+			throw new OrderValidationException(OrderValidationException.Type.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
 		}
 
 	}
 
-	private void validateScheduled1(Order order) throws ValidationException {
+	private void validateScheduled1(Order order) throws ValidationException, OrderValidationException {
 
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
-		newOrderScheduleStart.getTime();
+		if(newOrderScheduleStart == null){
+			throw new OrderValidationException(OrderValidationException.Type.INVALID_SCHEDULE_START, "Data de inicio de agendamento vazia");
+		}
 
 
 		/*
 		Nao coloco muitos filtros na query e retorno bastante orders e aplico a logica no if la em baixo.
 		 */
 		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalCategory().getProfessional().getIdProfessional());
-		orderRepository.save(orders);
+
 		for (int i = 0; i < orders.size(); i++) {
 			Order o =  orders.get(i);
 
@@ -399,9 +410,13 @@ public class OrderService {
                 }
             }
             log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
+	}
 
+	public void validateScheduledBadRequest(Order orderRequest) throws OrderValidationException {
 
-
+		if(orderRequest.getScheduleId().getScheduleEnd() == null && orderRequest.getStatus() == Order.Status.SCHEDULED){
+			throw new OrderValidationException(OrderValidationException.Type.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
+		}
 
 	}
 }
