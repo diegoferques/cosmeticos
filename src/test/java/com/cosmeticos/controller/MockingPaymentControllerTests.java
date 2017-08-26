@@ -20,13 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+//import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -71,10 +70,8 @@ public class MockingPaymentControllerTests {
     @Autowired
     ProfessionalCategoryRepository professionalServicesRepository;
 
+    private Integer statusTransacao = 0;
 
-    //IGNOREI O TESE ABAIXO PARA RESOLVER DEPOIS, POIS CONFLITOU COM O MOCKITO
-    //QUANDO COLOQUEI FORA DE UMA CLASE COM TESTE MOCKADO, PASSOU COM SUCESSO
-    @Ignore
     @Test
     public void testPaymentOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
@@ -320,11 +317,10 @@ public class MockingPaymentControllerTests {
 
     }
 
-    //IGNOREI O TESE ABAIXO PARA RESOLVER DEPOIS, POIS CONFLITOU COM O MOCKITO
-    //QUANDO COLOQUEI FORA DE UMA CLASE COM TESTE MOCKADO, PASSOU COM SUCESSO
-    @Ignore
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
+
+        this.statusTransacao = 2;
 
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
         ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao();
@@ -349,9 +345,6 @@ public class MockingPaymentControllerTests {
 
     }
 
-    //IGNOREI O TESE ABAIXO PARA RESOLVER DEPOIS, POIS CONFLITOU COM O MOCKITO
-    //QUANDO COLOQUEI FORA DE UMA CLASE COM TESTE MOCKADO, PASSOU COM SUCESSO
-    @Ignore
     @Test
     public void testCampainhaOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
@@ -387,7 +380,12 @@ public class MockingPaymentControllerTests {
         return ResponseEntity.ok(this.getFakeRetornoTransacao());
     }
 
+
+
     private RetornoTransacao getFakeRetornoTransacao() {
+        if(this.statusTransacao == 0){
+            this.statusTransacao = 31;
+        }
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");
@@ -395,7 +393,7 @@ public class MockingPaymentControllerTests {
         retornoTransacao.setValor(100);
         retornoTransacao.setValorDesconto(0);
         retornoTransacao.setParcelas(1);
-        retornoTransacao.setStatusTransacao(31);
+        retornoTransacao.setStatusTransacao(this.statusTransacao);
         retornoTransacao.setAutorizacao("20170808124436912");
         retornoTransacao.setCodigoTransacaoOperadora("0");
         retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
@@ -434,36 +432,38 @@ public class MockingPaymentControllerTests {
     }
 
 
-    @MockBean
-    private RestTemplateBuilder restTemplateBuilder;
+    //@MockBean
+    //private RestTemplateBuilder restTemplateBuilder;
 
     @Mock
-    private RestTemplate restTemplated;
+    private TestRestTemplate testRestTemplate;
 
-    //IGNOREI O TESE ABAIXO PARA RESOLVER DEPOIS, POIS CONFLITOU COM O MOCKITO
-    //QUANDO COLOQUEI FORA DE UMA CLASE COM TESTE MOCKADO, PASSOU COM SUCESSO
-    @Ignore
+    //TODO - CORRIGIR O TESTE ABAIXO
+    //BRANCH: RNF101
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
-        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
 
-        ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
+        //ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
 
         // Primeiro moca o RestTemplate
+        /*
         Mockito.when (
-                restTemplated.exchange(Mockito.anyObject(), RetornoTransacao.class)
+                testRestTemplate.exchange(Mockito.anyObject(), RetornoTransacao.class)
 	    ).thenReturn(response);
-
+        */
+        /*
         // Depois moca o restTemplateBuilder de modo que ele construa o RestTemplate mocado que vc mocou acima
         Mockito.when(
                 restTemplateBuilder.build()
-	    ).thenReturn(restTemplated);
+	    ).thenReturn(testRestTemplate);
+        */
 
-       // Mockito.when(
-       //         paymentService.consultaTransacao(Mockito.any())
-       // ).thenReturn(optionalFakeRetornoTransacao);
+         Mockito.when(
+                paymentService.consultaTransacao(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
 
 
         //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
