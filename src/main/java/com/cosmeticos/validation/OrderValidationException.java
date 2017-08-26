@@ -13,7 +13,10 @@ import javax.persistence.Enumerated;
 public class OrderValidationException extends Exception {
 
     public enum Type{
-        INVALID_SCHEDULE_END(HttpStatus.BAD_REQUEST), INVALID_SCHEDULE_START(HttpStatus.BAD_REQUEST), DUPLICATE_RUNNING_ORDER(HttpStatus.CONFLICT);
+        INVALID_SCHEDULE_END(HttpStatus.BAD_REQUEST),
+        INVALID_SCHEDULE_START(HttpStatus.BAD_REQUEST),
+        DUPLICATE_RUNNING_ORDER(HttpStatus.CONFLICT),
+        INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST);
 
         private HttpStatus status;
 
