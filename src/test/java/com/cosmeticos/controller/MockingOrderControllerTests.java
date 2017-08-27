@@ -1,7 +1,11 @@
 package com.cosmeticos.controller;
 
-import java.io.IOException;
-
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.service.OrderService;
+import com.cosmeticos.service.PaymentService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,15 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
+
 /**
  * Created by matto on 28/06/2017.
  */
-
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.service.OrderService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,6 +35,12 @@ public class MockingOrderControllerTests {
 
     @MockBean
     private OrderService orderService;
+
+    @MockBean
+    PaymentService paymentService;
+
+    @MockBean
+    private PaymentController paymentController;
 
     @Test
     public void testCreateError500() throws IOException, OrderService.ValidationException {
@@ -62,7 +68,7 @@ public class MockingOrderControllerTests {
     }
 
     @Test
-    public void testUpdateError500() throws IOException {
+    public void testUpdateError500() throws Exception {
         /**/
         Mockito.when(
                 orderService.update(Mockito.anyObject())
@@ -85,5 +91,4 @@ public class MockingOrderControllerTests {
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exchange.getStatusCode());
     }
-
 }

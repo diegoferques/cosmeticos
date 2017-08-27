@@ -1,19 +1,21 @@
 {
-	"description": "All Services retrieved.",
-	"professionalServicesList": [
-		{
-			"professionalCategoryId": 1,
+	"order": {
+		"date": 1498324200000,
+		"status": 0,
+		"paymentType": "CASH",
+		"professionalCategory": {
 			"category": {
-				"idCategory": 1,
-				"name": "CABELEIREIRA"
+				"idCategory": 8,
+				"name": "MASSAGISTA"
 			},
 			"professional": {
-				"idProfessional": 1,
-				"nameProfessional": "Garry",
-				"dateRegister": 1503202354882,
-				"status": 1,
-				"attendance": "HOME_CARE",
-				"distance": 1458
+				"idProfessional": 9,
+				"nameProfessional": "Fernanda Cavalcante",
+				"genre": "F",
+				"birthDate": 688010400000,
+				"cellPhone": "(21) 99887-7665",
+				"dateRegister": 1499195092952,
+				"status": 0
 			},
 			"priceRuleList": [
 				{
@@ -32,6 +34,24 @@
 					"price": 15000
 				}
 			]
+		},
+		"idLocation": null,
+		"idCustomer": {
+			"idCustomer": 7,
+			"nameCustomer": "Fernanda Cavalcante",
+			"cpf": "816.810.695-68",
+			"genre": "F",
+			"birthDate": 688010400000,
+			"cellPhone": "(21) 99887-7665",
+			"dateRegister": 1499195092952,
+			"status": 0,
+			"idLogin": {
+				"username": "KILLER",
+				"email": "Killer@gmail.com",
+				"personType": "FÍSICA",
+				"sourceApp": "facebook"
+			},
+			"idAddress": null
 		}
-	]
+	}
 }

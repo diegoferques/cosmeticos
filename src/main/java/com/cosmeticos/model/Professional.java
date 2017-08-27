@@ -5,7 +5,10 @@
 package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -41,7 +44,7 @@ public class Professional  implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
@@ -52,7 +55,7 @@ public class Professional  implements Serializable {
     private Long idProfessional;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
@@ -68,7 +71,7 @@ public class Professional  implements Serializable {
     private String cnpj;
 
     @JsonView({
-    	ResponseJsonView.ProfessionalServicesFindAll.class,
+    	ResponseJsonView.ProfessionalCategoryFindAll.class,
     	ResponseJsonView.ProfessionalFindAll.class,
     	ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -83,7 +86,7 @@ public class Professional  implements Serializable {
     private Date birthDate;
 
     @JsonView({    	
-	    ResponseJsonView.ProfessionalServicesFindAll.class,
+	    ResponseJsonView.ProfessionalCategoryFindAll.class,
 	    ResponseJsonView.ProfessionalFindAll.class,
 	    ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -100,14 +103,15 @@ public class Professional  implements Serializable {
     private String typeService;
 
     @JsonView({
-        ResponseJsonView.ProfessionalServicesFindAll.class,
-        ResponseJsonView.ProfessionalFindAll.class,
-        ResponseJsonView.ProfessionalUpdate.class,
-        ResponseJsonView.ProfessionalCreate.class,})
+    	
+    ResponseJsonView.ProfessionalCategoryFindAll.class,
+    ResponseJsonView.ProfessionalFindAll.class,
+    ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,})
     private Date dateRegister;
 	
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
@@ -117,7 +121,7 @@ public class Professional  implements Serializable {
     private Status status;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -157,7 +161,7 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
     })
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
-    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
+    private Set<ProfessionalCategory> professionalCategoryCollection = new HashSet<>();
 
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
@@ -173,7 +177,7 @@ public class Professional  implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
-            ResponseJsonView.ProfessionalServicesFindAll.class
+            ResponseJsonView.ProfessionalCategoryFindAll.class
     })
     @Transient
     private Long distance;
@@ -184,6 +188,11 @@ public class Professional  implements Serializable {
     })
     @Transient
     private float evaluation;
+
+    public void addProfessionalCategory(ProfessionalCategory ps1) {
+        getProfessionalCategoryCollection().add(ps1);
+        ps1.setProfessional(this);
+    }
 
 
     public void setWallet(Wallet wallet) {

@@ -1,6 +1,7 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Order;
+import com.cosmeticos.model.PriceRule;
 import lombok.Data;
 
 /**
@@ -12,4 +13,6 @@ public class OrderRequestBody {
     private Order order;
 
     private Integer vote;
+
+    private PriceRule priceRule;
 }

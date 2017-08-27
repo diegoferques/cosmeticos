@@ -1,17 +1,16 @@
 package com.cosmeticos.service;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-
+import com.cosmeticos.commons.CustomerRequestBody;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.repository.CustomerRepository;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by matto on 27/05/2017.

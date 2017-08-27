@@ -39,7 +39,7 @@ public class CategoryService {
             Category persistentCategory = optional.get();
 
             persistentCategory.setName(categoryFromRequest.getName());
-            persistentCategory.setProfessionalServicesCollection(categoryFromRequest.getProfessionalServicesCollection());
+            persistentCategory.setProfessionalCategoryCollection(categoryFromRequest.getProfessionalCategoryCollection());
 
             repository.save(persistentCategory);
         }

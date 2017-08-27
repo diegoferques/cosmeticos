@@ -1,6 +1,5 @@
 package com.cosmeticos.subscription.product;
 
-import com.cosmeticos.subscription.product.Product;
 import org.springframework.data.repository.CrudRepository;
 
 /**

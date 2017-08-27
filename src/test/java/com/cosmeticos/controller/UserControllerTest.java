@@ -41,7 +41,7 @@ public class UserControllerTest {
     @Autowired
     private CreditCardRepository ccRepository;
 
-    @Ignore
+    @Ignore // Ignorado pq o cartao se adiciona por put
     @Test
     public void inserirUsuarionovoComCartaoNovo() throws URISyntaxException {
 

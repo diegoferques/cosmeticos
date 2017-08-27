@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
@@ -39,6 +40,9 @@ public class OrderControllerTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -147,9 +151,13 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -172,10 +180,15 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
+                "     \"priceRule\": {\n" +
+                "           \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -297,12 +310,19 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
+        priceRule.setProfessionalCategory(ps1);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
@@ -324,11 +344,29 @@ public class OrderControllerTests {
                "      \"status\" : \"ACTIVE\",\n" +
                "      \"orderCollection\" : [ ]\n" +
                "    },\n" +
-               "    \"professionalServices\" : {\n" +
+               "    \"professionalCategory\" : {\n" +
                "      \"category\" : {\n" +
                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
                "        \"name\" : \"MASSAGISTA\"\n" +
                "      },\n" +
+
+                "\"priceRuleList\":[\n" +
+                "\t{\n" +
+                "\t\t\"id\": 1,\n" +
+                "\t\t\"name\": \"Cabelo Longo\",\n" +
+                "\t\t\"price\": 20000\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"id\": 2,\n" +
+                "\t\t\"name\": \"Cabelo curto\",\n" +
+                "\t\t\"price\": 10000\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"id\": 3,\n" +
+                "\t\t\"name\": \"Cabelo Medio\",\n" +
+                "\t\t\"price\": 15000\n" +
+                "\t}\n" +
+                "],\n" +
                "      \"professional\" : {\n" +
                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -402,9 +440,13 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -428,10 +470,15 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
+                "       \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -485,10 +532,15 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
+                "       \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -550,9 +602,13 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -572,10 +628,15 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
+                "       \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -657,9 +718,13 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -679,10 +744,15 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+"\n" +
                 "      },\n" +
+                "       \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -849,13 +919,16 @@ public class OrderControllerTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -868,11 +941,16 @@ public class OrderControllerTests {
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"paymentType\" : \"CASH\",\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+",\n" +
                 "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
+                "        \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -1085,9 +1163,13 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -1107,11 +1189,16 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+service.getIdCategory()+",\n" +
                 "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
+                "      \"priceRule\": {\n" +
+                "           \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -1203,16 +1290,20 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         //Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1288,16 +1379,20 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1368,7 +1463,7 @@ public class OrderControllerTests {
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername("testConflictedOrder-professional");
-        professional.getUser().setEmail("testConflictedOrder-professional@email.com");
+        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
 
@@ -1379,16 +1474,20 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1422,7 +1521,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
+        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1455,9 +1554,14 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -1477,11 +1581,16 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
                 "        \"name\" : \"MASSAGISTA\"\n" +
                 "      },\n" +
+                "      \"priceRule\": {\n" +
+                "           \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
                 "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
@@ -1596,16 +1705,20 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1638,7 +1751,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2);
+        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1679,16 +1792,20 @@ public class OrderControllerTests {
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1);
+        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
         System.out.println(jsonCreate);
 
         RequestEntity<String> entity =  RequestEntity
@@ -1743,8 +1860,54 @@ public class OrderControllerTests {
         //-------
     }
 
+    /*
+     * RNF119
+     */
+    @Test
+    public void updateScheduledOrderOkToOrderStatusScheduledBadRequest() throws URISyntaxException {
+
+        createScheduledOrderOk();
+        Order o1 = orderRestultFrom_createScheduledOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : " + o1.getIdOrder() + ",\n" +
+                "    \"status\" : \"" + Order.Status.SCHEDULED + "\", \n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"scheduleEnd\" : null\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate = RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, exchangeUpdate.getStatusCode());
+
+        List<Order> orderList = exchangeUpdate.getBody().getOrderList();
+
+        if(!orderList.isEmpty()){
+            Assert.assertEquals(Order.Status.SCHEDULED, orderList.get(0).getStatus());
+            orderRestultFrom_updateScheduledOrderOkToScheduled = orderList.get(0);
+
+        }
+
+    }
+
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
-    public String getOrderCreateJson(Category category, Professional professional, Customer customer) {
+    public String getOrderCreateJson(Category category, Professional professional, Customer customer, PriceRule priceRule) {
 
         String jsonCreate = "{\n" +
                 "  \"order\" : {\n" +
@@ -1756,11 +1919,16 @@ public class OrderControllerTests {
                 "      \"status\" : \"ACTIVE\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
                 "        \"name\" : \"PEDICURE\"\n" +
                 "      },\n" +
+                "       \"priceRule\": {\n" +
+                "            \"idPrice\": "+priceRule.getPrice()+",\n" +
+                "            \"name\": \""+priceRule.getName()+"\",\n" +
+                "            \"price\": "+priceRule.getPrice()+"\n" +
+                "          },\n" +
                 "      \"professional\" : {\n" +
                 "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
                 "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +

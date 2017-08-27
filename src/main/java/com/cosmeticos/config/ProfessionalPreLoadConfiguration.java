@@ -1,27 +1,20 @@
 package com.cosmeticos.config;
 
-import static java.time.LocalDateTime.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-
-import javax.annotation.PostConstruct;
-
+import com.cosmeticos.model.*;
+import com.cosmeticos.model.Professional.Type;
+import com.cosmeticos.repository.CategoryRepository;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.Professional.Type;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.User;
-import com.cosmeticos.model.Wallet;
-import com.cosmeticos.repository.CategoryRepository;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
+import javax.annotation.PostConstruct;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+
+import static java.time.LocalDateTime.now;
 
 /**
  * Classe que so vai executar em dev, pois o profile de producao sera PRODUCTION.
@@ -224,9 +217,9 @@ public class ProfessionalPreLoadConfiguration {
             categoryRepository.save(category);
         }
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);

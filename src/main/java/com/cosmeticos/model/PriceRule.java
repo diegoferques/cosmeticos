@@ -4,26 +4,15 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  *
@@ -36,30 +25,32 @@ public class PriceRule implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    @JsonView({
+    @JsonView
+            ({
     	ResponseJsonView.OrderControllerFindBy.class,
-        ResponseJsonView.ProfessionalServicesFindAll.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message="price name cannot be empty")
     @JsonView({
     	ResponseJsonView.OrderControllerFindBy.class,
-        ResponseJsonView.ProfessionalServicesFindAll.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
-    @NotEmpty(message="Hability name cannot be empty")
     private String name;
 
     @JsonView({
     	ResponseJsonView.OrderControllerFindBy.class,
-        ResponseJsonView.ProfessionalServicesFindAll.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     @NotNull
     private Long price;
-    
-    @ManyToOne
-    private ProfessionalServices professionalCategory;
+
+    @JoinColumn(name = "professionalCategory_Id", referencedColumnName = "professionalCategoryId")
+    @ManyToOne(optional = false)
+    private ProfessionalCategory professionalCategory;
 
     public PriceRule() {
     }
@@ -68,13 +59,19 @@ public class PriceRule implements Serializable {
         this.name = name;
     }
 
+    public PriceRule(String name, long price) {
+        this.name = name;
+        this.price = price;
+    }
 
+/*
     /**
      * Nao retornamos esse dado no json.
-     */
+
     @JsonIgnore
-    @ManyToMany(mappedBy = "habilityCollection")
+    @ManyToMany(mappedBy = "priceCollection")
     private Collection<Professional> professionalCollection = new ArrayList<>();
+*/
 
     @Override
     public int hashCode() {
@@ -102,7 +99,7 @@ public class PriceRule implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Hability[ id=" + id + " ]";
+        return "javaapplication2.entity.Hability[ idPrice=" + id + " ]";
     }
     
 }

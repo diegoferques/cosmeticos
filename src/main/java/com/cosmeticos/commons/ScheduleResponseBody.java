@@ -2,7 +2,6 @@ package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Schedule;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
 
 import java.util.ArrayList;

@@ -12,9 +12,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +27,7 @@ public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
 	
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
@@ -42,7 +39,7 @@ public class Category implements Serializable {
     private Long idCategory;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
@@ -66,7 +63,7 @@ public class Category implements Serializable {
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private Set<ProfessionalServices> professionalServicesCollection = new HashSet<>();
+    private Set<ProfessionalCategory> professionalCategoryCollection = new HashSet<>();
 
 
     public void addChild(Category s) {

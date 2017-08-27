@@ -1,14 +1,11 @@
 package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,7 +79,7 @@ public class CreditCard implements Serializable {
     private Date lastUsage;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
-     private Collection<Order> orders = new ArrayList<>();
+    private Collection<Order> orders = new ArrayList<>();
 
     /*@ManyToOne
     private Professional professional;

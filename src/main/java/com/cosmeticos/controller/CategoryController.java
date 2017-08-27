@@ -6,7 +6,6 @@ import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Category;
 import com.cosmeticos.service.CategoryService;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;

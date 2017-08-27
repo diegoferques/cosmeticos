@@ -7,7 +7,6 @@ import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.Schedule;
 import com.cosmeticos.service.ScheduleService;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;

@@ -1,7 +1,9 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Hability;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -145,14 +147,14 @@ public class ProfessionalService {
     }
 
     private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {
-        Set<ProfessionalServices> receivedProfessionalServices =
-                receivedProfessional.getProfessionalServicesCollection();
+        Set<ProfessionalCategory> receivedProfessionalServices =
+                receivedProfessional.getProfessionalCategoryCollection();
 
         if (receivedProfessionalServices != null) {
 			receivedProfessionalServices.stream().forEach(ps -> {
 				ps.setProfessional(newProfessional);
 
-				newProfessional.getProfessionalServicesCollection().add(ps);
+				newProfessional.getProfessionalCategoryCollection().add(ps);
 			});
 		}
     }

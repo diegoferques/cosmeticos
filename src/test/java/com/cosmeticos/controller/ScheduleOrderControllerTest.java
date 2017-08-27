@@ -3,10 +3,10 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.CategoryRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,9 +78,9 @@ public class ScheduleOrderControllerTest {
         serviceRepository.save(service);
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -104,7 +104,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 01, 12, 10)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -169,6 +169,8 @@ public class ScheduleOrderControllerTest {
         orderRestultFrom_createScheduledOrderOk = exchange.getBody().getOrderList().get(0);
 
     }
+
+    //MOCK
     @Test
     public void scheduledOrderPutOk() throws URISyntaxException {
 
@@ -201,9 +203,9 @@ public class ScheduleOrderControllerTest {
 
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -227,7 +229,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 14, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -303,7 +305,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleEnd\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 16, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -366,7 +368,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 15, 00)).getTime() + "\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +
@@ -436,7 +438,7 @@ public class ScheduleOrderControllerTest {
                 "      \"scheduleEnd\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 16, 00, 0)).getTime() +"\",\n" +
                 "      \"orderCollection\" : [ ]\n" +
                 "    },\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : " + service.getIdCategory() + "\n" +
                 "      },\n" +

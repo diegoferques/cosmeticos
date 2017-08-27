@@ -1,9 +1,10 @@
 package com.cosmeticos.service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
+import com.cosmeticos.Application;
+import com.cosmeticos.controller.CustomerControllerTests;
+import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,15 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.controller.CustomerControllerTests;
-import com.cosmeticos.controller.ProfessionalControllerTests;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.ProfessionalServicesRepository;
-import com.cosmeticos.repository.CategoryRepository;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Created by Vinicius on 15/07/2017.
@@ -39,7 +33,7 @@ public class OrderServiceTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CategoryRepository serviceRepository;
@@ -69,10 +63,10 @@ public class OrderServiceTest {
         serviceProgramador.setName("PROGRAMADOR");
         serviceRepository.save(serviceProgramador);
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, serviceProgramador);
-        professionalServicesRepository.save(ps1);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, serviceProgramador);
+        professionalCategoryRepository.save(ps1);
         
-        professional.getProfessionalServicesCollection().add(ps1);
+        professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
@@ -115,12 +109,11 @@ public class OrderServiceTest {
         o5.setStatus(Order.Status.SEMI_CLOSED);
         o5.setPaymentType(Order.PayType.CASH);
         orderRepository.save(o5);
-                    }
+    }
 
 
     @Test
     public void testUpdateStatus(){
-
 
         orderService.updateStatus();
             o3 = orderRepository.findOne(o3.getIdOrder());

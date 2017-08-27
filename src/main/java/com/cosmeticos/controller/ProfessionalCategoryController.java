@@ -1,10 +1,10 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
-import com.cosmeticos.commons.ProfessionalservicesRequestBody;
+import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.service.ProfessionalServicesBeanServices;
+import com.cosmeticos.model.ProfessionalCategory;
+import com.cosmeticos.service.ProfessionalCategoryService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +25,25 @@ import static org.springframework.http.ResponseEntity.*;
  */
 @Slf4j
 @RestController
-public class ProfessionalServicesController {
+public class ProfessionalCategoryController {
     @Autowired
-    private ProfessionalServicesBeanServices service;
+    private ProfessionalCategoryService category;
 
-    @RequestMapping(path = "/professionalservices", method = RequestMethod.POST)
-    public HttpEntity<ProfessionalServicesResponseBody> create(@Valid @RequestBody ProfessionalservicesRequestBody request, BindingResult bindingResult) {
+    @RequestMapping(path = "/professionalcategories", method = RequestMethod.POST)
+    public HttpEntity<ProfessionalCategoryResponseBody> create(@Valid @RequestBody ProfessionalCategoryRequestBody request, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                ProfessionalServices s = service.create(request);
+                ProfessionalCategory s = category.create(request);
                 log.info("Service adicionado com sucesso:  [{}]", s);
 
-                ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+                ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
 
                 responseBody.setDescription("Success");
-                responseBody.getProfessionalServicesList().add(s);
+                responseBody.getProfessionalCategoryList().add(s);
 
                 return ok().body(responseBody);
 
@@ -52,22 +52,22 @@ public class ProfessionalServicesController {
         }catch(Exception e){
 
             log.error("Falha no cadastro: {}", e.getMessage(), e);
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setDescription(e.getMessage());
 
             return ResponseEntity.status(500).body(responseBody);
         }
     }
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
-    @RequestMapping(path = "/professionalservices", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalServicesResponseBody> findAll(@ModelAttribute ProfessionalServices professionalServices) {
+    @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
+    @RequestMapping(path = "/professionalcategories", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalCategoryResponseBody> findAll(@ModelAttribute ProfessionalCategory professionalCategory) {
 
         try {
-            List<ProfessionalServices> entitylist = service.findAllBy(professionalServices);
+            List<ProfessionalCategory> entitylist = category.findAllBy(professionalCategory);
 
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
-            responseBody.setProfessionalServicesList(entitylist);
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
+            responseBody.setProfessionalCategoryList(entitylist);
             responseBody.setDescription("All Services retrieved.");
 
             log.info("{} ProfessionalServices successfully retrieved.", entitylist.size());
@@ -76,24 +76,24 @@ public class ProfessionalServicesController {
 
         } catch (Exception e) {
             log.error("Falha no BUSCAR TODOS: {}", e.getMessage(), e);
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
     }
 
-    @RequestMapping(path = "/professionalservices/{id}", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalServicesResponseBody> findById(@PathVariable Long id) {
+    @RequestMapping(path = "/professionalcategories/{id}", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalCategoryResponseBody> findById(@PathVariable Long id) {
 
         try {
-            Optional<ProfessionalServices> optional = service.find(id);
+            Optional<ProfessionalCategory> optional = category.find(id);
 
             if (optional.isPresent()) {
 
-                ProfessionalServices foundService = optional.get();
-                ProfessionalServicesResponseBody response = new ProfessionalServicesResponseBody();
+                ProfessionalCategory foundService = optional.get();
+                ProfessionalCategoryResponseBody response = new ProfessionalCategoryResponseBody();
                 response.setDescription("Service succesfully retrieved");
-                response.getProfessionalServicesList().add(foundService);
+                response.getProfessionalCategoryList().add(foundService);
 
                 log.info("Busca de Service com exito: [{}]", foundService);
 
@@ -104,26 +104,26 @@ public class ProfessionalServicesController {
             }
         } catch (Exception e) {
             log.error("Falha na busca por ID: {}", e.getMessage(), e);
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
     }
 
-    @JsonView(ResponseJsonView.ProfessionalServicesFindAll.class)
-    @RequestMapping(path = "/professionalservices/nearby/", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalServicesResponseBody> nearby(
-            @ModelAttribute ProfessionalServices bindableQueryObject,
+    @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
+    @RequestMapping(path = "/professionalcategories/nearby/", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalCategoryResponseBody> nearby(
+            @ModelAttribute ProfessionalCategory bindableQueryObject,
             @RequestParam("latitude") String latitude,
             @RequestParam("longitude") String longitude,
             @RequestParam("radius") String searchRadius
             ) {
 
         try {
-            List<ProfessionalServices> entitylist = service.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
+            List<ProfessionalCategory> entitylist = category.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
 
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
-            responseBody.setProfessionalServicesList(entitylist);
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
+            responseBody.setProfessionalCategoryList(entitylist);
             responseBody.setDescription("All Services retrieved.");
 
             log.info("{} ProfessionalServices successfully retrieved.", entitylist.size());
@@ -133,7 +133,7 @@ public class ProfessionalServicesController {
         } catch (Exception e) {
             log.error("Failed to retrieve ProfessionalServices: {}", e.getMessage(), e);
 
-            ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setDescription(e.getMessage());
 
             return ResponseEntity.status(500).body(responseBody);
@@ -141,13 +141,13 @@ public class ProfessionalServicesController {
 
     }
 
-    private ProfessionalServicesResponseBody buildErrorResponse(BindingResult bindingResult) {
+    private ProfessionalCategoryResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
                 .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
                 .collect(Collectors.toList());
 
-        ProfessionalServicesResponseBody responseBody = new ProfessionalServicesResponseBody();
+        ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
         responseBody.setDescription(errors.toString());
         return responseBody;
     }

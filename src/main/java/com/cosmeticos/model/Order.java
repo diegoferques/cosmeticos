@@ -87,7 +87,7 @@ public class Order implements Serializable {
     })
     @JoinColumn(name = "id_professional_category", referencedColumnName = "professionalCategoryId")
     @ManyToOne(optional = false)
-	private ProfessionalServices professionalCategory;
+	private ProfessionalCategory professionalCategory;
 
 	@JoinColumn(name = "idLocation", referencedColumnName = "id")
 	@ManyToOne(optional = true)
@@ -113,12 +113,6 @@ public class Order implements Serializable {
 	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
 			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	//TODO - PRECISA RESOVLER ISSO AQUI, POIS TIVE QUE COMENTAR ABAIXO E VOLTAR PARA COMO ERA ANTES, POIS DAVA O ERRO ABAIXO:
-	//java.lang.IllegalStateException: Failed to load ApplicationContext
-	//Caused by: org.hibernate.AnnotationException: Associations marked as mappedBy must not define database mappings
-	//like @JoinTable or @JoinColumn: com.cosmeticos.model.Order.creditCardCollection
-	//FALHAVAM TODOS OS TESTES E O PROJETO NAO EXECUTAVA
-	//@ManyToMany(mappedBy = "order")
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
@@ -139,10 +133,10 @@ public class Order implements Serializable {
 		this.status = status;
 	}
 
-	public Order(Customer idCustomer, ProfessionalServices professionalServices, Schedule scheduleId) {
+	public Order(Customer idCustomer, ProfessionalCategory professionalCategory, Schedule scheduleId) {
 		this();
 		this.idCustomer = idCustomer;
-		this.professionalCategory = professionalServices;
+		this.professionalCategory = professionalCategory;
 		this.scheduleId = scheduleId;
 	}
 

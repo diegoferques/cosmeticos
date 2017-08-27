@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by matto on 26/05/2017.
@@ -167,26 +166,6 @@ public class ProfessionalRepositoryTests {
         Assert.assertEquals("20080-001", p2.get(0).getAddress().getCep());
 
     }
-
-    
-
-    @Autowired
-    private CategoryRepository serviceRepository;
-    @Autowired
-    private ProfessionalServicesRepository professionalServicesRepository;
-    @Test
-    public void addProfessionalService()
-    {
-		Professional p1 = repository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
-        Category s1 = serviceRepository.findWithSpecialties(1L);
-
-       
-        ProfessionalServices ps1 = new ProfessionalServices(p1, s1);
-
-        repository.save(p1);
-    }
-    
-    
 
     /*
     @Test

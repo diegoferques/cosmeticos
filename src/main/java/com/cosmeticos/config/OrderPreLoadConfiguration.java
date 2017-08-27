@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * Created by matto on 24/06/2017.
  */
 
-@DependsOn({"professionalServicesPreLoadConfiguration"})
+@DependsOn({"professionalCategoryPreLoadConfiguration"})
 @Configuration
 @Profile("default")
 public class OrderPreLoadConfiguration {
@@ -30,7 +30,7 @@ public class OrderPreLoadConfiguration {
     private CustomerRepository customerRepository;
 
     @Autowired
-    ProfessionalServicesRepository professionalServicesRepository;
+    ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CategoryRepository serviceRepository;
@@ -45,14 +45,19 @@ public class OrderPreLoadConfiguration {
         //Schedule s1 = scheduleRepository.findOne(1L);
         //Schedule s2 = scheduleRepository.findOne(2L);
 
+        PriceRule pr1 = new PriceRule();
+        pr1.setName("Cabelo curto");
+        pr1.setPrice(10000L);
+
         Category service = new Category();
         service.setName("PEDICURE");
         serviceRepository.save(service);
 
-        ProfessionalServices ps1 = new ProfessionalServices(p1, service);
+        ProfessionalCategory ps1 = new ProfessionalCategory(p1, service);
+        pr1.setProfessionalCategory(ps1);
 
         //Atualizando associando o Profeissional ao Servico
-        professionalServicesRepository.save(ps1);
+        professionalCategoryRepository.save(ps1);
         professionalRepository.save(p1);
 
         Schedule s1 = new Schedule();
@@ -71,7 +76,7 @@ public class OrderPreLoadConfiguration {
         o1.setIdCustomer(c1);
         o1.setPaymentType(Order.PayType.CASH);
         //o1.setIdLocation();
-        o1.setProfessionalCategory(p1.getProfessionalServicesCollection().iterator().next());
+        o1.setProfessionalCategory(p1.getProfessionalCategoryCollection().iterator().next());
 
         //o1.setScheduleId(s1);
         orderRepository.save(o1);
@@ -166,7 +171,7 @@ public class OrderPreLoadConfiguration {
         s8.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(5)));
         s8.setScheduleEnd(Timestamp.valueOf(LocalDateTime.now().plusHours(7)));// 2 horas de trabalho.
         o8.setScheduleId(s8);
-        
+
         orderRepository.save(o8);
 
         //Scheduled Order

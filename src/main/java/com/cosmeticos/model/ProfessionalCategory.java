@@ -4,25 +4,16 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
-import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import lombok.Data;
 
 /**
  *
@@ -31,11 +22,11 @@ import lombok.Data;
 @Data
 @Entity
 //@SequenceGenerator(name = "myseq", sequenceName = "MY_SEQ", initialValue = 1, allocationSize = 1)
-public class ProfessionalServices implements Serializable {
+public class ProfessionalCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -47,8 +38,8 @@ public class ProfessionalServices implements Serializable {
     // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
     private Long professionalCategoryId;
 
-	@JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+    @JsonView({
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -60,7 +51,7 @@ public class ProfessionalServices implements Serializable {
     private Category category;
 
     @JsonView({
-            ResponseJsonView.ProfessionalServicesFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -76,26 +67,30 @@ public class ProfessionalServices implements Serializable {
 
     @JsonView({
     	ResponseJsonView.OrderControllerFindBy.class,
-        ResponseJsonView.ProfessionalServicesFindAll.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
     private Set<PriceRule> priceRuleList = new HashSet<>();
 
-	@Override
+
+    @Override
     public String toString() {
-        return "javaapplication2.entity.ProfessionalServices[ id=" + professionalCategoryId+ " ]";
+        return "javaapplication2.entity.ProfessionalCategory[ id=" + professionalCategoryId+ " ]";
     }
 
-	public ProfessionalServices(Professional p, Category s) {
-		this.professional = p;
-		this.category = s;
+    public ProfessionalCategory(Professional p, Category s) {
+        this.professional = p;
+        this.category = s;
 
-		this.professional.getProfessionalServicesCollection().add(this);
-		this.category.getProfessionalServicesCollection().add(this);
+        this.professional.getProfessionalCategoryCollection().add(this);
+        this.category.getProfessionalCategoryCollection().add(this);
 
-	}
 
-	public ProfessionalServices() {
+    }
+
+
+
+	public ProfessionalCategory() {
 	}
 
 	public void addPriceRule(PriceRule pr1) {

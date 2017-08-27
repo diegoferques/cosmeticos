@@ -1,10 +1,8 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Customer;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;

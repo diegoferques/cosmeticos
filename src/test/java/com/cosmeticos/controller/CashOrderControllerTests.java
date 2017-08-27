@@ -1,8 +1,12 @@
 package com.cosmeticos.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CategoryRepository;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,16 +19,8 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.repository.CategoryRepository;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Created by Vinicius on 17/08/2017.
@@ -45,6 +41,9 @@ public class CashOrderControllerTests {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProfessionalCategoryRepository professionalCategoryRepository;
+
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException {
         Customer c1 = CustomerControllerTests.createFakeCustomer();
@@ -60,23 +59,25 @@ public class CashOrderControllerTests {
         Category category = categoryRepository.findByName("PEDICURE");
         category = categoryRepository.findWithSpecialties(category.getIdCategory());
 
+        PriceRule pr = null;
 
-        ProfessionalServices ps1 = new ProfessionalServices(professional, category);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
+        ps1.addPriceRule(pr = new PriceRule("Preco de teste 50 mil reais", 5000000));
 
-        professional.getProfessionalServicesCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
 
         String json = "{\n" +
+                "  \"priceRule\": {\n" +
+                "     \"id\": " + pr.getId() + "\n" +
+                "  },\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : 1498324200000,\n" +
                 "    \"status\" : 0,\n" +
                 "    \"paymentType\" : \"CASH\",\n" +
-                "    \"professionalServices\" : {\n" +
+                "    \"professionalCategory\" : {\n" +
                 "      \"category\" : {\n" +
                 "        \"idCategory\" : "+category.getIdCategory()+",\n" +
                 "        \"name\" : \"MASSAGISTA\"\n" +
@@ -111,6 +112,8 @@ public class CashOrderControllerTests {
                 "    }\n" +
                 "  }\n" +
                 "}";
+
+        System.out.println(json);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -149,6 +152,7 @@ public class CashOrderControllerTests {
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         OrderResponseBody responseBodyDoPut = exchangeUpdate.getBody();
+        //ERRO AQUI ABAIXO, VERIFICAR
         Order orderAtualizada = responseBodyDoPut.getOrderList().get(0);
 
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());

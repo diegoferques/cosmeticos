@@ -1,11 +1,9 @@
 package com.cosmeticos.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.util.List;
-
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CategoryRepository;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,18 +15,15 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalServicesResponseBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalServices;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.User;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProfessionalServicesControllerTests {
+public class ProfessionalCategoryControllerTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -45,7 +40,7 @@ public class ProfessionalServicesControllerTests {
 	}
 
 	/**
-	 * Depende dos inserts feitos no ServicePreLoadConfiguration e ProfessionalServicesPreLoadConfiguration.
+	 * Depende dos inserts feitos no ServicePreLoadConfiguration e ProfessionalCategoryPreLoadConfiguration.
 	 * Ignore este teste se o profile de execucao usado nao for o default.
 	 * Este endopint testa o ModelAttribute do controller e a api Example do spring-data.
 	 * Ver card https://trello.com/c/OMGE90IV
@@ -81,7 +76,7 @@ public class ProfessionalServicesControllerTests {
 				"    \"idProfessional\": null,\n" +
 				"    \"location\": 506592589,\n" +
 				"    \"nameProfessional\": \"aaa\",\n" +
-				"    \"professionalServicesCollection\": [\n" +
+				"    \"professionalCategoryCollection\": [\n" +
 				"      {\n" +
 				"        \"professional\": null,\n" +
 				"        \"category\": {\n" +
@@ -102,23 +97,23 @@ public class ProfessionalServicesControllerTests {
 		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
 				.exchange(entity, ProfessionalResponseBody.class);
 
-		final ResponseEntity<ProfessionalServicesResponseBody> getExchange = //
+		final ResponseEntity<ProfessionalCategoryResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionalservices?category.name=FOOBAR",
+						"/professionalcategories?category.name=FOOBAR",
 						HttpMethod.GET, //
 						null,
-						ProfessionalServicesResponseBody.class);
+						ProfessionalCategoryResponseBody.class);
 
 		Assert.assertEquals(HttpStatus.OK, getExchange.getStatusCode());
 
-		ProfessionalServicesResponseBody response = getExchange.getBody();
+		ProfessionalCategoryResponseBody response = getExchange.getBody();
 
-		List<ProfessionalServices> entityList = response.getProfessionalServicesList();
+		List<ProfessionalCategory> entityList = response.getProfessionalCategoryList();
 
 		Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
 
 		for (int i = 0; i < entityList.size(); i++) {
-			ProfessionalServices ps =  entityList.get(i);
+			ProfessionalCategory ps =  entityList.get(i);
 
 			Professional p = ps.getProfessional();
 			Category s = ps.getCategory();

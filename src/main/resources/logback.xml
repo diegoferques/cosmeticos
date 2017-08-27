@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Aplica uma funcao que remove campos do mdc vazios do log -->
+    <!-- <variable scope="context" name="mdcPattern" value="%replace(errorCode: %X{errorCode}, httpStatus: %X{httpStatus},){'[a-zA-Z]+=( |$)', ''}"/> -->
+   <variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, httpStatus: %X{httpStatus} -"/>
+
+   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+       <encoder>
+           <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
+       </encoder>
+   </appender>
+
+
+  <!-- Talvez usaremos mais pra frente ainda neste sprint
+  <property name="LOG_PATH" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}" />
+
+   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+       <Append>true</Append>
+       <File>${logFolder:-.}/voucher-cocacola-json.log</File>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+           <level>INFO</level>
+           <onMatch>ACCEPT</onMatch>
+           <onMismatch>DENY</onMismatch>
+       </filter>
+
+       <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+           <providers>
+               <timestamp><fieldName>timestamp</fieldName></timestamp>
+               <logLevel/>
+               <loggerName><fieldName>logger</fieldName></loggerName>
+               <globalCustomFields><customFields>{"@source_host":"${HOSTNAME}"}</customFields></globalCustomFields>
+               <globalCustomFields><customFields>{"application": "voucher-cocacola"}</customFields></globalCustomFields>
+               <mdc />
+               <message />
+           </providers>
+       </encoder>
+       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+           <fileNamePattern>${logFolder:-.}/voucher-cocacola-json.log%d{yyyy-MM-dd}</fileNamePattern>
+           <maxHistory>30</maxHistory>
+       </rollingPolicy>
+   </appender>
+-->
+
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Append>true</Append>
+        <File>log/server.log</File>
+        <encoder>
+            <pattern>%date{dd/MMM/yyyy HH:mm:ss} %c %5p - %m %n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>log/older/server.log.%d{yyyy-MM-dd}
+            </fileNamePattern>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Estabelece o nivel de Log pra TODAS as classes do nosso projeto. -->
+    <!-- Loga DEBUG no console. -->
+    <logger name="com.cosmeticos" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- Estabelece o nivel de Log pra TODAS as classes do nosso projeto. -->
+    <!-- Loga INFO no arquivo. Nao logamos DEBUG no arquivo pq o espaco do HD pode estourar em minutos. -->
+    <logger name="com.cosmeticos" level="INFO" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Estabelece o nivel de Log pra TODAS as classes do sistema incluindo as classes de framework. -->
+    <root level="ERROR" >
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
