@@ -1,9 +1,18 @@
 package com.cosmeticos.model;
 
-import lombok.Data;
-
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import lombok.Data;
 
 @Entity
 @Data
@@ -24,7 +33,15 @@ public class Payment implements Serializable {
 	private Long value;
 	
 	private Integer parcelas;
+
+	@JoinColumn(name = "id_order", referencedColumnName = "idOrder")
+	@ManyToOne(optional = false)
+	private Order order;
+	
+	private PriceRule priceRule;
 	
 	@Transient
 	private CreditCard creditCard;
+	
+	
 }

@@ -86,9 +86,239 @@ public class MockingPaymentControllerTests {
 
         //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
 
-        String emailCustomer = "testPaymentOk-customer1@email.com";
+        Customer customer = postCustomerWhatever("testPaymentOk-customer1@email.com");
 
+        putCustomerAddCreditCard(customer);
+
+
+        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
+
+       ProfessionalCategory professionalCategory = createProfessionalWhatever(
+    		   "testPaymentOk-professional@email.com", 
+    		   "123.605.789-06"
+      );
+
+       // Determinamos a priceRule selecionaddaa pelo cliente
+        PriceRule priceRule200Reais = professionalCategory.getPriceRuleList()
+                .stream()
+                .filter(p -> p.getPrice() == 20000L)
+                .findFirst()
+                .get();
+
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = "{\n" +
+
+                "  \"priceRule\" : {\n" +
+                "    \"id\": " + priceRule200Reais.getId() + "\n" +
+                "  },\n" +
+
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \""+ Order.PayType.CREDITCARD +"\",\n" +
+                //"    \"scheduleId\" : {\n" +
+                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                //"      \"status\" : \"ACTIVE\",\n" +
+                //"      \"orderCollection\" : [ ]\n" +
+                //"    },\n" +
+
+                "    \"professionalCategory\" : {\n" +
+                "      \"professionalCategoryId\": " +professionalCategory.getProfessionalCategoryId()+ "\n" +
+                "    },\n" +
+
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+ customer.getIdCustomer() +"\n" +
+                "      },\n" +
+                "      \"address\": { \n" +
+                "   	    \"idAddress\": "+ customer.getAddress().getIdAddress() +"\n" +
+                "      }\n" +
+                "    }\n" +
+                "}";
+
+        System.out.println(jsonCreateOrder);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreateOrder);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
+        //-- checar se o seu teste esta incluindo address no json
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(exchangeCreate.getBody().getDescription(), HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Order order = exchangeCreate.getBody().getOrderList().get(0);
+        Order order1 = orderRepository.findOne(order.getIdOrder());
+
+        //TODO - OS DO ENDERECO NAO ESTAO VINDO
+        Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
+
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
+
+        Assert.assertNotNull(retornoTransacao.isPresent());
+        Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
+        Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
+
+    }
+
+    @Test
+    public void testScheduledOrderPaymentOk() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
+
+        //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
+
+        Customer customer = postCustomerWhatever("testScheduledOrderPaymentOk-customer1@email.com");
+
+        putCustomerAddCreditCard(customer);
+
+
+        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
+
+       ProfessionalCategory professionalCategory = createProfessionalWhatever(
+    		   "testScheduledOrderPaymentOk-professional@email.com",
+    		   "123.605.789-07"
+      );
+
+       // Determinamos a priceRule selecionaddaa pelo cliente
+        PriceRule priceRule200Reais = professionalCategory.getPriceRuleList()
+                .stream()
+                .filter(p -> p.getPrice() == 20000L)
+                .findFirst()
+                .get();
+
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = "{\n" +
+
+                "  \"priceRule\" : {\n" +
+                "    \"id\": " + priceRule200Reais.getId() + "\n" +
+                "  },\n" +
+
+                "  \"order\" : {\n" +
+                "    \"date\" : 1498324200000,\n" +
+                "    \"status\" : 0,\n" +
+                "    \"paymentType\" : \""+ Order.PayType.CREDITCARD +"\",\n" +
+
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.now().plusDays(5)).getTime() +"\",\n" +
+                "      \"status\" : \"ACTIVE\"\n" +
+                "    },\n" +
+
+                "    \"professionalCategory\" : {\n" +
+                "      \"professionalCategoryId\": " +professionalCategory.getProfessionalCategoryId()+ "\n" +
+                "    },\n" +
+
+                "    \"idCustomer\" : {\n" +
+                "      \"idCustomer\" : "+ customer.getIdCustomer() +"\n" +
+                "      },\n" +
+                "      \"address\": { \n" +
+                "   	    \"idAddress\": "+ customer.getAddress().getIdAddress() +"\n" +
+                "      }\n" +
+                "    }\n" +
+                "}";
+
+        System.out.println(jsonCreateOrder);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreateOrder);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
+        //-- checar se o seu teste esta incluindo address no json
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(exchangeCreate.getBody().getDescription(), HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Order order = exchangeCreate.getBody().getOrderList().get(0);
+
+        // Confirmando se a order foi mesmo pro banco
+        Assert.assertNotNull("A order nao foi icluido no banco", orderRepository.findOne(order.getIdOrder()));
+
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
+
+        Assert.assertNotNull(order.getPaymentCollection());
+
+    }
+
+    private void putCustomerAddCreditCard(Customer customer) throws URISyntaxException {
         String jsonCustomerCreate = "{\n" +
+                "   \"customer\":{\n" +
+                "      \"idCustomer\": "+ customer.getIdCustomer() +",\n" +
+                "      \"user\":{\n" +
+                "         \"idLogin\":"+customer.getUser().getIdLogin()+",\n" +
+                "         \"creditCardCollection\": [\n" +
+                    "         {\n" +
+                    "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
+                    "\t\t        \"ownerName\": \"Teste\",\n" +
+                    "\t\t        \"cardNumber\": \"67730987357243053\",\n" +
+                    "\t\t        \"securityCode\": \"098\",\n" +
+                    "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 11, 10, 0, 0)).getTime() +"\",\n" +
+                    "\t\t        \"vendor\": \"MasterCard\",\n" +
+                    "\t\t        \"status\": \"ACTIVE\"\n" +
+                    "\t\t     }\n" +
+                "         ]\n" +
+                "      }\n" +
+                "   }\n" +
+                "}";
+
+        System.out.println(jsonCustomerCreate);
+
+        RequestEntity<String> entityCustomer =  RequestEntity
+                .put(new URI("/customers"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCustomerCreate);
+
+        ResponseEntity<CustomerResponseBody> exchange = restTemplate
+                .exchange(entityCustomer, CustomerResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals(customer.getNameCustomer(), exchange.getBody().getCustomerList().get(0).getNameCustomer());
+
+    }
+
+    private ProfessionalCategory createProfessionalWhatever(String email, String cnpj) {
+		 Professional professional = ProfessionalControllerTests.createFakeProfessional();
+	        professional.getUser().setUsername(email);
+	        professional.getUser().setEmail(email);
+	        professional.getUser().setPassword("123");
+	        professional.setCnpj(cnpj);
+
+	        professionalRepository.save(professional);
+
+	        Category category = categoryRepository.findByName("PEDICURE");
+	        category = categoryRepository.findWithSpecialties(category.getIdCategory());
+
+	        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
+            ps1.addPriceRule( new PriceRule("Cabelo curto", 10000L));
+            ps1.addPriceRule( new PriceRule("Cabelo Medio", 15000L));
+            ps1.addPriceRule( new PriceRule("Cabelo Longo", 20000L));
+
+	        // Atualizando associando o Profeissional ao Servico
+	        professionalServicesRepository.save(ps1);
+	        
+	        return ps1;
+	}
+
+	private Customer postCustomerWhatever(String emailCustomer) throws URISyntaxException {
+		String jsonCustomerCreate = "{\n" +
                 "   \"customer\":{\n" +
                 "      \"address\":{\n" +
                 "         \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
@@ -140,177 +370,8 @@ public class MockingPaymentControllerTests {
         //ABAIXO SEGUE O CUSTOMER QUE BUSCAMOS NO BANCO PELO ID DO CUSTOMER CRIADO ACIMA, O ID DE ADDRESS RETORNADO FOI 7
         Customer customer2 = customerRepository.findOne(customer.getIdCustomer());
 
-        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testPaymentOk-professional");
-        professional.getUser().setEmail("testPaymentOk-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.605.789-06");
-
-        customerRepository.save(customer);
-        professionalRepository.save(professional);
-
-        Category category = categoryRepository.findByName("PEDICURE");
-        category = categoryRepository.findWithSpecialties(category.getIdCategory());
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
-        //ADICIONADO PARA TESTAR O NULLPOINTER
-        //professionalServicesRepository.save(ps1);
-
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
-
-        /*
-        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
-        String jsonCreateOrder = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdService() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
-                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
-                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
-                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
-                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                //"      \"idAddress\" : null\n" +
-                "       \"idAddress\": { \n" +
-                "   	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
-                "   	    \"cep\": \"26083-275\",\n" +
-                "   	    \"neighborhood\": \"Rodilândia\",\n" +
-                "   	    \"city\": \"Nova Iguaçu\",\n" +
-                "   	    \"state\": \"RJ\",\n" +
-                "   	    \"country\": \"BR\" \n" +
-                "       },\n" +
-                "       \"address\": { \n" +
-                "   	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
-                "   	    \"cep\": \"26083-275\",\n" +
-                "   	    \"neighborhood\": \"Rodilândia\",\n" +
-                "   	    \"city\": \"Nova Iguaçu\",\n" +
-                "   	    \"state\": \"RJ\",\n" +
-                "   	    \"country\": \"BR\" \n" +
-                "       }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-        */
-
-        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
-        String jsonCreateOrder = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \""+ Order.PayType.CREDITCARD +"\",\n" +
-                //"    \"scheduleId\" : {\n" +
-                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                //"      \"status\" : \"ACTIVE\",\n" +
-                //"      \"orderCollection\" : [ ]\n" +
-                //"    },\n" +
-
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+category.getIdCategory()+"\n" +
-                //"        \"category\" : \"PEDICURE\"\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
-                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
-                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
-                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
-                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : "+ customer.getAddress().getIdAddress() +",\n" +
-                "      \"address\": { \n" +
-                "   	    \"idAddress\": "+ customer.getAddress().getIdAddress() +"\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-
-        System.out.println(jsonCreateOrder);
-
-        RequestEntity<String> entity =  RequestEntity
-                .post(new URI("/orders"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonCreateOrder);
-
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
-                .exchange(entity, OrderResponseBody.class);
-        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
-        //-- checar se o seu teste esta incluindo address no json
-        Assert.assertNotNull(exchangeCreate);
-        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
-        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
-
-        Order order = exchangeCreate.getBody().getOrderList().get(0);
-        Order order1 = orderRepository.findOne(order.getIdOrder());
-
-        //TODO - OS DO ENDERECO NAO ESTAO VINDO
-        Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
-
-        /************ FIM DAS PRE_CONDICOES **********************************/
-
-        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
-
-        Assert.assertNotNull(retornoTransacao.isPresent());
-        Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
-        Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
-
-    }
+		return customer;
+	}
 
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {

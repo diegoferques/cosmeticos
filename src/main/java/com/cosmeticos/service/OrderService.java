@@ -1,23 +1,10 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.controller.PaymentController;
-import com.cosmeticos.model.*;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
-import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalCategoryRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.validation.OrderValidationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Example;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.StringUtils;
+import static com.cosmeticos.model.Order.Status.AUTO_CLOSED;
+import static com.cosmeticos.model.Order.Status.CANCELLED;
+import static com.cosmeticos.model.Order.Status.CLOSED;
+import static com.cosmeticos.model.Order.Status.EXPIRED;
+import static com.cosmeticos.validation.OrderValidationException.Type.INVALID_ORDER_STATUS;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -25,8 +12,27 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-import static com.cosmeticos.model.Order.Status.*;
-import static com.cosmeticos.validation.OrderValidationException.Type.INVALID_ORDER_STATUS;
+import com.cosmeticos.model.*;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
+
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.controller.PaymentController;
+import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
+import com.cosmeticos.penalty.PenaltyService;
+import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.validation.OrderValidationException;
+import com.cosmeticos.validation.OrderValidationException.Type;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by matto on 17/06/2017.
@@ -64,10 +70,20 @@ public class OrderService {
 		return Optional.of(orderRepository.findOne(idOrder));
 	}
 
-	public Order create(OrderRequestBody orderRequest) throws ValidationException {
+	public Order create(OrderRequestBody orderRequest) throws OrderValidationException {
 
 		PriceRule chosenPriceRule = orderRequest.getPriceRule();
-		ProfessionalCategory receivedProfessionalCategory = orderRequest.getOrder().getProfessionalCategory();
+
+		Order receivedORder = orderRequest.getOrder();
+
+		if(chosenPriceRule == null)
+		{
+			throw new OrderValidationException(Type.UNDEFINED_PRICE_RULE, "Regra de preco nao foi enviada pelo cliente");
+		}
+		
+		MDC.put("price", String.valueOf(chosenPriceRule.getPrice()));
+		
+		ProfessionalCategory receivedProfessionalCategory = receivedORder.getProfessionalCategory();
 
 		/*
 		 * Buscando o cliente que foi informado no request. Do que chega no request, so
@@ -75,69 +91,81 @@ public class OrderService {
 		 * nao vir preenchidos ou preenchidos de qualquer forma so pra nao ser barrado
 		 * pelo @Valid, portanto devemos buscar o objeto real no banco.
 		 */
-		Customer customer = customerResponsitory.findOne(orderRequest.getOrder().getIdCustomer().getIdCustomer());
+		Customer customer = customerResponsitory.findOne(receivedORder.getIdCustomer().getIdCustomer());
 
 		// Checaremos Order.PAymentTypeCreditCard creditCard = orderRequest.getOrder().getCreditCardCollection().iterator().next();
 
-		Professional professional = professionalRepository
-				.findOne(receivedProfessionalCategory.getProfessional().getIdProfessional());
+		ProfessionalCategory professionalCategory =
+				professionalCategoryRepository.findOne(receivedProfessionalCategory.getProfessionalCategoryId());
+
+		Professional receivedProfessional = professionalCategory.getProfessional();
+		Category receivedCategory = professionalCategory.getCategory();
 
 		// Conferindo se o ProfessionalServices recebido realmente esta associado ao
 		// Profissional em nossa base.
-		Optional<ProfessionalCategory> persistentProfessionalServices = professional.getProfessionalCategoryCollection()
+		Optional<ProfessionalCategory> persistentProfessionalServices = receivedProfessional.getProfessionalCategoryCollection()
 				.stream().filter(ps -> ps.getCategory().getIdCategory()
-						.equals(receivedProfessionalCategory.getCategory().getIdCategory()))
+						.equals(receivedCategory.getIdCategory()))
 				.findFirst();
 
 
 			if (persistentProfessionalServices.isPresent()) {
+
+				Payment.Type paymentType = null;
+				CreditCard creditCard  = null;
+
+				if(Order.PayType.CREDITCARD.equals(receivedORder.getPaymentType())) {
+					Collection<CreditCard> creditCards = customer.getUser().getCreditCardCollection();
+
+					if (creditCards.isEmpty()) {
+						throw new OrderValidationException(
+								Type.INVALID_PAYMENT_TYPE,
+								"Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
+						);
+					}
+					else
+					{
+						paymentType = Payment.Type.CC;
+						creditCard = creditCards.stream().findFirst().get();
+					}
+				}
+				else
+				{
+					paymentType = Payment.Type.CASH;
+				}
+
+				Payment payment = new Payment();
+				payment.setType(paymentType);
+				payment.setPriceRule(chosenPriceRule);
+				payment.setCreditCard(creditCard);
+				
 				Order order = new Order();
-				order.setScheduleId(orderRequest.getOrder().getScheduleId());
-				order.setIdLocation(orderRequest.getOrder().getIdLocation());
+				order.setScheduleId(receivedORder.getScheduleId());
+				order.setIdLocation(receivedORder.getIdLocation());
 				order.setIdCustomer(customer);
 				order.setDate(Calendar.getInstance().getTime());
 				order.setLastUpdate(order.getDate());
-				order.setPaymentType(orderRequest.getOrder().getPaymentType());
-//				order.getCreditCardCollection().add(creditCard);
+				order.setPaymentType(receivedORder.getPaymentType());
+				order.setStatus(Order.Status.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
+				order.setProfessionalCategory(persistentProfessionalServices.get());
 				order.setExpireTime(new Date(order.getDate().getTime() +
 
 						// 6 horas de validade
 						21600000));
+				order.addPayment(payment);
 
-				// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
-				// estra
-				order.setProfessionalCategory(persistentProfessionalServices.get());
-
-				//possibilidade de colocar um if a partir daki.
-				/*
-				MDC.put("price", receivedProfessionalCategory.getPriceRule()
-						.stream()
-						.findFirst()
-						.get()
-						.getPrice().toString());
-				*/
-
-				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
-				// order.setIdOrder(orderRequest.getOrder().getIdOrder());
-
-				// Schedule schedule = new Schedule();
-				// orderRequest.getOrder().getScheduleId()
-				// sale.setScheduleId();
-
-				// O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-				order.setStatus(Order.Status.OPEN);
 
 				Order newOrder = orderRepository.save(order);
 				// Buscando se o customer que chegou no request esta na wallet
 
-				addInWallet(professional, customer);
+				addInWallet(receivedProfessional, customer);
 
 				return newOrder;
 			} else {
-				throw new OrderService.ValidationException(
+				throw new OrderValidationException(Type.INVALID_PROFESSIONAL_CATEGORY_PAIR,
 						"Service [id=" + receivedProfessionalCategory.getCategory().getIdCategory()
 								+ "] informado no requst nao esta associado ao profissional " + "id=["
-								+ professional.getIdProfessional() + "] em nosso banco de dados.");
+								+ receivedProfessional.getIdProfessional() + "] em nosso banco de dados.");
 			}
 
 
@@ -405,42 +433,67 @@ public class OrderService {
 	 * @throws OrderValidationException
 	 * @throws ValidationException
 	 */
-	public void validate(Order order) throws OrderValidationException, ValidationException {//
+	public void validateCreate(Order order) throws OrderValidationException, ValidationException {//
 
-		Long idOrder = 0L;
-        Professional professional;
+		if (order.isScheduled()) {
+			validateScheduleEndDate(order);
+			
+            // Aqui vc escolhe o que quer usar.
+            //validateBusyScheduled2(order);
+            validateBusyScheduled1(order);
+		}
+		else {
+			Long idProfessionalCategory = order.getProfessionalCategory().getProfessionalCategoryId();
 
-		if(order.getScheduleId() != null)
-			validateScheduledBadRequest(order);
+			ProfessionalCategory professionalCategory = professionalCategoryRepository.findOne(idProfessionalCategory);
 
-        // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
-        // PARA VERIFICAR SE JA TEM ORDERS
-        if (order.getIdOrder() == null) {
+			Professional professional = professionalCategory.getProfessional();
 
-            professional = order.getProfessionalCategory().getProfessional();
+	        List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
+	                professional.getIdProfessional(), 0L);
+	
+			if (!orderList.isEmpty()) {
+				// Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
+				throw new OrderValidationException(OrderValidationException.Type.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
+			}
+		}
+	}
 
-            // SE FOR PUT/UPDATE, O ID ORDER EXISTE, MAS PODEMOS NAO TER O PROFISSIONAL, BEM
-            // COMO O UPDATE DE STATUS
-        } else {
-            order = orderRepository.findOne(order.getIdOrder());
-            professional = order.getProfessionalCategory().getProfessional();
-            idOrder = order.getIdOrder();
-			MDC.put("idOrder", idOrder.toString());
-        }
+	/**
+	 *
+	 * @param receivedOrder
+	 *
+	 * TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a
+	 * OrderValidationException mas tem q alterar  a classe la ainda
+	 * @throws OrderValidationException
+	 * @throws ValidationException
+	 */
+	public void validateUpdate(Order receivedOrder) throws OrderValidationException, ValidationException {//
 
-		if(order.getScheduleId() != null) {
-			// Aqui vc escolhe o que quer usar.
-			validateScheduled1(order);
-			//validateScheduled2(order);
+		Long idOrder = receivedOrder.getIdOrder();
+
+		MDC.put("idOrder", String.valueOf(idOrder));
+		
+		Order persistentOrder = orderRepository.findOne(idOrder);
+		
+		Professional professional;
+		ProfessionalCategory professionalCategory = receivedOrder.getProfessionalCategory();
+		
+		if(professionalCategory == null)
+		{
+			professionalCategory = persistentOrder.getProfessionalCategory(); 
+		}
+        
+		professional = professionalCategory.getProfessional();
+		
+		// So a Order gravada no banco eh que sabe dizer se a order eh agendada ou nao.
+		if (persistentOrder.isScheduled()) {
+			validateScheduleEndDate(receivedOrder);
+            validateBusyScheduled1(receivedOrder);
 		}
 
 
-		//List<Order> orderListId =
-		//orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
-		//Order.Status.ACCEPTED,
-		//Order.Status.INPROGRESS, professional.getIdProfessional());
-
-        List<Order> orderList = orderRepository.findByProfessionalCategory_Professional_idProfessionalAndStatusOrStatus(
+        List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
                 professional.getIdProfessional(), idOrder);
 
 		if (!orderList.isEmpty()) {
@@ -449,8 +502,7 @@ public class OrderService {
 		}
 
 	}
-
-	private void validateScheduled1(Order order) throws ValidationException, OrderValidationException {
+	private void validateBusyScheduled1(Order order) throws ValidationException, OrderValidationException {
 
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
 		if(newOrderScheduleStart == null){
@@ -473,12 +525,12 @@ public class OrderService {
 				if (existingOrderStart.before(newOrderScheduleStart) &&
 						existingOrderEnd.after(newOrderScheduleStart)) {
 					// conflitou!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					throw new ValidationException("Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+					throw new OrderValidationException(OrderValidationException.Type.CONFLICTING_SCHEDULES, "Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
 				}
 			}
 		}
 	}
-	private void validateScheduled2(Order order) throws ValidationException {
+	private void validateBusyScheduled2(Order order) throws ValidationException {
 
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
 		newOrderScheduleStart.getTime();
@@ -525,10 +577,11 @@ public class OrderService {
             log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
 	}
 
-	public void validateScheduledBadRequest(Order orderRequest) throws OrderValidationException {
+	public void validateScheduleEndDate(Order receivedOrder) throws OrderValidationException {
 
-		if(orderRequest.getScheduleId().getScheduleEnd() == null && orderRequest.getStatus() == Order.Status.SCHEDULED){
-			throw new OrderValidationException(OrderValidationException.Type.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
+		if(receivedOrder.getScheduleId().getScheduleEnd() == null 
+				&& Order.Status.SCHEDULED.equals(receivedOrder.getStatus())){
+			throw new OrderValidationException(Type.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
 		}
 
 	}

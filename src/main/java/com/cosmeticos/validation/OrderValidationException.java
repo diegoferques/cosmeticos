@@ -10,13 +10,17 @@ import javax.persistence.Enumerated;
  * Created by matto on 27/07/2017.
  */
 @Data
-public class OrderValidationException extends Exception {
+public class OrderValidationException extends RuntimeException {
 
     public enum Type{
         INVALID_SCHEDULE_END(HttpStatus.BAD_REQUEST),
         INVALID_SCHEDULE_START(HttpStatus.BAD_REQUEST),
         DUPLICATE_RUNNING_ORDER(HttpStatus.CONFLICT),
-        INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST);
+        INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST), 
+        CONFLICTING_SCHEDULES(HttpStatus.CONFLICT),
+        UNDEFINED_PRICE_RULE(HttpStatus.BAD_REQUEST),
+        INVALID_PROFESSIONAL_CATEGORY_PAIR(HttpStatus.BAD_REQUEST),
+        INVALID_PAYMENT_TYPE(HttpStatus.BAD_REQUEST);
 
         private HttpStatus status;
 

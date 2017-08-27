@@ -34,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE p.idProfessional = ?1 " +
             "AND o.idOrder != ?2 " +
             "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
-    List<Order> findByProfessionalCategory_Professional_idProfessionalAndStatusOrStatus(
+    List<Order> findRunningOrdersByProfessional(
             Long idProfessional, Long idOrder);
     
     /*

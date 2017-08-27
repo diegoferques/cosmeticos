@@ -46,7 +46,7 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                orderService.validate(request.getOrder());
+                orderService.validateCreate(request.getOrder());
 
                     Order order = orderService.create(request);
                     log.info("Order adicionado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
@@ -70,9 +70,9 @@ public class OrderController {
             String errorCode = String.valueOf(System.nanoTime());
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
-            orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
+            orderResponseBody.setDescription(e.getMessage() + " - errorCode{" +  errorCode + "}");
 
-            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+            log.error("Erro no insert: {} - {} - {}", orderResponseBody.getDescription(), errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
 
@@ -102,7 +102,7 @@ public class OrderController {
                     orderService.abort(request.getOrder());
                 }
 
-                orderService.validate(request.getOrder());
+                orderService.validateUpdate(request.getOrder());
 
                 Order order = orderService.update(request);
 
