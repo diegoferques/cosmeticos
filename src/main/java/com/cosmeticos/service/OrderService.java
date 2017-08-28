@@ -128,6 +128,7 @@ public class OrderService {
 				order.setStatus(Order.Status.OPEN);
 
 				Order newOrder = orderRepository.save(order);
+				//MDC.put("order", String.valueOf(order.getIdCustomer().getIdCustomer()));
 				// Buscando se o customer que chegou no request esta na wallet
 
 				addInWallet(professional, customer);

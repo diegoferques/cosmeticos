@@ -50,16 +50,26 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
+
+
+
+                MDC.put("idCustomer: ", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus: ", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
+                MDC.put("idProfessional: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getIdProfessional()));
+                MDC.put("professionalUserStatus: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getStatus()));
+                MDC.put("idOrder: ", String.valueOf(request.getOrder().getIdOrder()));
+                MDC.put("newStatus: ", String.valueOf(request.getOrder().getStatus()));
+                MDC.put("price: ", String.valueOf(request.getOrder().getProfessionalCategory().getPriceRule()));
+
                 orderService.validate(request.getOrder());
 
                     Order order = orderService.create(request);
 
-                /MDC.put("order", String.valueOf(order));
-                //MDC.put("request: ", String.valueOf(request));
 
-                    log.info("Order adicionado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                            " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            "{status atual: "+order.getStatus()+"}]");
+
+                    log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                            //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                            //"{status atual: "+order.getStatus()+"}]");
 
                     //return ok().build();
                 return ok(new OrderResponseBody(order));
@@ -128,8 +138,16 @@ public class OrderController {
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
 
-                //MDC.put("order", String.valueOf(order.getIdOrder()));
+                MDC.put("idCustomer: ", String.valueOf(order.getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus: ", String.valueOf(order.getIdCustomer().getStatus()));
+                MDC.put("idProfessional: ", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
+                MDC.put("professionalUserStatus: ", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
+                MDC.put("idOrder: ", String.valueOf(order.getIdOrder()));
+                MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+                MDC.put("price: ", String.valueOf(order.getProfessionalCategory().getPriceRule()));
 
+
+                /*
                 log.info("Order atualizado com sucesso:  [{professionalUserId: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
                         " {professionalUserStatus: "+order.getProfessionalCategory().getProfessional().getStatus()+"}, " +
                         " {customerUserId: "+order.getIdCustomer().getIdCustomer()+"}, " +
@@ -138,7 +156,7 @@ public class OrderController {
                         " {Status "+order.getStatus()+"}, " +
                         " {price: "+order.getProfessionalCategory().getPriceRule()+"}, " +
                         " {vote : "+request.getVote()+"}]");
-
+*/
                 return ok(responseBody);
 
             }
