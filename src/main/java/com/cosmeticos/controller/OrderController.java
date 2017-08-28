@@ -50,12 +50,26 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
+
+
+
+                MDC.put("idCustomer: ", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus: ", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
+                MDC.put("idProfessional: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getIdProfessional()));
+                MDC.put("professionalUserStatus: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getStatus()));
+                MDC.put("idOrder: ", String.valueOf(request.getOrder().getIdOrder()));
+                MDC.put("newStatus: ", String.valueOf(request.getOrder().getStatus()));
+                MDC.put("price: ", String.valueOf(request.getOrder().getProfessionalCategory().getPriceRule()));
+
                 orderService.validate(request.getOrder());
 
                     Order order = orderService.create(request);
-                    log.info("Order adicionado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                            " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            "{status atual: "+order.getStatus()+"}]");
+
+
+
+                    log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                            //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                            //"{status atual: "+order.getStatus()+"}]");
 
                     //return ok().build();
                 return ok(new OrderResponseBody(order));
@@ -76,6 +90,8 @@ public class OrderController {
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
 
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
             log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
@@ -85,6 +101,9 @@ public class OrderController {
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription("Erro interno: " + errorCode);
+
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
 
@@ -118,9 +137,26 @@ public class OrderController {
                 voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
-                log.info("Order atualizado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                        " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                        "{status atual: "+order.getStatus()+"}]");
+
+                MDC.put("idCustomer: ", String.valueOf(order.getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus: ", String.valueOf(order.getIdCustomer().getStatus()));
+                MDC.put("idProfessional: ", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
+                MDC.put("professionalUserStatus: ", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
+                MDC.put("idOrder: ", String.valueOf(order.getIdOrder()));
+                MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+                MDC.put("price: ", String.valueOf(order.getProfessionalCategory().getPriceRule()));
+
+
+                /*
+                log.info("Order atualizado com sucesso:  [{professionalUserId: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                        " {professionalUserStatus: "+order.getProfessionalCategory().getProfessional().getStatus()+"}, " +
+                        " {customerUserId: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                        " {customerUserStatus: "+order.getIdCustomer().getUser().getStatus()+"}, " +
+                        " {idOrder: "+order.getIdOrder()+"}, " +
+                        " {Status "+order.getStatus()+"}, " +
+                        " {price: "+order.getProfessionalCategory().getPriceRule()+"}, " +
+                        " {vote : "+request.getVote()+"}]");
+*/
                 return ok(responseBody);
 
             }
@@ -130,6 +166,9 @@ public class OrderController {
 
             OrderResponseBody response = new OrderResponseBody();
             response.setDescription(e.getMessage());
+
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
 
@@ -154,6 +193,9 @@ public class OrderController {
             OrderResponseBody response = new OrderResponseBody();
             response.setDescription("Erro interno: " + errorCode);
 
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getMessage()));
+
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -176,6 +218,9 @@ public class OrderController {
                 //return ok().body(response);
                 return ok(response);
             } else {
+
+
+
                 log.error("Nenhum registro encontrado para o id: {}", idOrder);
                 return notFound().build();
             }

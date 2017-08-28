@@ -3,13 +3,26 @@
 
     <!-- Aplica uma funcao que remove campos do mdc vazios do log -->
     <!-- <variable scope="context" name="mdcPattern" value="%replace(errorCode: %X{errorCode}, httpStatus: %X{httpStatus},){'[a-zA-Z]+=( |$)', ''}"/> -->
-   <variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, httpStatus: %X{httpStatus} -"/>
+   <!--<variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, httpStatus: %X{httpStatus}, urlPath: %X{urlPath}-"/>-->
 
-   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-       <encoder>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+       <!-- <encoder>
            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
-       </encoder>
-   </appender>
+       </encoder> -->
+
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp><fieldName>timestamp</fieldName></timestamp>
+                <logLevel/>
+                <loggerName><fieldName>logger</fieldName></loggerName>
+                <globalCustomFields><customFields>{"@source_host":"${HOSTNAME}"}</customFields></globalCustomFields>
+                <globalCustomFields><customFields>{"application": "cosmeticos-backend"}</customFields></globalCustomFields>
+                <mdc />
+                <message />
+            </providers>
+        </encoder>
+
+    </appender>
 
 
   <!-- Talvez usaremos mais pra frente ainda neste sprint
@@ -30,13 +43,13 @@
                <logLevel/>
                <loggerName><fieldName>logger</fieldName></loggerName>
                <globalCustomFields><customFields>{"@source_host":"${HOSTNAME}"}</customFields></globalCustomFields>
-               <globalCustomFields><customFields>{"application": "voucher-cocacola"}</customFields></globalCustomFields>
+               <globalCustomFields><customFields>{"application": "ipretty-backend"}</customFields></globalCustomFields>
                <mdc />
                <message />
            </providers>
        </encoder>
        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-           <fileNamePattern>${logFolder:-.}/voucher-cocacola-json.log%d{yyyy-MM-dd}</fileNamePattern>
+           <fileNamePattern>${logFolder:-.}/server-json.log%d{yyyy-MM-dd}</fileNamePattern>
            <maxHistory>30</maxHistory>
        </rollingPolicy>
    </appender>
