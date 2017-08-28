@@ -31,7 +31,7 @@ public class ControllersInterceptor extends HandlerInterceptorAdapter {
 		log.debug("{}.{}", getClass().getSimpleName(), "preHandle");
 
 		// TODO: Vinicius, catar dentro do parametro request o path da url que foi chamada (soh o que vem depois do localhost:8080
-		// MDC.put("urlPath", ??);
+		MDC.put("urlPath", request.getRequestURL().toString());
 
 		return super.preHandle(request, response, handler);
 	}

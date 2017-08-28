@@ -191,6 +191,8 @@ public class OrderService {
 		Order orderRequest = request.getOrder();
 		Order order = orderRepository.findOne(orderRequest.getIdOrder());
 
+		MDC.put("previousOrderStatus", order.getStatus().toString());
+
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(order.getStatus() == orderRequest.getStatus()) {
 			//throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
