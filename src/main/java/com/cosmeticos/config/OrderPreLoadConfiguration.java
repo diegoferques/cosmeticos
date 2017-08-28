@@ -74,7 +74,7 @@ public class OrderPreLoadConfiguration {
         o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o1.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o1.setIdCustomer(c1);
-        o1.setPaymentType(Order.PayType.CASH);
+        o1.addPayment(new Payment(Payment.Type.CASH));
         //o1.setIdLocation();
         o1.setProfessionalCategory(p1.getProfessionalCategoryCollection().iterator().next());
 
@@ -86,7 +86,7 @@ public class OrderPreLoadConfiguration {
         o2.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o2.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o2.setIdCustomer(c1);
-        o2.setPaymentType(Order.PayType.CASH);
+        o2.addPayment(new Payment(Payment.Type.CASH));
 
         //o2.setIdLocation();
         o2.setProfessionalCategory(ps1);
@@ -98,7 +98,7 @@ public class OrderPreLoadConfiguration {
         o3.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o3.setIdCustomer(c1);
-        o3.setPaymentType(Order.PayType.CASH);
+        o3.addPayment(new Payment(Payment.Type.CASH));
 
         //o3.setIdLocation();
         o3.setProfessionalCategory(ps1);
@@ -110,7 +110,7 @@ public class OrderPreLoadConfiguration {
         o4.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o4.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o4.setIdCustomer(c1);
-        o4.setPaymentType(Order.PayType.CASH);
+        o4.addPayment(new Payment(Payment.Type.CASH));
 
         //o4.setIdLocation();
         o4.setProfessionalCategory(ps1);
@@ -125,7 +125,7 @@ public class OrderPreLoadConfiguration {
         o5.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o5.setIdCustomer(c1);
         //o5.setIdLocation();
-        o5.setPaymentType(Order.PayType.CASH);
+        o5.addPayment(new Payment(Payment.Type.CASH));
 
         o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
@@ -138,7 +138,7 @@ public class OrderPreLoadConfiguration {
         o6.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setIdCustomer(c1);
-        o6.setPaymentType(Order.PayType.CASH);
+        o6.addPayment(new Payment(Payment.Type.CASH));
 
         //o6.setIdLocation();
         o6.setProfessionalCategory(ps1);
@@ -151,7 +151,7 @@ public class OrderPreLoadConfiguration {
         o7.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setIdCustomer(c1);
-        o7.setPaymentType(Order.PayType.CASH);
+        o7.addPayment(new Payment(Payment.Type.CASH));
 
         //o5.setIdLocation();
         o7.setProfessionalCategory(ps1);
@@ -164,7 +164,7 @@ public class OrderPreLoadConfiguration {
         o8.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setIdCustomer(c1);
-        o8.setPaymentType(Order.PayType.CREDITCARD);
+        o8.addPayment(new Payment(Payment.Type.CASH));
         o8.setProfessionalCategory(ps1);
 
         Schedule s8 = new Schedule();
@@ -180,7 +180,7 @@ public class OrderPreLoadConfiguration {
         o9.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setIdCustomer(c1);
-        o9.setPaymentType(Order.PayType.CREDITCARD);
+        o9.addPayment(new Payment(Payment.Type.CASH));
         o9.setProfessionalCategory(ps1);
 
         Schedule s9 = new Schedule();
@@ -195,7 +195,7 @@ public class OrderPreLoadConfiguration {
         o10.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setIdCustomer(c1);
-        o10.setPaymentType(Order.PayType.CREDITCARD);
+        o10.addPayment(new Payment(Payment.Type.CASH));
         o10.setProfessionalCategory(ps1);
 
         Schedule s10 = new Schedule();

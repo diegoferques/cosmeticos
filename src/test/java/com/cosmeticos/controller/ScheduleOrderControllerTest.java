@@ -3,10 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.CategoryRepository;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +20,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Created by Vinicius on 04/08/2017.
@@ -39,7 +38,7 @@ public class ScheduleOrderControllerTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ProfessionalRepository professionalRepository;
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CategoryRepository serviceRepository;
@@ -68,10 +67,6 @@ public class ScheduleOrderControllerTest {
         professional.getUser().setEmail(System.nanoTime() + "-professional@bol_Schedule");
 
         customerRepository.save(c1);
-        professionalRepository.save(professional);
-
-
-
 
         Category service = new Category();
         service.setName("PEDICUREscheduledOrderOk");
@@ -83,7 +78,7 @@ public class ScheduleOrderControllerTest {
         professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
@@ -194,7 +189,6 @@ public class ScheduleOrderControllerTest {
 
         customerRepository.save(c1);
         customerRepository.save(c2);
-        professionalRepository.save(professional);
 
 
         Category service = new Category();
@@ -203,12 +197,13 @@ public class ScheduleOrderControllerTest {
 
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
+        PriceRule pr = new PriceRule("Promocao 20 reais", 2000);
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(pr);
 
         // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
@@ -220,48 +215,13 @@ public class ScheduleOrderControllerTest {
          objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
          producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
           */
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 14, 00)).getTime() + "\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : " + c1.getIdCustomer() + ",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String json = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                pr,
+                Payment.Type.CASH,
+                Timestamp.valueOf(LocalDateTime.now().plusHours(20)).getTime()
+        ) ;
 
         System.out.println(json);
 
@@ -295,49 +255,21 @@ public class ScheduleOrderControllerTest {
 
         Order o1 = orderRestultFrom_createScheduledOrderOk;
 
-        String jsonUpdate = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"idOrder\" : "+o1.getIdOrder()+",\n"+
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : \""+Order.Status.SCHEDULED+"\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 14, 00)).getTime() + "\",\n" +
-                "      \"scheduleEnd\" : \"" + Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 16, 00)).getTime() + "\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : " + service.getIdCategory() + "\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : " + c1.getIdCustomer() + ",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        // Obtendo o start time da order criada e adicionando 30 mintos de trabalho.
+        LocalDateTime scheduleStart = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(
+                    o1.getScheduleId().getScheduleStart().getTime()
+                ),
+                ZoneId.systemDefault()
+        );
+
+        String jsonUpdate = OrderJsonHelper.buildJsonUpdateScheduledOrder(
+                o1.getIdOrder(),
+                Order.Status.SCHEDULED,
+                o1.getScheduleId().getScheduleId(),
+                Timestamp.valueOf(scheduleStart.plusMinutes(30)).getTime()
+
+        );
 
         System.out.println(jsonUpdate);
 

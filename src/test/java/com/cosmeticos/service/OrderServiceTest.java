@@ -79,7 +79,7 @@ public class OrderServiceTest {
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
         o3.setProfessionalCategory(ps1);
-        o3.setPaymentType(Order.PayType.CASH);
+        o3.addPayment(new Payment(Payment.Type.CASH));
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
 
@@ -93,7 +93,7 @@ public class OrderServiceTest {
         o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
         o4.setStatus(Order.Status.SEMI_CLOSED);
-        o4.setPaymentType(Order.PayType.CASH);
+        o4.addPayment(new Payment(Payment.Type.CASH));
 
         orderRepository.save(o4);
 
@@ -107,7 +107,7 @@ public class OrderServiceTest {
         o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
-        o5.setPaymentType(Order.PayType.CASH);
+        o5.addPayment(new Payment(Payment.Type.CASH));
         orderRepository.save(o5);
     }
 

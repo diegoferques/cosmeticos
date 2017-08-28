@@ -73,10 +73,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "SELECT o " +
             "FROM Order o " +
             "join fetch o.professionalCategory ps " +
-            "join fetch ps.professional p " +
-            "WHERE p.idProfessional = ?1 " +
+            "WHERE ps.professionalCategoryId = ?1 " +
             "AND  o.status in( 'SCHEDULED', 'INPROGRESS' )")
-    List<Order> findScheduledOrdersByProfessional(Long idProfessional);
+    List<Order> findScheduledOrdersByProfessionalCategory(Long professionalCategoryId);
 
 
     @Query(value = "" +

@@ -27,7 +27,9 @@ public class PriceRule implements Serializable {
 
     @JsonView
             ({
-    	ResponseJsonView.OrderControllerFindBy.class,
+                    ResponseJsonView.OrderControllerCreate.class,
+                    ResponseJsonView.OrderControllerUpdate.class,
+                    ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     @Id
@@ -36,13 +38,17 @@ public class PriceRule implements Serializable {
 
     @NotEmpty(message="price name cannot be empty")
     @JsonView({
-    	ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     private String name;
 
     @JsonView({
-    	ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     @NotNull

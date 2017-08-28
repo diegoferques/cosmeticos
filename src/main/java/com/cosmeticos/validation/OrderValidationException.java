@@ -18,9 +18,10 @@ public class OrderValidationException extends RuntimeException {
         DUPLICATE_RUNNING_ORDER(HttpStatus.CONFLICT),
         INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST), 
         CONFLICTING_SCHEDULES(HttpStatus.CONFLICT),
-        UNDEFINED_PRICE_RULE(HttpStatus.BAD_REQUEST),
+        INVALID_PAYMENT_CONFIGURATION(HttpStatus.BAD_REQUEST),
         INVALID_PROFESSIONAL_CATEGORY_PAIR(HttpStatus.BAD_REQUEST),
-        INVALID_PAYMENT_TYPE(HttpStatus.BAD_REQUEST);
+        INVALID_PAYMENT_TYPE(HttpStatus.BAD_REQUEST),
+        GATEWAY_DUPLICATE_PAYMENT(HttpStatus.CONFLICT);
 
         private HttpStatus status;
 

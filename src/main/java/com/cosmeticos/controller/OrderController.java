@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,12 +70,14 @@ public class OrderController {
         } catch (OrderValidationException e) {
             String errorCode = String.valueOf(System.nanoTime());
 
+            String msg = MessageFormat.format("Falha da validacao da requisicao! errorCode: {0}, message: {1}", errorCode, e.getMessage());
+
             OrderResponseBody orderResponseBody = new OrderResponseBody();
-            orderResponseBody.setDescription(e.getMessage() + " - errorCode{" +  errorCode + "}");
+            orderResponseBody.setDescription(msg);
 
-            log.error("Erro no insert: {} - {} - {}", orderResponseBody.getDescription(), errorCode, e.getMessage(), e);
+            log.error("Erro no insert: {} ", msg, e);
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
+            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

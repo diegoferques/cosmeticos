@@ -316,7 +316,6 @@ public class OrderControllerTests {
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
         ps1.addPriceRule(priceRule);
-        priceRule.setProfessionalCategory(ps1);
 
         professional.getProfessionalCategoryCollection().add(ps1);
 
@@ -326,77 +325,19 @@ public class OrderControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-
-
         /*
          O teste comeca aqui:
          Fazemos um json com informacoes que batem com o que foi inserido acima. Nossa pre-condicao pede que 3
          objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
          producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
           */
-        String json = "{\n" +
-               "  \"order\" : {\n" +
-               "    \"date\" : 1498324200000,\n" +
-               "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-               "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-               "      \"status\" : \"ACTIVE\",\n" +
-               "      \"orderCollection\" : [ ]\n" +
-               "    },\n" +
-               "    \"professionalCategory\" : {\n" +
-               "      \"category\" : {\n" +
-               "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-               "        \"name\" : \"MASSAGISTA\"\n" +
-               "      },\n" +
-
-                "\"priceRuleList\":[\n" +
-                "\t{\n" +
-                "\t\t\"id\": 1,\n" +
-                "\t\t\"name\": \"Cabelo Longo\",\n" +
-                "\t\t\"price\": 20000\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"id\": 2,\n" +
-                "\t\t\"name\": \"Cabelo curto\",\n" +
-                "\t\t\"price\": 10000\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"id\": 3,\n" +
-                "\t\t\"name\": \"Cabelo Medio\",\n" +
-                "\t\t\"price\": 15000\n" +
-                "\t}\n" +
-                "],\n" +
-               "      \"professional\" : {\n" +
-               "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-               "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-               "        \"genre\" : \"F\",\n" +
-               "        \"birthDate\" : 688010400000,\n" +
-               "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-               "        \"dateRegister\" : 1499195092952,\n" +
-               "        \"status\" : 0\n" +
-               "      }\n" +
-               "    },\n" +
-               "    \"idLocation\" : null,\n" +
-               "    \"idCustomer\" : {\n" +
-               "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-               "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-               "      \"cpf\" : \"816.810.695-68\",\n" +
-               "      \"genre\" : \"F\",\n" +
-               "      \"birthDate\" : 688010400000,\n" +
-               "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-               "      \"dateRegister\" : 1499195092952,\n" +
-               "      \"status\" : 0,\n" +
-               "      \"idLogin\" : {\n" +
-               "        \"username\" : \"KILLER\",\n" +
-               "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-               "      },\n" +
-               "      \"idAddress\" : null\n" +
-               "    }\n" +
-               "  }\n" +
-               "}";
+        String json = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                priceRule,
+                Payment.Type.CASH,
+                Timestamp.valueOf(LocalDateTime.now().plusHours(5)).getTime()
+        );
 
         System.out.println(json);
 
@@ -1876,7 +1817,7 @@ public class OrderControllerTests {
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"scheduleEnd\" : null\n" +
+                "      \"scheduleEnd\" : null\n" + // Foracara o erro
                 "    }" +
                 "\n}\n" +
                 "}";

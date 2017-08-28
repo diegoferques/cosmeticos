@@ -29,6 +29,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -80,6 +81,7 @@ public class Order implements Serializable {
     @Enumerated(EnumType.STRING)
 	private Status status;
 
+    /*
 	@JsonView({
 			ResponseJsonView.OrderControllerCreate.class,
 			ResponseJsonView.OrderControllerUpdate.class,
@@ -88,7 +90,8 @@ public class Order implements Serializable {
 	@Basic(optional = false)
 	@Column(name = "payment_Type")
 	@Enumerated(EnumType.STRING)
-	private PayType paymentType;
+	private PayType paymentType; */
+
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
@@ -135,7 +138,12 @@ public class Order implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
-    @OneToMany(mappedBy = "order")
+	@JsonView({
+			ResponseJsonView.OrderControllerCreate.class,
+			ResponseJsonView.OrderControllerUpdate.class,
+			ResponseJsonView.OrderControllerFindBy.class
+	})
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private Set<Payment> paymentCollection = new HashSet<>();
 
 	public Order() {
