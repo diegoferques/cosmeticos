@@ -52,7 +52,7 @@ public class Payment implements Serializable {
 			ResponseJsonView.OrderControllerUpdate.class,
 			ResponseJsonView.OrderControllerFindBy.class
 	})
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	@JoinColumn(name = "id")
 	private PriceRule priceRule;
 	

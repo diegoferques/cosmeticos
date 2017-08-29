@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.LocalDateTime.now;
+
 /**
  * Created by matto on 17/08/2017.
  */
@@ -186,7 +188,7 @@ public class MockingPaymentControllerTests {
                 professionalCategory,
                 priceRule200Reais,
                 Payment.Type.CC,
-                Timestamp.valueOf(LocalDateTime.now().plusHours(5)).getTime()
+                Timestamp.valueOf(now().plusHours(5)).getTime()
         );
 
         System.out.println(jsonCreateOrder);
@@ -221,9 +223,9 @@ public class MockingPaymentControllerTests {
                     "         {\n" +
                     "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
                     "\t\t        \"ownerName\": \"Teste\",\n" +
-                    "\t\t        \"cardNumber\": \"67730987357243053\",\n" +
+                    "\t\t        \"cardNumber\": \""+System.nanoTime()+"\",\n" +
                     "\t\t        \"securityCode\": \"098\",\n" +
-                    "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 11, 10, 0, 0)).getTime() +"\",\n" +
+                    "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(now().plusDays(30)).getTime() +"\",\n" +
                     "\t\t        \"vendor\": \"MasterCard\",\n" +
                     "\t\t        \"status\": \"ACTIVE\"\n" +
                     "\t\t     }\n" +
@@ -435,7 +437,7 @@ public class MockingPaymentControllerTests {
         );
 
         ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
-        Mockito.doReturn(response).when(paymentService).doConsultaTransacaoRequest(
+        Mockito.doReturn(response).when(paymentService).doCapturaTransacaoRequest(
                 Mockito.anyObject(),
                 Mockito.anyObject()
         );
@@ -493,7 +495,7 @@ public class MockingPaymentControllerTests {
                         ps1,
                         priceRule,
                         Payment.Type.CASH,
-                        Timestamp.valueOf(LocalDateTime.now().plusDays(3)).getTime()
+                        Timestamp.valueOf(now().plusDays(3)).getTime()
                 );
 
         RequestEntity<String> entity =  RequestEntity

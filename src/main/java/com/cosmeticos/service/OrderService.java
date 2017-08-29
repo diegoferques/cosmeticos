@@ -5,6 +5,7 @@ import static com.cosmeticos.model.Order.Status.CANCELLED;
 import static com.cosmeticos.model.Order.Status.CLOSED;
 import static com.cosmeticos.model.Order.Status.EXPIRED;
 import static com.cosmeticos.validation.OrderValidationException.Type.INVALID_ORDER_STATUS;
+import static org.springframework.util.StringUtils.isEmpty;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -13,21 +14,19 @@ import java.time.ZoneId;
 import java.util.*;
 
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.*;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.controller.PaymentController;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
-import com.cosmeticos.repository.ProfessionalCategoryRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import com.cosmeticos.validation.OrderValidationException.Type;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,6 +64,9 @@ public class OrderService {
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
+
+    @Autowired
+    private PriceRuleRepository priceRuleRepository;
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -174,6 +176,15 @@ public class OrderService {
             if (chosenPriceRule == null) {
                 throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
             }
+            else
+            {
+                chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
+
+                /**
+                 * Buscamos o pricerule no banco pq o q chega no request é so o ID.
+                 */
+                receivedPayment.setPriceRule(chosenPriceRule);
+            }
 
             return receivedPayment;
         }
@@ -272,23 +283,23 @@ public class OrderService {
             }
         }
 
-        if (!StringUtils.isEmpty(receivedOrder.getDate())) {
+        if (!isEmpty(receivedOrder.getDate())) {
             persistentOrder.setDate(receivedOrder.getDate());
         }
 
-        if (!StringUtils.isEmpty(receivedOrder.getStatus())) {
+        if (!isEmpty(receivedOrder.getStatus())) {
             persistentOrder.setStatus(receivedOrder.getStatus());
         }
 
-        if (!StringUtils.isEmpty(receivedOrder.getIdCustomer())) {
+        if (!isEmpty(receivedOrder.getIdCustomer())) {
             persistentOrder.setIdCustomer(receivedOrder.getIdCustomer());
         }
 
-        if (!StringUtils.isEmpty(receivedOrder.getIdLocation())) {
+        if (!isEmpty(receivedOrder.getIdLocation())) {
             persistentOrder.setIdLocation(receivedOrder.getIdLocation());
         }
 
-        if (!StringUtils.isEmpty(receivedOrder.getProfessionalCategory())) {
+        if (!isEmpty(receivedOrder.getProfessionalCategory())) {
 
             Professional p = receivedOrder.getProfessionalCategory().getProfessional();
             Category s = receivedOrder.getProfessionalCategory().getCategory();
@@ -301,13 +312,38 @@ public class OrderService {
 
         }
 
-        if (!StringUtils.isEmpty(receivedOrder.getScheduleId())) {
-            persistentOrder.setScheduleId(receivedOrder.getScheduleId());
+        if (receivedOrder.getScheduleId() != null) {
+
+            Schedule receivedSchedule = receivedOrder.getScheduleId();
+            Schedule persistentSchedule = persistentOrder.getScheduleId();
+
+            if(persistentSchedule == null ) {
+
+                persistentOrder.setScheduleId(receivedSchedule);
+            }
+            else
+            {
+                // Atualizamos campo a campo caso ja haja schedule registrada no banco
+                persistentSchedule.setTitle(receivedSchedule.getTitle() == null ?
+                        persistentSchedule.getTitle() : receivedSchedule.getTitle());
+
+                persistentSchedule.setDescription(receivedSchedule.getDescription() == null ?
+                        persistentSchedule.getDescription() : receivedSchedule.getDescription());
+
+                persistentSchedule.setScheduleStart(receivedSchedule.getScheduleStart() == null ?
+                        persistentSchedule.getScheduleStart() : receivedSchedule.getScheduleStart());
+
+                persistentSchedule.setScheduleEnd(receivedSchedule.getScheduleEnd() == null ?
+                        persistentSchedule.getScheduleEnd() : receivedSchedule.getScheduleEnd());
+            }
         }
 
+        orderRepository.save(persistentOrder);
+
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
+        // Utilizamos a order persistente pois ela possui TODOS os atributos setados
         if (receivedOrder.getStatus() == Order.Status.ACCEPTED) {
-            this.sendPaymentRequest(receivedOrder);
+            this.sendPaymentRequest(persistentOrder);
         }
 
         //TIVE QUE COMENTAR A VALIDACAO ABAIXO POIS ESTAVA DANDO O ERRO ABAIXO:
@@ -315,16 +351,14 @@ public class OrderService {
         //-- VALIDANDO O COMENTARIO ACIMA --//
         //AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
         if (receivedOrder.getStatus() == Order.Status.SCHEDULED) {
-            this.validateScheduledAndsendPaymentRequest(receivedOrder);
+            this.validateScheduledAndsendPaymentRequest(persistentOrder);
         }
 
 
-        return orderRepository.save(persistentOrder);
+        return persistentOrder;
     }
 
-    private void validateScheduledAndsendPaymentRequest(Order orderRequest) throws Exception {
-
-        Order order = orderRepository.findOne(orderRequest.getIdOrder());
+    private void validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
 
         int daysToStart = Integer.parseInt(daysToStartPayment);
 
@@ -336,7 +370,7 @@ public class OrderService {
         Date now = c.getTime();
 
         //PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
-        Date scheduleDateStart = order.getScheduleId().getScheduleStart();
+        Date scheduleDateStart = persistenOrder.getScheduleId().getScheduleStart();
 
         //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
         c.setTime(scheduleDateStart);
@@ -349,7 +383,7 @@ public class OrderService {
         //TODO - DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
         //SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
         if (now.after(dateToStartPayment)) {
-            sendPaymentRequest(orderRequest);
+            sendPaymentRequest(persistenOrder);
         }
     }
 
@@ -384,10 +418,10 @@ public class OrderService {
                     //OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
                     Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.get());
 
-                    if (updateStatusPagamento == false) {
+                    if (!updateStatusPagamento) {
                         //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
                         log.error("Erro salvar o status do pagamento");
-                        throw new Exception("Erro salvar o status do pagamento");
+                        throw new RuntimeException("Erro salvar o status do pagamento");
                     }
 
                     //SE NAO VIER O STATUS DO PAGAMENTO 1 OU 2, VAMOS LANCAR UMA EXCECAO COM O STATUS VINDO DA SUPERPAY
@@ -530,7 +564,9 @@ public class OrderService {
                 // Se for nulo, entao nao eh intencao do cliente atualizar o agendamento, logo, nao validamos.
                 receivedOrder.getScheduleId() != null) {
             validateScheduleEndDate(receivedOrder);
-            validateBusyScheduled1(receivedOrder);
+
+            // Nao precisa validar pq so valida scheduleStart, que ja foi validado no PUT
+            //validateBusyScheduled1(receivedOrder);
         }
 
 
@@ -555,21 +591,23 @@ public class OrderService {
 		/*
         Nao coloco muitos filtros na query e retorno bastante orders e aplico a logica no if la em baixo.
 		 */
-        List<Order> persistentScheduledOrders = orderRepository.findScheduledOrdersByProfessionalCategory(
-                order.getProfessionalCategory().getProfessionalCategoryId()
-        );
+        if (order.getProfessionalCategory() != null) {
+            List<Order> persistentScheduledOrders = orderRepository.findScheduledOrdersByProfessionalCategory(
+                    order.getProfessionalCategory().getProfessionalCategoryId()
+            );
 
-        for (int i = 0; i < persistentScheduledOrders.size(); i++) {
-            Order o = persistentScheduledOrders.get(i);
+            for (int i = 0; i < persistentScheduledOrders.size(); i++) {
+                Order o = persistentScheduledOrders.get(i);
 
-            if (o.getScheduleId() != null) {
-                Date existingOrderStart = o.getScheduleId().getScheduleStart();
-                Date existingOrderEnd = o.getScheduleId().getScheduleEnd();
+                if (o.getScheduleId() != null) {
+                    Date existingOrderStart = o.getScheduleId().getScheduleStart();
+                    Date existingOrderEnd = o.getScheduleId().getScheduleEnd();
 
-                if (existingOrderStart.before(newOrderScheduleStart) &&
-                        existingOrderEnd.after(newOrderScheduleStart)) {
-                    // conflitou!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    throw new OrderValidationException(OrderValidationException.Type.CONFLICTING_SCHEDULES, "Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+                    if (existingOrderStart.before(newOrderScheduleStart) &&
+                            existingOrderEnd.after(newOrderScheduleStart)) {
+                        // conflitou!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        throw new OrderValidationException(Type.CONFLICTING_SCHEDULES, "Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+                    }
                 }
             }
         }

@@ -10,5 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface ProfessionalCategoryRepository extends JpaRepository<ProfessionalCategory, Long> {
 
-	//Set<ProfessionalServices> findByServiceIdService(Long idCategory);
+    //ProfessionalCategory findByPriceRuleListId(Long id);
+
+    //Set<ProfessionalServices> findByServiceIdService(Long idCategory);
 }
