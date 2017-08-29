@@ -1128,13 +1128,13 @@ public class OrderControllerTests {
         c1.setCpf("123.456.789-01");
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testConflictedOrder-customer2");
-        c2.getUser().setEmail("testConflictedOrder-customer2@email.com");
+        c2.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-customer2");
+        c2.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-customer2@email.com");
         c2.getUser().setPassword("123");
         c2.setCpf("123.456.789-02");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testConflictedOrder-professional");
+        professional.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional");
         professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
@@ -1312,20 +1312,20 @@ public class OrderControllerTests {
 
         //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testConflictedOrderUpdate-customer1");
-        c1.getUser().setEmail("testConflictedOrderUpdate-customer1@email.com");
+        c1.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer1");
+        c1.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer1@email.com");
         c1.getUser().setPassword("123");
         c1.setCpf("123.456.789-01");
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testConflictedOrderUpdate-customer2");
-        c2.getUser().setEmail("testConflictedOrderUpdate-customer2@email.com");
+        c2.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer2");
+        c2.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer2@email.com");
         c2.getUser().setPassword("123");
         c2.setCpf("123.456.789-02");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testConflictedOrderUpdate-professional");
-        professional.getUser().setEmail("testConflictedOrderUpdate-professional@email.com");
+        professional.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-professional");
+        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
 
@@ -1576,6 +1576,97 @@ public class OrderControllerTests {
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         return exchangeUpdate;
+    }
+
+    @Test
+    public void testCreateToOrderStatusInProgressToOtherSchedule() throws IOException, URISyntaxException {
+
+        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testConflictedOrderUpdate-customer1");
+        c1.getUser().setEmail("testConflictedOrderUpdate-customer1@email.com");
+        c1.getUser().setPassword("123");
+        c1.setCpf("123.456.789-01");
+
+        Customer c2 = CustomerControllerTests.createFakeCustomer();
+        c2.getUser().setUsername("testConflictedOrderUpdate-customer2");
+        c2.getUser().setEmail("testConflictedOrderUpdate-customer2@email.com");
+        c2.getUser().setPassword("123");
+        c2.setCpf("123.456.789-02");
+
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testConflictedOrderUpdate-professional");
+        professional.getUser().setEmail("testConflictedOrderUpdate-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.456.789-03");
+
+        customerRepository.save(c1);
+        customerRepository.save(c2);
+        professionalRepository.save(professional);
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
+
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
+
+        // Atualizando associando o Profeissional ao Servico
+        professionalCategoryRepository.save(ps1);
+        //-------
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+
+        Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
+        //-------
+
+        //ATUALIZAMOS ORDER PARA IN_PROGRESS PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
+        ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
+                createdOrder.getIdOrder(), Order.Status.INPROGRESS);
+
+        Assert.assertNotNull(exchangeUpdateAccepted);
+        Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
+
+        Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
+        Assert.assertEquals(Order.Status.INPROGRESS, orderUpdateAccepted.getStatus());
+        //-------
+
+        //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
+        String jsonCreate2 = this.getOrderCreateJson(service, ps1, c2, priceRule);
+
+        RequestEntity<String> entity2 =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate2);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate2 = this.updateOrderStatus(
+                createdOrder.getIdOrder(), Order.Status.SCHEDULED);
+
+        Assert.assertNotNull(exchangeCreate2);
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate2.getStatusCode());
+        //-------
+
     }
 
     private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {

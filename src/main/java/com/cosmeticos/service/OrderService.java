@@ -141,8 +141,8 @@ public class OrderService {
             order.addPayment(validatedPayment);
 
 
-            Order newOrder = orderRepository.save(order);
-            // Buscando se o customer que chegou no request esta na wallet
+				Order newOrder = orderRepository.save(order);
+				// Buscando se o customer que chegou no request esta na wallet
 
             addInWallet(receivedProfessional, persistentCustomer);
 
@@ -184,6 +184,8 @@ public class OrderService {
                  * Buscamos o pricerule no banco pq o q chega no request é so o ID.
                  */
                 receivedPayment.setPriceRule(chosenPriceRule);
+
+                MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
             }
 
             return receivedPayment;
@@ -257,11 +259,13 @@ public class OrderService {
         Order receivedOrder = request.getOrder();
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
-        //ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
-        if (persistentOrder.getStatus() == receivedOrder.getStatus()) {
-            //throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
-            throw new OrderValidationException(INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
-        }
+		MDC.put("previousOrderStatus", String.valueOf(receivedOrder.getStatus()));
+
+		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
+		if(persistentOrder.getStatus() == receivedOrder.getStatus()) {
+			//throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+			throw new OrderValidationException(INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+		}
 
         if (Order.Status.CLOSED == persistentOrder.getStatus()) {
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
@@ -525,6 +529,9 @@ public class OrderService {
             ProfessionalCategory professionalCategory = professionalCategoryRepository.findOne(idProfessionalCategory);
 
             Professional professional = professionalCategory.getProfessional();
+
+            MDC.put("idProfessional: ", String.valueOf(professional.getIdProfessional()));
+            MDC.put("professionalUserStatus: ", String.valueOf(professional.getUser().getStatus()));
 
             List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
                     professional.getIdProfessional(), 0L);
