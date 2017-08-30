@@ -444,7 +444,7 @@ public class PaymentController {
             }
 
         } else {
-            throw new OrderValidationException(HttpStatus.FORBIDDEN, "Status da Order não permite efetuar captura do pagamento");
+            throw new OrderValidationException(OrderValidationException.Type.FORBIDEN_PAYMENT, "Status da Order não permite efetuar captura do pagamento");
         }
 
         return validateAndCapture;

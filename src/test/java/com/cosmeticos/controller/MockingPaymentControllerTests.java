@@ -346,11 +346,18 @@ public class MockingPaymentControllerTests {
                 paymentService.capturaTransacaoSuperpay(Mockito.any())
         ).thenReturn(responseEntityFakeRetornoTransacao);
 
+        Mockito.when(
+                paymentController.validatePaymentStatusAndSendCapture(Mockito.any())
+        ).thenCallRealMethod();
+
 
         //validatePaymentStatusAndSendCapture
 
+        // TODO: diego, seu teste ta dependendo de do preload, nao pode.. tem q criar essa order dentro do seu metodo de teste.
         Order order = orderRepository.findOne(3L);
 
+        // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
+        // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
         Boolean capturaTransacao = paymentController.validatePaymentStatusAndSendCapture(order);
 
         Assert.assertNotNull(capturaTransacao);

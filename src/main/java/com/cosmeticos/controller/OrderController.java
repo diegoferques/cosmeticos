@@ -171,12 +171,8 @@ public class OrderController {
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
-<<<<<<< HEAD
-            //TODO - FAZER ISSO EM TODAS OS CATCHS DE ORDER VALIDATION EXCEPION
-            return ResponseEntity.status(e.getStatus()).body(orderResponseBody);
-=======
+
             return ResponseEntity.status(e.getType().getHttpStatus()).body(orderResponseBody);
->>>>>>> dev
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
