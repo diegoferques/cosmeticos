@@ -2,7 +2,8 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardResponseBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
@@ -20,8 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 /**
  * Created by Vinicius on 08/07/2017.

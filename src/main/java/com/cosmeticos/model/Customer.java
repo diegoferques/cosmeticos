@@ -4,8 +4,10 @@
  */
 package com.cosmeticos.model;
 
-import com.fasterxml.jackson.annotation.*;
 import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -33,7 +35,8 @@ public class Customer implements Serializable {
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,16 +44,26 @@ public class Customer implements Serializable {
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class
+    })
     @NotEmpty(message = "cpf was not set!")
     private String cpf;
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class
+    })
     private Character genre;
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class
+    })
     //TODO - Troquei o TemporalType de TIMESTAMP para DATE, verificar se essa alteração não tem problema
     //Voltei para TimeStamp
     @NotNull(message = "birthDate was not set!")
@@ -59,19 +72,27 @@ public class Customer implements Serializable {
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     private String cellPhone;
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class
+    })
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegister;
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class
+    })
     private Integer status;
 
     @JsonManagedReference(value="user-customer")
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;

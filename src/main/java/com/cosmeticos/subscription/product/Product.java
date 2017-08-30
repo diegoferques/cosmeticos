@@ -1,12 +1,11 @@
 package com.cosmeticos.subscription.product;
 
 //import com.cosmeticos.subscription.Pricing;
+
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.io.Serializable;
 
 /**

@@ -5,7 +5,10 @@
 package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -185,6 +188,11 @@ public class Professional  implements Serializable {
     })
     @Transient
     private float evaluation;
+
+    public void addProfessionalCategory(ProfessionalCategory ps1) {
+        getProfessionalCategoryCollection().add(ps1);
+        ps1.setProfessional(this);
+    }
 
 
     public void setWallet(Wallet wallet) {

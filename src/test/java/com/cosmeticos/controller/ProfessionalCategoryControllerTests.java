@@ -1,11 +1,9 @@
 package com.cosmeticos.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.util.List;
-
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CategoryRepository;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,13 +15,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalCategory;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.User;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)

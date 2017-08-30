@@ -63,23 +63,6 @@ public class PaymentService {
         ObjectMapper om = new ObjectMapper();
         String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
 
-        //ESTAVA ANALISANDO E PUDE PERCEBER QUE RetornoTransacao E RetornoCaptura POSSUEM OS MESMOS ATRIBUTOS
-        //ENTAO, JOGUEI TUDO EM RetornoTransacao
-        RequestEntity<RetornoTransacao> entity = RequestEntity
-        //RequestEntity<RetornoCaptura> entity = RequestEntity
-                .post(new URI(urlCapturaTransacao))
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("usuario", jsonHeader)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(null);
-
-        ResponseEntity<RetornoTransacao> exchange = restTemplate
-                .exchange(entity, RetornoTransacao.class);
-
-<<<<<<< HEAD
-        if(exchange.getStatusCode() == HttpStatus.CONFLICT){
-            log.warn("Conflitou");
-=======
             RequestEntity<RetornoTransacao> entity = RequestEntity
                     .post(new URI(urlCapturaTransacao))
                     .contentType(MediaType.APPLICATION_JSON)
@@ -87,40 +70,26 @@ public class PaymentService {
                     .accept(MediaType.APPLICATION_JSON)
                     .body(null);
 
-            ResponseEntity<RetornoTransacao> exchange = doConsultaTransacaoRequest(restTemplate, entity);
+            ResponseEntity<RetornoTransacao> exchange = doCapturaTransacaoRequest(restTemplate, entity);
 
-            //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
-            if(exchange.getStatusCode() == HttpStatus.OK) {
-                result = this.updatePaymentStatus(exchange.getBody());
-
-            } else {
-                result = false;
-            }
-
-            if(exchange.getStatusCode() == HttpStatus.CONFLICT){
-                log.warn("Conflitou");
-            }
-
-        } catch (Exception e) {
-            log.error(e.toString());
-
-            result = false;
->>>>>>> dev
+        if(exchange.getStatusCode() == HttpStatus.CONFLICT) {
+            log.warn("Conflitou");
         }
 
         return exchange;
     }
 
-<<<<<<< HEAD
-    //VERIFICAMOS NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
-=======
-    public ResponseEntity<RetornoTransacao> doConsultaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
+    public ResponseEntity<RetornoTransacao> doConsultaTransacaoRequest(RestTemplate restTemplate,
+                RequestEntity<RetornoTransacao> entity) {
+        return restTemplate.exchange(entity, RetornoTransacao.class);
+    }
+
+    public ResponseEntity<RetornoTransacao> doCapturaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
         return restTemplate.exchange(entity, RetornoTransacao.class);
     }
 
     //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
     //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
->>>>>>> dev
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/129
     public Optional<RetornoTransacao> consultaTransacao(Long numeroTransacao) throws JsonProcessingException {
 
@@ -138,13 +107,7 @@ public class PaymentService {
 
         HttpEntity entity = new HttpEntity(headers);
 
-        ResponseEntity<RetornoTransacao> exchange = restTemplate.exchange(
-                urlConsultaTransacao,
-                HttpMethod.GET,
-                entity,
-                RetornoTransacao.class
-                //        param
-        );
+            ResponseEntity<RetornoTransacao> exchange = doConsultaTransacao(restTemplate, urlConsultaTransacao, entity);
 
         if(exchange.getStatusCode() == HttpStatus.OK) {
             retornoTransacao = exchange.getBody();
@@ -159,6 +122,16 @@ public class PaymentService {
         }
 
         return Optional.ofNullable(retornoTransacao);
+    }
+
+    public ResponseEntity<RetornoTransacao> doConsultaTransacao(RestTemplate restTemplate, String urlConsultaTransacao, HttpEntity entity) {
+        return restTemplate.exchange(
+                        urlConsultaTransacao,
+                        HttpMethod.GET,
+                        entity,
+                        RetornoTransacao.class
+                        //        param
+                );
     }
 
     //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE

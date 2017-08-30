@@ -1,7 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ScheduleRequestBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Schedule;
 import com.cosmeticos.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,4 +37,13 @@ public class ScheduleService {
     public List<Schedule> find10Lastest() {
         return repository.findTop10ByOrderByScheduleStartDesc();
     }
+
+    /**
+     * Retorna agendamentos associados a orders iniciadas de um profissional.
+     * @param idProfessional
+     * @return
+     */
+	public List<Schedule> findByProfessional(Long idProfessional) {
+		return repository.findByProfessional(idProfessional);
+	}
 }

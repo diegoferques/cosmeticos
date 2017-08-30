@@ -1,8 +1,5 @@
 package com.cosmeticos.subscription.product;
 
-import com.cosmeticos.commons.RoleRequestBody;
-import com.cosmeticos.commons.RoleResponseBody;
-import com.cosmeticos.model.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -11,14 +8,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 /**
  * Created by Vinicius on 17/07/2017.

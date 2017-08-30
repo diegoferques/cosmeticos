@@ -4,7 +4,6 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -19,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,9 +36,6 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    private PenaltyService penaltyService;
-
-    @Autowired
     private VoteService voteService;
 
     @JsonView(ResponseJsonView.OrderControllerCreate.class)
@@ -50,12 +47,23 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                orderService.validate(request.getOrder());
+
+
+
+                MDC.put("idCustomer: ", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus: ", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
+
+                orderService.validateCreate(request.getOrder());
 
                     Order order = orderService.create(request);
-                    log.info("Order adicionado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                            " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            "{status atual: "+order.getStatus()+"}]");
+
+                    MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+
+
+
+                    log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                            //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                            //"{status atual: "+order.getHttpStatus()+"}]");
 
                     //return ok().build();
                 return ok(new OrderResponseBody(order));
@@ -73,18 +81,25 @@ public class OrderController {
         } catch (OrderValidationException e) {
             String errorCode = String.valueOf(System.nanoTime());
 
+            String msg = MessageFormat.format("Falha da validacao da requisicao! errorCode: {0}, message: {1}", errorCode, e.getMessage());
+
             OrderResponseBody orderResponseBody = new OrderResponseBody();
-            orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
+            orderResponseBody.setDescription(msg);
 
-            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getType().getHttpStatus()));
+            log.error("Erro no insert: {} ", msg, e);
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
+            return ResponseEntity.status(e.getType().getHttpStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription("Erro interno: " + errorCode);
+
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
 
@@ -106,7 +121,7 @@ public class OrderController {
                     orderService.abort(request.getOrder());
                 }
 
-                orderService.validate(request.getOrder());
+                orderService.validateUpdate(request.getOrder());
 
                 Order order = orderService.update(request);
 
@@ -118,9 +133,16 @@ public class OrderController {
                 voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
-                log.info("Order atualizado com sucesso:  [{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                        " {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                        "{status atual: "+order.getStatus()+"}]");
+
+                MDC.put("idCustomer: ", String.valueOf(order.getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus: ", String.valueOf(order.getIdCustomer().getStatus()));
+                MDC.put("idProfessional: ", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
+                MDC.put("professionalUserStatus: ", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
+                MDC.put("idOrder: ", String.valueOf(order.getIdOrder()));
+                MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+
+                log.info("Order atualizado com sucesso.");
+
                 return ok(responseBody);
 
             }
@@ -130,6 +152,9 @@ public class OrderController {
 
             OrderResponseBody response = new OrderResponseBody();
             response.setDescription(e.getMessage());
+
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
 
@@ -142,7 +167,7 @@ public class OrderController {
             orderResponseBody.setDescription(e.getMessage());
 
             MDC.put("errorCode", errorCode);
-            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
+            MDC.put("httpStatus", String.valueOf(e.getType().getHttpStatus()));
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
@@ -150,7 +175,7 @@ public class OrderController {
             //TODO - FAZER ISSO EM TODAS OS CATCHS DE ORDER VALIDATION EXCEPION
             return ResponseEntity.status(e.getStatus()).body(orderResponseBody);
 =======
-            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
+            return ResponseEntity.status(e.getType().getHttpStatus()).body(orderResponseBody);
 >>>>>>> dev
 
         } catch (Exception e) {
@@ -158,6 +183,9 @@ public class OrderController {
 
             OrderResponseBody response = new OrderResponseBody();
             response.setDescription("Erro interno: " + errorCode);
+
+            MDC.put("errorCode", errorCode);
+            MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
 
@@ -221,7 +249,7 @@ public class OrderController {
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);
-            responseBody.setDescription("TOP 10 successfully retrieved.");
+            responseBody.setDescription(entitylist.size() + " orders successfully retrieved.");
 
             log.info("{} Orders successfully retrieved.", entitylist.size());
 

@@ -1,7 +1,6 @@
 package com.cosmeticos.repository;
 
 import com.cosmeticos.model.Category;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

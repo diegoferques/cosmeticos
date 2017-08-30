@@ -1,7 +1,7 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.service.ProfessionalCategoryService;

@@ -2,12 +2,11 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Professional;
 import com.cosmeticos.service.CustomerService;
 import com.cosmeticos.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -75,6 +74,7 @@ public class CustomerController {
         }
     }
 
+    @JsonView(ResponseJsonView.CustomerControllerUpdate.class)
     @RequestMapping(path = "/customers", method = RequestMethod.PUT)
     public HttpEntity<CustomerResponseBody> update(@RequestBody CustomerRequestBody request,
                                                    BindingResult bindingResult) {
@@ -95,7 +95,8 @@ public class CustomerController {
 					String emailInDatabase = persistentCustomer.getUser().getEmail();
 					String emailFromRequest = request.getCustomer().getUser().getEmail();
 
-					if (emailInDatabase.equals(emailFromRequest)) {
+					if (emailFromRequest == null || // Se nao foi informado email no request nao precisamos checar se os emails gravados recebidos sao iguais.
+                            emailInDatabase.equals(emailFromRequest)) {
 
 						optional = Optional.ofNullable(service.update(request));
 

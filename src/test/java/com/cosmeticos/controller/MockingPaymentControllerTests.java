@@ -19,10 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-<<<<<<< HEAD
-//import org.springframework.boot.web.client.RestTemplateBuilder;
-=======
->>>>>>> dev
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -37,6 +33,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
 
 /**
  * Created by matto on 17/08/2017.
@@ -72,12 +70,11 @@ public class MockingPaymentControllerTests {
     @Autowired
     ProfessionalCategoryRepository professionalServicesRepository;
 
-    private Integer statusTransacao = 0;
 
     @Test
-    public void testPaymentOk() throws URISyntaxException, ParseException, JsonProcessingException {
+    public void testNonScheduledPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentController.sendRequest(Mockito.any())
@@ -93,9 +90,194 @@ public class MockingPaymentControllerTests {
 
         //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
 
-        String emailCustomer = "testPaymentOk-customer1@email.com";
+        Customer customer = postCustomerWhatever("testPaymentOk-customer1@email.com");
 
+        putCustomerAddCreditCard(customer);
+
+
+        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
+
+       ProfessionalCategory professionalCategory = createProfessionalWhatever(
+    		   "testPaymentOk-professional@email.com",
+    		   "123.605.789-06"
+      );
+
+       // Determinamos a priceRule selecionaddaa pelo cliente
+        PriceRule priceRule200Reais = professionalCategory.getPriceRuleList()
+                .stream()
+                .filter(p -> p.getPrice() == 20000L)
+                .findFirst()
+                .get();
+
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
+                customer,
+                professionalCategory,
+                Payment.Type.CC,
+                priceRule200Reais
+        );
+
+        System.out.println(jsonCreateOrder);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreateOrder);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
+        /*
+         Resp: Nao vem pq nao faz sentido retornar endereco como resultado de Order, por isso o address nem entra no jsonview do endpoint que este request vai chamar.
+         TODO: Apagar estes comentarios quando tivermos entendido esta parte.
+          */
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(exchangeCreate.getBody().getDescription(), HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Order order = exchangeCreate.getBody().getOrderList().get(0);
+        Order order1 = orderRepository.findOne(order.getIdOrder());
+
+        //TODO - OS DO ENDERECO NAO ESTAO VINDO
+        //RESP: Nem deveria. Ver meu outro "Resp" acima
+        Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
+
+        /************ FIM DAS PRE_CONDICOES **********************************/
+
+        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
+
+        Assert.assertNotNull(retornoTransacao.isPresent());
+        Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
+        Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
+
+    }
+
+    @Test
+    public void testScheduledOrderPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
+
+        //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
+
+        Customer customer = postCustomerWhatever("testScheduledOrderPaymentOk-customer1@email.com");
+
+        putCustomerAddCreditCard(customer);
+
+
+        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
+
+       ProfessionalCategory professionalCategory = createProfessionalWhatever(
+    		   "testScheduledOrderPaymentOk-professional@email.com",
+    		   "123.605.789-07"
+      );
+
+       // Determinamos a priceRule selecionaddaa pelo cliente
+        PriceRule priceRule200Reais = professionalCategory.getPriceRuleList()
+                .stream()
+                .filter(p -> p.getPrice() == 20000L)
+                .findFirst()
+                .get();
+
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                customer,
+                professionalCategory,
+                priceRule200Reais,
+                Payment.Type.CC,
+                Timestamp.valueOf(now().plusHours(5)).getTime()
+        );
+
+        System.out.println(jsonCreateOrder);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreateOrder);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(exchangeCreate.getBody().getDescription(), HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Order order = exchangeCreate.getBody().getOrderList().get(0);
+
+        // Confirmando se a order foi mesmo pro banco apesar do status ter sido 200.
+        Assert.assertNotNull("A order nao foi icluido no banco", orderRepository.findOne(order.getIdOrder()));
+
+    }
+
+    private void putCustomerAddCreditCard(Customer customer) throws URISyntaxException {
         String jsonCustomerCreate = "{\n" +
+                "   \"customer\":{\n" +
+                "      \"idCustomer\": "+ customer.getIdCustomer() +",\n" +
+                "      \"user\":{\n" +
+                "         \"idLogin\":"+customer.getUser().getIdLogin()+",\n" +
+                "         \"creditCardCollection\": [\n" +
+                    "         {\n" +
+                    "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
+                    "\t\t        \"ownerName\": \"Teste\",\n" +
+                    "\t\t        \"cardNumber\": \""+System.nanoTime()+"\",\n" +
+                    "\t\t        \"securityCode\": \"098\",\n" +
+                    "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(now().plusDays(30)).getTime() +"\",\n" +
+                    "\t\t        \"vendor\": \"MasterCard\",\n" +
+                    "\t\t        \"status\": \"ACTIVE\"\n" +
+                    "\t\t     }\n" +
+                "         ]\n" +
+                "      }\n" +
+                "   }\n" +
+                "}";
+
+        System.out.println(jsonCustomerCreate);
+
+        RequestEntity<String> entityCustomer =  RequestEntity
+                .put(new URI("/customers"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCustomerCreate);
+
+        ResponseEntity<CustomerResponseBody> exchange = restTemplate
+                .exchange(entityCustomer, CustomerResponseBody.class);
+
+        Assert.assertNotNull(exchange);
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals(customer.getNameCustomer(), exchange.getBody().getCustomerList().get(0).getNameCustomer());
+
+    }
+
+    private ProfessionalCategory createProfessionalWhatever(String email, String cnpj) {
+		 Professional professional = ProfessionalControllerTests.createFakeProfessional();
+	        professional.getUser().setUsername(email);
+	        professional.getUser().setEmail(email);
+	        professional.getUser().setPassword("123");
+	        professional.setCnpj(cnpj);
+
+	        professionalRepository.save(professional);
+
+	        Category category = categoryRepository.findByName("PEDICURE");
+	        category = categoryRepository.findWithSpecialties(category.getIdCategory());
+
+	        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
+            ps1.addPriceRule( new PriceRule("Cabelo curto", 10000L));
+            ps1.addPriceRule( new PriceRule("Cabelo Medio", 15000L));
+            ps1.addPriceRule( new PriceRule("Cabelo Longo", 20000L));
+
+	        // Atualizando associando o Profeissional ao Servico
+	        professionalServicesRepository.save(ps1);
+
+	        return ps1;
+	}
+
+	private Customer postCustomerWhatever(String emailCustomer) throws URISyntaxException {
+		String jsonCustomerCreate = "{\n" +
                 "   \"customer\":{\n" +
                 "      \"address\":{\n" +
                 "         \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
@@ -147,185 +329,14 @@ public class MockingPaymentControllerTests {
         //ABAIXO SEGUE O CUSTOMER QUE BUSCAMOS NO BANCO PELO ID DO CUSTOMER CRIADO ACIMA, O ID DE ADDRESS RETORNADO FOI 7
         Customer customer2 = customerRepository.findOne(customer.getIdCustomer());
 
-        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testPaymentOk-professional");
-        professional.getUser().setEmail("testPaymentOk-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.605.789-06");
-
-        customerRepository.save(customer);
-        professionalRepository.save(professional);
-
-        Category category = categoryRepository.findByName("PEDICURE");
-        category = categoryRepository.findWithSpecialties(category.getIdCategory());
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
-        //ADICIONADO PARA TESTAR O NULLPOINTER
-        //professionalServicesRepository.save(ps1);
-
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
-
-        /*
-        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
-        String jsonCreateOrder = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalServices\" : {\n" +
-                "      \"service\" : {\n" +
-                "        \"idService\" : "+ service.getIdService() +",\n" +
-                "        \"category\" : \"PEDICURE\"\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
-                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
-                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
-                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
-                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                //"      \"idAddress\" : null\n" +
-                "       \"idAddress\": { \n" +
-                "   	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
-                "   	    \"cep\": \"26083-275\",\n" +
-                "   	    \"neighborhood\": \"Rodilândia\",\n" +
-                "   	    \"city\": \"Nova Iguaçu\",\n" +
-                "   	    \"state\": \"RJ\",\n" +
-                "   	    \"country\": \"BR\" \n" +
-                "       },\n" +
-                "       \"address\": { \n" +
-                "   	    \"address\": \"Avenida dos Metalúrgicos, 22\",\n" +
-                "   	    \"cep\": \"26083-275\",\n" +
-                "   	    \"neighborhood\": \"Rodilândia\",\n" +
-                "   	    \"city\": \"Nova Iguaçu\",\n" +
-                "   	    \"state\": \"RJ\",\n" +
-                "   	    \"country\": \"BR\" \n" +
-                "       }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-        */
-
-        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
-        String jsonCreateOrder = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \""+ Order.PayType.CREDITCARD +"\",\n" +
-                //"    \"scheduleId\" : {\n" +
-                //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                //"      \"status\" : \"ACTIVE\",\n" +
-                //"      \"orderCollection\" : [ ]\n" +
-                //"    },\n" +
-
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+category.getIdCategory()+"\n" +
-                //"        \"category\" : \"PEDICURE\"\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
-                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
-                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
-                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
-                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : "+ customer.getAddress().getIdAddress() +",\n" +
-                "      \"address\": { \n" +
-                "   	    \"idAddress\": "+ customer.getAddress().getIdAddress() +"\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-
-        System.out.println(jsonCreateOrder);
-
-        RequestEntity<String> entity =  RequestEntity
-                .post(new URI("/orders"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonCreateOrder);
-
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
-                .exchange(entity, OrderResponseBody.class);
-        //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO - PARECE QUE NAO ESTA SALVANDO EM ORDER CREATE
-        //-- checar se o seu teste esta incluindo address no json
-        Assert.assertNotNull(exchangeCreate);
-        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
-        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
-
-        Order order = exchangeCreate.getBody().getOrderList().get(0);
-        Order order1 = orderRepository.findOne(order.getIdOrder());
-
-        //TODO - OS DO ENDERECO NAO ESTAO VINDO
-        Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
-
-        /************ FIM DAS PRE_CONDICOES **********************************/
-
-        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
-
-        Assert.assertNotNull(retornoTransacao.isPresent());
-        Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
-        Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
-
-    }
+		return customer;
+	}
 
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
-        this.statusTransacao = 2;
-
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
-        ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao();
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao(1);
 
         Mockito.when(
                 paymentService.consultaTransacao(Mockito.any())
@@ -350,7 +361,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCampainhaOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
 
         Mockito.when(
                 paymentService.consultaTransacao(Mockito.any())
@@ -374,20 +385,16 @@ public class MockingPaymentControllerTests {
 
     }
 
-    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao() {
-        return Optional.of(this.getFakeRetornoTransacao());
+    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+        return Optional.of(this.getFakeRetornoTransacao(statusTransacao));
     }
 
-    private ResponseEntity<RetornoTransacao> getResponseEntityFakeRetornoTransacao() {
-        return ResponseEntity.ok(this.getFakeRetornoTransacao());
+    private ResponseEntity<RetornoTransacao> getResponseEntityFakeRetornoTransacao(int statusTransacao) {
+        return ResponseEntity.ok(this.getFakeRetornoTransacao(statusTransacao));
     }
 
+    private RetornoTransacao getFakeRetornoTransacao(int statusTransacao) {
 
-
-    private RetornoTransacao getFakeRetornoTransacao() {
-        if(this.statusTransacao == 0){
-            this.statusTransacao = 31;
-        }
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");
@@ -395,7 +402,7 @@ public class MockingPaymentControllerTests {
         retornoTransacao.setValor(100);
         retornoTransacao.setValorDesconto(0);
         retornoTransacao.setParcelas(1);
-        retornoTransacao.setStatusTransacao(this.statusTransacao);
+        retornoTransacao.setStatusTransacao(statusTransacao);
         retornoTransacao.setAutorizacao("20170808124436912");
         retornoTransacao.setCodigoTransacaoOperadora("0");
         retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
@@ -433,61 +440,24 @@ public class MockingPaymentControllerTests {
         return exchange;
     }
 
-<<<<<<< HEAD
-
-    //@MockBean
-    //private RestTemplateBuilder restTemplateBuilder;
-
-    @Mock
-    private TestRestTemplate testRestTemplate;
-
-    //TODO - CORRIGIR O TESTE ABAIXO
-    //BRANCH: RNF101
-=======
->>>>>>> dev
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
-<<<<<<< HEAD
-        //ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
-
-        // Primeiro moca o RestTemplate
-        /*
-        Mockito.when (
-                testRestTemplate.exchange(Mockito.anyObject(), RetornoTransacao.class)
-	    ).thenReturn(response);
-        */
-        /*
-        // Depois moca o restTemplateBuilder de modo que ele construa o RestTemplate mocado que vc mocou acima
-        Mockito.when(
-                restTemplateBuilder.build()
-	    ).thenReturn(testRestTemplate);
-        */
-
-         Mockito.when(
-                paymentService.consultaTransacao(Mockito.any())
-        ).thenReturn(optionalFakeRetornoTransacao);
-
-
-        //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
-        //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
-=======
         Mockito.when(
                 paymentController.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
->>>>>>> dev
 
         Mockito.doReturn(true).when(paymentService).updatePaymentStatus(
                 Mockito.anyObject()
         );
 
         ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
-        Mockito.doReturn(response).when(paymentService).doConsultaTransacaoRequest(
+        Mockito.doReturn(response).when(paymentService).doCapturaTransacaoRequest(
                 Mockito.anyObject(),
                 Mockito.anyObject()
         );
@@ -519,23 +489,34 @@ public class MockingPaymentControllerTests {
         customerRepository.save(c2);
         professionalRepository.save(professional);
 
-        Category service = categoryRepository.findByName("PEDICURE");
+
+        String categoryName = "PEDICURE";
+        String priceRuleName = "RULE";
+        Long price = 6600L;
+
+        Category service = categoryRepository.findByName(categoryName);
         service = categoryRepository.findWithSpecialties(service.getIdCategory());
 
         PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
+        priceRule.setName(priceRuleName);
+        priceRule.setPrice(price);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-
-        professional.getProfessionalCategoryCollection().add(ps1);
+        ps1.addPriceRule(priceRule);
 
         // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalServicesRepository.save(ps1);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate =
+                OrderJsonHelper.buildJsonCreateScheduledOrder(
+                        c1,
+                        ps1,
+                        priceRule,
+                        Payment.Type.CASH,
+                        Timestamp.valueOf(now().plusDays(3)).getTime()
+                );
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -562,14 +543,22 @@ public class MockingPaymentControllerTests {
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
-        Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
-
+        //Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
+        Assert.assertEquals(HttpStatus.CONFLICT, exchangeUpdateAccepted.getStatusCode());
+/*
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getHttpStatus());
         //-------
 
+ //Removi pq antes o post estava indo no ssuperpay mas agora nao vai mais.
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
+        String jsonCreate2 =OrderJsonHelper.buildJsonCreateScheduledOrder(
+                        c2,
+                        ps1,
+                        priceRule,
+                        Payment.Type.CASH,
+                        Timestamp.valueOf(LocalDateTime.now().plusDays(5)).getTime()
+                );
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -581,76 +570,7 @@ public class MockingPaymentControllerTests {
                 .exchange(entity2, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate2);
-        Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode());
-
-
-        //Assert.assertEquals(HttpStatus.CONFLICT.ordinal(), response.getStatusCodeValue());
-
-
-
-
-        //-------
-
-
-
-    }
-    public String getOrderCreateJson(Category category, Professional professional, Customer customer, PriceRule priceRule) {
-
-        String jsonCreate = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
-                "        \"name\" : \"PEDICURE\"\n" +
-                "      },\n" +
-                "       \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
-                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
-                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
-                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
-                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-
-        return jsonCreate;
-
+        Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode()); */
     }
 
     public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, Order.Status status) throws URISyntaxException {

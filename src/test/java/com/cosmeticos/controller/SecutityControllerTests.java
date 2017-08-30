@@ -1,7 +1,7 @@
 package com.cosmeticos.controller;
 
-import java.text.ParseException;
-
+import com.cosmeticos.Application;
+import com.cosmeticos.commons.CustomerResponseBody;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,8 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.cosmeticos.Application;
-import com.cosmeticos.commons.CustomerResponseBody;
+import java.text.ParseException;
 
 /**
  * Created by matto on 19/07/2017.
