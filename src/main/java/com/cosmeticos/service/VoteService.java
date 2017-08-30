@@ -38,10 +38,10 @@ public class VoteService {
         return voteRepository.findAllByUser(user);
     }
 
-    public float getProfessionalEvaluation(Professional professional) {
+    public float getUserEvaluation(User user) {
         float evaluation = 0;
         Integer totalVotes = 0;
-        List<Vote> votes = findAllByUser(professional.getUser());
+        List<Vote> votes = findAllByUser(user);
 
         for (Vote vote: votes) {
             totalVotes += vote.getValue();
@@ -51,6 +51,8 @@ public class VoteService {
 
         return evaluation;
     }
+
+
 
 
 }

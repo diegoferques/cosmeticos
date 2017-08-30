@@ -58,13 +58,13 @@ public class OrderController {
                 MDC.put("idProfessional: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getIdProfessional()));
                 MDC.put("professionalUserStatus: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getStatus()));
                 MDC.put("idOrder: ", String.valueOf(request.getOrder().getIdOrder()));
-                MDC.put("newStatus: ", String.valueOf(request.getOrder().getStatus()));
                 MDC.put("price: ", String.valueOf(request.getOrder().getProfessionalCategory().getPriceRule()));
 
                 orderService.validate(request.getOrder());
 
-                    Order order = orderService.create(request);
+                Order order = orderService.create(request);
 
+                MDC.put("newStatus: ", String.valueOf(request.getOrder().getStatus()));
 
 
                     log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
@@ -144,7 +144,7 @@ public class OrderController {
                 MDC.put("professionalUserStatus: ", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
                 MDC.put("idOrder: ", String.valueOf(order.getIdOrder()));
                 MDC.put("newStatus: ", String.valueOf(order.getStatus()));
-                MDC.put("price: ", String.valueOf(order.getProfessionalCategory().getPriceRule()));
+                MDC.put("price: ", String.valueOf(order.getProfessionalCategory()));
 
 
                 /*

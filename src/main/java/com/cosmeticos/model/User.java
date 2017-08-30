@@ -101,6 +101,17 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private PersonType personType;
 
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+    })
+    @Transient
+    private float evaluation;
+
+    @OneToMany(mappedBy = "user")
+    @Cascade(CascadeType.ALL)
+    private Set<Vote> voteCollection = new HashSet<>();
+
+
 
     public User() {
     }
