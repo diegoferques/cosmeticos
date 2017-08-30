@@ -79,18 +79,21 @@ public class OrderController {
 
             return badRequest().body(orderResponseBody);
         } catch (OrderValidationException e) {
-            String errorCode = String.valueOf(System.nanoTime());
 
-            String msg = MessageFormat.format("Falha da validacao da requisicao! errorCode: {0}, message: {1}", errorCode, e.getMessage());
+        	String auditError = String.valueOf(System.nanoTime());
+            String msg = MessageFormat.format("Falha da validacao da requisicao! errorCode: {0}, message: {1}", auditError, e.getMessage());
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
+            orderResponseBody.setErrorCode(e.getCode());
             orderResponseBody.setDescription(msg);
 
-            MDC.put("errorCode", errorCode);
-            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
+            MDC.put("auditError", auditError);
+            MDC.put("errorCode", String.valueOf(e.getCode()));
+            MDC.put("httpStatus", String.valueOf(e.getCode().getHttpStatus()));
+            
             log.error("Erro no insert: {} ", msg, e);
 
-            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
+            return ResponseEntity.status(e.getCode().getHttpStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -167,11 +170,11 @@ public class OrderController {
             orderResponseBody.setDescription(e.getMessage());
 
             MDC.put("errorCode", errorCode);
-            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
+            MDC.put("httpStatus", String.valueOf(e.getCode().getHttpStatus()));
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
-            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
+            return ResponseEntity.status(e.getCode().getHttpStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

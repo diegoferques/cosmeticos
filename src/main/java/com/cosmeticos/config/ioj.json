@@ -1,43 +1,36 @@
 {
-  "priceRule": {
-     "id": 7
-  },
-  "order" : {
-    "date" : 1498324200000,
-    "status" : 0,
-    "paymentType" : "CASH",
-    "professionalCategory" : {
-      "category" : {
-        "idCategory" : 8,
-        "name" : "MASSAGISTA"
-      },
-      "professional" : {
-        "idProfessional" : 9,
-        "nameProfessional" : "Fernanda Cavalcante",
-        "genre" : "F",
-        "birthDate" : 688010400000,
-        "cellPhone" : "(21) 99887-7665",
-        "dateRegister" : 1499195092952,
-        "status" : 0
-      }
-    },
-    "idLocation" : null,
-    "idCustomer" : {
-      "idCustomer" : 7,
-      "nameCustomer" : "Fernanda Cavalcante",
-      "cpf" : "816.810.695-68",
-      "genre" : "F",
-      "birthDate" : 688010400000,
-      "cellPhone" : "(21) 99887-7665",
-      "dateRegister" : 1499195092952,
-      "status" : 0,
-      "idLogin" : {
-        "username" : "KILLER",
-        "email" : "Killer@gmail.com",
-        "personType":"FÍSICA",
-        "sourceApp" : "facebook"
-      },
-      "idAddress" : null
-    }
-  }
+	"order": {
+		"creditCardCollection": [
+			{
+				"expirationDate": null,
+				"idCreditCard": null,
+				"lastUsage": null,
+				"ownerName": null,
+				"status": null,
+				"token": null,
+				"user": null,
+				"vendor": null
+			}
+		],
+		"date": 1503981277372,
+		"idCustomer": {
+			"idCustomer": 1
+		},
+		"paymentCollection": [
+			{
+				"creditCard": null,
+				"id": null,
+				"order": null,
+				"parcelas": null,
+				"priceRule": null,
+				"type": "CC",
+				"value": null
+			}
+		],
+		"professionalCategory": {
+			"professionalCategoryId": 2
+		},
+		"status": "OPEN"
+	},
+	"vote": null
 }
