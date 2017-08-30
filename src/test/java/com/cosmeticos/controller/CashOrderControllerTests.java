@@ -3,14 +3,19 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +25,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Vinicius on 17/08/2017.
@@ -27,10 +36,6 @@ import java.net.URISyntaxException;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CashOrderControllerTests {
-
-    private Order orderRestultFrom_createOrderOk = null;
-    private Order orderRestultFrom_testUpdateOk = null;
-
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -44,8 +49,22 @@ public class CashOrderControllerTests {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProfessionalCategoryRepository professionalCategoryRepository;
+
+    @MockBean
+    private PaymentController paymentController;
+
     @Test
-    public void testReady2ChargeToSemiClosed() throws URISyntaxException {
+    public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {
+
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
+
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
+
+
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
         c1.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
@@ -59,57 +78,23 @@ public class CashOrderControllerTests {
         Category category = categoryRepository.findByName("PEDICURE");
         category = categoryRepository.findWithSpecialties(category.getIdCategory());
 
+        PriceRule pr = null;
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, category);
+        ps1.addPriceRule(pr = new PriceRule("Preco de teste 50 mil reais", 5000000));
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
+        String json = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
+                c1,
+                ps1,
+                Payment.Type.CASH,
+                pr
+        );
 
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+category.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
-                "      },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        System.out.println(json);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -120,11 +105,14 @@ public class CashOrderControllerTests {
         ResponseEntity<OrderResponseBody> exchange = restTemplate
                 .exchange(entity, OrderResponseBody.class);
 
+        Order responsedOrder = exchange.getBody().getOrderList().get(0);
+
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
-        Assert.assertEquals(Order.PayType.CASH, exchange.getBody().getOrderList().get(0).getPaymentType());
-        Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
+        Assert.assertEquals(Order.Status.OPEN, responsedOrder.getStatus());
+        Assert.assertFalse(responsedOrder.getPaymentCollection().isEmpty());
+        Assert.assertEquals(Payment.Type.CASH, responsedOrder.getPaymentCollection().stream().findFirst().get().getType());
+        Assert.assertNull(responsedOrder.getScheduleId());
 
 
         Order orderOpenOk = exchange.getBody().getOrderList().get(0);
@@ -211,5 +199,28 @@ public class CashOrderControllerTests {
     }
 
 
+    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+        RetornoTransacao retornoTransacao = new RetornoTransacao();
+        retornoTransacao.setNumeroTransacao(3);
+        retornoTransacao.setCodigoEstabelecimento("1501698887865");
+        retornoTransacao.setCodigoFormaPagamento(170);
+        retornoTransacao.setValor(100);
+        retornoTransacao.setValorDesconto(0);
+        retornoTransacao.setParcelas(1);
+        retornoTransacao.setStatusTransacao(statusTransacao);
+        retornoTransacao.setAutorizacao("20170808124436912");
+        retornoTransacao.setCodigoTransacaoOperadora("0");
+        retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
+        retornoTransacao.setNumeroComprovanteVenda("0808124434526");
+        retornoTransacao.setNsu("4436912");
+        retornoTransacao.setUrlPagamento("1502206705884f8a21ff8-db8f-4c7d-a779-8f35f35cfd71");
+
+        List<String> cartaoUtilizado = new ArrayList<>();
+        cartaoUtilizado.add("000000******0001");
+        retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
+
+        return Optional.of(retornoTransacao);
+
+    }
 
 }

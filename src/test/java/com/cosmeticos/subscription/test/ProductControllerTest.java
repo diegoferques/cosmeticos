@@ -1,13 +1,8 @@
 package com.cosmeticos.subscription.test;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.CreditCardResponseBody;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.commons.WalletResponseBody;
-import com.cosmeticos.model.Order;
 import com.cosmeticos.subscription.product.Product;
 import com.cosmeticos.subscription.product.ProductRepository;
-import com.cosmeticos.subscription.product.ProductRequestBody;
 import com.cosmeticos.subscription.product.ProductResponseBody;
 import org.junit.Assert;
 import org.junit.Before;

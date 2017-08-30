@@ -1,14 +1,13 @@
 package com.cosmeticos.repository;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Order.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Order.Status;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by matto on 17/06/2017.
@@ -35,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE p.idProfessional = ?1 " +
             "AND o.idOrder != ?2 " +
             "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
-    List<Order> findByProfessionalCategory_Professional_idProfessionalAndStatusOrStatus(
+    List<Order> findRunningOrdersByProfessional(
             Long idProfessional, Long idOrder);
     
     /*
@@ -74,10 +73,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "SELECT o " +
             "FROM Order o " +
             "join fetch o.professionalCategory ps " +
-            "join fetch ps.professional p " +
-            "WHERE p.idProfessional = ?1 " +
+            "WHERE ps.professionalCategoryId = ?1 " +
             "AND  o.status in( 'SCHEDULED', 'INPROGRESS' )")
-    List<Order> findScheduledOrdersByProfessional(Long idProfessional);
+    List<Order> findScheduledOrdersByProfessionalCategory(Long professionalCategoryId);
 
 
     @Query(value = "" +

@@ -1,12 +1,12 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.google.LocationGoogle;
+import com.cosmeticos.model.Category;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalCategory;
-import com.cosmeticos.model.Category;
 import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.service.LocationService;
 import org.junit.Assert;

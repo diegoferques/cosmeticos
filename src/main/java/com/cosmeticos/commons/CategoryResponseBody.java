@@ -2,11 +2,9 @@ package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Category;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -23,7 +21,6 @@ public class CategoryResponseBody {
     @JsonView({
             ResponseJsonView.CategoryGetAll.class,
     })
-    private List<Category> serviceList = new ArrayList<>(10);
-
+    private List<Category> categoryList = new ArrayList<>(10);
 
 }

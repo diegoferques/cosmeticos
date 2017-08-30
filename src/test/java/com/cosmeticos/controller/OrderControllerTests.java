@@ -3,18 +3,24 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
+import com.cosmeticos.service.PaymentService;
 import com.cosmeticos.service.VoteService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,7 +28,11 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
@@ -39,7 +49,7 @@ public class OrderControllerTests {
     private Order orderRestultFrom_updateScheduledOrderToInactive = null;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private TestRestTemplate testRestTemplate;
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
@@ -68,9 +78,17 @@ public class OrderControllerTests {
     @Autowired
     private VoteService voteService;
 
+    @MockBean
+    private PaymentController paymentController;
+
+    /**
+     * Apesar de nao ser uma classe de teste mocking, precisamos mocar a ida ao superpay,.
+     */
+    @MockBean
+    private PaymentService paymentService;
+
     @Before
-    public void setup()
-    {
+    public void setup() throws ParseException, JsonProcessingException {
         Category service = serviceRepository.findByName("PEDICURE");
 
         if(service == null) {
@@ -78,6 +96,40 @@ public class OrderControllerTests {
             service.setName("PEDICURE");
             serviceRepository.save(service);
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////// Mocando o controller que vai no superpay e vai sofrer um refactoring monstruoso //////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
+
+
+        ///////////////////////////////////////////////////////////////////////
+        ///////// Mocando chamadas a consulta transacao ///////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        RetornoTransacao fakeRetornoTransacao = new RetornoTransacao();
+        fakeRetornoTransacao.setStatusTransacao(1);// TODO: Transformar esse 1 em um enum de status
+
+        ResponseEntity<RetornoTransacao> mockedResponse = new ResponseEntity<RetornoTransacao>(
+                fakeRetornoTransacao,
+                HttpStatus.OK
+        ) ;
+        Mockito.when(
+                paymentService.doConsultaTransacao(
+                        Mockito.anyObject(),
+                        Mockito.anyObject(),
+                        Mockito.anyObject())
+        ).thenReturn(mockedResponse);
+
+        ////////////////////////////////////////////////////////////////////////////
+        ///////// Mocando Update Payment Status, que ainda nao foi implementado  ///
+        ////////////////////////////////////////////////////////////////////////////
+        Mockito.doReturn(true).when(paymentService).
+                updatePaymentStatus(Mockito.anyObject()
+        );
     }
 
     //TESTANDO O RETORNO DE ORDER PELO ID
@@ -85,7 +137,7 @@ public class OrderControllerTests {
     public void testFindById() throws ParseException {
 
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders/1", //
                         HttpMethod.GET, //
                         null,
@@ -101,7 +153,7 @@ public class OrderControllerTests {
     public void testLastest10OK() throws ParseException {
 
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders", //
                         HttpMethod.GET, //
                         null,
@@ -117,7 +169,7 @@ public class OrderControllerTests {
     public void testDeleteForbiden() throws ParseException {
 
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders/1", //
                         HttpMethod.DELETE, //
                         null,
@@ -156,77 +208,20 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
+        professionalCategoryRepository.save(ps1);
 
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
-
-        /************ FIM DAS PRE_CONDICOES **********************************/
-
-        /*
-         O teste comeca aqui:
-         Fazemos um json com informacoes que batem com o que foi inserido acima. Nossa pre-condicao pede que 3
-         objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
-         producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
-          */
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
-                "      },\n" +
-                "     \"priceRule\": {\n" +
-                "           \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(json);
+                .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         OrderResponseBody orderResponseBody = exchange.getBody();
@@ -249,7 +244,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         OrderResponseBody responseBodyDoPut = exchangeUpdate.getBody();
@@ -273,7 +268,7 @@ public class OrderControllerTests {
         or.setOrder(s1);
 
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders", //
                         HttpMethod.PUT, //
                         new HttpEntity(or), // Body
@@ -315,8 +310,7 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.getPriceRule().add(priceRule);
-        priceRule.setProfessionalCategory(ps1);
+        ps1.addPriceRule(priceRule);
 
         professional.getProfessionalCategoryCollection().add(ps1);
 
@@ -326,64 +320,19 @@ public class OrderControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-
-
         /*
          O teste comeca aqui:
          Fazemos um json com informacoes que batem com o que foi inserido acima. Nossa pre-condicao pede que 3
          objetos estejam persistidos no banco. Usamos os IDs desses caras nesse json abaixo pq se fosse um servico em
          producao as pre-condicoes seriam as mesmas e o json abaixo seria igual.
           */
-        String json = "{\n" +
-               "  \"order\" : {\n" +
-               "    \"date\" : 1498324200000,\n" +
-               "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-               "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-               "      \"status\" : \"ACTIVE\",\n" +
-               "      \"orderCollection\" : [ ]\n" +
-               "    },\n" +
-               "    \"professionalCategory\" : {\n" +
-               "      \"category\" : {\n" +
-               "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-               "        \"name\" : \"MASSAGISTA\"\n" +
-               "      },\n" +
-                "      \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-               "      \"professional\" : {\n" +
-               "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-               "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-               "        \"genre\" : \"F\",\n" +
-               "        \"birthDate\" : 688010400000,\n" +
-               "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-               "        \"dateRegister\" : 1499195092952,\n" +
-               "        \"status\" : 0\n" +
-               "      }\n" +
-               "    },\n" +
-               "    \"idLocation\" : null,\n" +
-               "    \"idCustomer\" : {\n" +
-               "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-               "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-               "      \"cpf\" : \"816.810.695-68\",\n" +
-               "      \"genre\" : \"F\",\n" +
-               "      \"birthDate\" : 688010400000,\n" +
-               "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-               "      \"dateRegister\" : 1499195092952,\n" +
-               "      \"status\" : 0,\n" +
-               "      \"idLogin\" : {\n" +
-               "        \"username\" : \"KILLER\",\n" +
-               "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-               "      },\n" +
-               "      \"idAddress\" : null\n" +
-               "    }\n" +
-               "  }\n" +
-               "}";
+        String json = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                priceRule,
+                Payment.Type.CASH,
+                Timestamp.valueOf(now().plusHours(5)).getTime()
+        );
 
         System.out.println(json);
 
@@ -393,7 +342,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchange);
@@ -414,12 +363,10 @@ public class OrderControllerTests {
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername("testaddwallet-cliente");
         c1.getUser().setEmail("testaddwallet-cliente@bol");
+
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername("testaddwallet-professional");
         professional.getUser().setEmail("testaddwallet-professional@bol");
-
-        customerRepository.save(c1);
-        professionalRepository.save(professional);
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -432,70 +379,23 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-
-        professional.getProfessionalCategoryCollection().add(ps1);
+        ps1.addPriceRule(priceRule);
 
         // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /*
          O teste comeca aqui:
          Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
          um profissional associado a um servico que existirao no banco.
           */
-
-
         Assert.assertTrue(professional.getWallet() == null || professional.getWallet().getCustomers().isEmpty());
 
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : 1499706000000,\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
-                "      },\n" +
-                "       \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String json =
+                OrderJsonHelper.buildJsonCreateScheduledOrder(c1, ps1, priceRule, Payment.Type.CASH,
+                        Timestamp.valueOf(now().plusHours(5)).getTime()
+                );
+
 
         RequestEntity<String> entity = RequestEntity
                 .post(new URI("/orders"))
@@ -503,61 +403,18 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        restTemplate.exchange(entity, OrderResponseBody.class);
+        testRestTemplate.exchange(entity, OrderResponseBody.class);
 
         // Antes do 1o request a carteira tem que estar vazia.
         // //Apos o 2o request a carteira ainda tem q estar vazia.
         Assert.assertTrue(professional.getWallet() == null || professional.getWallet().getCustomers().isEmpty());
 
-        json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : 1499706000000,\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
-                "      },\n" +
-                "       \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        // Identico ao criado acima...
+        json =
+                OrderJsonHelper.buildJsonCreateScheduledOrder(c1, ps1, priceRule, Payment.Type.CASH,
+                        Timestamp.valueOf(now().plusHours(5)).getTime()
+                );
+
 
         RequestEntity<String> entityPost2 = RequestEntity
                 .post(new URI("/orders"))
@@ -565,7 +422,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        restTemplate.exchange(entityPost2, OrderResponseBody.class);
+        testRestTemplate.exchange(entityPost2, OrderResponseBody.class);
 
         Wallet wallet = walletRepository.findByProfessional_idProfessional(professional.getIdProfessional());//
 
@@ -594,65 +451,23 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /*
          O teste comeca aqui:
          Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
          um profissional associado a um servico que existirao no banco.
           */
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"status\" : 0,\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : 1499706000000,\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
-                "      },\n" +
-                "       \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String json = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                priceRule,
+                Payment.Type.CASH,
+                Timestamp.valueOf(now().plusHours(6)).getTime() // Agendado pra daqui ha 6 horas.
+        );
+
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -660,7 +475,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Order newOrder = exchange.getBody().getOrderList().get(0);
@@ -679,7 +494,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangePut = restTemplate
+        ResponseEntity<OrderResponseBody> exchangePut = testRestTemplate
                 .exchange(entityPut, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangePut);
@@ -689,7 +504,8 @@ public class OrderControllerTests {
     }
 
     @Test
-    public void testParaTravarUpdateDeStatus() throws URISyntaxException {
+    public void testParaTravarUpdateDeStatus() throws URISyntaxException, ParseException, JsonProcessingException {
+
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername("testParaTravarUpdateDeStatus-cliente");
@@ -710,66 +526,22 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /*
          O teste comeca aqui:
          Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
          um profissional associado a um servico que existirao no banco.
           */
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : \""+Order.Status.OPEN+"\",\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : 1499706000000,\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+"\n" +
-                "      },\n" +
-                "       \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String json = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                priceRule,
+                Payment.Type.CASH,
+                Timestamp.valueOf(now().plusHours(6)).getTime() // Agendado pra daqui ha 6 horas.
+        );
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -777,7 +549,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Order newOrder = exchange.getBody().getOrderList().get(0);
@@ -796,7 +568,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangePut = restTemplate
+        ResponseEntity<OrderResponseBody> exchangePut = testRestTemplate
                 .exchange(entityPut, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangePut);
@@ -817,7 +589,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate2);
 
-        ResponseEntity<OrderResponseBody> exchangePut2 = restTemplate
+        ResponseEntity<OrderResponseBody> exchangePut2 = testRestTemplate
                 .exchange(entityPut2, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangePut2);
@@ -851,7 +623,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeUpdate);
@@ -885,7 +657,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeUpdate);
@@ -914,60 +686,21 @@ public class OrderControllerTests {
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
+        professionalCategoryRepository.save(ps1);
 
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        /*
+         O teste comeca aqui:
+        Este teste nao cria order agendada.
+          */
+        String json = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
+                c1,
+                ps1,
+                Payment.Type.CASH,
+                priceRule
+        );
 
-        /************ FIM DAS PRE_CONDICOES **********************************/
-
-
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
-                "      },\n" +
-                "        \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -975,7 +708,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchange);
@@ -1012,7 +745,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         //TODO - FINALIZAR OS ASSERTS
@@ -1049,7 +782,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         //TODO - FINALIZAR OS ASSERTS
@@ -1062,7 +795,7 @@ public class OrderControllerTests {
     }
 
     @Test
-    public void updateScheduledOrderOkToOrderStatusScheduled() throws URISyntaxException {
+    public void updateScheduledOrderOkToOrderStatusScheduled() throws URISyntaxException, ParseException, JsonProcessingException {
 
         createScheduledOrderOk();
         Order o1 = orderRestultFrom_createScheduledOrderOk;
@@ -1087,7 +820,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         //TODO - FINALIZAR OS ASSERTS
@@ -1100,7 +833,7 @@ public class OrderControllerTests {
     }
 
     @Test
-    public void updateCreatedOrderOkToStatusFinished() throws URISyntaxException {
+    public void updateCreatedOrderOkToStatusFinished() throws URISyntaxException, ParseException, JsonProcessingException {
 
         updateScheduledOrderOkToOrderStatusScheduled();
 
@@ -1126,7 +859,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         //TODO - FINALIZAR OS ASSERTS
@@ -1155,67 +888,23 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /*
          O teste comeca aqui:
          Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
          um profissional associado a um servico que existirao no banco.
           */
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : 1499706000000,\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+service.getIdCategory()+",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
-                "      },\n" +
-                "      \"priceRule\": {\n" +
-                "           \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+professional.getIdProfessional()+",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+c1.getIdCustomer()+",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String json = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                priceRule,
+                Payment.Type.CASH,
+                Timestamp.valueOf(now().plusHours(6)).getTime() // Agendado pra daqui ha 6 horas.
+        );
+
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1223,7 +912,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(json);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Order newOrder = exchange.getBody().getOrderList().get(0);
@@ -1242,7 +931,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangePut = restTemplate
+        ResponseEntity<OrderResponseBody> exchangePut = testRestTemplate
                 .exchange(entityPut, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangePut);
@@ -1282,15 +971,13 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        //Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1298,7 +985,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate);
@@ -1324,7 +1011,7 @@ public class OrderControllerTests {
         //-------
 
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders", //
                         HttpMethod.GET, //
                         null,
@@ -1371,15 +1058,13 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1387,7 +1072,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate);
@@ -1414,7 +1099,7 @@ public class OrderControllerTests {
 
         //ABAIXO LISTAMOS TODOS OS ORDERS EXISTENTES, MAS NAO DEVEM VIR OS CANCELLED OU CLOSED
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders", //
                         HttpMethod.GET, //
                         null,
@@ -1433,7 +1118,7 @@ public class OrderControllerTests {
     }
 
     @Test
-    public void testCreateToConflictedOrderErrorCausedByOrderStatusAccepted() throws IOException, URISyntaxException {
+    public void testCreateToConflictedOrderErrorCausedByOrderStatusAccepted() throws IOException, URISyntaxException, ParseException {
 
         //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
         Customer c1 = CustomerControllerTests.createFakeCustomer();
@@ -1443,13 +1128,13 @@ public class OrderControllerTests {
         c1.setCpf("123.456.789-01");
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testConflictedOrder-customer2");
-        c2.getUser().setEmail("testConflictedOrder-customer2@email.com");
+        c2.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-customer2");
+        c2.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-customer2@email.com");
         c2.getUser().setPassword("123");
         c2.setCpf("123.456.789-02");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testConflictedOrder-professional");
+        professional.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional");
         professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
@@ -1466,15 +1151,12 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
-        //-------
+        professionalCategoryRepository.save(ps1);
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1483,7 +1165,7 @@ public class OrderControllerTests {
                 .body(jsonCreate);
 
 
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate);
@@ -1508,7 +1190,16 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
+        /*
+        Nao podemos enviar o json de uma order agendada senao nao da conflito pois order agendada eh criada independente
+        do profissional ja estar ocupado com outra order.
+         */
+        String jsonCreate2 = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
+                c2,
+                ps1,
+                Payment.Type.CASH,
+                priceRule
+        );
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1516,7 +1207,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate2);
 
-        ResponseEntity<OrderResponseBody> exchangeCreate2 = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate2 = testRestTemplate
                 .exchange(entity2, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate2);
@@ -1548,74 +1239,21 @@ public class OrderControllerTests {
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
+        ps1.addPriceRule(priceRule);
 
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
+        //-------
 
-        /*
-         O teste comeca aqui:
-         Fazemos um json com informacoes que batem com o que foi inserido acima. Um usuario que existe no banco e
-         um profissional associado a um servico que existirao no banco.
-          */
-        String json = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : \"" + Order.Status.OPEN + "\",\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : 1499706000000,\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : " + service.getIdCategory() + ",\n" +
-                "        \"name\" : \"MASSAGISTA\"\n" +
-                "      },\n" +
-                "      \"priceRule\": {\n" +
-                "           \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : " + professional.getIdProfessional() + ",\n" +
-                "        \"nameProfessional\" : \"Fernanda Cavalcante\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : " + c1.getIdCustomer() + ",\n" +
-                "      \"nameCustomer\" : \"Fernanda Cavalcante\",\n" +
-                "      \"cpf\" : \"816.810.695-68\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \"KILLER\",\n" +
-                "        \"email\" : \"Killer@gmail.com\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity = RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(json);
+                .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchange = restTemplate
+        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Order newOrder = exchange.getBody().getOrderList().get(0);
@@ -1634,7 +1272,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangePut = restTemplate
+        ResponseEntity<OrderResponseBody> exchangePut = testRestTemplate
                 .exchange(entityPut, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangePut);
@@ -1655,7 +1293,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate2);
 
-        ResponseEntity<OrderResponseBody> exchangePut2 = restTemplate
+        ResponseEntity<OrderResponseBody> exchangePut2 = testRestTemplate
                 .exchange(entityPut2, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangePut2);
@@ -1663,25 +1301,31 @@ public class OrderControllerTests {
 
     }
 
+    /**
+     * Orders nao agendadas nao podem ser criadas pra um profissional se esse profissional ja tem uma order inprogress.
+     * Se a order for agendada, podemos cria-las a vontade.
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     @Test
     public void testCreateToConflictedOrderErrorCausedByOrderStatusInProgress() throws IOException, URISyntaxException {
 
         //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testConflictedOrderUpdate-customer1");
-        c1.getUser().setEmail("testConflictedOrderUpdate-customer1@email.com");
+        c1.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer1");
+        c1.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer1@email.com");
         c1.getUser().setPassword("123");
         c1.setCpf("123.456.789-01");
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testConflictedOrderUpdate-customer2");
-        c2.getUser().setEmail("testConflictedOrderUpdate-customer2@email.com");
+        c2.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer2");
+        c2.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer2@email.com");
         c2.getUser().setPassword("123");
         c2.setCpf("123.456.789-02");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testConflictedOrderUpdate-professional");
-        professional.getUser().setEmail("testConflictedOrderUpdate-professional@email.com");
+        professional.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-professional");
+        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
 
@@ -1697,15 +1341,13 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1713,7 +1355,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate);
@@ -1738,7 +1380,13 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
+        // So vale para orders nao agendadas.
+        String jsonCreate2 = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
+                c2,
+                ps1,
+                Payment.Type.CASH,
+                priceRule
+        );
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1746,8 +1394,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate2);
 
-
-        ResponseEntity<OrderResponseBody> exchangeCreate2 = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate2 = testRestTemplate
                 .exchange(entity2, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate2);
@@ -1785,15 +1432,13 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
 
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
         System.out.println(jsonCreate);
 
         RequestEntity<String> entity =  RequestEntity
@@ -1802,7 +1447,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate);
@@ -1832,7 +1477,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeUpdate);
@@ -1864,7 +1509,7 @@ public class OrderControllerTests {
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"scheduleEnd\" : null\n" +
+                "      \"scheduleEnd\" : null\n" + // Foracara o erro
                 "    }" +
                 "\n}\n" +
                 "}";
@@ -1877,7 +1522,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         //TODO - FINALIZAR OS ASSERTS
@@ -1895,60 +1540,16 @@ public class OrderControllerTests {
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
-    public String getOrderCreateJson(Category category, Professional professional, Customer customer, PriceRule priceRule) {
+    public String getOrderCreateJson(Category category, ProfessionalCategory pc, Customer customer, PriceRule priceRule) {
 
-        String jsonCreate = "{\n" +
-                "  \"order\" : {\n" +
-                "    \"date\" : 1498324200000,\n" +
-                "    \"status\" : 0,\n" +
-                "    \"paymentType\" : \"CASH\",\n" +
-                "    \"scheduleId\" : {\n" +
-                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
-                "      \"status\" : \"ACTIVE\",\n" +
-                "      \"orderCollection\" : [ ]\n" +
-                "    },\n" +
-                "    \"professionalCategory\" : {\n" +
-                "      \"category\" : {\n" +
-                "        \"idCategory\" : "+ category.getIdCategory() +",\n" +
-                "        \"name\" : \"PEDICURE\"\n" +
-                "      },\n" +
-                "       \"priceRule\": {\n" +
-                "            \"idPrice\": "+priceRule.getIdPrice()+",\n" +
-                "            \"name\": \""+priceRule.getName()+"\",\n" +
-                "            \"price\": "+priceRule.getPrice()+"\n" +
-                "          },\n" +
-                "      \"professional\" : {\n" +
-                "        \"idProfessional\" : "+ professional.getIdProfessional() +",\n" +
-                "        \"nameProfessional\" : \""+ professional.getNameProfessional() +"\",\n" +
-                "        \"cnpj\" : \""+ professional.getIdProfessional() +"\",\n" +
-                "        \"genre\" : \"F\",\n" +
-                "        \"birthDate\" : 688010400000,\n" +
-                "        \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "        \"dateRegister\" : 1499195092952,\n" +
-                "        \"status\" : 0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"idLocation\" : null,\n" +
-                "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ customer.getIdCustomer() +",\n" +
-                "      \"nameCustomer\" : \""+ customer.getNameCustomer() +"\",\n" +
-                "      \"cpf\" : \""+ customer.getCpf() +"\",\n" +
-                "      \"genre\" : \"F\",\n" +
-                "      \"birthDate\" : 688010400000,\n" +
-                "      \"cellPhone\" : \"(21) 99887-7665\",\n" +
-                "      \"dateRegister\" : 1499195092952,\n" +
-                "      \"status\" : 0,\n" +
-                "      \"idLogin\" : {\n" +
-                "        \"username\" : \""+ customer.getUser().getUsername() +"\",\n" +
-                "        \"email\" : \""+ customer.getUser().getEmail() +"\",\n" +
-                "        \"password\" : \""+ customer.getUser().getPassword() +"\",\n" +
-                "        \"personType\":\"FÍSICA\",\n" +
-                "        \"sourceApp\" : \"facebook\"\n" +
-                "      },\n" +
-                "      \"idAddress\" : null\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String jsonCreate = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                customer,
+                pc,
+                priceRule,
+                Payment.Type.CASH,
+                Timestamp.valueOf(now().plusDays(1)).getTime() // Marcado pra amanha
+        );
+
 
         return jsonCreate;
 
@@ -1971,7 +1572,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
                 .exchange(entityUpdate, OrderResponseBody.class);
 
         return exchangeUpdate;
@@ -2011,15 +1612,14 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-
-        professional.getProfessionalCategoryCollection().add(ps1);
+        ps1.addPriceRule(priceRule);
 
         // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
         //-------
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(service, professional, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(service, ps1, c1, priceRule);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -2027,7 +1627,7 @@ public class OrderControllerTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate);
 
-        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchangeCreate);
@@ -2052,7 +1652,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(service, professional, c2, priceRule);
+        String jsonCreate2 = this.getOrderCreateJson(service, ps1, c2, priceRule);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -2069,4 +1669,27 @@ public class OrderControllerTests {
 
     }
 
+    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+        RetornoTransacao retornoTransacao = new RetornoTransacao();
+        retornoTransacao.setNumeroTransacao(3);
+        retornoTransacao.setCodigoEstabelecimento("1501698887865");
+        retornoTransacao.setCodigoFormaPagamento(170);
+        retornoTransacao.setValor(100);
+        retornoTransacao.setValorDesconto(0);
+        retornoTransacao.setParcelas(1);
+        retornoTransacao.setStatusTransacao(statusTransacao);
+        retornoTransacao.setAutorizacao("20170808124436912");
+        retornoTransacao.setCodigoTransacaoOperadora("0");
+        retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
+        retornoTransacao.setNumeroComprovanteVenda("0808124434526");
+        retornoTransacao.setNsu("4436912");
+        retornoTransacao.setUrlPagamento("1502206705884f8a21ff8-db8f-4c7d-a779-8f35f35cfd71");
+
+        List<String> cartaoUtilizado = new ArrayList<>();
+        cartaoUtilizado.add("000000******0001");
+        retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
+
+        return Optional.of(retornoTransacao);
+
+    }
 }

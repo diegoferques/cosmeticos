@@ -1,6 +1,8 @@
 package com.cosmeticos.config;
 
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

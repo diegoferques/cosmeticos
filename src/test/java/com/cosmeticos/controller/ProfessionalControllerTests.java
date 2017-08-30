@@ -4,7 +4,10 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ScheduleResponseBody;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Address;
+import com.cosmeticos.model.Hability;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.User;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
@@ -962,62 +965,6 @@ public class ProfessionalControllerTests {
 						ProfessionalResponseBody.class);
 
 		Assert.assertEquals(HttpStatus.OK, getExchangeGet.getStatusCode());
-	}
-
-	//NAO TEM COMO EFETUAR O TESTE ABAIXO PARA O CARD RNF58 - MOTIVOS ABAIXO:
-	//Em ProfessionalController.Create não é permitido adicionar um Professional sem um professionalServices.
-	//Tem uma validação lá neste controller.
-	//Com isso, nunca vou conseguir fazer o teste, pois não tem como criar um Professional sem professionalServices
-	//para, somente depois, fazer o Update inserindo um professionalServices.
-	@Ignore
-	@Test
-	public void testUpdateProfessionalServicesToProfessionalWithoutProfessionalServices() throws URISyntaxException {
-		String email = "professionalServicesRNF58@email.com";
-
-		//CRIAMOS O JSON PARA CRIAR O PROFESSIONAL SEM PROFESSIONALSERVICES
-		String json = "{\n" +
-				"  \"professional\": {\n" +
-				"    \"address\": null,\n" +
-				"    \"birthDate\": 1120705200000,\n" +
-				"    \"cellPhone\": null,\n" +
-				"    \"dateRegister\": null,\n" +
-				"    \"genre\": null,\n" +
-				"    \"status\": null,\n" +
-				"    \"user\": {\n" +
-				"      \"email\": \""+ email +"\",\n" +
-				//"      \"idLogin\": null,\n" +
-				"      \"password\": \"123\",\n" +
-				"      \"sourceApp\": null,\n" +
-				"         \"personType\":\"JURIDICA\",\n" +
-				"      \"username\": \""+ email +"\"\n" +
-				"    },\n" +
-				"    \"cnpj\": \"05404276846\",\n" +
-				//"    \"idProfessional\": null,\n" +
-				"    \"location\": 506592589,\n" +
-				"    \"nameProfessional\": \"professionalServicesRNF58\",\n" +
-				"    \"professionalCategoryCollection\": null \n" +
-				"  }\n" +
-				"}";
-
-		System.out.println(json);
-
-
-		RequestEntity<String> entity =  RequestEntity
-				.post(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(json);
-
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
-				.exchange(entity, ProfessionalResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-
-		Professional professional = exchange.getBody().getProfessionalList().get(0);
-
-		Assert.assertEquals("professionalServicesRNF58", professional.getNameProfessional());
-		Assert.assertEquals(email, professional.getUser().getEmail());
 	}
 
 	@Test

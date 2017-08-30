@@ -5,25 +5,34 @@
 package com.cosmeticos.model;
 
 import java.io.Serializable;
-import java.util.*;
-
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import lombok.Data;
-
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
 
 /**
  *
@@ -72,6 +81,7 @@ public class Order implements Serializable {
     @Enumerated(EnumType.STRING)
 	private Status status;
 
+    /*
 	@JsonView({
 			ResponseJsonView.OrderControllerCreate.class,
 			ResponseJsonView.OrderControllerUpdate.class,
@@ -80,7 +90,8 @@ public class Order implements Serializable {
 	@Basic(optional = false)
 	@Column(name = "payment_Type")
 	@Enumerated(EnumType.STRING)
-	private PayType paymentType;
+	private PayType paymentType; */
+
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
@@ -127,7 +138,13 @@ public class Order implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
-	private Payment payment;
+	@JsonView({
+			ResponseJsonView.OrderControllerCreate.class,
+			ResponseJsonView.OrderControllerUpdate.class,
+			ResponseJsonView.OrderControllerFindBy.class
+	})
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	private Set<Payment> paymentCollection = new HashSet<>();
 
 	public Order() {
 	}
@@ -151,7 +168,16 @@ public class Order implements Serializable {
 		this.scheduleId = scheduleId;
 	}
 
+	public boolean isScheduled()
+	{
+		return this.scheduleId != null;
+	}
 
+	public void addPayment(Payment payment) {
+		this.paymentCollection.add(payment);
+		payment.setOrder(this);
+	}
+	
 	@Override
 	public int hashCode() {
 		int hash = 0;
@@ -177,5 +203,6 @@ public class Order implements Serializable {
 	public String toString() {
 		return "javaapplication2.entity.Order[ idOrder=" + idOrder + " ]";
 	}
+
 
 }

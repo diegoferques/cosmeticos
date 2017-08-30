@@ -6,10 +6,10 @@
    <!--<variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, httpStatus: %X{httpStatus}, urlPath: %X{urlPath}-"/>-->
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-       <!-- <encoder>
+        <encoder>
            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
-       </encoder> -->
-
+       </encoder>
+<!--
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp><fieldName>timestamp</fieldName></timestamp>
@@ -20,7 +20,7 @@
                 <mdc />
                 <message />
             </providers>
-        </encoder>
+        </encoder>-->
 
     </appender>
 
@@ -69,20 +69,9 @@
         </rollingPolicy>
     </appender>
 
-    <!-- Estabelece o nivel de Log pra TODAS as classes do nosso projeto. -->
-    <!-- Loga DEBUG no console. -->
-    <logger name="com.cosmeticos" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE" />
-    </logger>
-
-    <!-- Estabelece o nivel de Log pra TODAS as classes do nosso projeto. -->
-    <!-- Loga INFO no arquivo. Nao logamos DEBUG no arquivo pq o espaco do HD pode estourar em minutos. -->
-    <logger name="com.cosmeticos" level="INFO" additivity="false">
-        <appender-ref ref="FILE" />
-    </logger>
 
     <!-- Estabelece o nivel de Log pra TODAS as classes do sistema incluindo as classes de framework. -->
-    <root level="ERROR" >
+    <root level="INFO" >
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>

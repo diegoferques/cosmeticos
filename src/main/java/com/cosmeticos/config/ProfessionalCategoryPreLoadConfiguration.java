@@ -36,24 +36,17 @@ public class ProfessionalCategoryPreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data(){
 
-        PriceRule pr1 = new PriceRule();
-        pr1.setName("Cabelo curto");
-        pr1.setPrice(10000L);
-
         Professional p1 = professionalRepository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
         Category s1 = serviceRepository.findWithSpecialties(1L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(p1, s1);
-        pr1.setProfessionalCategory(ps1);
-//      ps1.getPriceRule().add(pr1);
+        ps1.addPriceRule( new PriceRule("Cabelo curto", 10000L));
+        ps1.addPriceRule( new PriceRule("Cabelo Medio", 15000L));
+        ps1.addPriceRule( new PriceRule("Cabelo Longo", 20000L));
 
         professionalCategoryRepository.save(ps1);
 
         /////////////////////////////////////////////////////////
-
-        PriceRule pr2 = new PriceRule();
-        pr2.setName("Cabelo curto");
-        pr2.setPrice(10000L);
 
         Professional p2 = professionalRepository.findOne(2L);        // Criamos o Usuario que nao existe no banco.
         Category s2 = serviceRepository.findWithSpecialties(2L);
@@ -75,6 +68,9 @@ public class ProfessionalCategoryPreLoadConfiguration {
         Category s4 = serviceRepository.findWithSpecialties(4L);
 
         ProfessionalCategory ps4 = new ProfessionalCategory(p4, s4);
+        ps4.addPriceRule(new PriceRule("Cabelo curto", 10000L));
+        ps4.addPriceRule(new PriceRule("Cabelo Medio", 15000L));
+        ps4.addPriceRule(new PriceRule("Cabelo Longo", 20000L));
 
         professionalCategoryRepository.save(ps4);
 
