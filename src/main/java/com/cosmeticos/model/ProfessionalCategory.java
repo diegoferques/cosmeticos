@@ -10,12 +10,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -68,9 +65,12 @@ public class ProfessionalCategory implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
     private Collection<Order> orderCollection;
 
-    @JsonIgnore
+    @JsonView({
+    	ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
+    })
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory")
-    private Set<PriceRule> priceRule = new HashSet<>();
+    private Set<PriceRule> priceRuleList = new HashSet<>();
 
 
     @Override
@@ -91,6 +91,11 @@ public class ProfessionalCategory implements Serializable {
 
 
 	public ProfessionalCategory() {
+	}
+
+	public void addPriceRule(PriceRule pr1) {
+		priceRuleList.add(pr1);
+		pr1.setProfessionalCategory(this);
 	}
 
 }

@@ -1,30 +1,17 @@
 package com.cosmeticos.jsonizer;
 
+import com.cosmeticos.commons.*;
+import com.cosmeticos.controller.CustomerControllerTests;
+import com.cosmeticos.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.Test;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashSet;
-
-import org.junit.Test;
-
-import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.commons.HabilityRequestBody;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.RoleRequestBody;
-import com.cosmeticos.commons.ScheduleRequestBody;
-import com.cosmeticos.commons.UserRequestBody;
-import com.cosmeticos.controller.CustomerControllerTests;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Hability;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.Role;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.User;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Created by Lulu on 30/05/2017.

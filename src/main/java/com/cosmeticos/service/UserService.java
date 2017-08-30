@@ -27,8 +27,17 @@ public class UserService {
         return repository.save(request.getEntity());
     }
 
+    /**
+     *
+     * @param request
+     * @return
+     * @deprecated Devemos usar update(User).
+     */
     public Optional<User> update(UserRequestBody request){
-        User userFromRequest = request.getEntity();
+        return update(request.getEntity());
+    }
+
+    public Optional<User> update(User userFromRequest){
 
         // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdLogin = userFromRequest.getIdLogin();

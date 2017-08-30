@@ -72,7 +72,7 @@ public class PaymentService {
                     .accept(MediaType.APPLICATION_JSON)
                     .body(null);
 
-            ResponseEntity<RetornoTransacao> exchange = doConsultaTransacaoRequest(restTemplate, entity);
+            ResponseEntity<RetornoTransacao> exchange = doCapturaTransacaoRequest(restTemplate, entity);
 
             //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
             if(exchange.getStatusCode() == HttpStatus.OK) {
@@ -95,7 +95,7 @@ public class PaymentService {
         return result;
     }
 
-    public ResponseEntity<RetornoTransacao> doConsultaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
+    public ResponseEntity<RetornoTransacao> doCapturaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
         return restTemplate.exchange(entity, RetornoTransacao.class);
     }
 
@@ -120,13 +120,7 @@ public class PaymentService {
 
             HttpEntity entity = new HttpEntity(headers);
 
-            ResponseEntity<RetornoTransacao> exchange = restTemplate.exchange(
-                    urlConsultaTransacao,
-                    HttpMethod.GET,
-                    entity,
-                    RetornoTransacao.class
-                    //        param
-            );
+            ResponseEntity<RetornoTransacao> exchange = doConsultaTransacao(restTemplate, urlConsultaTransacao, entity);
 
             if(exchange.getStatusCode() == HttpStatus.OK) {
                 retornoTransacao = exchange.getBody();
@@ -146,6 +140,16 @@ public class PaymentService {
         }
 
         return Optional.ofNullable(retornoTransacao);
+    }
+
+    public ResponseEntity<RetornoTransacao> doConsultaTransacao(RestTemplate restTemplate, String urlConsultaTransacao, HttpEntity entity) {
+        return restTemplate.exchange(
+                        urlConsultaTransacao,
+                        HttpMethod.GET,
+                        entity,
+                        RetornoTransacao.class
+                        //        param
+                );
     }
 
     //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE

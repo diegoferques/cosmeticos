@@ -1,14 +1,13 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Order.Status;
+import org.springframework.stereotype.Service;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Order.Status;
 
 import static com.cosmeticos.model.Order.Status.*;
 

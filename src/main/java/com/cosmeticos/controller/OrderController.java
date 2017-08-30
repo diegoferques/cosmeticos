@@ -4,7 +4,6 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -19,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,9 +34,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private PenaltyService penaltyService;
 
     @Autowired
     private VoteService voteService;
@@ -55,16 +52,13 @@ public class OrderController {
 
                 MDC.put("idCustomer: ", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
                 MDC.put("customerUserStatus: ", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
-                MDC.put("idProfessional: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getIdProfessional()));
-                MDC.put("professionalUserStatus: ", String.valueOf(request.getOrder().getProfessionalCategory().getProfessional().getStatus()));
-                MDC.put("idOrder: ", String.valueOf(request.getOrder().getIdOrder()));
-                MDC.put("price: ", String.valueOf(request.getOrder().getProfessionalCategory().getPriceRule()));
 
-                orderService.validate(request.getOrder());
+                orderService.validateCreate(request.getOrder());
 
-                Order order = orderService.create(request);
+                    Order order = orderService.create(request);
 
-                MDC.put("newStatus: ", String.valueOf(request.getOrder().getStatus()));
+                    MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+
 
 
                     log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
@@ -87,14 +81,16 @@ public class OrderController {
         } catch (OrderValidationException e) {
             String errorCode = String.valueOf(System.nanoTime());
 
+            String msg = MessageFormat.format("Falha da validacao da requisicao! errorCode: {0}, message: {1}", errorCode, e.getMessage());
+
             OrderResponseBody orderResponseBody = new OrderResponseBody();
-            orderResponseBody.setDescription("Erro: Profissional não pode ter duas Orders simultaneas em andamento. - {}: " + errorCode);
+            orderResponseBody.setDescription(msg);
 
             MDC.put("errorCode", errorCode);
             MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
-            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+            log.error("Erro no insert: {} ", msg, e);
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(orderResponseBody);
+            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -125,7 +121,7 @@ public class OrderController {
                     orderService.abort(request.getOrder());
                 }
 
-                orderService.validate(request.getOrder());
+                orderService.validateUpdate(request.getOrder());
 
                 Order order = orderService.update(request);
 
@@ -144,19 +140,9 @@ public class OrderController {
                 MDC.put("professionalUserStatus: ", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
                 MDC.put("idOrder: ", String.valueOf(order.getIdOrder()));
                 MDC.put("newStatus: ", String.valueOf(order.getStatus()));
-                MDC.put("price: ", String.valueOf(order.getProfessionalCategory()));
 
+                log.info("Order atualizado com sucesso.");
 
-                /*
-                log.info("Order atualizado com sucesso:  [{professionalUserId: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                        " {professionalUserStatus: "+order.getProfessionalCategory().getProfessional().getStatus()+"}, " +
-                        " {customerUserId: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                        " {customerUserStatus: "+order.getIdCustomer().getUser().getStatus()+"}, " +
-                        " {idOrder: "+order.getIdOrder()+"}, " +
-                        " {Status "+order.getStatus()+"}, " +
-                        " {price: "+order.getProfessionalCategory().getPriceRule()+"}, " +
-                        " {vote : "+request.getVote()+"}]");
-*/
                 return ok(responseBody);
 
             }
@@ -218,9 +204,6 @@ public class OrderController {
                 //return ok().body(response);
                 return ok(response);
             } else {
-
-
-
                 log.error("Nenhum registro encontrado para o id: {}", idOrder);
                 return notFound().build();
             }
@@ -261,7 +244,7 @@ public class OrderController {
 
             OrderResponseBody responseBody = new OrderResponseBody();
             responseBody.setOrderList(entitylist);
-            responseBody.setDescription("TOP 10 successfully retrieved.");
+            responseBody.setDescription(entitylist.size() + " orders successfully retrieved.");
 
             log.info("{} Orders successfully retrieved.", entitylist.size());
 

@@ -4,19 +4,15 @@
  */
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import lombok.Data;
+import java.io.Serializable;
 
 /**
  *
@@ -29,13 +25,32 @@ public class PriceRule implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    @JsonView
+            ({
+                    ResponseJsonView.OrderControllerCreate.class,
+                    ResponseJsonView.OrderControllerUpdate.class,
+                    ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPrice;
+    private Long id;
 
     @NotEmpty(message="price name cannot be empty")
+    @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
+    })
     private String name;
 
+    @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+        ResponseJsonView.ProfessionalCategoryFindAll.class,
+    })
     @NotNull
     private Long price;
 
@@ -50,6 +65,11 @@ public class PriceRule implements Serializable {
         this.name = name;
     }
 
+    public PriceRule(String name, long price) {
+        this.name = name;
+        this.price = price;
+    }
+
 /*
     /**
      * Nao retornamos esse dado no json.
@@ -62,7 +82,7 @@ public class PriceRule implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idPrice != null ? idPrice.hashCode() :
+        hash += (id != null ? id.hashCode() :
 
                 // Name eh unique, portanto nao preciso ter medo de usa-lo como hash.
                 name != null ? name.hashCode() : 0);
@@ -76,7 +96,7 @@ public class PriceRule implements Serializable {
             return false;
         }
         PriceRule other = (PriceRule) object;
-        if ((this.idPrice == null && other.idPrice != null) || (this.idPrice != null && !this.idPrice.equals(other.idPrice))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 
                 return false;
         }
@@ -85,7 +105,7 @@ public class PriceRule implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Hability[ id=" + idPrice + " ]";
+        return "javaapplication2.entity.Hability[ idPrice=" + id + " ]";
     }
     
 }

@@ -1,7 +1,6 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Order;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.UserRepository;

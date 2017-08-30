@@ -5,7 +5,9 @@
 package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -42,6 +44,7 @@ public class User implements Serializable {
     @JsonView({
         ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,6 +56,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     @NotEmpty(message = "UserName cannot be empty")
     @Column(unique = true)
@@ -66,6 +70,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CustomerControllerUpdate.class
     })
     @Column(unique = true)
     private String email;
@@ -83,6 +88,9 @@ public class User implements Serializable {
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class
+    })
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();

@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
  * Created by Lulu on 04/07/2017.
  */
 
-@Ignore
+@Ignore // Ignorado por ser teste de integracao com o geocode.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class GpsCoordinateCalcTEst {

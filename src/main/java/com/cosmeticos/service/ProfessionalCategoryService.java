@@ -1,17 +1,16 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.model.ProfessionalCategory;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import com.cosmeticos.repository.ProfessionalCategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-
-import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
-import com.cosmeticos.model.ProfessionalCategory;
 
 /**
  * Created by Vinicius on 21/06/2017.
@@ -27,7 +26,11 @@ public class ProfessionalCategoryService {
         ProfessionalCategory ps = new ProfessionalCategory();
         ps.setProfessional(request.getEntity().getProfessional());
         ps.setCategory(request.getEntity().getCategory());
-        ps.setPriceRule(request.getEntity().getPriceRule());
+        ps.addPriceRule(request.getEntity().getPriceRuleList()
+                .stream()
+                .findFirst()
+                .get()
+        );
 
         return repository.save(ps);
     }
