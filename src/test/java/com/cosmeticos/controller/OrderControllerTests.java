@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by diego.MindTek on 26/06/2017.
@@ -39,6 +40,9 @@ public class OrderControllerTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -311,11 +315,14 @@ public class OrderControllerTests {
         priceRule.setPrice(7600L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.getPriceRule().add(priceRule);
+        priceRule.setProfessionalCategory(ps1);
 
         professional.getProfessionalCategoryCollection().add(ps1);
 
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
+        professionalCategoryRepository.save(ps1);
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
@@ -1443,7 +1450,7 @@ public class OrderControllerTests {
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername("testConflictedOrder-professional");
-        professional.getUser().setEmail("testConflictedOrder-professional@email.com");
+        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");
 
@@ -1838,6 +1845,52 @@ public class OrderControllerTests {
         Assert.assertNotNull(vote);
         Assert.assertTrue((float)3.0 == vote);
         //-------
+    }
+
+    /*
+     * RNF119
+     */
+    @Test
+    public void updateScheduledOrderOkToOrderStatusScheduledBadRequest() throws URISyntaxException {
+
+        createScheduledOrderOk();
+        Order o1 = orderRestultFrom_createScheduledOrderOk;
+
+        String jsonUpdate = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : " + o1.getIdOrder() + ",\n" +
+                "    \"status\" : \"" + Order.Status.SCHEDULED + "\", \n" +
+                "    \"scheduleId\" : {\n" +
+                "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
+                "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
+                "      \"scheduleEnd\" : null\n" +
+                "    }" +
+                "\n}\n" +
+                "}";
+
+        System.out.println(jsonUpdate);
+
+        RequestEntity<String> entityUpdate = RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdate);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = restTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        //TODO - FINALIZAR OS ASSERTS
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, exchangeUpdate.getStatusCode());
+
+        List<Order> orderList = exchangeUpdate.getBody().getOrderList();
+
+        if(!orderList.isEmpty()){
+            Assert.assertEquals(Order.Status.SCHEDULED, orderList.get(0).getStatus());
+            orderRestultFrom_updateScheduledOrderOkToScheduled = orderList.get(0);
+
+        }
+
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO

@@ -78,14 +78,16 @@ public class ProfessionalCategory implements Serializable {
         return "javaapplication2.entity.ProfessionalCategory[ id=" + professionalCategoryId+ " ]";
     }
 
-	public ProfessionalCategory(Professional p, Category s) {
-		this.professional = p;
-		this.category = s;
+    public ProfessionalCategory(Professional p, Category s) {
+        this.professional = p;
+        this.category = s;
 
-		this.professional.getProfessionalCategoryCollection().add(this);
-		this.category.getProfessionalCategoryCollection().add(this);
+        this.professional.getProfessionalCategoryCollection().add(this);
+        this.category.getProfessionalCategoryCollection().add(this);
 
-	}
+
+    }
+
 
 
 	public ProfessionalCategory() {

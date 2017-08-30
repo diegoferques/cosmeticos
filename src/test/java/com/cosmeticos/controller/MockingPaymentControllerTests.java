@@ -14,13 +14,15 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+<<<<<<< HEAD
 //import org.springframework.boot.web.client.RestTemplateBuilder;
+=======
+>>>>>>> dev
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -44,7 +46,7 @@ import java.util.Optional;
 public class MockingPaymentControllerTests {
 
     @MockBean
-    PaymentService paymentService;
+    private PaymentService paymentService;
 
     @MockBean
     private PaymentController paymentController;
@@ -431,6 +433,7 @@ public class MockingPaymentControllerTests {
         return exchange;
     }
 
+<<<<<<< HEAD
 
     //@MockBean
     //private RestTemplateBuilder restTemplateBuilder;
@@ -440,12 +443,16 @@ public class MockingPaymentControllerTests {
 
     //TODO - CORRIGIR O TESTE ABAIXO
     //BRANCH: RNF101
+=======
+>>>>>>> dev
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
+<<<<<<< HEAD
         //ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
 
         // Primeiro moca o RestTemplate
@@ -468,8 +475,22 @@ public class MockingPaymentControllerTests {
 
         //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
         //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
+=======
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
 
+>>>>>>> dev
 
+        Mockito.doReturn(true).when(paymentService).updatePaymentStatus(
+                Mockito.anyObject()
+        );
+
+        ResponseEntity<RetornoTransacao> response = new ResponseEntity<RetornoTransacao>(HttpStatus.CONFLICT);
+        Mockito.doReturn(response).when(paymentService).doConsultaTransacaoRequest(
+                Mockito.anyObject(),
+                Mockito.anyObject()
+        );
 
         // TODO: vinicius fazer o request ao endpoint que dispara o pagamento: montar o json e fazer put pra order/ com status ACCEPTED ou SCHEDULED (escolhe um dos dois pois qq um dos dois dispara o pagamento)
 

@@ -76,14 +76,51 @@ public class PaymentService {
         ResponseEntity<RetornoTransacao> exchange = restTemplate
                 .exchange(entity, RetornoTransacao.class);
 
+<<<<<<< HEAD
         if(exchange.getStatusCode() == HttpStatus.CONFLICT){
             log.warn("Conflitou");
+=======
+            RequestEntity<RetornoTransacao> entity = RequestEntity
+                    .post(new URI(urlCapturaTransacao))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("usuario", jsonHeader)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(null);
+
+            ResponseEntity<RetornoTransacao> exchange = doConsultaTransacaoRequest(restTemplate, entity);
+
+            //TODO - NAO SEI SE VAMOS PRECISAR TRATAR HTTP STATUS 409(CONFLICT) QUANDO TENTAR CAPTUTAR PAGAMENTO JA CAPTURADO
+            if(exchange.getStatusCode() == HttpStatus.OK) {
+                result = this.updatePaymentStatus(exchange.getBody());
+
+            } else {
+                result = false;
+            }
+
+            if(exchange.getStatusCode() == HttpStatus.CONFLICT){
+                log.warn("Conflitou");
+            }
+
+        } catch (Exception e) {
+            log.error(e.toString());
+
+            result = false;
+>>>>>>> dev
         }
 
         return exchange;
     }
 
+<<<<<<< HEAD
     //VERIFICAMOS NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
+=======
+    public ResponseEntity<RetornoTransacao> doConsultaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
+        return restTemplate.exchange(entity, RetornoTransacao.class);
+    }
+
+    //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
+    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
+>>>>>>> dev
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/129
     public Optional<RetornoTransacao> consultaTransacao(Long numeroTransacao) throws JsonProcessingException {
 

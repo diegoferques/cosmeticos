@@ -12,6 +12,7 @@ import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -28,6 +29,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 import static com.cosmeticos.model.Order.Status.*;
+import static com.cosmeticos.validation.OrderValidationException.Type.*;
 
 /**
  * Created by matto on 17/06/2017.
@@ -54,6 +56,7 @@ public class OrderService {
 	@Autowired
 	private PenaltyService penaltyService;
 
+	// TODO: Nao se acessa o controller por autowired mas sim seu Service
 	@Autowired
 	private PaymentController paymentController;
 
@@ -109,6 +112,16 @@ public class OrderService {
 				// ProfessionalServices por ser uma tabela associativa necessita de um cuidado
 				// estra
 				order.setProfessionalCategory(persistentProfessionalServices.get());
+				order.getProfessionalCategory().setPriceRule(receivedProfessionalCategory.getPriceRule());
+
+				//possibilidade de colocar um if a partir daki.
+				/*
+				MDC.put("price", receivedProfessionalCategory.getPriceRule()
+						.stream()
+						.findFirst()
+						.get()
+						.getPrice().toString());
+				*/
 
 				// O ID ORDER SERA DEFINIDO AUTOMATICAMENTE
 				// order.setIdOrder(orderRequest.getOrder().getIdOrder());
@@ -187,7 +200,11 @@ public class OrderService {
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(order.getStatus() == orderRequest.getStatus()) {
 			//throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+<<<<<<< HEAD
 			throw new OrderValidationException(HttpStatus.CONFLICT, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+=======
+			throw new OrderValidationException(INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+>>>>>>> dev
 		}
 
 		if (Order.Status.CLOSED == order.getStatus()) {
@@ -608,6 +625,9 @@ public class OrderService {
 		Long idOrder = 0L;
         Professional professional;
 
+		if(order.getScheduleId() != null)
+			validateScheduledBadRequest(order);
+
         // SE FOR POST/CREATE, O ID ORDER AINDA NAO EXISTE, MAS TEMOS O PROFISSIONAL
         // PARA VERIFICAR SE JA TEM ORDERS
         if (order.getIdOrder() == null) {
@@ -620,13 +640,16 @@ public class OrderService {
             order = orderRepository.findOne(order.getIdOrder());
             professional = order.getProfessionalCategory().getProfessional();
             idOrder = order.getIdOrder();
+			MDC.put("idOrder", idOrder.toString());
         }
 
-        if(order.getScheduleId() != null) {
-            // Aqui vc escolhe o que quer usar.
-            validateScheduled1(order);
-            //validateScheduled2(order);
-        }
+		if(order.getScheduleId() != null) {
+			// Aqui vc escolhe o que quer usar.
+			validateScheduled1(order);
+			//validateScheduled2(order);
+		}
+
+
 		//List<Order> orderListId =
 		//orderRepository.findByStatusOrStatusAndProfessionalServices_Professional_idProfessional(
 		//Order.Status.ACCEPTED,
@@ -637,22 +660,24 @@ public class OrderService {
 
 		if (!orderList.isEmpty()) {
 			// Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-			throw new OrderValidationException();
+			throw new OrderValidationException(OrderValidationException.Type.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
 		}
 
 	}
 
-	private void validateScheduled1(Order order) throws ValidationException {
+	private void validateScheduled1(Order order) throws ValidationException, OrderValidationException {
 
 		Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
-		newOrderScheduleStart.getTime();
+		if(newOrderScheduleStart == null){
+			throw new OrderValidationException(OrderValidationException.Type.INVALID_SCHEDULE_START, "Data de inicio de agendamento vazia");
+		}
 
 
 		/*
 		Nao coloco muitos filtros na query e retorno bastante orders e aplico a logica no if la em baixo.
 		 */
 		List<Order> orders = orderRepository.findScheduledOrdersByProfessional(order.getProfessionalCategory().getProfessional().getIdProfessional());
-		orderRepository.save(orders);
+
 		for (int i = 0; i < orders.size(); i++) {
 			Order o =  orders.get(i);
 
@@ -713,9 +738,13 @@ public class OrderService {
                 }
             }
             log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
+	}
 
+	public void validateScheduledBadRequest(Order orderRequest) throws OrderValidationException {
 
-
+		if(orderRequest.getScheduleId().getScheduleEnd() == null && orderRequest.getStatus() == Order.Status.SCHEDULED){
+			throw new OrderValidationException(OrderValidationException.Type.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
+		}
 
 	}
 }
