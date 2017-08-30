@@ -131,6 +131,7 @@ public class OrderController {
 
                 //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
                 voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
+                voteService.create(order.getIdCustomer().getUser(), request.getVote());
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
 

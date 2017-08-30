@@ -9,7 +9,7 @@
         <encoder>
            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
        </encoder>
-<!--
+
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp><fieldName>timestamp</fieldName></timestamp>
@@ -20,7 +20,7 @@
                 <mdc />
                 <message />
             </providers>
-        </encoder>-->
+        </encoder>
 
     </appender>
 
