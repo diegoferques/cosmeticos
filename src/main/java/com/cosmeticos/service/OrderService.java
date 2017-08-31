@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.controller.PaymentController;
@@ -103,12 +101,19 @@ public class OrderService {
         /********************************************************/
         /*****   VALIDACOES    **********************************/
         /********************************************************/
+        Payment validatedPayment = null;
+        if (paymentCollection.isEmpty()) {
+            throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
+        }
+        else {
+            validatedPayment = paymentCollection.stream().findFirst().get();
+        }
 
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
-        Payment validatedPayment = validatePayment(paymentCollection);
+        validateAndApplyPaymentPriceRule(validatedPayment);
 
         // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-        validateCreditcard(persistentCustomer, validatedPayment.getType());
+        validateAndApplyPaymentCreditcard(persistentCustomer, validatedPayment);
 
 
         /********************************************************/
@@ -160,16 +165,10 @@ public class OrderService {
     /**
      * Apensar de ser uma collection, so trabalharemos com 1 Payment inicialmente, o qual este metodo estara retornando.
      *
-     * @param paymentCollection
+     * @param receivedPayment
      * @return
      */
-    private Payment validatePayment(Collection<Payment> paymentCollection) {
-        if (paymentCollection.isEmpty()) {
-            throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
-        } else {
-
-
-            Payment receivedPayment = paymentCollection.stream().findFirst().get();
+    private void validateAndApplyPaymentPriceRule(Payment receivedPayment) {
 
             PriceRule chosenPriceRule = receivedPayment.getPriceRule();
 
@@ -187,9 +186,6 @@ public class OrderService {
 
                 MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
             }
-
-            return receivedPayment;
-        }
     }
 
     /**
@@ -197,10 +193,10 @@ public class OrderService {
      * cartao registrado.
      *
      * @param persistentCustomer
-     * @param receivedPaymentType
+     * @param receivedPayment
      */
-    private void validateCreditcard(Customer persistentCustomer, Payment.Type receivedPaymentType) {
-        if (Payment.Type.CC.equals(receivedPaymentType)) {
+    private void validateAndApplyPaymentCreditcard(Customer persistentCustomer, Payment receivedPayment) {
+        if (Payment.Type.CC.equals(receivedPayment.getType())) {
             Collection<CreditCard> persistentCreditCards = persistentCustomer.getUser().getCreditCardCollection();
 
             if (persistentCreditCards.isEmpty()) {
@@ -208,6 +204,12 @@ public class OrderService {
                         Type.INVALID_PAYMENT_TYPE,
                         "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
                 );
+            }
+            else
+            {
+                Optional<CreditCard> cc = persistentCreditCards.stream().findFirst();
+
+                receivedPayment.setCreditCard(cc.get());
             }
         }
     }

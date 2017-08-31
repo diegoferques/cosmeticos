@@ -46,7 +46,8 @@ public class VoteService {
         List<Vote> votes = findAllByUser(user);
 
         for (Vote vote: votes) {
-            totalVotes += vote.getValue();
+            int voteValue = vote.getValue() == null ? 0 : vote.getValue();
+            totalVotes += voteValue;
         }
 
         evaluation = totalVotes / votes.size();
