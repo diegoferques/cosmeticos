@@ -130,8 +130,14 @@ public class OrderController {
                 //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
 
                 //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
-                voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
-                voteService.create(order.getIdCustomer().getUser(), request.getVote());
+
+                if(order.getStatus() == Order.Status.CLOSED) {
+                    voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
+                }
+
+                if (order.getStatus() == Order.Status.SEMI_CLOSED) {
+                    voteService.create(order.getIdCustomer().getUser(), request.getVote());
+                }
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);
 

@@ -24,6 +24,9 @@ public class VoteService {
     private OrderRepository orderRepository;
 
     public void create(User user, Integer value) {
+
+        getUserEvaluation(user);
+
         Vote vote = new Vote();
         vote.setUser(user);
         vote.setValue(value);
@@ -41,8 +44,9 @@ public class VoteService {
     public float getUserEvaluation(User user) {
         float evaluation = 0;
         Integer totalVotes = 0;
-        List<Vote> votes = findAllByUser(user);
 
+        List<Vote> votes = findAllByUser(user);
+        
         for (Vote vote: votes) {
             totalVotes += vote.getValue();
         }

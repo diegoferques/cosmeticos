@@ -1503,6 +1503,7 @@ public class OrderControllerTests {
         c1.setCpf("123.984.789-01");
         c1.setNameCustomer("testOrderClosedAndVote Customer");
 
+
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername("testOrderClosedAndVote-professional");
         professional.getUser().setEmail("testOrderClosedAndVote-professional@email.com");
@@ -1548,13 +1549,16 @@ public class OrderControllerTests {
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
-        //ATUALIZAMOS ORDER PARA CLOSED E ENVIAMOS O VOTO
+        //ATUALIZAMOS ORDER PARA SEMI CLOSED E ENVIAMOS O VOTO
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
                 "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\"\n" +
                 "   },\n" +
-                "   \"vote\" : 3\n" +
+                "   \"user\" : {\n" +
+                "       \"vote\" : {\n" +
+                "              \"value\" : 4\n" +
+                "   }\n" +
                 "\n}\n" +
                 "}";
 

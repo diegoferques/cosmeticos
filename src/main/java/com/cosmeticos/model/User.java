@@ -6,6 +6,7 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -112,12 +113,14 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerUpdate.class,
     })
+
     @Transient
     private float evaluation;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
-    private Set<Vote> voteCollection = new HashSet<>();
+    private Set<Vote> vote = new HashSet<>();
 
 
 

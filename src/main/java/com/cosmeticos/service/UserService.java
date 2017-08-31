@@ -22,6 +22,9 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private VoteService voteService;
+
     public User create(UserRequestBody request){
 
         return repository.save(request.getEntity());
@@ -56,6 +59,8 @@ public class UserService {
             persistentUser.setStatus(userFromRequest.getStatus());
             persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
             persistentUser.setPersonType(userFromRequest.getPersonType());
+            persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
+            persistentUser.setVote(userFromRequest.getVote());
 
             repository.save(persistentUser);
         }
