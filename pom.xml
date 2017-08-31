@@ -163,7 +163,8 @@
 				</executions>
 				<configuration>
 					<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
-					<packageName>com.cosmeticos.payment.superpay.ws</packageName>
+					<generatePackage>com.cosmeticos.payment.superpay.ws</generatePackage>
+					<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
 					<schemaIncludes>
 						<include>*.wsdl</include>
 					</schemaIncludes>

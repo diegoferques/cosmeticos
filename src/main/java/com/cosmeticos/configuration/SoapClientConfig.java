@@ -18,7 +18,7 @@ public class SoapClientConfig {
 	  @Bean
 	  Jaxb2Marshaller jaxb2Marshaller() {
 	    Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
-	    jaxb2Marshaller.setContextPath("br.com.ernet.superpay.webservices.pagamentos");
+	    jaxb2Marshaller.setContextPath("com.cosmeticos.payment.superpay.ws");
 
 	    return jaxb2Marshaller;
 	  }

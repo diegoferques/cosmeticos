@@ -1,16 +1,15 @@
 package com.cosmeticos.payment;
 
-import javax.xml.bind.JAXBElement;
-
+import com.cosmeticos.payment.superpay.ws.CadastraPagamentoOneClickV2;
+import com.cosmeticos.payment.superpay.ws.CadastraPagamentoOneClickV2Response;
+import com.cosmeticos.payment.superpay.ws.DadosCadastroPagamentoOneClickWSV2;
+import com.cosmeticos.payment.superpay.ws.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import br.com.ernet.superpay.webservices.pagamentos.CadastraPagamentoOneClickV2;
-import br.com.ernet.superpay.webservices.pagamentos.CadastraPagamentoOneClickV2Response;
-import br.com.ernet.superpay.webservices.pagamentos.DadosCadastroPagamentoOneClickWSV2;
-import br.com.ernet.superpay.webservices.pagamentos.ObjectFactory;
+import javax.xml.bind.JAXBElement;
 
 @Component
 @lombok.extern.slf4j.Slf4j
@@ -62,7 +61,7 @@ public class SuperpayOneClickClient {
 
 		log.info("Client sending person[user={},estabelecimento={}]", user, codigoEstabelecimento);
 
-		JAXBElement<CadastraPagamentoOneClickV2Response> jaxbResponse = 
+		JAXBElement<CadastraPagamentoOneClickV2Response> jaxbResponse =
 				(JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(person);
 
 		CadastraPagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
