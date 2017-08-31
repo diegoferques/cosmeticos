@@ -303,6 +303,14 @@ public class OrderService {
             persistentOrder.setIdLocation(receivedOrder.getIdLocation());
         }
 
+        //TODO - VERIFICAR SE REALMETNE VAMOS DELETAR
+        //CONFORME SOLICITAÇÃO DO GARRY, ESTOU DESATIVANDO O IF ABAIXO, MAS DEIXEI PARA VOCES DELETAREM.
+        /*
+        Esse if inteiro da lnha 306 pode apagar.. Ta fazendo nada isso. persistentOrder eh a order q ta no banco.
+        Essa order ja ta associada ao professionalCategory, tanto q na linha 311 vc obteve o profissional..
+        Ta dando uma volta desnecessaria. Sem contar q nao fazemos atualizacao de outra entidade em orderService...
+        */
+        /*
         if (!isEmpty(receivedOrder.getProfessionalCategory())) {
 		    //TODO - CORRIGIR O PROBLEMA ABAIXO AO PEGAR PROFESSIONAL VINDO DE REQUEST
             //AO ATUALIZAR STATUS DE OPEN PARA ACCEPTED, ABAIXO NAO CONSEGUIMOS PEGAR O PROFESSIONAL DO REQUEST/persistentOrder
@@ -318,6 +326,7 @@ public class OrderService {
             persistentOrder.setProfessionalCategory(ps);
 
         }
+        */
 
         if (receivedOrder.getScheduleId() != null) {
 
