@@ -13,6 +13,7 @@ import com.cosmeticos.service.PaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -335,6 +336,8 @@ public class MockingPaymentControllerTests {
 		return customer;
 	}
 
+	//IGNORADO, UTILIZAR A NOVA VERSAO LOGO NO PROXIMO TESTE: testCapturarTransacaoOK2
+	@Ignore
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
@@ -381,6 +384,14 @@ public class MockingPaymentControllerTests {
         Mockito.when(
                 paymentService.capturaTransacaoSuperpay(Mockito.any())
         ).thenReturn(responseEntityFakeRetornoTransacao);
+
+        Mockito.when(
+                paymentService.updatePaymentStatus(Mockito.any())
+        ).thenCallRealMethod();
+
+        Mockito.when(
+                paymentController.sendRequest(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
 
         Mockito.when(
                 paymentController.validatePaymentStatusAndSendCapture(Mockito.any())
@@ -435,15 +446,61 @@ public class MockingPaymentControllerTests {
         // Confirmando se a order foi mesmo pro banco apesar do status ter sido 200.
         Assert.assertNotNull("A order nao foi icluido no banco", orderRepository.findOne(order.getIdOrder()));
 
-        //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
-        order.setStatus(Order.Status.ACCEPTED);
-        OrderRequestBody orderRequestAccepted = new OrderRequestBody();
-        orderRequestAccepted.setOrder(order);
 
-        Order orderAccepted = orderService.update(orderRequestAccepted);
+        //--- INICIO - ABAIXO MUDAMOS DE OPEN PARA ACCEPTED ---//
+        Order orderAccepted = orderRepository.findOne(order.getIdOrder());
+        //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
+        orderAccepted.setStatus(Order.Status.ACCEPTED);
+        OrderRequestBody orderRequestAccepted = new OrderRequestBody();
+        orderRequestAccepted.setOrder(orderAccepted);
+
+        Order orderAcceptedUpdated = orderService.update(orderRequestAccepted);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
-        Assert.assertNotNull(orderAccepted);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderAccepted.getStatus());
+        Assert.assertNotNull(orderAcceptedUpdated);
+        Assert.assertEquals(Order.Status.ACCEPTED, orderAcceptedUpdated.getStatus());
+        //--- FIM ---//
+
+        //--- INICIO - ABAIXO MUDAMOS DE ACCEPTED PARA INPROGRESS ---//
+        Order orderInProgress = orderRepository.findOne(order.getIdOrder());
+        //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
+        orderInProgress.setStatus(Order.Status.INPROGRESS);
+        OrderRequestBody orderRequestInProgress = new OrderRequestBody();
+        orderRequestInProgress.setOrder(orderInProgress);
+
+        Order orderInProgressUpdated = orderService.update(orderRequestInProgress);
+        //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
+        Assert.assertNotNull(orderInProgressUpdated);
+        Assert.assertEquals(Order.Status.INPROGRESS, orderInProgressUpdated.getStatus());
+        //--- FIM ---//
+
+        //--- INICIO - ABAIXO MUDAMOS DE INPROGRESS PARA EXECUTED ---//
+        Order orderExecuted = orderRepository.findOne(order.getIdOrder());
+        //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
+        orderExecuted.setStatus(Order.Status.EXECUTED);
+        OrderRequestBody orderRequestExecuted = new OrderRequestBody();
+        orderRequestExecuted.setOrder(orderExecuted);
+
+        Order orderExecutedUpdated = orderService.update(orderRequestExecuted);
+        //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
+        Assert.assertNotNull(orderExecutedUpdated);
+        Assert.assertEquals(Order.Status.EXECUTED, orderExecutedUpdated.getStatus());
+        //--- FIM ---//
+
+
+        //--- INICIO - ABAIXO MUDAMOS DE INPROGRESS PARA READY2CHARGE E, AUTOMATICAMENTE, EFETUAMOS A CAPTURA ---//
+        Order orderReady2Charge = orderRepository.findOne(order.getIdOrder());
+        //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
+        orderReady2Charge.setStatus(Order.Status.READY2CHARGE);
+        OrderRequestBody orderRequestReady2Charge = new OrderRequestBody();
+        orderRequestReady2Charge.setOrder(orderReady2Charge);
+
+        Order orderReady2ChargeUpdated = orderService.update(orderRequestReady2Charge);
+        //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
+        Assert.assertNotNull(orderReady2ChargeUpdated);
+        Assert.assertEquals(Order.Status.READY2CHARGE, orderReady2ChargeUpdated.getStatus());
+        //--- FIM ---//
+
+
 
 
         // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.

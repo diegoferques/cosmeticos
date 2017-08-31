@@ -273,6 +273,8 @@ public class OrderService {
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
+        //TODO - SE ORDER NO BANCO FOR READY2CHARGE E PAGAMENTO EM DINHEIRO, ENTAO MUDAMOS O STATUS PARA O SOLICITADO???
+        //NAO ESTOU ENTENDENDO ISSO!!!
         //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
         // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
         if (Order.Status.READY2CHARGE == persistentOrder.getStatus()) {
@@ -290,7 +292,7 @@ public class OrderService {
         if (!isEmpty(receivedOrder.getDate())) {
             persistentOrder.setDate(receivedOrder.getDate());
         }
-
+        //AQUI SETAMOS O STATUS VINDO DO REQUEST
         if (!isEmpty(receivedOrder.getStatus())) {
             persistentOrder.setStatus(receivedOrder.getStatus());
         }
@@ -354,6 +356,7 @@ public class OrderService {
             }
         }
 
+        //ESTE SAVE DEVE FICAR ANTES DAS VALIDACOES DE PAGAMENTO, POIS SE DER ERRO NO PAGAMENTO, JA SALVOU TUDO
         orderRepository.save(persistentOrder);
 
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
@@ -370,23 +373,33 @@ public class OrderService {
             this.validateScheduledAndsendPaymentRequest(persistentOrder);
         }
 
-		//AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-		if (receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
+		//TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
+		//HTTPSTATUS DEFINIDO PARA CADA STATUS DE PAGAMENTO DA SUPERPAY
+		//CARD: https://trello.com/c/fyPMjNJI/113-adequar-status-do-pagamento-do-superpay-aos-nossos-status-da-order
+		//BRANCH: RNF101
 
+        //ACHEI MELHOR FAZER UMA NOVA VERIFICACAO APOS SALVAR, POIS PRECISAMOS TER ARMAZENADO QUANDO MUDAMOS O STATUS
+        //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
+        //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
+        if(persistentOrder.getStatus() == Order.Status.READY2CHARGE) {
             Payment payment = persistentOrder.getPaymentCollection()
                     .stream()
                     .findFirst()
                     .get();
 
             if (Payment.Type.CC.equals(payment.getType())) {
-                this.sendPaymentCapture(persistentOrder);
-            }
-		}
+                //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
+                if(this.sendPaymentCapture(persistentOrder)) {
 
-		//TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
-		//HTTPSTATUS DEFINIDO PARA CADA STATUS DE PAGAMENTO DA SUPERPAY
-		//CARD: https://trello.com/c/fyPMjNJI/113-adequar-status-do-pagamento-do-superpay-aos-nossos-status-da-order
-		//BRANCH: RNF101
+                    //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
+                    //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
+                    //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA SEMI_CLOSED
+                    persistentOrder.setStatus(Order.Status.SEMI_CLOSED);
+                    //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
+                    orderRepository.save(persistentOrder);
+                }
+            }
+        }
 
         return persistentOrder;
     }
@@ -394,22 +407,8 @@ public class OrderService {
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
 	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
-	private void sendPaymentCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
+	private Boolean sendPaymentCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
 
-		//ACHEI MELHOR COMENTAR ABAIXO E UTILIZAR O PROXIMO
-		/*
-		Optional<RetornoTransacao> retornoConsultaTransacao = paymentService.consultaTransacao(idOrder);
-
-		if(retornoConsultaTransacao.isPresent()) {
-
-			//SE O STATUS ESTIVER NA SUPERPAY COMO PAGO E NAO CAPTURADO, ENTAO ENVIAMOS O PEDIDO DE CAPTURA
-			if (retornoConsultaTransacao.get().getStatusTransacao() == 2) {
-				ResponseEntity<RetornoTransacao> exchange = paymentService.capturaTransacaoSuperpay(idOrder);
-			}
-		}
-		*/
-
-		//ACHEI MELHOR COLOCAR ESSA RESPONSABILIDADE DENTRO DE PAYMENTSERVICE, (OPS, CONTROLLER)
 		Boolean paymentCapture = paymentController.validatePaymentStatusAndSendCapture(order);
 
 		//DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
@@ -421,9 +420,12 @@ public class OrderService {
 		}
 		*/
 
+		return paymentCapture;
 	}
 
-	private void validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
+	private Boolean validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
+
+        Boolean success = false;
 
 		int daysToStart = Integer.parseInt(daysToStartPayment);
 		int daysBeforeStart = Integer.parseInt(daysBeforeStartToNotification);
@@ -469,7 +471,9 @@ public class OrderService {
 			if(!sendPaymentRequest(persistenOrder)) {
 				//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
 				log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
-			}
+			} else {
+			    success = true;
+            }
 
 		//TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
 		} else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
@@ -478,18 +482,24 @@ public class OrderService {
 				//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
 				log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
 						" forma de pagamento seja alterado para dinheiro");
-			}
+			} else {
+                success = true;
+            }
 
 		//TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
 		//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
 		} else if (now.after(dateToStartPayment)) {
 			//AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
-			sendPaymentRequest(persistenOrder);
+			if(sendPaymentRequest(persistenOrder)) {
+                success = true;
+            }
 
 		//TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
 		} else {
 			log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + persistenOrder.getIdOrder());
 		}
+
+		return success;
 
 	}
 
@@ -640,7 +650,7 @@ public class OrderService {
 
 				//SE FOR PAGO E NAO CAPTURADO, CORREU TUDO CERTO!
 				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 2) {
-					senPaymentStatus = true;
+				    senPaymentStatus = true;
 				}
 
                 //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
@@ -649,13 +659,14 @@ public class OrderService {
 					senPaymentStatus = true;
                 }
 
+                    //TODO - URGENTE
                     //ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
                     //OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
                     Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.get());
 
                     if (!updateStatusPagamento) {
                         //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
-                        log.error("Erro salvar o status do pagamento");
+                        log.error("Erro ao salvar o status do pagamento");
                         throw new RuntimeException("Erro salvar o status do pagamento");
                     }
 
