@@ -25,8 +25,6 @@ public class VoteService {
 
     public void create(User user, Integer value) {
 
-        getUserEvaluation(user);
-
         Vote vote = new Vote();
         vote.setUser(user);
         vote.setValue(value);
@@ -46,7 +44,7 @@ public class VoteService {
         Integer totalVotes = 0;
 
         List<Vote> votes = findAllByUser(user);
-        
+
         for (Vote vote: votes) {
             totalVotes += vote.getValue();
         }
