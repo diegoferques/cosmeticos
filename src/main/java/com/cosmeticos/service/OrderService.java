@@ -1,36 +1,21 @@
 package com.cosmeticos.service;
 
-import static com.cosmeticos.model.Order.Status.AUTO_CLOSED;
-import static com.cosmeticos.model.Order.Status.CANCELLED;
-import static com.cosmeticos.model.Order.Status.CLOSED;
-import static com.cosmeticos.model.Order.Status.EXPIRED;
-import static com.cosmeticos.validation.OrderValidationException.Type.INVALID_ORDER_STATUS;
-import static org.springframework.util.StringUtils.isEmpty;
-
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
-
+import com.cosmeticos.commons.OrderRequestBody;
+import com.cosmeticos.controller.PaymentController;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
+import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.validation.OrderValidationException;
+import com.cosmeticos.validation.OrderValidationException.Type;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
-import com.cosmeticos.commons.OrderRequestBody;
-import com.cosmeticos.controller.PaymentController;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
-import com.cosmeticos.penalty.PenaltyService;
-import com.cosmeticos.validation.OrderValidationException;
-import com.cosmeticos.validation.OrderValidationException.Type;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,7 +24,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-import lombok.extern.slf4j.Slf4j;
+import static com.cosmeticos.model.Order.Status.*;
+import static com.cosmeticos.validation.OrderValidationException.Type.INVALID_ORDER_STATUS;
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by matto on 17/06/2017.
@@ -317,8 +304,11 @@ public class OrderService {
         }
 
         if (!isEmpty(receivedOrder.getProfessionalCategory())) {
-
-            Professional p = receivedOrder.getProfessionalCategory().getProfessional();
+		    //TODO - CORRIGIR O PROBLEMA ABAIXO AO PEGAR PROFESSIONAL VINDO DE REQUEST
+            //AO ATUALIZAR STATUS DE OPEN PARA ACCEPTED, ABAIXO NAO CONSEGUIMOS PEGAR O PROFESSIONAL DO REQUEST/persistentOrder
+            //MAS QUANDO VERIFICAMOS persistentOrder, CONSEGUIMOS PEGAR O PROFESSIONAL
+            //Professional p = receivedOrder.getProfessionalCategory().getProfessional();
+            Professional p = persistentOrder.getProfessionalCategory().getProfessional();
             Category s = receivedOrder.getProfessionalCategory().getCategory();
 
             ProfessionalCategory ps = new ProfessionalCategory(p, s);

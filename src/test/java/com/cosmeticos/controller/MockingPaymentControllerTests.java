@@ -3,15 +3,16 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
 import com.cosmeticos.commons.CustomerResponseBody;
+import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.PaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -29,7 +30,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +66,9 @@ public class MockingPaymentControllerTests {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     ProfessionalCategoryRepository professionalServicesRepository;
@@ -362,6 +365,93 @@ public class MockingPaymentControllerTests {
 
         Assert.assertNotNull(capturaTransacao);
         Assert.assertEquals(true, capturaTransacao);
+
+    }
+
+    @Test
+    public void testCapturarTransacaoOK2() throws Exception {
+
+        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao(1);
+
+        Mockito.when(
+                paymentService.consultaTransacao(Mockito.any())
+        ).thenReturn(optionalFakeRetornoTransacao);
+
+        Mockito.when(
+                paymentService.capturaTransacaoSuperpay(Mockito.any())
+        ).thenReturn(responseEntityFakeRetornoTransacao);
+
+        Mockito.when(
+                paymentController.validatePaymentStatusAndSendCapture(Mockito.any())
+        ).thenCallRealMethod();
+
+        //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
+
+        Customer customer = postCustomerWhatever("testCapturarTransacaoOK-customer@email.com");
+
+        putCustomerAddCreditCard(customer);
+
+
+        //-------- FIM DA CRIACAO DE CUSTOMER ----------/
+
+        ProfessionalCategory professionalCategory = createProfessionalWhatever(
+                "testCapturarTransacaoOK-professional@email.com",
+                "123.605.789-07"
+        );
+
+        // Determinamos a priceRule selecionaddaa pelo cliente
+        PriceRule priceRule200Reais = professionalCategory.getPriceRuleList()
+                .stream()
+                .filter(p -> p.getPrice() == 20000L)
+                .findFirst()
+                .get();
+
+        //JSON PARA CRIAR ORDER PARA EFETUAR O PAGAMENTO
+        String jsonCreateOrder = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
+                customer,
+                professionalCategory,
+                Payment.Type.CC,
+                priceRule200Reais
+        );
+
+        System.out.println(jsonCreateOrder);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreateOrder);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = restTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(exchangeCreate.getBody().getDescription(), HttpStatus.OK, exchangeCreate.getStatusCode());
+
+        Order order = exchangeCreate.getBody().getOrderList().get(0);
+
+        // Confirmando se a order foi mesmo pro banco apesar do status ter sido 200.
+        Assert.assertNotNull("A order nao foi icluido no banco", orderRepository.findOne(order.getIdOrder()));
+
+        //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
+        order.setStatus(Order.Status.ACCEPTED);
+        OrderRequestBody orderRequestAccepted = new OrderRequestBody();
+        orderRequestAccepted.setOrder(order);
+
+        Order orderAccepted = orderService.update(orderRequestAccepted);
+        //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
+        Assert.assertNotNull(orderAccepted);
+        Assert.assertEquals(Order.Status.ACCEPTED, orderAccepted.getStatus());
+
+
+        // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
+        // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
+        //Boolean capturaTransacao = paymentController.validatePaymentStatusAndSendCapture(order);
+
+        //Assert.assertNotNull(capturaTransacao);
+        //Assert.assertEquals(true, capturaTransacao);
 
     }
 
