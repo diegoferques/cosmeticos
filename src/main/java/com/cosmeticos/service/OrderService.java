@@ -53,10 +53,6 @@ public class OrderService {
     @Autowired
     private PenaltyService penaltyService;
 
-    // TODO: Nao se acessa o controller por autowired mas sim seu Service
-    @Autowired
-    private PaymentController paymentController;
-
     @Autowired
     private PaymentService paymentService;
 
@@ -101,12 +97,19 @@ public class OrderService {
         /********************************************************/
         /*****   VALIDACOES    **********************************/
         /********************************************************/
+        Payment validatedPayment = null;
+        if (paymentCollection.isEmpty()) {
+            throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
+        }
+        else {
+            validatedPayment = paymentCollection.stream().findFirst().get();
+        }
 
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
-        Payment validatedPayment = validatePayment(paymentCollection);
+        validateAndApplyPaymentPriceRule(validatedPayment);
 
         // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-        validateCreditcard(persistentCustomer, validatedPayment.getType());
+        validateAndApplyPaymentCreditcard(persistentCustomer, validatedPayment);
 
 
         /********************************************************/
@@ -158,35 +161,26 @@ public class OrderService {
     /**
      * Apensar de ser uma collection, so trabalharemos com 1 Payment inicialmente, o qual este metodo estara retornando.
      *
-     * @param paymentCollection
+     * @param receivedPayment
      * @return
      */
-    private Payment validatePayment(Collection<Payment> paymentCollection) {
-        if (paymentCollection.isEmpty()) {
-            throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
-        } else {
+    private void validateAndApplyPaymentPriceRule(Payment receivedPayment) {
 
+        PriceRule chosenPriceRule = receivedPayment.getPriceRule();
 
-            Payment receivedPayment = paymentCollection.stream().findFirst().get();
+        if (chosenPriceRule == null) {
+            throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
+        }
+        else
+        {
+            chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
 
-            PriceRule chosenPriceRule = receivedPayment.getPriceRule();
+            /**
+             * Buscamos o pricerule no banco pq o q chega no request é so o ID.
+             */
+            receivedPayment.setPriceRule(chosenPriceRule);
 
-            if (chosenPriceRule == null) {
-                throw new OrderValidationException(Type.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
-            }
-            else
-            {
-                chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
-
-                /**
-                 * Buscamos o pricerule no banco pq o q chega no request é so o ID.
-                 */
-                receivedPayment.setPriceRule(chosenPriceRule);
-
-                MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
-            }
-
-            return receivedPayment;
+            MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
         }
     }
 
@@ -195,10 +189,10 @@ public class OrderService {
      * cartao registrado.
      *
      * @param persistentCustomer
-     * @param receivedPaymentType
+     * @param receivedPayment
      */
-    private void validateCreditcard(Customer persistentCustomer, Payment.Type receivedPaymentType) {
-        if (Payment.Type.CC.equals(receivedPaymentType)) {
+    private void validateAndApplyPaymentCreditcard(Customer persistentCustomer, Payment receivedPayment) {
+        if (Payment.Type.CC.equals(receivedPayment.getType())) {
             Collection<CreditCard> persistentCreditCards = persistentCustomer.getUser().getCreditCardCollection();
 
             if (persistentCreditCards.isEmpty()) {
@@ -206,6 +200,12 @@ public class OrderService {
                         Type.INVALID_PAYMENT_TYPE,
                         "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
                 );
+            }
+            else
+            {
+                Optional<CreditCard> cc = persistentCreditCards.stream().findFirst();
+
+                receivedPayment.setCreditCard(cc.get());
             }
         }
     }
@@ -277,6 +277,7 @@ public class OrderService {
         //NAO ESTOU ENTENDENDO ISSO!!!
         //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
         // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
+        // Garry: Ta estranho mesmo.. vamos apagar esta instrucao
         if (Order.Status.READY2CHARGE == persistentOrder.getStatus()) {
 
             Payment payment = persistentOrder.getPaymentCollection()
@@ -394,7 +395,8 @@ public class OrderService {
                     //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
                     //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
                     //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA SEMI_CLOSED
-                    persistentOrder.setStatus(Order.Status.SEMI_CLOSED);
+                    //persistentOrder.setStatus(Order.Status.SEMI_CLOSED);
+
                     //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
                     orderRepository.save(persistentOrder);
                 }
@@ -409,7 +411,7 @@ public class OrderService {
 	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
 	private Boolean sendPaymentCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
 
-		Boolean paymentCapture = paymentController.validatePaymentStatusAndSendCapture(order);
+		Boolean paymentCapture = paymentService.validatePaymentStatusAndSendCapture(order);
 
 		//DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
 		//POIS O CRON PEGA TODOS OS READY2CHARGE E ENVIA PARA ESTE METODO, SE DER ALGUM ERRO, TEMOS QUE FAZER ALGO
@@ -627,7 +629,7 @@ public class OrderService {
 
 		Boolean senPaymentStatus = false;
 
-        Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentController.sendRequest(orderRequest);
+        Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentService.sendRequest(orderRequest);
 
         if (retornoTransacaoSuperpay.isPresent()) {
 

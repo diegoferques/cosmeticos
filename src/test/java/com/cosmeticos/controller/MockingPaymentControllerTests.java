@@ -47,8 +47,8 @@ public class MockingPaymentControllerTests {
     @MockBean
     private PaymentService paymentService;
 
-    @MockBean
-    private PaymentController paymentController;
+   // @MockBean
+   // private PaymentController paymentController;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -81,7 +81,7 @@ public class MockingPaymentControllerTests {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
         /*
@@ -150,7 +150,7 @@ public class MockingPaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
+        Optional<RetornoTransacao> retornoTransacao = paymentService.sendRequest(order);
 
         Assert.assertNotNull(retornoTransacao.isPresent());
         Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
@@ -164,7 +164,7 @@ public class MockingPaymentControllerTests {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
         //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
@@ -353,7 +353,7 @@ public class MockingPaymentControllerTests {
         ).thenReturn(responseEntityFakeRetornoTransacao);
 
         Mockito.when(
-                paymentController.validatePaymentStatusAndSendCapture(Mockito.any())
+                paymentService.validatePaymentStatusAndSendCapture(Mockito.any())
         ).thenCallRealMethod();
 
 
@@ -364,7 +364,7 @@ public class MockingPaymentControllerTests {
 
         // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
         // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
-        Boolean capturaTransacao = paymentController.validatePaymentStatusAndSendCapture(order);
+        Boolean capturaTransacao = paymentService.validatePaymentStatusAndSendCapture(order);
 
         Assert.assertNotNull(capturaTransacao);
         Assert.assertEquals(true, capturaTransacao);
@@ -390,11 +390,11 @@ public class MockingPaymentControllerTests {
         ).thenCallRealMethod();
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
         Mockito.when(
-                paymentController.validatePaymentStatusAndSendCapture(Mockito.any())
+                paymentService.validatePaymentStatusAndSendCapture(Mockito.any())
         ).thenCallRealMethod();
 
         //-------- INICIO DA CRIACAO DE CUSTOMER ----------/
@@ -602,7 +602,7 @@ public class MockingPaymentControllerTests {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
 
