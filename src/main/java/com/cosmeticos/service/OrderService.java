@@ -352,23 +352,7 @@ public class OrderService {
             }
         }
 
-        if (receivedOrder.getStatus() == Order.Status.SEMI_CLOSED) {
-            User persistentUser = persistentOrder.getIdCustomer().getUser();
-
-            User receivedUser = receivedOrder.getIdCustomer().getUser();
-
-            addVotesToUser(persistentUser, receivedUser);
-        }
-
-        if(receivedOrder.getStatus() == Order.Status.CLOSED) {
-            ProfessionalCategory persistentProfessionalCategory = persistentOrder.getProfessionalCategory();
-            User persistentUser = persistentProfessionalCategory.getProfessional().getUser();
-
-            ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
-            User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
-
-            addVotesToUser(persistentUser, receivedUser);
-        }
+        applyVote(receivedOrder, persistentOrder);
 
         orderRepository.save(persistentOrder);
 
@@ -388,6 +372,25 @@ public class OrderService {
 
 
         return persistentOrder;
+    }
+
+    private void applyVote(Order receivedOrder, Order persistentOrder) {
+        if (receivedOrder.getStatus() == Order.Status.SEMI_CLOSED) {
+            User persistentUser = persistentOrder.getIdCustomer().getUser();
+
+            User receivedUser = receivedOrder.getIdCustomer().getUser();
+
+            addVotesToUser(persistentUser, receivedUser);
+        }
+        else if(receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
+            ProfessionalCategory persistentProfessionalCategory = persistentOrder.getProfessionalCategory();
+            User persistentUser = persistentProfessionalCategory.getProfessional().getUser();
+
+            ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
+            User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
+
+            addVotesToUser(persistentUser, receivedUser);
+        }
     }
 
     private void addVotesToUser(User persistentUser, User receivedUser) {
