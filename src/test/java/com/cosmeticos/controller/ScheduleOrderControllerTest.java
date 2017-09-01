@@ -5,6 +5,7 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.service.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,7 +62,7 @@ public class ScheduleOrderControllerTest {
     private OrderRepository orderRepository;
 
     @MockBean
-    private PaymentController paymentController;
+    private PaymentService paymentService;
 
     private Order orderRestultFrom_createScheduledOrderOk = null;
 
@@ -81,7 +82,7 @@ public class ScheduleOrderControllerTest {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
     }
 
