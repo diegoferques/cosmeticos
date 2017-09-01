@@ -9,8 +9,5 @@ import lombok.Data;
  */
 @Data
 public class OrderRequestBody {
-
     private Order order;
-
-    private Integer vote;
 }

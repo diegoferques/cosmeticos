@@ -23,11 +23,7 @@ public class VoteService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public void create(User user, Integer value) {
-
-        Vote vote = new Vote();
-        vote.setUser(user);
-        vote.setValue(value);
+    public void create(Vote vote) {
         voteRepository.save(vote);
     }
 

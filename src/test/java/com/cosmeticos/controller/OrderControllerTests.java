@@ -1553,13 +1553,18 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\"\n" +
-                "   },\n" +
-                "   \"user\" : {\n" +
-                "       \"vote\" : {\n" +
-                "              \"value\" : 4\n" +
-                "   }\n" +
-                "\n}\n" +
+                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
+                "    \"idCustomer\" : {\n" +
+                "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
+                "        \"user\" : {\n" +
+                "            \"voteCollection\" : [\n" +
+                "                {\n" +
+                "                    \"value\" : 4\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    }\n" +
+                "  }\n" +
                 "}";
 
         System.out.println(jsonUpdate);
@@ -1582,7 +1587,7 @@ public class OrderControllerTests {
 
         float vote = voteService.getUserEvaluation(c1.getUser());
         Assert.assertNotNull(vote);
-        Assert.assertTrue((float)3.0 == vote);
+        Assert.assertTrue((float)4.0 == vote);
 }
 
     /*
