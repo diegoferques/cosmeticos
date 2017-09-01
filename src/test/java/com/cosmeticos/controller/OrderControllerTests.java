@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
@@ -20,7 +21,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
@@ -1767,6 +1767,77 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeCreate2.getStatusCode());
         //-------
 
+    }
+
+    /**
+     * RNF127 - https://trello.com/c/19xzp68K
+     * Customer nao tem cartao de credito cadastrado mas de alguma forma chegou Order pra ser paga no cartao de credito.
+     * Retornamos erro.
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    public void testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType() throws IOException, URISyntaxException {
+
+        // Criando usuario sem cartao de credito.
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1.getUser().setUsername("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-customer1");
+        c1.getUser().setEmail("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-customer1@email.com");
+        c1.getUser().setPassword("123");
+        c1.setCpf("123.456.789-02");
+
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional.getUser().setUsername("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-professional");
+        professional.getUser().setEmail("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-professional@email.com");
+        professional.getUser().setPassword("123");
+        professional.setCnpj("123.456.789-03");
+
+        customerRepository.save(c1);
+
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
+
+        ProfessionalCategory ps1 = buildProfessionalCateogry(professional, priceRule);
+
+        //-------
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
+        String jsonCreate = OrderJsonHelper.buildJsonCreateScheduledOrder(
+                c1,
+                ps1,
+                priceRule,
+                Payment.Type.CC,
+                Timestamp.valueOf(now().plusDays(1)).getTime() // Marcado pra amanha
+        );
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, exchangeCreate.getStatusCode());
+        Assert.assertEquals(ErrorCode.INVALID_PAYMENT_TYPE, exchangeCreate.getBody().getErrorCode());
+    }
+
+    private ProfessionalCategory buildProfessionalCateogry(Professional professional, PriceRule priceRule) {
+
+        professionalRepository.save(professional);
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
+
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
+
+        // Atualizando associando o Profeissional ao Servico
+        return professionalCategoryRepository.save(ps1);
     }
 
     private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {

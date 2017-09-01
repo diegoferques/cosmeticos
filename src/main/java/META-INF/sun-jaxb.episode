@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb" if-exists="true" version="2.1">
+  <!--
+
+Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.11 
+Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
+Gerado em: 2017.08.31 às 03:17:48 PM BRT 
+
+  -->
+  <bindings xmlns:tns="http://pagamentos.webservices.superpay.ernet.com.br/" if-exists="true" scd="x-schema::tns">
+    <schemaBindings map="false">
+      <package name="com.cosmeticos.payment.superpay.ws"/>
+    </schemaBindings>
+    <bindings if-exists="true" scd="~tns:alteraCadastraPagamentoOneClick">
+      <class ref="com.cosmeticos.payment.superpay.ws.AlteraCadastraPagamentoOneClick"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:alteraCadastraPagamentoOneClickResponse">
+      <class ref="com.cosmeticos.payment.superpay.ws.AlteraCadastraPagamentoOneClickResponse"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:cadastraPagamentoOneClick">
+      <class ref="com.cosmeticos.payment.superpay.ws.CadastraPagamentoOneClick"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:cadastraPagamentoOneClickResponse">
+      <class ref="com.cosmeticos.payment.superpay.ws.CadastraPagamentoOneClickResponse"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:cadastraPagamentoOneClickV2">
+      <class ref="com.cosmeticos.payment.superpay.ws.CadastraPagamentoOneClickV2"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:cadastraPagamentoOneClickV2Response">
+      <class ref="com.cosmeticos.payment.superpay.ws.CadastraPagamentoOneClickV2Response"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:consultaDadosOneClick">
+      <class ref="com.cosmeticos.payment.superpay.ws.ConsultaDadosOneClick"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:consultaDadosOneClickResponse">
+      <class ref="com.cosmeticos.payment.superpay.ws.ConsultaDadosOneClickResponse"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:pagamentoOneClick">
+      <class ref="com.cosmeticos.payment.superpay.ws.PagamentoOneClick"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:pagamentoOneClickResponse">
+      <class ref="com.cosmeticos.payment.superpay.ws.PagamentoOneClickResponse"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:pagamentoOneClickV2">
+      <class ref="com.cosmeticos.payment.superpay.ws.PagamentoOneClickV2"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:pagamentoOneClickV2Response">
+      <class ref="com.cosmeticos.payment.superpay.ws.PagamentoOneClickV2Response"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:resultadoPagamentoWS">
+      <class ref="com.cosmeticos.payment.superpay.ws.ResultadoPagamentoWS"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:MultipleCardsException">
+      <class ref="com.cosmeticos.payment.superpay.ws.MultipleCardsException"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:UnsupportedEncodingException">
+      <class ref="com.cosmeticos.payment.superpay.ws.UnsupportedEncodingException"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:WebServicesException">
+      <class ref="com.cosmeticos.payment.superpay.ws.WebServicesException"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:Exception">
+      <class ref="com.cosmeticos.payment.superpay.ws.Exception"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:dadosCadastroPagamentoOneClickWS">
+      <class ref="com.cosmeticos.payment.superpay.ws.DadosCadastroPagamentoOneClickWS"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:transacaoDadosCobrancaCartaoVo">
+      <class ref="com.cosmeticos.payment.superpay.ws.TransacaoDadosCobrancaCartaoVo"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:vo">
+      <class ref="com.cosmeticos.payment.superpay.ws.Vo"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:transacaoOneClickWSV2">
+      <class ref="com.cosmeticos.payment.superpay.ws.TransacaoOneClickWSV2"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:transacaoOneClickWS">
+      <class ref="com.cosmeticos.payment.superpay.ws.TransacaoOneClickWS"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:dadosUsuarioTransacaoCompletaWS">
+      <class ref="com.cosmeticos.payment.superpay.ws.DadosUsuarioTransacaoCompletaWS"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:itemPedidoTransacaoWS">
+      <class ref="com.cosmeticos.payment.superpay.ws.ItemPedidoTransacaoWS"/>
+    </bindings>
+    <bindings if-exists="true" scd="~tns:dadosCadastroPagamentoOneClickWSV2">
+      <class ref="com.cosmeticos.payment.superpay.ws.DadosCadastroPagamentoOneClickWSV2"/>
+    </bindings>
+  </bindings>
+</bindings>
