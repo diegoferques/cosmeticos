@@ -3,7 +3,9 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
+import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.model.Order;
+import com.cosmeticos.model.User;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -132,11 +134,11 @@ public class OrderController {
                 //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
 
                 if(order.getStatus() == Order.Status.CLOSED) {
-                    voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
+                    voteService.create((User) order.getProfessionalCategory().getProfessional().getUser().getVote());
                 }
 
                 if (order.getStatus() == Order.Status.SEMI_CLOSED) {
-                    voteService.create(order.getIdCustomer().getUser(), request.getVote());
+                    voteService.create((User) order.getIdCustomer().getUser().getVote());
                 }
 
                 OrderResponseBody responseBody = new OrderResponseBody(order);

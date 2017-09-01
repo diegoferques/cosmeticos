@@ -12,5 +12,4 @@ public class OrderRequestBody {
 
     private Order order;
 
-    private Integer vote;
 }

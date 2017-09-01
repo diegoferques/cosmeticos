@@ -1,5 +1,6 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.model.Vote;
@@ -23,11 +24,11 @@ public class VoteService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public void create(User user, Integer value) {
+    public void create(User user) {
 
         Vote vote = new Vote();
         vote.setUser(user);
-        vote.setValue(value);
+        //vote.setValue(value);
         voteRepository.save(vote);
     }
 
@@ -46,7 +47,8 @@ public class VoteService {
         List<Vote> votes = findAllByUser(user);
 
         for (Vote vote: votes) {
-            totalVotes += vote.getValue();
+            int voteValue = vote.getValue() == null ? 0 : vote.getValue();
+            totalVotes += voteValue;
         }
 
         evaluation = totalVotes / votes.size();
