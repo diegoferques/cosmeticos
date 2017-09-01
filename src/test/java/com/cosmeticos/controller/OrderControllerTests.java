@@ -78,9 +78,6 @@ public class OrderControllerTests {
     @Autowired
     private VoteService voteService;
 
-    @MockBean
-    private PaymentController paymentController;
-
     /**
      * Apesar de nao ser uma classe de teste mocking, precisamos mocar a ida ao superpay,.
      */
@@ -103,7 +100,7 @@ public class OrderControllerTests {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
 
@@ -262,7 +259,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         
-        Assert.assertEquals( Order.Status.CANCELLED, exchange.getBody().getOrderList().get(0).getStatus()); */
+        Assert.assertEquals( Order.Status.CANCELLED, exchange.getBody().getOrderList().get(0).getHttpStatus()); */
 
     }
 

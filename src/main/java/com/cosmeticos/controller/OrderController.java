@@ -60,7 +60,7 @@ public class OrderController {
 
                     log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
                             //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            //"{status atual: "+order.getStatus()+"}]");
+                            //"{status atual: "+order.getHttpStatus()+"}]");
 
                     //return ok().build();
                 return ok(new OrderResponseBody(order));
@@ -84,10 +84,10 @@ public class OrderController {
             orderResponseBody.setDescription(msg);
 
             MDC.put("errorCode", errorCode);
-            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
+            MDC.put("httpStatus", String.valueOf(e.getType().getHttpStatus()));
             log.error("Erro no insert: {} ", msg, e);
 
-            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
+            return ResponseEntity.status(e.getType().getHttpStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -156,11 +156,12 @@ public class OrderController {
             orderResponseBody.setDescription(e.getMessage());
 
             MDC.put("errorCode", errorCode);
-            MDC.put("httpStatus", String.valueOf(e.getType().getStatus()));
+            MDC.put("httpStatus", String.valueOf(e.getType().getHttpStatus()));
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
 
-            return ResponseEntity.status(e.getType().getStatus()).body(orderResponseBody);
+
+            return ResponseEntity.status(e.getType().getHttpStatus()).body(orderResponseBody);
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

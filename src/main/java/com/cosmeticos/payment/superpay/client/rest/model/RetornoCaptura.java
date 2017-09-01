@@ -2,12 +2,12 @@ package com.cosmeticos.payment.superpay.client.rest.model;
 
 import lombok.Data;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class RetornoTransacao {
+public class RetornoCaptura {
 
     private Integer numeroTransacao;
     private String codigoEstabelecimento;
@@ -18,7 +18,6 @@ public class RetornoTransacao {
     private Integer statusTransacao;
     private String autorizacao;
     private String codigoTransacaoOperadora;
-    private String dataTransacaoOperadora;
     private String dataAprovacaoOperadora;
     private String numeroComprovanteVenda;
     private String nsu;
@@ -27,5 +26,4 @@ public class RetornoTransacao {
     private List<String> cartoesUtilizados = null;
     private Erro erro;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
 }
