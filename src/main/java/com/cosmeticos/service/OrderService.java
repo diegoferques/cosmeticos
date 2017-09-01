@@ -111,99 +111,83 @@ public class OrderService {
         ProfessionalCategory persistentProfessionalCategory =
                 professionalCategoryRepository.findOne(receivedProfessionalCategoryId);
 
-        Professional receivedProfessional = persistentProfessionalCategory.getProfessional();
-        Category receivedCategory = persistentProfessionalCategory.getCategory();
-
-
         /********************************************************/
         /*****   VALIDACOES    **********************************/
         /********************************************************/
 
+        Payment validatedPayment = null;
+
+        if(persistentProfessionalCategory == null)
+        {
+            throw new OrderValidationException(
+                    ErrorCode.INVALID_PROFESSIONAL_CATEGORY,
+                    "ProfessionalCategoryId invalido: " + receivedProfessionalCategoryId);
+
+        }
+
+        if (paymentCollection.isEmpty()) {
+            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
+        }
+        else {
+            validatedPayment = paymentCollection.stream().findFirst().get();
+        }
+
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
-        Payment validatedPayment = validatePayment(paymentCollection);
+        validateAndApplyPaymentPriceRule(validatedPayment);
 
         // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-        validateCreditcard(persistentCustomer, validatedPayment.getType());
+        validateAndApplyPaymentCreditcard(persistentCustomer, validatedPayment);
 
 
         /********************************************************/
         /*****   EXECUCAO      **********************************/
         /********************************************************/
 
+        Order order = new Order();
+        order.setScheduleId(receivedOrder.getScheduleId());
+        order.setIdLocation(receivedOrder.getIdLocation());
+        order.setIdCustomer(persistentCustomer);
+        order.setDate(Calendar.getInstance().getTime());
+        order.setLastUpdate(order.getDate());
+        order.setStatus(Order.Status.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
+        order.setProfessionalCategory(persistentProfessionalCategory);
+        order.setExpireTime(new Date(order.getDate().getTime() +
 
-        // Conferindo se o ProfessionalServices recebido realmente esta associado ao
-        // Profissional em nossa base.
-        Optional<ProfessionalCategory> persistentProfessionalServices = receivedProfessional.getProfessionalCategoryCollection()
-                .stream().filter(ps -> ps.getCategory().getIdCategory()
-                        .equals(receivedCategory.getIdCategory()))
-                .findFirst();
+                // 6 horas de validade
+                21600000));
+        order.addPayment(validatedPayment);
 
+        Order newOrder = orderRepository.save(order);
+        // Buscando se o customer que chegou no request esta na wallet
 
-        if (persistentProfessionalServices.isPresent()) {
+        addInWallet(persistentProfessionalCategory.getProfessional(), persistentCustomer);
 
-            Order order = new Order();
-            order.setScheduleId(receivedOrder.getScheduleId());
-            order.setIdLocation(receivedOrder.getIdLocation());
-            order.setIdCustomer(persistentCustomer);
-            order.setDate(Calendar.getInstance().getTime());
-            order.setLastUpdate(order.getDate());
-            order.setStatus(Order.Status.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
-            order.setProfessionalCategory(persistentProfessionalServices.get());
-            order.setExpireTime(new Date(order.getDate().getTime() +
-
-                    // 6 horas de validade
-                    21600000));
-            order.addPayment(validatedPayment);
-
-
-				Order newOrder = orderRepository.save(order);
-				// Buscando se o customer que chegou no request esta na wallet
-
-            addInWallet(receivedProfessional, persistentCustomer);
-
-            return newOrder;
-
-        } else {
-            throw new OrderValidationException(ErrorCode.INVALID_PROFESSIONAL_CATEGORY_PAIR,
-                    "ProfessionalCategory [id=" + receivedProfessionalCategoryId
-                            + "] informado no request nao esta associado ao profissional id=["
-                            + receivedProfessional.getIdProfessional() + "] em nosso banco de dados.");
-        }
-
+        return newOrder;
     }
 
     /**
      * Apensar de ser uma collection, so trabalharemos com 1 Payment inicialmente, o qual este metodo estara retornando.
      *
-     * @param paymentCollection
+     * @param receivedPayment
      * @return
      */
-    private Payment validatePayment(Collection<Payment> paymentCollection) {
-        if (paymentCollection.isEmpty()) {
-            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
-        } else {
+    private void validateAndApplyPaymentPriceRule(Payment receivedPayment) {
 
+        PriceRule chosenPriceRule = receivedPayment.getPriceRule();
 
-            Payment receivedPayment = paymentCollection.stream().findFirst().get();
+        if (chosenPriceRule == null) {
+            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
+        }
+        else
+        {
+            chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
 
-            PriceRule chosenPriceRule = receivedPayment.getPriceRule();
+            /**
+             * Buscamos o pricerule no banco pq o q chega no request é so o ID.
+             */
+            receivedPayment.setPriceRule(chosenPriceRule);
 
-            if (chosenPriceRule == null) {
-                throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
-            }
-            else
-            {
-                chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
-
-                /**
-                 * Buscamos o pricerule no banco pq o q chega no request é so o ID.
-                 */
-                receivedPayment.setPriceRule(chosenPriceRule);
-
-                MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
-            }
-
-            return receivedPayment;
+            MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
         }
     }
 
@@ -212,10 +196,10 @@ public class OrderService {
      * cartao registrado.
      *
      * @param persistentCustomer
-     * @param receivedPaymentType
+     * @param receivedPayment
      */
-    private void validateCreditcard(Customer persistentCustomer, Payment.Type receivedPaymentType) {
-        if (Payment.Type.CC.equals(receivedPaymentType)) {
+    private void validateAndApplyPaymentCreditcard(Customer persistentCustomer, Payment receivedPayment) {
+        if (Payment.Type.CC.equals(receivedPayment.getType())) {
             Collection<CreditCard> persistentCreditCards = persistentCustomer.getUser().getCreditCardCollection();
 
             if (persistentCreditCards.isEmpty()) {
@@ -223,6 +207,12 @@ public class OrderService {
                         ErrorCode.INVALID_PAYMENT_TYPE,
                         "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
                 );
+            }
+            else
+            {
+                Optional<CreditCard> cc = persistentCreditCards.stream().findFirst();
+
+                receivedPayment.setCreditCard(cc.get());
             }
         }
     }
