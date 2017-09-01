@@ -60,7 +60,7 @@ public class UserService {
             persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
             persistentUser.setPersonType(userFromRequest.getPersonType());
             persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
-            persistentUser.setVote(userFromRequest.getVote());
+            persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
 
             repository.save(persistentUser);
         }

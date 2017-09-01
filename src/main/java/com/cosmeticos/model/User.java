@@ -28,6 +28,11 @@ import java.util.Set;
 @Entity
 public class User implements Serializable {
 
+    public void addVote(Vote v) {
+        voteCollection.add(v);
+        v.setUser(this);
+    }
+
     public  enum Status {
 
         ACTIVE, INACTIVE, GONE
@@ -40,7 +45,7 @@ public class User implements Serializable {
 
     }
 
-        private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @JsonView({
         ResponseJsonView.ProfessionalFindAll.class,
@@ -117,10 +122,9 @@ public class User implements Serializable {
     @Transient
     private float evaluation;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
-    private Set<Vote> vote = new HashSet<>();
+    private Set<Vote> voteCollection = new HashSet<>();
 
 
 

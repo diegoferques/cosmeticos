@@ -21,7 +21,8 @@ public class OrderValidationException extends RuntimeException {
         INVALID_PAYMENT_CONFIGURATION(HttpStatus.BAD_REQUEST),
         INVALID_PROFESSIONAL_CATEGORY_PAIR(HttpStatus.BAD_REQUEST),
         INVALID_PAYMENT_TYPE(HttpStatus.BAD_REQUEST),
-        GATEWAY_DUPLICATE_PAYMENT(HttpStatus.CONFLICT);
+        GATEWAY_DUPLICATE_PAYMENT(HttpStatus.CONFLICT),
+        ILLEGAL_ORDER_OWNER_CHANGE(HttpStatus.BAD_REQUEST);
 
         private HttpStatus status;
 

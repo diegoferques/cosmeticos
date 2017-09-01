@@ -66,6 +66,12 @@ public class OrderService {
     @Autowired
     private PriceRuleRepository priceRuleRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private VoteService voteService;
+
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
     }
@@ -297,25 +303,27 @@ public class OrderService {
             persistentOrder.setStatus(receivedOrder.getStatus());
         }
 
+        /* Removendo isso pq senao estou permitindo que uma Order mude de customer, o que nao eh permitido.
+        Na verdade deveria haver uma validacao de que se o customer da Order que veio do request eh diferente
+        do customer que esta na Order gravada no banco.
         if (!isEmpty(receivedOrder.getIdCustomer())) {
             persistentOrder.setIdCustomer(receivedOrder.getIdCustomer());
+        }*/
+        if (!isEmpty(receivedOrder.getIdCustomer())) {
+            if(receivedOrder.getIdCustomer().getIdCustomer() != persistentOrder.getIdCustomer().getIdCustomer())
+            {
+                throw new OrderValidationException(Type.ILLEGAL_ORDER_OWNER_CHANGE,
+                        "Nao se pode alterar o customer de uma order para outro customer");
+            }
         }
 
         if (!isEmpty(receivedOrder.getIdLocation())) {
             persistentOrder.setIdLocation(receivedOrder.getIdLocation());
         }
 
-        if (!isEmpty(receivedOrder.getProfessionalCategory())) {
 
-            Professional p = receivedOrder.getProfessionalCategory().getProfessional();
-            Category s = receivedOrder.getProfessionalCategory().getCategory();
-
-            ProfessionalCategory ps = new ProfessionalCategory(p, s);
-
-            professionalCategoryRepository.save(ps);
-
-            persistentOrder.setProfessionalCategory(ps);
-
+        if (!isEmpty(receivedOrder.getIdLocation())) {
+            persistentOrder.setIdLocation(receivedOrder.getIdLocation());
         }
 
         if (receivedOrder.getScheduleId() != null) {
@@ -344,6 +352,24 @@ public class OrderService {
             }
         }
 
+        if (receivedOrder.getStatus() == Order.Status.SEMI_CLOSED) {
+            User persistentUser = persistentOrder.getIdCustomer().getUser();
+
+            User receivedUser = receivedOrder.getIdCustomer().getUser();
+
+            addVotesToUser(persistentUser, receivedUser);
+        }
+
+        if(receivedOrder.getStatus() == Order.Status.CLOSED) {
+            ProfessionalCategory persistentProfessionalCategory = persistentOrder.getProfessionalCategory();
+            User persistentUser = persistentProfessionalCategory.getProfessional().getUser();
+
+            ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
+            User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
+
+            addVotesToUser(persistentUser, receivedUser);
+        }
+
         orderRepository.save(persistentOrder);
 
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
@@ -362,6 +388,15 @@ public class OrderService {
 
 
         return persistentOrder;
+    }
+
+    private void addVotesToUser(User persistentUser, User receivedUser) {
+
+        for (Vote v : receivedUser.getVoteCollection())
+        {
+            persistentUser.addVote(v);
+            voteService.create(v);
+        }
     }
 
     private void validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
