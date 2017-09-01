@@ -7,11 +7,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+@ActiveProfiles("integrationTest")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class SuperpayOneClickClientTest {
+public class SuperpayOneClickClientIntegrationTest {
 
 	@Autowired
 	private SuperpayOneClickClient oneClickClient;
