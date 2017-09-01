@@ -182,12 +182,14 @@ public class Professional  implements Serializable {
     @Transient
     private Long distance;
 
+    /*
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class
     })
     @Transient
     private float evaluation;
+    */
 
     public void addProfessionalCategory(ProfessionalCategory ps1) {
         getProfessionalCategoryCollection().add(ps1);

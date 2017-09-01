@@ -62,6 +62,12 @@ public class OrderService {
     @Autowired
     private PriceRuleRepository priceRuleRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private VoteService voteService;
+
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
     }
@@ -298,38 +304,23 @@ public class OrderService {
             persistentOrder.setStatus(receivedOrder.getStatus());
         }
 
+        /* Removendo isso pq senao estou permitindo que uma Order mude de customer, o que nao eh permitido.
+        Na verdade deveria haver uma validacao de que se o customer da Order que veio do request eh diferente
+        do customer que esta na Order gravada no banco.
         if (!isEmpty(receivedOrder.getIdCustomer())) {
             persistentOrder.setIdCustomer(receivedOrder.getIdCustomer());
+        }*/
+        if (!isEmpty(receivedOrder.getIdCustomer())) {
+            if(receivedOrder.getIdCustomer().getIdCustomer() != persistentOrder.getIdCustomer().getIdCustomer())
+            {
+                throw new OrderValidationException(Type.ILLEGAL_ORDER_OWNER_CHANGE,
+                        "Nao se pode alterar o customer de uma order para outro customer");
+            }
         }
 
         if (!isEmpty(receivedOrder.getIdLocation())) {
             persistentOrder.setIdLocation(receivedOrder.getIdLocation());
         }
-
-        //TODO - VERIFICAR SE REALMETNE VAMOS DELETAR
-        //CONFORME SOLICITAÇÃO DO GARRY, ESTOU DESATIVANDO O IF ABAIXO, MAS DEIXEI PARA VOCES DELETAREM.
-        /*
-        Esse if inteiro da lnha 306 pode apagar.. Ta fazendo nada isso. persistentOrder eh a order q ta no banco.
-        Essa order ja ta associada ao professionalCategory, tanto q na linha 311 vc obteve o profissional..
-        Ta dando uma volta desnecessaria. Sem contar q nao fazemos atualizacao de outra entidade em orderService...
-        */
-        /*
-        if (!isEmpty(receivedOrder.getProfessionalCategory())) {
-		    //TODO - CORRIGIR O PROBLEMA ABAIXO AO PEGAR PROFESSIONAL VINDO DE REQUEST
-            //AO ATUALIZAR STATUS DE OPEN PARA ACCEPTED, ABAIXO NAO CONSEGUIMOS PEGAR O PROFESSIONAL DO REQUEST/persistentOrder
-            //MAS QUANDO VERIFICAMOS persistentOrder, CONSEGUIMOS PEGAR O PROFESSIONAL
-            //Professional p = receivedOrder.getProfessionalCategory().getProfessional();
-            Professional p = persistentOrder.getProfessionalCategory().getProfessional();
-            Category s = receivedOrder.getProfessionalCategory().getCategory();
-
-            ProfessionalCategory ps = new ProfessionalCategory(p, s);
-
-            professionalCategoryRepository.save(ps);
-
-            persistentOrder.setProfessionalCategory(ps);
-
-        }
-        */
 
         if (receivedOrder.getScheduleId() != null) {
 
@@ -357,7 +348,8 @@ public class OrderService {
             }
         }
 
-        //ESTE SAVE DEVE FICAR ANTES DAS VALIDACOES DE PAGAMENTO, POIS SE DER ERRO NO PAGAMENTO, JA SALVOU TUDO
+        applyVote(receivedOrder, persistentOrder);
+
         orderRepository.save(persistentOrder);
 
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
@@ -406,6 +398,48 @@ public class OrderService {
         return persistentOrder;
     }
 
+    private void applyVote(Order receivedOrder, Order persistentOrder) {
+
+        if (receivedOrder.getStatus() == Order.Status.SEMI_CLOSED) {
+
+            // Aplicado ao Customer quando o professional encerra o servico
+
+            User persistentUser = persistentOrder.getIdCustomer().getUser();
+
+            User receivedUser = receivedOrder.getIdCustomer().getUser();
+
+            Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+
+            addVotesToUser(persistentUser, receivedvote);
+
+            MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
+
+        }
+        else if(receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
+
+            // Aplicado ao Professional quando o customer confirma realização do servico e avalia o professional
+
+            ProfessionalCategory persistentProfessionalCategory = persistentOrder.getProfessionalCategory();
+            User persistentUser = persistentProfessionalCategory.getProfessional().getUser();
+
+            ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
+            User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
+
+            Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+
+            addVotesToUser(persistentUser, receivedvote);
+
+            MDC.put("professionalVote", String.valueOf(receivedvote.getValue()));
+        }
+    }
+
+    private void addVotesToUser(User persistentUser, Vote receivedVote) {
+
+            persistentUser.addVote(receivedVote);
+            voteService.create(receivedVote);
+
+    }
+
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
 	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
@@ -426,6 +460,7 @@ public class OrderService {
 	}
 
 	private Boolean validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
+
 
         Boolean success = false;
 

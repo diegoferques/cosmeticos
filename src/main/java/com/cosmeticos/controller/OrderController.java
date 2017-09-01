@@ -35,9 +35,6 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private VoteService voteService;
-
     @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
     public HttpEntity<OrderResponseBody> create(@Valid @RequestBody OrderRequestBody request,
@@ -125,15 +122,6 @@ public class OrderController {
 
                 Order order = orderService.update(request);
 
-                //TODO - SETANDO CUSTOMER E PROFESSIONAL COMO NULL, NUNCA CONSEGUIREI ADICIONAR O VOTO AO PROFESSIONAL/USER DE ORDER
-                //order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-                //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-
-                //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
-                voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
-
-                OrderResponseBody responseBody = new OrderResponseBody(order);
-
                 MDC.put("idCustomer: ", String.valueOf(order.getIdCustomer().getIdCustomer()));
                 MDC.put("customerUserStatus: ", String.valueOf(order.getIdCustomer().getStatus()));
                 MDC.put("idProfessional: ", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
@@ -143,6 +131,7 @@ public class OrderController {
 
                 log.info("Order atualizado com sucesso.");
 
+                OrderResponseBody responseBody = new OrderResponseBody(order);
                 return ok(responseBody);
 
             }
