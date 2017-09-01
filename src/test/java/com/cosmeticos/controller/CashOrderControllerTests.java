@@ -65,6 +65,11 @@ public class CashOrderControllerTests {
                 paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
+        Mockito.when(
+                paymentService.updatePaymentStatus(Mockito.any())
+        ).thenReturn(true);
+
+
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
