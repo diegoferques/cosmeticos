@@ -7,6 +7,8 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,7 +46,7 @@ public class PaymentControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private PaymentController paymentController;
+    private PaymentService paymentService;
 
     @Autowired
     AddressRepository addressRepository;
@@ -369,7 +371,7 @@ public class PaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        Optional<RetornoTransacao> retornoTransacao = paymentController.sendRequest(order);
+        Optional<RetornoTransacao> retornoTransacao = paymentService.sendRequest(order);
 
         Assert.assertNotNull(retornoTransacao.isPresent());
         Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
@@ -380,16 +382,16 @@ public class PaymentControllerTests {
     //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
     @Ignore
     @Test
-    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException {
+    public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
-        Long numeroTransacao = 14L;
+        //CERTIFIQUE-SE QUE A ORDER ABAIXO ESTA COM O STATUS READY2CHARGE, CASO CONTRARIO RETORNARA UM ERRO!
+        Order order = orderRepository.findOne(14L);
 
-        Boolean capturaTransacao = paymentController.capturaTransacao(numeroTransacao);
+        Boolean capturaTransacao = paymentService.validatePaymentStatusAndSendCapture(order);
 
         Assert.assertNotNull(capturaTransacao);
         Assert.assertEquals(true, capturaTransacao);
 
     }
-
 
 }

@@ -4,35 +4,15 @@
  */
 package com.cosmeticos.model;
 
+import com.cosmeticos.commons.ResponseJsonView;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import lombok.Data;
 
 /**
  *
@@ -132,6 +112,7 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
+    // TODO: estudar futuro deste infeliz atributo
 	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
 			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
 			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
@@ -143,7 +124,7 @@ public class Order implements Serializable {
 			ResponseJsonView.OrderControllerUpdate.class,
 			ResponseJsonView.OrderControllerFindBy.class
 	})
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Payment> paymentCollection = new HashSet<>();
 
 	public Order() {
@@ -177,7 +158,7 @@ public class Order implements Serializable {
 		this.paymentCollection.add(payment);
 		payment.setOrder(this);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 0;

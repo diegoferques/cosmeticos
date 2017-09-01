@@ -23,10 +23,7 @@ public class VoteService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public void create(User user, Integer value) {
-        Vote vote = new Vote();
-        vote.setUser(user);
-        vote.setValue(value);
+    public void create(Vote vote) {
         voteRepository.save(vote);
     }
 
@@ -38,19 +35,23 @@ public class VoteService {
         return voteRepository.findAllByUser(user);
     }
 
-    public float getProfessionalEvaluation(Professional professional) {
+    public float getUserEvaluation(User user) {
         float evaluation = 0;
         Integer totalVotes = 0;
-        List<Vote> votes = findAllByUser(professional.getUser());
+
+        List<Vote> votes = findAllByUser(user);
 
         for (Vote vote: votes) {
-            totalVotes += vote.getValue();
+            int voteValue = vote.getValue() == null ? 0 : vote.getValue();
+            totalVotes += voteValue;
         }
 
         evaluation = totalVotes / votes.size();
 
         return evaluation;
     }
+
+
 
 
 }

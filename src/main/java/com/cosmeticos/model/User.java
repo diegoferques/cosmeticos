@@ -6,6 +6,7 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -27,6 +28,11 @@ import java.util.Set;
 @Entity
 public class User implements Serializable {
 
+    public void addVote(Vote v) {
+        voteCollection.add(v);
+        v.setUser(this);
+    }
+
     public  enum Status {
 
         ACTIVE, INACTIVE, GONE
@@ -39,7 +45,7 @@ public class User implements Serializable {
 
     }
 
-        private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @JsonView({
         ResponseJsonView.ProfessionalFindAll.class,
@@ -108,6 +114,18 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private PersonType personType;
+
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+    })
+
+    @Transient
+    private float evaluation;
+
+    @OneToMany(mappedBy = "user")
+    @Cascade(CascadeType.ALL)
+    private Set<Vote> voteCollection = new HashSet<>();
+
 
 
     public User() {

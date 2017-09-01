@@ -35,9 +35,6 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private VoteService voteService;
-
     @JsonView(ResponseJsonView.OrderControllerCreate.class)
     @RequestMapping(path = "/orders", method = RequestMethod.POST)
     public HttpEntity<OrderResponseBody> create(@Valid @RequestBody OrderRequestBody request,
@@ -63,7 +60,7 @@ public class OrderController {
 
                     log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
                             //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            //"{status atual: "+order.getStatus()+"}]");
+                            //"{status atual: "+order.getHttpStatus()+"}]");
 
                     //return ok().build();
                 return ok(new OrderResponseBody(order));
@@ -90,7 +87,7 @@ public class OrderController {
             MDC.put("auditError", auditError);
             MDC.put("errorCode", String.valueOf(e.getCode()));
             MDC.put("httpStatus", String.valueOf(e.getCode().getHttpStatus()));
-            
+
             log.error("Erro no insert: {} ", msg, e);
 
             return ResponseEntity.status(e.getCode().getHttpStatus()).body(orderResponseBody);
@@ -128,15 +125,6 @@ public class OrderController {
 
                 Order order = orderService.update(request);
 
-                //TODO - SETANDO CUSTOMER E PROFESSIONAL COMO NULL, NUNCA CONSEGUIREI ADICIONAR O VOTO AO PROFESSIONAL/USER DE ORDER
-                //order.setIdCustomer(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-                //order.setProfessionalServices(null);//TODO: criar card de bug pra resolver relacionamento de Garry que eh Joao.
-
-                //TODO - ESTAVA NA DUVIDA ENTRE COLOCAR EM SERVICE OU CONTROLLER, MAS ACHEI MELHOR COLOCAR AQUI
-                voteService.create(order.getProfessionalCategory().getProfessional().getUser(), request.getVote());
-
-                OrderResponseBody responseBody = new OrderResponseBody(order);
-
                 MDC.put("idCustomer: ", String.valueOf(order.getIdCustomer().getIdCustomer()));
                 MDC.put("customerUserStatus: ", String.valueOf(order.getIdCustomer().getStatus()));
                 MDC.put("idProfessional: ", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
@@ -146,6 +134,7 @@ public class OrderController {
 
                 log.info("Order atualizado com sucesso.");
 
+                OrderResponseBody responseBody = new OrderResponseBody(order);
                 return ok(responseBody);
 
             }

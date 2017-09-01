@@ -298,11 +298,11 @@ public class CustomerControllerTests {
 
 	static User createFakeLogin(Customer c) {
 		User u = new User();
-		u.setEmail("diego@bol.com");
+		u.setEmail(String.valueOf(System.nanoTime()) + "@bol.com");
 		//u.setUser(1234L);
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
-		u.setUsername("diegoferques");
+		u.setUsername(String.valueOf(System.nanoTime()) );
 		//u.getCustomerCollection().add(c);
 		return u;
 	}
@@ -320,6 +320,10 @@ public class CustomerControllerTests {
 		return a;
 	}
 
+	/**
+	 * Cria o customer com os campos unique de Customer e User com nanoSeconds convertidos em String.
+	 * @return
+	 */
 	public static Customer createFakeCustomer() {
 		Customer c1 = new Customer();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
@@ -327,7 +331,7 @@ public class CustomerControllerTests {
 		c1.setCpf("098.765.432-10");
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
-		c1.setNameCustomer("João da Silva");
+		c1.setNameCustomer(String.valueOf(System.nanoTime()));
 		//c1.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setAddress(createFakeAddress(c1));

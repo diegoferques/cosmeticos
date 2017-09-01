@@ -8,6 +8,7 @@ import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.service.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class CashOrderControllerTests {
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @MockBean
-    private PaymentController paymentController;
+    private PaymentService paymentService;
 
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {
@@ -61,8 +62,13 @@ public class CashOrderControllerTests {
         Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
 
         Mockito.when(
-                paymentController.sendRequest(Mockito.any())
+                paymentService.sendRequest(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
+
+        Mockito.when(
+                paymentService.updatePaymentStatus(Mockito.any())
+        ).thenReturn(true);
+
 
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
