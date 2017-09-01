@@ -384,7 +384,12 @@ public class OrderService {
 
             User receivedUser = receivedOrder.getIdCustomer().getUser();
 
-            addVotesToUser(persistentUser, receivedUser);
+            Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+
+            addVotesToUser(persistentUser, receivedvote);
+
+            MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
+
         }
         else if(receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
 
@@ -396,17 +401,19 @@ public class OrderService {
             ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
             User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
 
-            addVotesToUser(persistentUser, receivedUser);
+            Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+
+            addVotesToUser(persistentUser, receivedvote);
+
+            MDC.put("professionalVote", String.valueOf(receivedvote.getValue()));
         }
     }
 
-    private void addVotesToUser(User persistentUser, User receivedUser) {
+    private void addVotesToUser(User persistentUser, Vote receivedVote) {
 
-        for (Vote v : receivedUser.getVoteCollection())
-        {
-            persistentUser.addVote(v);
-            voteService.create(v);
-        }
+            persistentUser.addVote(receivedVote);
+            voteService.create(receivedVote);
+
     }
 
     private void validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
