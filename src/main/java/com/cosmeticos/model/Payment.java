@@ -20,28 +20,6 @@ public class Payment implements Serializable {
 		CC, CASH, BOLETO
 	}
 
-	public enum Type{
-		INVALID_SCHEDULE_END(HttpStatus.BAD_REQUEST),
-		INVALID_SCHEDULE_START(HttpStatus.BAD_REQUEST),
-		DUPLICATE_RUNNING_ORDER(HttpStatus.CONFLICT),
-		INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST),
-		CONFLICTING_SCHEDULES(HttpStatus.CONFLICT),
-		INVALID_PAYMENT_CONFIGURATION(HttpStatus.BAD_REQUEST),
-		INVALID_PROFESSIONAL_CATEGORY_PAIR(HttpStatus.BAD_REQUEST),
-		INVALID_PAYMENT_TYPE(HttpStatus.BAD_REQUEST),
-		GATEWAY_DUPLICATE_PAYMENT(HttpStatus.CONFLICT), FORBIDEN_PAYMENT(HttpStatus.FORBIDDEN);
-
-		private HttpStatus httpStatus;
-
-		private Type(HttpStatus status) {
-			this.httpStatus = status;
-		}
-
-		public HttpStatus getHttpStatus(){
-			return httpStatus;
-		}
-	}
-
 	public enum Status {
 		PAGO_E_CAPTURADO(HttpStatus.OK), PAGO_E_NAO_CAPTURADO(HttpStatus.ACCEPTED), NAO_PAGO(HttpStatus.FORBIDDEN),
 		TRANSACAO_EM_ANDAMENTO(HttpStatus.CONFLICT), AGUARDANDO_PAGAMENTO(HttpStatus.BAD_REQUEST),
