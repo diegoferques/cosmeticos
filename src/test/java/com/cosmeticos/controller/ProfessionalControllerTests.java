@@ -771,6 +771,10 @@ public class ProfessionalControllerTests {
 		return a;
 	}
 
+	/**
+	 * Cria o Professional com os campos unique de Professional e User com nanoSeconds convertidos em String.
+	 * @return
+	 */
 	public static Professional createFakeProfessional() {
 		Professional c1 = new Professional();
 		c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
@@ -778,11 +782,11 @@ public class ProfessionalControllerTests {
 		c1.setCnpj("098.765.432-10");
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
-		c1.setNameProfessional("João da Silva");
+		c1.setNameProfessional(String.valueOf(System.nanoTime()) );
 		//c1.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(createFakeAddress());
-		c1.setUser(UserControllerTest.createFakeUser("222", "222@2.com"));
+		c1.setUser(UserControllerTest.createFakeUser(String.valueOf(System.nanoTime()) , String.valueOf(System.nanoTime()) + "@2.com"));
 		c1.getUser().setProfessional(c1);
 
 		return c1;

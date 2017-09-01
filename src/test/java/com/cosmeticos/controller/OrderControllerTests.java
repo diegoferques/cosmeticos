@@ -183,37 +183,22 @@ public class OrderControllerTests {
     @Test
     public void testUpdateOK() throws IOException, URISyntaxException {
 
-        /*
-         PRE-CONDICOES para o teste:
-         Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.
-         Salvamos tudo no banco.
-          */
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testUpdateOK-cliente");
-        c1.getUser().setEmail("testUpdateOK-cliente@bol");
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testUpdateOK-professional");
-        professional.getUser().setEmail("testUpdateOK-professional@bol");
-
         customerRepository.save(c1);
-        professionalRepository.save(professional);
 
-
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -946,38 +931,22 @@ public class OrderControllerTests {
     @Test
     public void testFindByStatusNotCancelled() throws ParseException, URISyntaxException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testFindByStatusNotCancelled-customer1");
-        c1.getUser().setEmail("testFindByStatusNotCancelled-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.456.789-05");
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testFindByStatusNotCancelled-professional");
-        professional.getUser().setEmail("testFindByStatusNotCancelled-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.456.789-06");
-
         customerRepository.save(c1);
-        professionalRepository.save(professional);
 
-
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1033,38 +1002,22 @@ public class OrderControllerTests {
     @Test
     public void testFindByStatusNotClosed() throws ParseException, URISyntaxException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testFindByStatusNotClosed-customer1");
-        c1.getUser().setEmail("testFindByStatusNotClosed-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.456.789-05");
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testFindByStatusNotClosed-professional");
-        professional.getUser().setEmail("testFindByStatusNotClosed-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.456.789-06");
-
         customerRepository.save(c1);
-        professionalRepository.save(professional);
 
-
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1120,43 +1073,25 @@ public class OrderControllerTests {
     @Test
     public void testCreateToConflictedOrderErrorCausedByOrderStatusAccepted() throws IOException, URISyntaxException, ParseException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testConflictedOrder-customer1");
-        c1.getUser().setEmail("testConflictedOrder-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.456.789-01");
+        customerRepository.save(c1);
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-customer2");
-        c2.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-customer2@email.com");
-        c2.getUser().setPassword("123");
-        c2.setCpf("123.456.789-02");
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional");
-        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusAccepted-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.456.789-03");
-
-        customerRepository.save(c1);
         customerRepository.save(c2);
-        professionalRepository.save(professional);
 
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1198,7 +1133,7 @@ public class OrderControllerTests {
                 c2,
                 ps1,
                 Payment.Type.CASH,
-                priceRule
+                ps1.getPriceRuleList().stream().findFirst().get()
         );
 
         RequestEntity<String> entity2 =  RequestEntity
@@ -1219,33 +1154,22 @@ public class OrderControllerTests {
     @Test
     public void testParaTravarUpdateStatusDeExpiredParaOpen() throws IOException, URISyntaxException {
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testUpdateStatusDeExpiredParaOpen-cliente");
-        c1.getUser().setEmail("testUpdateStatusDeExpiredParaOpen-cliente@bol");
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testUpdateStatusDeExpiredParaOpen-professional");
-        professional.getUser().setEmail("testUpdateStatusDeExpiredParaOpen-professional@bol");
-
         customerRepository.save(c1);
-        professionalRepository.save(professional);
 
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity = RequestEntity
                 .post(new URI("/orders"))
@@ -1310,44 +1234,25 @@ public class OrderControllerTests {
     @Test
     public void testCreateToConflictedOrderErrorCausedByOrderStatusInProgress() throws IOException, URISyntaxException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer1");
-        c1.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.456.789-01");
+        customerRepository.save(c1);
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer2");
-        c2.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-customer2@email.com");
-        c2.getUser().setPassword("123");
-        c2.setCpf("123.456.789-02");
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-professional");
-        professional.getUser().setEmail("testCreateToConflictedOrderErrorCausedByOrderStatusInProgress-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.456.789-03");
-
-        customerRepository.save(c1);
         customerRepository.save(c2);
-        professionalRepository.save(professional);
 
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1385,7 +1290,7 @@ public class OrderControllerTests {
                 c2,
                 ps1,
                 Payment.Type.CASH,
-                priceRule
+                ps1.getPriceRuleList().stream().findFirst().get()
         );
 
         RequestEntity<String> entity2 =  RequestEntity
@@ -1406,39 +1311,25 @@ public class OrderControllerTests {
     @Test
     public void testOrderClosedAndVote() throws IOException, URISyntaxException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL E CUSTOMER QUE VAMOS UTILIZAR NESTE TESTE
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testOrderClosedAndVote-customer1");
-        c1.getUser().setEmail("testOrderClosedAndVote-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.984.789-01");
-        c1.setNameCustomer("testOrderClosedAndVote Customer");
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testOrderClosedAndVote-professional");
-        professional.getUser().setEmail("testOrderClosedAndVote-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.984.789-03");
-        professional.setNameProfessional("testOrderClosedAndVote Professional");
-
         customerRepository.save(c1);
-        professionalRepository.save(professional);
 
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
+        Customer c2 = CustomerControllerTests.createFakeCustomer();
+        customerRepository.save(c2);
 
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
         System.out.println(jsonCreate);
 
         RequestEntity<String> entity =  RequestEntity
@@ -1487,48 +1378,30 @@ public class OrderControllerTests {
         Order orderUpdateAccepted = exchangeUpdate.getBody().getOrderList().get(0);
         Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
 
-        float vote = voteService.getUserEvaluation(professional.getUser());
+        float vote = voteService.getUserEvaluation(ps1.getProfessional().getUser());
         Assert.assertNotNull(vote);
         Assert.assertTrue((float)3.0 == vote);
         //-------
     }
 
     @Test
-    public void testOrderSemiClosedAndVote() throws IOException, URISyntaxException {
-        //SETAMOS E SALVAMOS O PROFESSIONAL E CUSTOMER QUE VAMOS UTILIZAR NESTE TESTE
+    public void testOrderSemiClosedAndVoteCustomer() throws IOException, URISyntaxException {
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testOrderClosedAndVote-customer1");
-        c1.getUser().setEmail("testOrderClosedAndVote-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.984.789-01");
-        c1.setNameCustomer("testOrderClosedAndVote Customer");
-
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testOrderClosedAndVote-professional");
-        professional.getUser().setEmail("testOrderClosedAndVote-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.984.789-03");
-        professional.setNameProfessional("testOrderClosedAndVote Professional");
-
         customerRepository.save(c1);
-        professionalRepository.save(professional);
 
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
         System.out.println(jsonCreate);
 
         RequestEntity<String> entity =  RequestEntity
@@ -1543,7 +1416,6 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate);
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
-
         Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
@@ -1588,7 +1460,161 @@ public class OrderControllerTests {
         float vote = voteService.getUserEvaluation(c1.getUser());
         Assert.assertNotNull(vote);
         Assert.assertTrue((float)4.0 == vote);
-}
+    }
+
+    @Test
+    public void testOrderSemiClosedAndVoteProfessional() throws IOException, URISyntaxException {
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        customerRepository.save(c1);
+
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
+        professionalCategoryRepository.save(ps1);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
+        //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA CLOSED E ENVIARMOS O VOTO
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
+        System.out.println(jsonCreate);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonCreate);
+
+        ResponseEntity<OrderResponseBody> exchangeCreate = testRestTemplate
+                .exchange(entity, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeCreate);
+        Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
+        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+
+        Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        ///////// ATUALIZAMOS ORDER PARA SEMI CLOSED E ENVIAMOS O VOTO /////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        String jsonUpdateSemiclosed = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
+                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
+                "    \"idCustomer\" : {\n" +
+                "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
+                "        \"user\" : {\n" +
+                "            \"voteCollection\" : [\n" +
+                "                {\n" +
+                "                    \"value\" : 4\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        System.out.println(jsonUpdateSemiclosed);
+
+        RequestEntity<String> entityUpdate =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdateSemiclosed);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdate = testRestTemplate
+                .exchange(entityUpdate, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdate);
+        Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+
+        Order orderUpdateAccepted = exchangeUpdate.getBody().getOrderList().get(0);
+        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateAccepted.getStatus());
+
+        float vote = voteService.getUserEvaluation(c1.getUser());
+        Assert.assertNotNull(vote);
+        Assert.assertTrue((float)4.0 == vote);
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        ///////// ATUALIZAMOS ORDER PARA CLOSED E ENVIAMOS O VOTO DO PROFISSIONAL    ///////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        String jsonUpdateClosed = "{\n" +
+                    "  \"order\" : {\n" +
+                    "    \"idOrder\" : "+createdOrder.getIdOrder()+",\n" +
+                    "    \"date\" : "+Timestamp.valueOf(LocalDateTime.now()).getTime()+",\n" +
+                    "    \"status\" : \""+Order.Status.READY2CHARGE +"\",\n" +
+
+                    "    \"professionalCategory\" : {\n" +
+                    "       \"professional\" : {\n" +
+                    "        \"user\" : {\n" +
+                    "            \"voteCollection\" : [\n" +
+                    "                {\n" +
+                    "                    \"value\" : 2\n" +
+                    "                }\n" +
+                    "            ]\n" +
+                    "        }\n" +
+                    "       },\n" +
+                    "      \"professionalCategoryId\": " +ps1.getProfessionalCategoryId()+ "\n" +
+                    "    }\n" +
+
+                    "  }\n" +
+                    "}";
+
+
+        System.out.println(jsonUpdateClosed);
+
+        RequestEntity<String> entityUpdateProfessional =  RequestEntity
+                .put(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdateClosed);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdateProfessionalVote = testRestTemplate
+                .exchange(entityUpdateProfessional, OrderResponseBody.class);
+
+        Assert.assertNotNull(exchangeUpdateProfessionalVote);
+        Assert.assertNotNull(exchangeUpdateProfessionalVote.getBody().getOrderList());
+        Assert.assertEquals(HttpStatus.OK, exchangeUpdateProfessionalVote.getStatusCode());
+
+        Order orderUpdateProfessionalVote =  orderRepository.findOne(createdOrder.getIdOrder());
+
+        //Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(Order.Status.READY2CHARGE, orderUpdateProfessionalVote.getStatus());
+
+        User professionalUser = orderUpdateProfessionalVote.getProfessionalCategory()
+                .getProfessional().getUser();
+
+        float professionalVote = voteService.getUserEvaluation(professionalUser);
+
+        Assert.assertNotNull(professionalVote);
+        Assert.assertTrue((float)2.0 == professionalVote);
+    }
+
+    private ProfessionalCategory buildFakeProfessionalCategory() {
+
+        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professionalRepository.save(professional);
+
+        Category service = serviceRepository.findByName("PEDICURE");
+        service = serviceRepository.findWithSpecialties(service.getIdCategory());
+
+        PriceRule priceRule = new PriceRule();
+        priceRule.setName("RULE");
+        priceRule.setPrice(7600L);
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+        ps1.addPriceRule(priceRule);
+
+        return ps1;
+    }
 
     /*
      * RNF119
@@ -1637,12 +1663,12 @@ public class OrderControllerTests {
     }
 
     //METODO PARA FACILITAR OS TESTES E EVETIAR TANTA REPETICAO DE CODIGO
-    public String getOrderCreateJson(ProfessionalCategory pc, Customer customer, PriceRule priceRule) {
+    public String getOrderCreateJson(ProfessionalCategory pc, Customer customer) {
 
         String jsonCreate = OrderJsonHelper.buildJsonCreateScheduledOrder(
                 customer,
                 pc,
-                priceRule,
+                pc.getPriceRuleList().stream().findFirst().get(),
                 Payment.Type.CASH,
                 Timestamp.valueOf(now().plusDays(1)).getTime() // Marcado pra amanha
         );
@@ -1678,45 +1704,25 @@ public class OrderControllerTests {
     @Test
     public void testCreateToOrderStatusInProgressToOtherSchedule() throws IOException, URISyntaxException {
 
-        //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// SETTING UP ////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testConflictedOrderUpdate-customer1");
-        c1.getUser().setEmail("testConflictedOrderUpdate-customer1@email.com");
-        c1.getUser().setPassword("123");
-        c1.setCpf("123.456.789-01");
+        customerRepository.save(c1);
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testConflictedOrderUpdate-customer2");
-        c2.getUser().setEmail("testConflictedOrderUpdate-customer2@email.com");
-        c2.getUser().setPassword("123");
-        c2.setCpf("123.456.789-02");
-
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testConflictedOrderUpdate-professional");
-        professional.getUser().setEmail("testConflictedOrderUpdate-professional@email.com");
-        professional.getUser().setPassword("123");
-        professional.setCnpj("123.456.789-03");
-
-        customerRepository.save(c1);
         customerRepository.save(c2);
-        professionalRepository.save(professional);
 
-        Category service = serviceRepository.findByName("PEDICURE");
-        service = serviceRepository.findWithSpecialties(service.getIdCategory());
-
-        PriceRule priceRule = new PriceRule();
-        priceRule.setName("RULE");
-        priceRule.setPrice(7600L);
-
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
-        ps1.addPriceRule(priceRule);
-
-        // Atualizando associando o Profeissional ao Servico
+        ProfessionalCategory ps1 = buildFakeProfessionalCategory();
         professionalCategoryRepository.save(ps1);
-        //-------
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /////// RUNNING THE TEST //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //CRIAMOS ORDER COM O PROFESSIONAL E O CUSTOMER 1 PARA, POSTERIORMENTE, ATUALIZAMOS O STATUS PARA ACCEPTED
-        String jsonCreate = this.getOrderCreateJson(ps1, c1, priceRule);
+        String jsonCreate = this.getOrderCreateJson(ps1, c1);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -1749,7 +1755,7 @@ public class OrderControllerTests {
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
-        String jsonCreate2 = this.getOrderCreateJson(ps1, c2, priceRule);
+        String jsonCreate2 = this.getOrderCreateJson(ps1, c2);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
