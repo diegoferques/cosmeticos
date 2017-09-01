@@ -375,7 +375,11 @@ public class OrderService {
     }
 
     private void applyVote(Order receivedOrder, Order persistentOrder) {
+
         if (receivedOrder.getStatus() == Order.Status.SEMI_CLOSED) {
+
+            // Aplicado ao Customer quando o professional encerra o servico
+
             User persistentUser = persistentOrder.getIdCustomer().getUser();
 
             User receivedUser = receivedOrder.getIdCustomer().getUser();
@@ -383,6 +387,9 @@ public class OrderService {
             addVotesToUser(persistentUser, receivedUser);
         }
         else if(receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
+
+            // Aplicado ao Professional quando o customer confirma realização do servico e avalia o professional
+
             ProfessionalCategory persistentProfessionalCategory = persistentOrder.getProfessionalCategory();
             User persistentUser = persistentProfessionalCategory.getProfessional().getUser();
 
