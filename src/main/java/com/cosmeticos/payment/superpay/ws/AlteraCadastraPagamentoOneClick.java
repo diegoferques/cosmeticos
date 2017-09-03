@@ -10,6 +10,7 @@ package com.cosmeticos.payment.superpay.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -35,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "alteraCadastraPagamentoOneClick", propOrder = {
     "dadosOneClick",
@@ -63,7 +65,7 @@ public class AlteraCadastraPagamentoOneClick {
 
     /**
      * Define o valor da propriedade dadosOneClick.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link DadosCadastroPagamentoOneClickWS }
