@@ -68,7 +68,7 @@ public class SuperpayOneClickClient {
 		return oneclickResponse.getReturn();
 	}
 
-	public String pay(Long numeroTransacao,
+	public ResultadoPagamentoWS pay(Long numeroTransacao,
 									int idioma, String ip,
 									String origemTransacao,
 									int parcelas,
@@ -186,16 +186,23 @@ public class SuperpayOneClickClient {
 		JAXBElement<PagamentoOneClickV2> requestBody =
 				factory.createPagamentoOneClickV2(pagamentoOneClickV2);
 
+// O log de erro deu a dica de qual tipo que retorna. Vamos tentar de novo agora. eu tinha colocado isso tbm.. deu esse msm erro comigo
+		// Aki sabemos que esta certo. Estamos cnvertento pro tipo que realmente retorna da api.
+		JAXBElement<PagamentoOneClickV2Response> jaxbResponse =
+				(JAXBElement<PagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(requestBody);
 
-		JAXBElement<ResultadoPagamentoWS> jaxbResponse =
-				(JAXBElement<ResultadoPagamentoWS>) webServiceTemplate.marshalSendAndReceive(requestBody);
 
+		PagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
 
-		ResultadoPagamentoWS oneclickResponse = jaxbResponse.getValue();
+		// Aki ta errado. eu ia te perguntar isso agorinha, rsrsrsrs
+		// Tem q saber o q o toString retorna pra poder fazer isso. O que queremos aki na verdade é ver o status do pagamento... deixa eu ver aki.
+		// Pelo visto é igual o addCard... retorna um objeto que so tem um _return dentro. É esse cara que temos que retornar.
+		//Sacou? saquei.. eu tava usando justamente isso quando coloquei pagamentoresponse.
+		// Entao, estava td certo entao.. o q tava falantando era só o usar o token q retorna do addcard.. certo:?aham.
+		//vamos testar de novo entao.
+		log.info("Client reeceived result='{}'", oneclickResponse.getReturn());
 
-		log.info("Client received result='{}'", oneclickResponse.toString());
-
-		return String.valueOf(oneclickResponse.toString());
+ 		return oneclickResponse.getReturn();// vo mudar o tipo de retorno do metodo. tbm fiz isso.. rsrsrsrsrsrs
 
 	}
 

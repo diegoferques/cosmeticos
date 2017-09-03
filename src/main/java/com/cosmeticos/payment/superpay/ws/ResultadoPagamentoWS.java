@@ -65,20 +65,20 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ResultadoPagamentoWS {
 
-    protected int autorizacao;
+    protected int autorizacao;// isso temos que logar
     protected String codigoEstabelecimento;
     protected int codigoFormaPagamento;
-    protected int codigoTransacaoOperadora;
-    protected String dataAprovacaoOperadora;
-    protected String mensagemVenda;
-    protected String numeroComprovanteVenda;
-    protected long numeroTransacao;
+    protected int codigoTransacaoOperadora;// isso temos que logar
+    protected String dataAprovacaoOperadora;// isso temos que logar
+    protected String mensagemVenda;// isso temos que logar
+    protected String numeroComprovanteVenda;// isso temos que logar
+    protected long numeroTransacao;// isso temos que logar
     protected int parcelas;
-    protected int statusTransacao;
+    protected int statusTransacao;// isso temos que logar
     protected long taxaEmbarque;
-    protected String urlPagamento;
-    protected long valor;
-    protected long valorDesconto;
+    protected String urlPagamento; // isso temos que logar
+    protected long valor; // isso temos que logar
+    protected long valorDesconto;// isso temos que logar
 
     /**
      * Obtém o valor da propriedade autorizacao.
