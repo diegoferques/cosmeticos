@@ -31,15 +31,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -77,7 +70,7 @@ public class PaymentService {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
-    private Map<String, Integer> usuarioMap = getFormasPagamento();
+    private Map<String, Integer> formasPagamentoMap = getFormasPagamentoMap();
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
     public Optional<RetornoTransacao> sendRequest(Order orderCreated) throws ParseException, JsonProcessingException {
@@ -97,7 +90,7 @@ public class PaymentService {
         System.out.println(jsonHeader);
         System.out.println(jsonRequest);
 
-        //String response = postJson(urlTransacao, usuarioMap, jsonRequest);
+        //String response = postJson(urlTransacao, formasPagamentoMap, jsonRequest);
         Optional<RetornoTransacao> retornoTransacao = postJson(urlTransacao, usuarioMap, jsonRequest);
 
         return retornoTransacao;
@@ -246,7 +239,7 @@ public class PaymentService {
 
         request.setCodigoEstabelecimento(estabelecimento);
 
-        request.setCodigoFormaPagamento(usuarioMap.get(creditCard.getVendor()));
+        request.setCodigoFormaPagamento(formasPagamentoMap.get(creditCard.getVendor()));
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);
@@ -269,7 +262,7 @@ public class PaymentService {
         return request;
     }
 
-    private Map<String, Integer> getFormasPagamento() {
+    private Map<String, Integer> getFormasPagamentoMap() {
         Map<String, Integer> formasPagamento = new HashMap<String, Integer>();
         formasPagamento.put("Visa", 170);
         formasPagamento.put("MasterCard", 171);

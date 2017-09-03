@@ -802,13 +802,8 @@ public class OrderService {
             MDC.put("idProfessional: ", String.valueOf(professional.getIdProfessional()));
             MDC.put("professionalUserStatus: ", String.valueOf(professional.getUser().getStatus()));
 
-            List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
-                    professional.getIdProfessional(), 0L);
-
-            if (!orderList.isEmpty()) {
-                // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-                throw new OrderValidationException(ErrorCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
-            }
+            // Passando zero pq eh create
+            validateIfThereAreRunningOrders(0L, professional);
         }
     }
 
@@ -844,8 +839,13 @@ public class OrderService {
             // Nao precisa validar pq so valida scheduleStart, que ja foi validado no PUT
             //validateBusyScheduled1(receivedOrder);
         }
+        validateIfThereAreRunningOrders(idOrder, professional);
 
 
+    }
+
+    private void validateIfThereAreRunningOrders(Long idOrder, Professional professional) {
+        // Profissional ja possui order em andamento?...
         List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
                 professional.getIdProfessional(), idOrder);
 
@@ -853,7 +853,6 @@ public class OrderService {
             // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
             throw new OrderValidationException(ErrorCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
         }
-
     }
 
     private void validateBusyScheduled1(Order order) throws ValidationException, OrderValidationException {

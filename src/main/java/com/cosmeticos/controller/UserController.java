@@ -184,7 +184,7 @@ public class UserController {
     //TODO - FALTA CONFIGURAR EMAIL, SENHA SMTP E ETC DO SERVIDOR
     //TODO - FALTA CRIAR TESTES E VALIDAR
     //REFERENCIA: https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
-    @RequestMapping(path = "/password_reset", method = RequestMethod.PUT)
+        @RequestMapping(path = "/password_reset", method = RequestMethod.PUT)
     public HttpEntity<UserResponseBody> passwordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
 
         try {
