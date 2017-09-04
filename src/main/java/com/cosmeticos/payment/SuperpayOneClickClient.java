@@ -186,67 +186,25 @@ public class SuperpayOneClickClient {
 		JAXBElement<PagamentoOneClickV2> requestBody =
 				factory.createPagamentoOneClickV2(pagamentoOneClickV2);
 
-// O log de erro deu a dica de qual tipo que retorna. Vamos tentar de novo agora. eu tinha colocado isso tbm.. deu esse msm erro comigo
-		// Aki sabemos que esta certo. Estamos cnvertento pro tipo que realmente retorna da api.
 		JAXBElement<PagamentoOneClickV2Response> jaxbResponse =
 				(JAXBElement<PagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(requestBody);
 
 
 		PagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
 
-		// Aki ta errado. eu ia te perguntar isso agorinha, rsrsrsrs
-		// Tem q saber o q o toString retorna pra poder fazer isso. O que queremos aki na verdade é ver o status do pagamento... deixa eu ver aki.
-		// Pelo visto é igual o addCard... retorna um objeto que so tem um _return dentro. É esse cara que temos que retornar.
-		//Sacou? saquei.. eu tava usando justamente isso quando coloquei pagamentoresponse.
-		// Entao, estava td certo entao.. o q tava falantando era só o usar o token q retorna do addcard.. certo:?aham.
-		//vamos testar de novo entao.
+
 		log.info("Client reeceived result='{}'", oneclickResponse.getReturn());
 
  		return oneclickResponse.getReturn();// vo mudar o tipo de retorno do metodo. tbm fiz isso.. rsrsrsrsrsrs
 
 	}
 
-	public ResultadoPagamentoWS updateCard(
+	public String updateCard(
 			String dataValidadeCartao,
 			String emailComprador,
 			Long formaPagamento,
 			String nomeTitularCartaoCredito,
 			String numeroCartaoCredito, String token) {
-
-			ObjectFactory factory = new ObjectFactory();
-
-			DadosCadastroPagamentoOneClickWS dados = factory.createDadosCadastroPagamentoOneClickWS();
-			dados.setCodigoEstabelecimento(codigoEstabelecimento);
-			dados.setDataValidadeCartao(dataValidadeCartao);
-			dados.setEmailComprador(emailComprador);
-			dados.setFormaPagamento(formaPagamento);
-			dados.setNomeTitularCartaoCredito(nomeTitularCartaoCredito);
-			dados.setNumeroCartaoCredito(numeroCartaoCredito);
-
-			AlteraCadastraPagamentoOneClick person = factory.createAlteraCadastraPagamentoOneClick();
-			person.setDadosOneClick(dados);
-			person.setToken(token);
-			person.setSenha(password);
-			person.setUsuario(user);
-
-			log.info("Client sending person[user={},estabelecimento={}]", user, codigoEstabelecimento);
-
-			JAXBElement<ResultadoPagamentoWS> jaxbResponse =
-					(JAXBElement<ResultadoPagamentoWS>) webServiceTemplate.marshalSendAndReceive(dados);
-
-			ResultadoPagamentoWS oneclickResponse = jaxbResponse.getValue();
-
-			log.info("Client received result='{}'", oneclickResponse.getClass());
-
-			return oneclickResponse;
-	}
-
-	public DadosCadastroPagamentoOneClickWSV2 readCard(
-			String dataValidadeCartao,
-			String emailComprador,
-			Long formaPagamento,
-			String nomeTitularCartaoCredito,
-			String numeroCartaoCredito) {
 
 		ObjectFactory factory = new ObjectFactory();
 
@@ -265,14 +223,53 @@ public class SuperpayOneClickClient {
 
 		log.info("Client sending person[user={},estabelecimento={}]", user, codigoEstabelecimento);
 
-		JAXBElement<DadosCadastroPagamentoOneClickWSV2> jaxbResponse =
-				(JAXBElement<DadosCadastroPagamentoOneClickWSV2>) webServiceTemplate.marshalSendAndReceive(person);
+		JAXBElement<CadastraPagamentoOneClickV2> requestBody =
+				factory.createCadastraPagamentoOneClickV2(person);
 
-		DadosCadastroPagamentoOneClickWSV2 oneclickResponse = jaxbResponse.getValue();
+		JAXBElement<CadastraPagamentoOneClickV2Response> jaxbResponse =
+				(JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(requestBody);
 
-		log.info("Client received result='{}'", oneclickResponse.toString());
+		CadastraPagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
 
-		return oneclickResponse;
+		log.info("Client received result='{}'", oneclickResponse.getReturn());
+
+		return oneclickResponse.getReturn();
+	}
+
+	public DadosCadastroPagamentoOneClickWS readCard(
+			String dataValidadeCartao,
+			String emailComprador,
+			Long formaPagamento,
+			String nomeTitularCartaoCredito,
+			String numeroCartaoCredito, String token) {
+
+		ObjectFactory factory = new ObjectFactory();
+
+		DadosCadastroPagamentoOneClickWSV2 dados = factory.createDadosCadastroPagamentoOneClickWSV2();
+		dados.setCodigoEstabelecimento(codigoEstabelecimento);
+		dados.setDataValidadeCartao(dataValidadeCartao);
+		dados.setEmailComprador(emailComprador);
+		dados.setFormaPagamento(formaPagamento);
+		dados.setNomeTitularCartaoCredito(nomeTitularCartaoCredito);
+		dados.setNumeroCartaoCredito(numeroCartaoCredito);
+
+		ConsultaDadosOneClick person = factory.createConsultaDadosOneClick();
+		person.setSenha(password);
+		person.setUsuario(user);
+		person.setToken(token);
+
+		JAXBElement<ConsultaDadosOneClick> requestBody =
+				factory.createConsultaDadosOneClick(person);
+
+		JAXBElement<ConsultaDadosOneClickResponse> jaxbResponse =
+				(JAXBElement<ConsultaDadosOneClickResponse>) webServiceTemplate.marshalSendAndReceive(requestBody);
+
+
+		ConsultaDadosOneClickResponse oneclickResponse = jaxbResponse.getValue();
+
+		log.info("Client received result='{}'", oneclickResponse.getReturn());
+
+		return oneclickResponse.getReturn();
 	}
 
 }

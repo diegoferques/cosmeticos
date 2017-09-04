@@ -2,6 +2,7 @@ package com.cosmeticos.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.cosmeticos.payment.superpay.ws.DadosCadastroPagamentoOneClickWS;
 import com.cosmeticos.payment.superpay.ws.ResultadoPagamentoWS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,7 @@ public class SuperpayOneClickClientIntegrationTest {
 
 	@Autowired
 	private SuperpayOneClickClient oneClickClient;
+
 	@Test
 	public void testSayHello() {
 		// vo rodar de novo
@@ -36,7 +38,6 @@ public class SuperpayOneClickClientIntegrationTest {
 	@Test
 	public void testPagamento(){
 
-// debuga ae!
 		String dataValidadeCartao = "10/10";
 		String emailComprador = "deivison.1@gmail.com";
 		Long formaPagamento = 1L;
@@ -96,19 +97,47 @@ public class SuperpayOneClickClientIntegrationTest {
 
 	@Test
 	public void testUpdateCard() {
+
 		String dataValidadeCartao = "01/10";
 		String emailComprador = "deivison.2@gmail.com";
 		Long formaPagamento = 1L;
 		String nomeTitularCartaoCredito = "deivison";
-		String numeroCartaoCredito = "1234567890";
-		String token = "0987-0876564";
+		String numeroCartaoCredito = "1234567899990";
 
-		ResultadoPagamentoWS result = (oneClickClient.updateCard(
+		String token = addCard(dataValidadeCartao, emailComprador, formaPagamento, nomeTitularCartaoCredito, numeroCartaoCredito);
+
+		String result = (oneClickClient.updateCard(
 				dataValidadeCartao,
 				emailComprador,
 				formaPagamento,
 				nomeTitularCartaoCredito,
-				numeroCartaoCredito, token));
+				numeroCartaoCredito,
+				token));
+
+		System.out.println(result);
+
+		assertThat(result);
+	}
+
+	@Test
+	public void testReadCard() {
+
+		String dataValidadeCartao = "10/10";
+		String emailComprador = "deivison.1@gmail.com";
+		Long formaPagamento = 1L;
+		String nomeTitularCartaoCredito = "deivison";
+		String numeroCartaoCredito = "1234567890";
+
+		String token = addCard(dataValidadeCartao, emailComprador, formaPagamento, nomeTitularCartaoCredito, numeroCartaoCredito);
+
+
+		DadosCadastroPagamentoOneClickWS result = (oneClickClient.readCard(
+				dataValidadeCartao,
+				emailComprador,
+				formaPagamento,
+				nomeTitularCartaoCredito,
+				numeroCartaoCredito,
+				token));
 
 		System.out.println(result);
 
@@ -127,7 +156,35 @@ public class SuperpayOneClickClientIntegrationTest {
 		return result;
 	}
 
-	private ResultadoPagamentoWS pay(Long numeroTransacao, int idioma, String ip, String origemTransacao, int parcelas, String token, String campainha, String urlRedirecionamentoNaoPago, String urlRedirecionamentoPago, long valor, long valorDesconto, String bairroEnderecoComprador, String cepEnderecoComprador, String cidadeEnderecoCompra, String codigoCliente, String dataNascimentoComprador, String emailComprador, String enderecoComprador, String estadoEnderecoComprador, String nomeComprador, String numeroEnderecoComprador, String paisComprar, String sexoComprador, String telefoneAdicionalComprador, String telefoneComprador, long tipoCliente, long codigoTipoTelefoneAdicionalComprador, String codigoCategoria, String nomeCategoria, String codigoProduto, String nomeProduto, int quantidadeProduto, Long valorUnitarioProduto, String cvv) {
+	private ResultadoPagamentoWS pay(Long numeroTransacao,
+									 int idioma, String ip,
+									 String origemTransacao,
+									 int parcelas, String token,
+									 String campainha,
+									 String urlRedirecionamentoNaoPago,
+									 String urlRedirecionamentoPago,
+									 long valor,
+									 long valorDesconto,
+									 String bairroEnderecoComprador,
+									 String cepEnderecoComprador,
+									 String cidadeEnderecoCompra,
+									 String codigoCliente,
+									 String dataNascimentoComprador,
+									 String emailComprador,
+									 String enderecoComprador,
+									 String estadoEnderecoComprador,
+									 String nomeComprador,
+									 String numeroEnderecoComprador,
+									 String paisComprar,
+									 String sexoComprador,
+									 String telefoneAdicionalComprador,
+									 String telefoneComprador,
+									 long tipoCliente,
+									 long codigoTipoTelefoneAdicionalComprador,
+									 String codigoCategoria, String nomeCategoria,
+									 String codigoProduto, String nomeProduto,
+									 int quantidadeProduto,
+									 Long valorUnitarioProduto, String cvv) {
 		ResultadoPagamentoWS result = (oneClickClient.pay(
 				numeroTransacao,
 				idioma,
