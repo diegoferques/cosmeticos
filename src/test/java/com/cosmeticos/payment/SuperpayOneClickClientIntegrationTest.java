@@ -116,7 +116,7 @@ public class SuperpayOneClickClientIntegrationTest {
 
 		System.out.println(result);
 
-		assertThat(result);
+		assertThat(result).isNotBlank();
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class SuperpayOneClickClientIntegrationTest {
 
 		System.out.println(result);
 
-		assertThat(result);
+		assertThat(result).isNotNull();
 	}
 
 	private String addCard(String dataValidadeCartao, String emailComprador, Long formaPagamento, String nomeTitularCartaoCredito, String numeroCartaoCredito) {
