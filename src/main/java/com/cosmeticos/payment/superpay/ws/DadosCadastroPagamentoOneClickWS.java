@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlType;
     "nomeTitularCartaoCredito",
     "numeroCartaoCredito"
 })
-public class DadosCadastroPagamentoOneClickWS {
+public class DadosCadastroPagamentoOneClickWS extends ResultadoPagamentoWS {
 
     protected String codigoEstabelecimento;
     protected String codigoSeguranca;
