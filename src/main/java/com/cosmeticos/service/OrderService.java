@@ -52,7 +52,7 @@ public class OrderService {
     private PenaltyService penaltyService;
 
     @Autowired
-    private PaymentService paymentService;
+    private TypedCcPaymentService paymentService;
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
@@ -669,18 +669,18 @@ public class OrderService {
                 case 2:
 
 				//SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
-				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
+				if (statusTransacao == 1) {
 					log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
 					senPaymentStatus = true;
 				}
 
 				//SE FOR PAGO E NAO CAPTURADO, CORREU TUDO CERTO!
-				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 2) {
+				if (statusTransacao == 2) {
 				    senPaymentStatus = true;
 				}
 
                 //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
-                if (retornoTransacaoSuperpay.get().getStatusTransacao() == 31) {
+                if (statusTransacao == 31) {
                     log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
 					senPaymentStatus = true;
                 }

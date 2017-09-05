@@ -7,7 +7,7 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.service.TypedCcPaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -46,7 +46,7 @@ public class PaymentControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private PaymentService paymentService;
+    private TypedCcPaymentService paymentService;
 
     @Autowired
     AddressRepository addressRepository;

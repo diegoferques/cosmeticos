@@ -9,7 +9,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.service.TypedCcPaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -45,7 +45,7 @@ import static java.time.LocalDateTime.now;
 public class MockingPaymentControllerTests {
 
     @MockBean
-    private PaymentService paymentService;
+    private TypedCcPaymentService paymentService;
 
    // @MockBean
    // private PaymentController paymentController;

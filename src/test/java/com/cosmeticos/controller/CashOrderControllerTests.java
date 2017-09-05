@@ -8,7 +8,7 @@ import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.service.TypedCcPaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class CashOrderControllerTests {
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @MockBean
-    private PaymentService paymentService;
+    private TypedCcPaymentService paymentService;
 
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {

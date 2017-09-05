@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.payment.Charger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class PaymentService {
+public class TypedCcPaymentService implements Charger {
 
     @Value("${superpay.url.transacao}")
     private String urlTransacao;
@@ -108,7 +109,7 @@ public class PaymentService {
      * @param data
      * @return Optional<RetornoTransacao>
      */
-    public Optional<RetornoTransacao> postJson(String url, Map<String, String> headers, String data) {
+    private Optional<RetornoTransacao> postJson(String url, Map<String, String> headers, String data) {
         RestTemplate restTemplate = restTemplateBuilder.build();
 
         RetornoTransacao retornoTransacao;
@@ -164,11 +165,6 @@ public class PaymentService {
         }
 
         return exchange;
-    }
-
-    public ResponseEntity<RetornoTransacao> doConsultaTransacaoRequest(RestTemplate restTemplate,
-                                                                       RequestEntity<RetornoTransacao> entity) {
-        return restTemplate.exchange(entity, RetornoTransacao.class);
     }
 
     public ResponseEntity<RetornoTransacao> doCapturaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
@@ -398,7 +394,7 @@ public class PaymentService {
     }
 
     //GERAMOS UM CARTAO DE TESTE DA SUPERPAY PARA USAR NOS TESTES
-    public CreditCard getCartaoTeste() throws ParseException {
+    private CreditCard getCartaoTeste() throws ParseException {
 
         CreditCard creditCard = new CreditCard();
         creditCard.setOwnerName("Cliente Teste");

@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.11 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2017.08.31 às 03:17:48 PM BRT 
+// Gerado em: 2017.09.04 às 11:37:06 AM BRT 
 //
 
 
@@ -48,10 +48,10 @@ import javax.xml.bind.annotation.XmlType;
 public class MultipleCardsException {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "key", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "cartao", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "message", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "cartoesVo", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "cartao", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "key", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "cartoesVo", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<?>> content;
 
@@ -83,9 +83,9 @@ public class MultipleCardsException {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link TransacaoDadosCobrancaCartaoVo }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link TransacaoDadosCobrancaCartaoVo }{@code >}
      * 
      * 

@@ -7,7 +7,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.service.TypedCcPaymentService;
 import com.cosmeticos.service.VoteService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -82,7 +82,7 @@ public class OrderControllerTests {
      * Apesar de nao ser uma classe de teste mocking, precisamos mocar a ida ao superpay,.
      */
     @MockBean
-    private PaymentService paymentService;
+    private TypedCcPaymentService paymentService;
 
     @Before
     public void setup() throws ParseException, JsonProcessingException {
