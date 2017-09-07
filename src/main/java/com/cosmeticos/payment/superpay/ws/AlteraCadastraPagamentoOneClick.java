@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.11 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2017.08.31 às 03:17:48 PM BRT 
+// Gerado em: 2017.09.06 às 06:46:41 PM BRT 
 //
 
 
@@ -10,7 +10,6 @@ package com.cosmeticos.payment.superpay.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -36,7 +35,6 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
-@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "alteraCadastraPagamentoOneClick", propOrder = {
     "dadosOneClick",
@@ -65,7 +63,7 @@ public class AlteraCadastraPagamentoOneClick {
 
     /**
      * Define o valor da propriedade dadosOneClick.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link DadosCadastroPagamentoOneClickWS }

@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.11 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2017.08.31 às 03:17:48 PM BRT 
+// Gerado em: 2017.09.06 às 06:46:41 PM BRT 
 //
 
 
@@ -10,7 +10,6 @@ package com.cosmeticos.payment.superpay.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -65,20 +64,20 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ResultadoPagamentoWS {
 
-    protected int autorizacao;// isso temos que logar
+    protected int autorizacao;
     protected String codigoEstabelecimento;
     protected int codigoFormaPagamento;
-    protected int codigoTransacaoOperadora;// isso temos que logar
-    protected String dataAprovacaoOperadora;// isso temos que logar
-    protected String mensagemVenda;// isso temos que logar
-    protected String numeroComprovanteVenda;// isso temos que logar
-    protected long numeroTransacao;// isso temos que logar
+    protected int codigoTransacaoOperadora;
+    protected String dataAprovacaoOperadora;
+    protected String mensagemVenda;
+    protected String numeroComprovanteVenda;
+    protected long numeroTransacao;
     protected int parcelas;
-    protected int statusTransacao;// isso temos que logar
+    protected int statusTransacao;
     protected long taxaEmbarque;
-    protected String urlPagamento; // isso temos que logar
-    protected long valor; // isso temos que logar
-    protected long valorDesconto;// isso temos que logar
+    protected String urlPagamento;
+    protected long valor;
+    protected long valorDesconto;
 
     /**
      * Obtém o valor da propriedade autorizacao.
