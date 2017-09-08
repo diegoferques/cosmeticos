@@ -1,23 +1,25 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
-import com.cosmeticos.model.*;
-import com.cosmeticos.payment.superpay.client.rest.model.*;
-import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Payment;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.service.TypedCcPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
+import java.util.Optional;
 
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
@@ -29,32 +31,14 @@ import static org.springframework.http.ResponseEntity.ok;
 @Controller
 public class PaymentController {
 
-    @Value("${superpay.url.transacao}")
-    private String urlTransacao;
-
     @Value("${superpay.estabelecimento}")
     private String estabelecimento;
-
-    @Value("${superpay.login}")
-    private String login;
-
-    @Value("${superpay.senha}")
-    private String senha;
 
     @Autowired
     private TypedCcPaymentService paymentService;
 
     @Autowired
     private PaymentRepository paymentRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
 
     public enum Language {
         NONE, PORTUGUESE, ENGLISH, SPANISH
@@ -73,77 +57,90 @@ public class PaymentController {
             @RequestParam(required = false, name = "campoLivre5") String campoLivre5) {
 
         CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
-        Optional<Order> orderOptional = Optional.ofNullable(orderRepository.findOne(numeroTransacao));
 
-        try {
+        Optional<Payment> paymentOptional = Optional.ofNullable(paymentRepository.findByOrder_idOrder(numeroTransacao));
 
-            if(numeroTransacao == null) {
+        if(paymentOptional.isPresent()) {
 
-                responseBody.setDescription("O campo \"numeroTransacao\" é obrigatório.");
-                log.error(responseBody.getDescription());
+            Order persistentORrder = paymentOptional.get().getOrder();
 
-                return badRequest().body(responseBody);
+            try {
 
-            } else if(codigoEstabelecimento == null) {
+                if (numeroTransacao == null) {
 
-                responseBody.setDescription("O campo \"codigoEstabelecimento\" é obrigatório.");
-                log.error(responseBody.getDescription());
+                    responseBody.setDescription("O campo \"numeroTransacao\" é obrigatório.");
+                    log.error(responseBody.getDescription());
 
-                return badRequest().body(responseBody);
+                    return badRequest().body(responseBody);
 
-            } else if(codigoEstabelecimento != Long.parseLong(estabelecimento)) {
+                } else if (codigoEstabelecimento == null) {
 
-                responseBody.setDescription("\"codigoEstabelecimento\" desconhecido.");
-                log.error(responseBody.getDescription());
+                    responseBody.setDescription("O campo \"codigoEstabelecimento\" é obrigatório.");
+                    log.error(responseBody.getDescription());
 
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+                    return badRequest().body(responseBody);
 
-            } else if(!orderOptional.isPresent()) {
+                } else if (codigoEstabelecimento != Long.parseLong(estabelecimento)) {
 
-                responseBody.setDescription("Order não encontrado:" + numeroTransacao);
-                log.error(responseBody.getDescription());
+                    responseBody.setDescription("\"codigoEstabelecimento\" desconhecido.");
+                    log.error(responseBody.getDescription());
 
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
 
-            } else {
-                //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
-                //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
-                Optional<RetornoTransacao> retornoConsulta = paymentService.consultaTransacao(numeroTransacao);
+                } else {
 
-                if(retornoConsulta.isPresent()) {
+                    ChargeRequest<Order> chargeRequest = new ChargeRequest<>(persistentORrder);
 
-                    Boolean updateStatus = paymentService.updatePaymentStatus(retornoConsulta.get());
+                    //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
+                    //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
 
-                    if(updateStatus) {
-                        responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID ["+
-                                numeroTransacao +"] foram atualizados com sucesso.");
-                        log.error(responseBody.getDescription());
-                        return ok(responseBody);
+                    ChargeResponse<RetornoTransacao> transacaoChargeResponse = paymentService.getStatus(chargeRequest);
+
+                    Optional<RetornoTransacao> retornoConsulta = Optional.ofNullable(transacaoChargeResponse.getBody());
+
+                    if (retornoConsulta.isPresent()) {
+
+                        Boolean updateStatus = paymentService.updatePaymentStatus(retornoConsulta.get());
+
+                        if (updateStatus) {
+                            responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID [" +
+                                    numeroTransacao + "] foram atualizados com sucesso.");
+                            log.error(responseBody.getDescription());
+                            return ok(responseBody);
+
+                        } else {
+                            String errorCode = String.valueOf(System.nanoTime());
+                            responseBody.setDescription("Erro ao atualizar o status do pagamento da transação de ID [" + numeroTransacao + "]. Error Code: [" + errorCode + "].");
+                            log.error(responseBody.getDescription());
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+                        }
 
                     } else {
                         String errorCode = String.valueOf(System.nanoTime());
-                        responseBody.setDescription("Erro ao atualizar o status do pagamento da transação de ID ["+ numeroTransacao +"]. Error Code: ["+ errorCode +"].");
+                        responseBody.setDescription("Transação com ID [" + numeroTransacao + "] não encontrada na Superpay. Error Code: [" + errorCode + "].");
                         log.error(responseBody.getDescription());
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
                     }
 
-                } else {
-                    String errorCode = String.valueOf(System.nanoTime());
-                    responseBody.setDescription("Transação com ID ["+ numeroTransacao +"] não encontrada na Superpay. Error Code: ["+ errorCode +"].");
-                    log.error(responseBody.getDescription());
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
                 }
 
+            } catch (Exception e) {
+                String errorCode = String.valueOf(System.nanoTime());
+
+                responseBody.setDescription("Erro interno: " + errorCode);
+
+                log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
             }
+        }
+        else
+        {
 
-        } catch (Exception e) {
-            String errorCode = String.valueOf(System.nanoTime());
+            responseBody.setDescription("Order não encontrado:" + numeroTransacao);
+            log.error(responseBody.getDescription());
 
-            responseBody.setDescription("Erro interno: " + errorCode);
-
-            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
         }
     }
 

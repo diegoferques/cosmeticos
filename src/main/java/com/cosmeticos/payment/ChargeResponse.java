@@ -9,4 +9,8 @@ public class ChargeResponse<B> {
     private ErrorCode responseCode;
 
     private B body;
+
+    public ChargeResponse(B body) {
+        this.body = body;
+    }
 }

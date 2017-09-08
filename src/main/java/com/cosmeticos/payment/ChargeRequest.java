@@ -6,4 +6,8 @@ import lombok.Data;
 public class ChargeRequest<B> {
 
     private B body;
+
+    public ChargeRequest(B body) {
+        this.body = body;
+    }
 }

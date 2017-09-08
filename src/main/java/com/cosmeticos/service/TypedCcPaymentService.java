@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class TypedCcPaymentService implements Charger {
+public class TypedCcPaymentService implements Charger<Order, RetornoTransacao> {
 
     @Value("${superpay.url.transacao}")
     private String urlTransacao;
@@ -74,27 +76,31 @@ public class TypedCcPaymentService implements Charger {
     private Map<String, Integer> formasPagamentoMap = getFormasPagamentoMap();
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
-    public Optional<RetornoTransacao> sendRequest(Order orderCreated) throws ParseException, JsonProcessingException {
+    private ChargeResponse<RetornoTransacao> sendRequest(Order orderCreated) {
 
-        Order order = orderRepository.findOne(orderCreated.getIdOrder());
+        try {
+            Order order = orderRepository.findOne(orderCreated.getIdOrder());
 
-        TransacaoRequest request = createRequest(order);
+            TransacaoRequest request = createRequest(order);
 
-        ObjectMapper om = new ObjectMapper();
-        String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+            ObjectMapper om = new ObjectMapper();
+            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
 
-        Map<String, String> usuarioMap = new HashMap<>();
-        usuarioMap.put("usuario", jsonHeader);
+            Map<String, String> usuarioMap = new HashMap<>();
+            usuarioMap.put("usuario", jsonHeader);
 
-        String jsonRequest = om.writeValueAsString(request);
+            String jsonRequest = om.writeValueAsString(request);
 
-        System.out.println(jsonHeader);
-        System.out.println(jsonRequest);
+            System.out.println(jsonHeader);
+            System.out.println(jsonRequest);
 
-        //String response = postJson(urlTransacao, formasPagamentoMap, jsonRequest);
-        Optional<RetornoTransacao> retornoTransacao = postJson(urlTransacao, usuarioMap, jsonRequest);
+            //String response = postJson(urlTransacao, formasPagamentoMap, jsonRequest);
+            ChargeResponse<RetornoTransacao> retornoTransacao = postJson(urlTransacao, usuarioMap, jsonRequest);
 
-        return retornoTransacao;
+            return retornoTransacao;
+        } catch (JsonProcessingException e) {
+            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha convertendo json", e);
+        }
 
     }
 
@@ -109,7 +115,7 @@ public class TypedCcPaymentService implements Charger {
      * @param data
      * @return Optional<RetornoTransacao>
      */
-    private Optional<RetornoTransacao> postJson(String url, Map<String, String> headers, String data) {
+    private ChargeResponse<RetornoTransacao> postJson(String url, Map<String, String> headers, String data) {
         RestTemplate restTemplate = restTemplateBuilder.build();
 
         RetornoTransacao retornoTransacao;
@@ -130,41 +136,43 @@ public class TypedCcPaymentService implements Charger {
 
             retornoTransacao = exchange.getBody();
 
-        } catch (Exception e) {
-            log.error(e.toString());
-            retornoTransacao = null;
+            return new ChargeResponse<>(retornoTransacao);
+        } catch (URISyntaxException e) {
+           throw  new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Url invalida ao chamar superpay", e);
         }
-
-        return Optional.ofNullable(retornoTransacao);
     }
 
     //TODO - CRIAR AS ROTINAS PARA SALVAR NO BANCO O QUE FOR NECESSARIO DO RETORNO DO PAGAMENTO NO GATEWAY DE PAGAMENTO
 
     //TODO - TEMOS QUE DEFINIR LOGO SE VAMOS USAR ORDER ID PARA CRIAR OS PEDIDOS NA SUPERPAY OU SE VAMOS USAR PAYMENT ID
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/118
-    public ResponseEntity<RetornoTransacao> capturaTransacaoSuperpay(Long numeroTransacao) throws JsonProcessingException, URISyntaxException {
+    private ResponseEntity<RetornoTransacao> capturaTransacaoSuperpay(Long numeroTransacao)  {
 
-        RestTemplate restTemplate = restTemplateBuilder.build();
+        try {
+            RestTemplate restTemplate = restTemplateBuilder.build();
 
-        String urlCapturaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao + "/capturar";
+            String urlCapturaTransacao = urlTransacao + "/" + estabelecimento + "/" + numeroTransacao + "/capturar";
 
-        ObjectMapper om = new ObjectMapper();
-        String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+            ObjectMapper om = new ObjectMapper();
+            String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
 
-        RequestEntity<RetornoTransacao> entity = RequestEntity
-                .post(new URI(urlCapturaTransacao))
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("usuario", jsonHeader)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(null);
+            RequestEntity<RetornoTransacao> entity = RequestEntity
+                    .post(new URI(urlCapturaTransacao))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("usuario", jsonHeader)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(null);
 
-        ResponseEntity<RetornoTransacao> exchange = doCapturaTransacaoRequest(restTemplate, entity);
+            ResponseEntity<RetornoTransacao> exchange = doCapturaTransacaoRequest(restTemplate, entity);
 
-        if (exchange.getStatusCode() == HttpStatus.CONFLICT) {
-            log.warn("Conflitou");
+            if (exchange.getStatusCode() == HttpStatus.CONFLICT) {
+                log.warn("Conflitou");
+            }
+
+            return exchange;
+        } catch (JsonProcessingException | URISyntaxException e) {
+            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha preparando a captura de pagamento", e);
         }
-
-        return exchange;
     }
 
     public ResponseEntity<RetornoTransacao> doCapturaTransacaoRequest(RestTemplate restTemplate, RequestEntity<RetornoTransacao> entity) {
@@ -174,7 +182,7 @@ public class TypedCcPaymentService implements Charger {
     //TODO - VERIFICAR NO GATEWAY SUPERPAY SE HOUVE UMA ATUALIZACAO NA TRANSACAO
     //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
     //https://superpay.acelerato.com/base-de-conhecimento/#/artigos/129
-    public Optional<RetornoTransacao> consultaTransacao(Long numeroTransacao) throws JsonProcessingException {
+    private Optional<RetornoTransacao> consultaTransacao(Long numeroTransacao)  {
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
@@ -183,7 +191,12 @@ public class TypedCcPaymentService implements Charger {
         RetornoTransacao retornoTransacao;
 
         ObjectMapper om = new ObjectMapper();
-        String jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+        String jsonHeader = null;
+        try {
+            jsonHeader = om.writeValueAsString(new Usuario(login, senha));
+        } catch (JsonProcessingException e) {
+            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha convertendo json", e);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("usuario", jsonHeader);
@@ -225,7 +238,7 @@ public class TypedCcPaymentService implements Charger {
 
 
     //MONTAMOS A REQUISICAO PARA ENVIAR PARA A SUPERPAY
-    private TransacaoRequest createRequest(Order order) throws ParseException {
+    private TransacaoRequest createRequest(Order order)  {
 
         //TODO - PRECISAMOS DE ALGO PARECIDO COMO O QUE SEGUE ABAIXO PARA PEGAR OS DADOS DA FORMA DE PAGAMENTO DE ORDER
         //CreditCard creditCard = order.getPayment().getCreditCard();
@@ -394,7 +407,7 @@ public class TypedCcPaymentService implements Charger {
     }
 
     //GERAMOS UM CARTAO DE TESTE DA SUPERPAY PARA USAR NOS TESTES
-    private CreditCard getCartaoTeste() throws ParseException {
+    private CreditCard getCartaoTeste()  {
 
         CreditCard creditCard = new CreditCard();
         creditCard.setOwnerName("Cliente Teste");
@@ -408,7 +421,11 @@ public class TypedCcPaymentService implements Charger {
         //new LocalDate(2026,12, 01).get();
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        creditCard.setExpirationDate(sdf.parse("01/12/2026"));
+        try {
+            creditCard.setExpirationDate(sdf.parse("01/12/2026"));
+        } catch (ParseException e) {
+            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha parseando data de cartao de credito", e);
+        }
 
         creditCard.setVendor("Visa");
 
@@ -419,7 +436,7 @@ public class TypedCcPaymentService implements Charger {
     //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
     //BRANCH: RNF101
     //TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
-    public Boolean validatePaymentStatusAndSendCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
+    private Boolean validatePaymentStatusAndSendCapture(Order order) throws OrderValidationException {
 
         //Payment payment = paymentRepository.findOne(order.getPayment().getId());
 
@@ -451,7 +468,7 @@ public class TypedCcPaymentService implements Charger {
     //MUDEI DE PUBLIC PARA PRIVATE, AGORA TEMOS QUE CHAMAR O VALIDATE ANTES DE ENVIAR PARA A SUPERPAY
     //DEVERA SER VISTO SOMENTE PELA CLASSE
     //AQUI CAPTURAMOS A TRANSACAO NA SUPERPAY E, CASO RETORNE HTTP STATUS 200(OK), ATUALIZAMOS O STATUS DE PAYMENT DA ORDER
-    private ResponseEntity<RetornoTransacao> capturaTransacao(Long numeroTransacao) throws JsonProcessingException, URISyntaxException {
+    private ResponseEntity<RetornoTransacao> capturaTransacao(Long numeroTransacao)  {
 
         ResponseEntity<RetornoTransacao> exchange = capturaTransacaoSuperpay(numeroTransacao);
 
@@ -476,5 +493,35 @@ public class TypedCcPaymentService implements Charger {
         CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
         responseBody.setDescription(errors.toString());
         return responseBody;
+    }
+
+    @Override
+    public ChargeResponse addCard(ChargeRequest chargeRequest) {
+        log.debug("Nao implementado.");
+        return null;
+    }
+
+    @Override
+    public ChargeResponse<RetornoTransacao> reserve(ChargeRequest<Order> chargeRequest) {
+        ChargeResponse<RetornoTransacao> response = this.sendRequest(chargeRequest.getBody());
+        return response;
+    }
+
+    @Override
+    public ChargeResponse<RetornoTransacao> capture(ChargeRequest<Order> chargeRequest) {
+        return new ChargeResponse(validatePaymentStatusAndSendCapture(chargeRequest.getBody()));
+    }
+
+    @Override
+    public ChargeResponse<RetornoTransacao> getStatus(ChargeRequest<Order> chargeRequest) {
+        // TODO: aplicar logica pra pegar o payment com o id (q eh o cod de transacao) correto.
+        Order order = chargeRequest.getBody();
+        Set<Payment> payments = order.getPaymentCollection();
+        Optional<Payment> payment = payments.stream().findFirst();
+
+        if(payment.isPresent())
+            return new ChargeResponse(consultaTransacao(payment.get().getId()));
+        else
+            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Nao conseguimos encontrar o id da transacao");
     }
 }

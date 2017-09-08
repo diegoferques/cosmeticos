@@ -4,6 +4,7 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
@@ -97,10 +98,10 @@ public class OrderControllerTests {
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////// Mocando o controller que vai no superpay e vai sofrer um refactoring monstruoso //////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
 
         Mockito.when(
-                paymentService.sendRequest(Mockito.any())
+                paymentService.reserve(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
 
@@ -1840,7 +1841,7 @@ public class OrderControllerTests {
         return professionalCategoryRepository.save(ps1);
     }
 
-    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");
@@ -1860,7 +1861,7 @@ public class OrderControllerTests {
         cartaoUtilizado.add("000000******0001");
         retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
 
-        return Optional.of(retornoTransacao);
+        return new ChargeResponse(retornoTransacao);
 
     }
 }

@@ -1,10 +1,9 @@
 package com.cosmeticos.payment;
 
-public interface Charger {
+public interface Charger<B, R> {
 
-    ChargeResponse addCard(ChargeRequest chargeRequest);
-    ChargeResponse reserve(ChargeRequest chargeRequest);
-    ChargeResponse pay(ChargeRequest chargeRequest);
-    ChargeResponse getStatus(ChargeRequest chargeRequest);
-    ChargeResponse capture(ChargeRequest chargeRequest);
+    ChargeResponse<R> addCard(ChargeRequest<B> chargeRequest);
+    ChargeResponse<R> reserve(ChargeRequest<B> chargeRequest);
+    ChargeResponse<R> capture(ChargeRequest<B> chargeRequest);
+    ChargeResponse<R> getStatus(ChargeRequest<B> chargeRequest);
 }

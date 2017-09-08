@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
@@ -29,7 +30,6 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Vinicius on 17/08/2017.
@@ -59,10 +59,10 @@ public class CashOrderControllerTests {
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
+        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
 
         Mockito.when(
-                paymentService.sendRequest(Mockito.any())
+                paymentService.reserve(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
 
         Mockito.when(
@@ -205,7 +205,7 @@ public class CashOrderControllerTests {
     }
 
 
-    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");
@@ -225,7 +225,7 @@ public class CashOrderControllerTests {
         cartaoUtilizado.add("000000******0001");
         retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
 
-        return Optional.of(retornoTransacao);
+        return new ChargeResponse(retornoTransacao);
 
     }
 

@@ -36,7 +36,8 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,24 +46,28 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
 
     @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @NotEmpty(message = "cpf was not set!")
     private String cpf;
 
     @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private Character genre;
 
     @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     //TODO - Troquei o TemporalType de TIMESTAMP para DATE, verificar se essa alteração não tem problema
     //Voltei para TimeStamp
@@ -73,18 +78,21 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String cellPhone;
 
     @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegister;
 
     @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private Integer status;
 
@@ -92,7 +100,8 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;

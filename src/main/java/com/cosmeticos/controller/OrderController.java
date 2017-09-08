@@ -83,6 +83,7 @@ public class OrderController {
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setErrorCode(e.getCode());
             orderResponseBody.setDescription(msg);
+            orderResponseBody.setUserFriendlyMessage(e.getMessage());
 
             MDC.put("auditError", auditError);
             MDC.put("errorCode", String.valueOf(e.getCode()));
