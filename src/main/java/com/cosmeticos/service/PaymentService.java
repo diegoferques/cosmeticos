@@ -411,7 +411,7 @@ public class PaymentService {
         if (optionalCc.isPresent()){
             return optionalCc.get();
         }else{
-            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_TYPE, "Cartão não cadasrado");
+            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_TYPE, "Cartão não cadastrado");
         }
 
     }

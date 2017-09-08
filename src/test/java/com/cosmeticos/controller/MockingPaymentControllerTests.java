@@ -372,7 +372,7 @@ public class MockingPaymentControllerTests {
 
     }
 
-    @Transactional
+    @Ignore
     @Test
     public void testCapturarTransacaoOK2() throws Exception {
 

@@ -20,9 +20,12 @@ public class MailSenderService {
     MailSender mailSender;
 
     //TODO - ADICIONAR TEMPLATE HTML PARA ENVIAR UM EMAIL BONITINHO PRO CLIENTE
-    public Boolean sendPasswordReset(User user) {
+    public Boolean sendEmail(String email, String subject, String msg) {
+
+        User user = new User();
 
         SimpleMailMessage message = new SimpleMailMessage();
+
         message.setSubject("COSMÉTICOS - Your new password");
         message.setText("Your new password is: " + user.getPassword());
         message.setTo(user.getEmail());

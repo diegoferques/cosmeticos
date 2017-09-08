@@ -37,7 +37,7 @@ public class MockingUserControllerTests {
     @Test
     public void testUserPasswordReset() throws URISyntaxException {
         Mockito.when(
-                mailSenderService.sendPasswordReset(Mockito.any())
+                mailSenderService.sendEmail(Mockito.any())
         ).thenReturn(true);
 
         //PRIMEIRO CRIAMOS UM USUARIO PARA DEPOIS SOLICITAR A TROCA DA SENHA
@@ -46,7 +46,7 @@ public class MockingUserControllerTests {
                 "\t{\n" +
                 "\t\t\"username\": \"userPasswordReset\",\n" +
                 "\t    \"password\": \"abcd1234\",\n" +
-                "\t    \"email\": \"diegoferques@gmail.com\",\n" +
+                "\t    \"email\": \"killerhomage@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
                 "\t    \"personType\":\"FISICA\",\n" +
                 "\t    \"status\": \"ACTIVE\"\n" +
@@ -67,7 +67,7 @@ public class MockingUserControllerTests {
 
         Assert.assertNotNull(response);
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assert.assertEquals("diegoferques@gmail.com", response.getBody().getUserList().get(0).getEmail());
+        Assert.assertEquals("killerhomage@gmail.com", response.getBody().getUserList().get(0).getEmail());
         Assert.assertEquals("abcd1234", response.getBody().getUserList().get(0).getPassword());
 
         User userCreated = response.getBody().getUserList().get(0);
@@ -85,7 +85,7 @@ public class MockingUserControllerTests {
 
 
         RequestEntity<String> entityUpdate =  RequestEntity
-                .put(new URI("/password_reset"))
+                .post(new URI("/users/prepare_send_token"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonUpdate);

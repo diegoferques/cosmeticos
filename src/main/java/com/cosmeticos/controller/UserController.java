@@ -4,6 +4,8 @@ import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
+import com.cosmeticos.repository.UserRepository;
+import com.cosmeticos.service.RandomCode;
 import com.cosmeticos.service.UserService;
 import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,9 @@ public class UserController {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     MailSenderService mailSenderService;
@@ -180,11 +185,78 @@ public class UserController {
         }
     }
 
+    @RequestMapping(path = "/users/prepare_send_token", method = RequestMethod.POST)
+    public HttpEntity<UserResponseBody> preparePasswordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
+
+        try {
+            if (bindingResult.hasErrors()) {
+
+                log.error("Erros na requisicao: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+
+            } else if (request.getEntity().getEmail() == null) {
+
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("E-mail não informado!");
+                log.error("BAD REQUEST: E-mail não informado!");
+                return badRequest().body(responseBody);
+
+            } else if(!service.verifyEmailExists(request.getEntity().getEmail())) {
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("E-mail inexistente.");
+                log.error("NOT FOUND: E-mail inexistente.");
+                return notFound().build();
+
+            } else {
+
+
+                Optional<User> userOptional = service.saveToken(request);
+
+                User updatedUser = userOptional.get();
+
+                RandomCode random =  new RandomCode(4);
+                String code = random.nextString();
+
+                updatedUser.setGenerateToken(code);
+
+                
+
+                Boolean sendEmail = mailSenderService.sendEmail(updatedUser.getEmail(),
+                        "Esqueci minha senha",
+                        "Seu token pra recriar sua senha é: " + code);
+
+                UserResponseBody responseBody = new UserResponseBody();
+
+                if (sendEmail) {
+
+                    userRepository.save(updatedUser);
+
+                    responseBody.setDescription("Uma nova senha foi enviada para o email cadastrado");
+
+                    log.info("Uma nova senha foi enviada para o email cadastrado:  [{}]", updatedUser);
+                    return ok().body(responseBody);
+                } else {
+                    responseBody.setDescription("Houve um erro ao enviar o email com sua nova senha, tente novamente.");
+
+                    log.info("Houve um erro ao enviar o email com sua nova senha, tente novamente.:  [{}]", updatedUser);
+                    return ResponseEntity.status(500).body(responseBody);
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Falha na atualizacao: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
+        }
+
+    }
+
     //TODO - FALTA TERMINAR A CONFIGURACAO DO SMTP E TESTAR COM USUARIO E SENHA
     //TODO - FALTA CONFIGURAR EMAIL, SENHA SMTP E ETC DO SERVIDOR
     //TODO - FALTA CRIAR TESTES E VALIDAR
     //REFERENCIA: https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
-    @RequestMapping(path = "/password_reset", method = RequestMethod.PUT)
+    @RequestMapping(path = "/users", method = RequestMethod.PUT)
     public HttpEntity<UserResponseBody> passwordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
 
         try {
@@ -208,10 +280,9 @@ public class UserController {
 
             } else {
 
-                Optional<User> userOptional = service.passwordReset(request);
+                Optional<User> userOptional = service.update(request);
                 User updatedUser = userOptional.get();
-
-                Boolean sendEmail = mailSenderService.sendPasswordReset(updatedUser);
+                Boolean sendEmail = mailSenderService.sendEmail(updatedUser.getEmail(), "jh", "jhjhg");
 
                 UserResponseBody responseBody = new UserResponseBody();
 

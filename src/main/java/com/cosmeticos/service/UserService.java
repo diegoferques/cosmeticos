@@ -94,14 +94,18 @@ public class UserService {
 
     }
 
-    public Optional<User> passwordReset(UserRequestBody request){
+    public Optional<User> saveToken(UserRequestBody request){
 
         Optional<User> userOptional = repository.findByEmail(request.getEntity().getEmail());
+
 
         if (userOptional.isPresent()) {
             User persistentUser = userOptional.get();
 
-            persistentUser.setPassword(generateRandomPassword(8));
+            RandomCode random =  new RandomCode(4);
+            String code = random.nextString();
+            
+            persistentUser.setGenerateToken(code);
 
             repository.save(persistentUser);
         }
@@ -109,22 +113,4 @@ public class UserService {
         return userOptional;
     }
 
-    private String generateRandomPassword(int length) {
-
-        Random RANDOM = new SecureRandom();
-
-        //http://www.java2s.com/Code/Java/Security/GeneratearandomStringsuitableforuseasatemporarypassword.htm
-        // Pick from some letters that won't be easily mistaken for each
-        // other. So, for example, omit o O and 0, 1 l and L.
-        String letters = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789+@";
-
-        String pw = "";
-        for (int i=0; i<length; i++)
-        {
-            int index = (int)(RANDOM.nextDouble()*letters.length());
-            pw += letters.substring(index, index+1);
-        }
-
-        return pw;
-    }
 }

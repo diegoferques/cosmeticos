@@ -96,7 +96,7 @@ public class CashOrderControllerTests {
         String json = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
                 c1,
                 ps1,
-                Payment.Type.CASH,
+                Payment.Type.CC,
                 pr
         );
 
@@ -117,7 +117,7 @@ public class CashOrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertEquals(Order.Status.OPEN, responsedOrder.getStatus());
         Assert.assertFalse(responsedOrder.getPaymentCollection().isEmpty());
-        Assert.assertEquals(Payment.Type.CASH, responsedOrder.getPaymentCollection().stream().findFirst().get().getType());
+        Assert.assertEquals(Payment.Type.CC, responsedOrder.getPaymentCollection().stream().findFirst().get().getType());
         Assert.assertNull(responsedOrder.getScheduleId());
 
 
