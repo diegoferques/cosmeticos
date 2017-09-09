@@ -47,14 +47,14 @@ public class OrderController {
 
 
 
-                MDC.put("idCustomer: ", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
-                MDC.put("customerUserStatus: ", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
+                MDC.put("idCustomer", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
 
                 orderService.validateCreate(request.getOrder());
 
                     Order order = orderService.create(request);
 
-                    MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+                    MDC.put("newStatus", String.valueOf(order.getStatus()));
 
 
 
@@ -118,20 +118,25 @@ public class OrderController {
                 return badRequest().body(buildErrorResponse(bindingResult));
 
             } else {
+
+
                 if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
                 }
-
-                orderService.validateUpdate(request.getOrder());
+                else
+                {
+                    // Pedidos de cancelamento devem ser acatados, nao devemos por obstaculos no desejo do usuario de cancelar. Nao no backend.
+                    orderService.validateUpdate(request.getOrder());
+                }
 
                 Order order = orderService.update(request);
 
-                MDC.put("idCustomer: ", String.valueOf(order.getIdCustomer().getIdCustomer()));
-                MDC.put("customerUserStatus: ", String.valueOf(order.getIdCustomer().getStatus()));
-                MDC.put("idProfessional: ", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
-                MDC.put("professionalUserStatus: ", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
-                MDC.put("idOrder: ", String.valueOf(order.getIdOrder()));
-                MDC.put("newStatus: ", String.valueOf(order.getStatus()));
+                MDC.put("idCustomer", String.valueOf(order.getIdCustomer().getIdCustomer()));
+                MDC.put("customerUserStatus", String.valueOf(order.getIdCustomer().getStatus()));
+                MDC.put("idProfessional", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
+                MDC.put("professionalUserStatus", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
+                MDC.put("idOrder", String.valueOf(order.getIdOrder()));
+                MDC.put("newStatus", String.valueOf(order.getStatus()));
 
                 log.info("Order atualizado com sucesso.");
 

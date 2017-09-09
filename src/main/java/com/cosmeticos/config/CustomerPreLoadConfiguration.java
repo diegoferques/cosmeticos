@@ -51,7 +51,7 @@ public class CustomerPreLoadConfiguration {
             c1.setStatus(Customer.Status.ACTIVE.ordinal());
             c1.setAddress(this.createFakeAddress());
             c1.setUser(this.createFakeLogin("josilva","josilva@bol.com", User.PersonType.JURIDICA));
-            c1.getUser().addCreditCard(cc);
+            //c1.getUser().addCreditCard(cc);
 
             Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
             Customer c2 = new Customer();

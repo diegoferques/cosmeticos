@@ -149,6 +149,8 @@ public class OrderService {
         order.addPayment(validatedPayment);
 
         Order newOrder = orderRepository.save(order);
+
+        org.apache.log4j.MDC.put("idOrder", newOrder.getIdOrder());
         // Buscando se o customer que chegou no request esta na wallet
 
         addInWallet(persistentProfessionalCategory.getProfessional(), persistentCustomer);
@@ -255,7 +257,7 @@ public class OrderService {
         Order receivedOrder = request.getOrder();
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
-		MDC.put("previousOrderStatus", String.valueOf(receivedOrder.getStatus()));
+        MDC.put("previousOrderStatus", String.valueOf(persistentOrder.getStatus()));
 
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(persistentOrder.getStatus() == receivedOrder.getStatus()) {
@@ -676,7 +678,7 @@ public class OrderService {
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
-        org.apache.log4j.MDC.put("paymentStatus", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
+        org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
 
         if (paymentStatus.isSuccess()) {
 
