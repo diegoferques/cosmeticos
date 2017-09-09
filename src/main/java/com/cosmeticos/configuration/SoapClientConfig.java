@@ -24,12 +24,22 @@ public class SoapClientConfig {
 	  }
 
 	  @Bean
-	  public WebServiceTemplate webServiceTemplate() {
-	    WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
-	    webServiceTemplate.setMarshaller(jaxb2Marshaller());
-	    webServiceTemplate.setUnmarshaller(jaxb2Marshaller());
-	    webServiceTemplate.setDefaultUri("https://homologacao.superpay.com.br/checkout/servicosPagamentoOneClickWS.Services");
+	  public WebServiceTemplate webServiceTemplateOneClick() {
+	    WebServiceTemplate webServiceTemplateOneClick = new WebServiceTemplate();
+	    webServiceTemplateOneClick.setMarshaller(jaxb2Marshaller());
+	    webServiceTemplateOneClick.setUnmarshaller(jaxb2Marshaller());
+	    webServiceTemplateOneClick.setDefaultUri("https://homologacao.superpay.com.br/checkout/servicosPagamentoOneClickWS.Services");
 
-	    return webServiceTemplate;
+	    return webServiceTemplateOneClick;
 	  }
+
+	@Bean
+	public WebServiceTemplate webServiceTemplateCompleto() {
+		WebServiceTemplate webServiceTemplateCompleto = new WebServiceTemplate();
+		webServiceTemplateCompleto.setMarshaller(jaxb2Marshaller());
+		webServiceTemplateCompleto.setUnmarshaller(jaxb2Marshaller());
+		webServiceTemplateCompleto.setDefaultUri("https://homologacao.superpay.com.br/checkout/servicosPagamentoCompletoWS.Services?wsdl");
+
+		return webServiceTemplateCompleto;
+	}
 }
