@@ -57,18 +57,41 @@ public class UserService {
         if (optional.isPresent()) {
             User persistentUser = optional.get();
 
-            persistentUser.setUsername(userFromRequest.getUsername());
-            persistentUser.setPassword(userFromRequest.getPassword());
-            persistentUser.setEmail(userFromRequest.getEmail());
-            persistentUser.setSourceApp(userFromRequest.getSourceApp());
-            persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
-            persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
-            persistentUser.setStatus(userFromRequest.getStatus());
-            persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
-            persistentUser.setPersonType(userFromRequest.getPersonType());
+            if (userFromRequest.getUsername() != null) {
+                persistentUser.setUsername(userFromRequest.getUsername());
+            }
+            if (userFromRequest.getPassword() != null) {
+                persistentUser.setPassword(userFromRequest.getPassword());
+            }
+            if (userFromRequest.getEmail() != null) {
+                persistentUser.setEmail(userFromRequest.getEmail());
+            }
+            if (userFromRequest.getSourceApp() != null) {
+                persistentUser.setSourceApp(userFromRequest.getSourceApp());
+            }
+            if (userFromRequest.getRoleCollection() != null) {
+                persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
+            }
+            if (userFromRequest.getCreditCardCollection() != null) {
+                persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
+            }
+            if (userFromRequest.getStatus() != null) {
+                persistentUser.setStatus(userFromRequest.getStatus());
+            }
+            if (userFromRequest.getGoodByeReason() != null) {
+                persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
+            }
+            if (userFromRequest.getPersonType() != null) {
+                persistentUser.setPersonType(userFromRequest.getPersonType());
+            }
+            if (userFromRequest.getVoteCollection() != null) {
+                persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
+            }
+            if (userFromRequest.getGenerateToken() != null) {
+                persistentUser.setGenerateToken(userFromRequest.getGenerateToken());
+            }
+
             persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
-            persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
-            persistentUser.setGenerateToken(userFromRequest.getGenerateToken());
 
             repository.save(persistentUser);
         }
@@ -110,12 +133,10 @@ public class UserService {
         if (receivedUser.getEmail() != null && !receivedUser.getEmail().isEmpty()) {
             Boolean emailExists = persistentUser.getEmail().equals(receivedUser.getEmail());
 
-            return emailExists;
+            return !emailExists;
         } else {
             return false;
         }
-
-
     }
 
     public Optional<User> saveToken(UserRequestBody request){

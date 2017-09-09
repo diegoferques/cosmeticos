@@ -200,18 +200,9 @@ public class UserController {
                 log.error("BAD REQUEST: E-mail não informado!");
                 return badRequest().body(responseBody);
 
-            } else if(!service.verifyEmailExistsforUpdate(request.getEntity())) {
-                UserResponseBody responseBody = new UserResponseBody();
-                responseBody.setDescription("E-mail inexistente.");
-                log.error("NOT FOUND: E-mail inexistente.");
-                return notFound().build();
-
             } else {
 
                 User user = service.preparePasswordReset(request.getEntity());
-
-
-
 
                 if (user != null) {
 
