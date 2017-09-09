@@ -5,12 +5,11 @@ import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
-import com.cosmeticos.service.RandomCode;
 import com.cosmeticos.service.UserService;
-import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
@@ -38,8 +37,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    MailSenderService mailSenderService;
+
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
@@ -56,7 +54,7 @@ public class UserController {
                 log.error("Nao e permitido cadastro de usuario associados a cartoes pre-existentes.");
                 return badRequest().body(responseBody);
 
-            } else if(service.verifyEmailExists(request.getEntity().getEmail())) {
+            } else if(service.verifyEmailExistsforCreate(request.getEntity().getEmail())) {
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("E-mail já existente.");
                 log.error("Nao e permitido cadastro de usuario associados a emails pre-existentes.");
@@ -85,7 +83,8 @@ public class UserController {
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.PUT)
-    public HttpEntity<UserResponseBody> update(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
+    public HttpEntity<UserResponseBody>
+    update(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors()) {
@@ -100,7 +99,7 @@ public class UserController {
                 log.error("BAD REQUEST: Entity ID must to be set!");
                 return badRequest().body(responseBody);
 
-            } else if(service.verifyEmailExists(request.getEntity().getEmail())) {
+            } else if(service.verifyEmailExistsforUpdate(request.getEntity())) {
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("E-mail já existente.");
                 log.error("Nao e permitido atualizar usuario para um novo emails pre-existentes.");
@@ -201,7 +200,7 @@ public class UserController {
                 log.error("BAD REQUEST: E-mail não informado!");
                 return badRequest().body(responseBody);
 
-            } else if(!service.verifyEmailExists(request.getEntity().getEmail())) {
+            } else if(!service.verifyEmailExistsforUpdate(request.getEntity())) {
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("E-mail inexistente.");
                 log.error("NOT FOUND: E-mail inexistente.");
@@ -209,37 +208,22 @@ public class UserController {
 
             } else {
 
+                User user = service.preparePasswordReset(request.getEntity());
 
-                Optional<User> userOptional = service.saveToken(request);
 
-                User updatedUser = userOptional.get();
 
-                RandomCode random =  new RandomCode(4);
-                String code = random.nextString();
 
-                updatedUser.setGenerateToken(code);
+                if (user != null) {
 
-                
-
-                Boolean sendEmail = mailSenderService.sendEmail(updatedUser.getEmail(),
-                        "Esqueci minha senha",
-                        "Seu token pra recriar sua senha é: " + code);
-
-                UserResponseBody responseBody = new UserResponseBody();
-
-                if (sendEmail) {
-
-                    userRepository.save(updatedUser);
-
+                    UserResponseBody responseBody = new UserResponseBody(user);
                     responseBody.setDescription("Uma nova senha foi enviada para o email cadastrado");
 
-                    log.info("Uma nova senha foi enviada para o email cadastrado:  [{}]", updatedUser);
+                    log.info("Uma nova senha foi enviada para o email cadastrado: [{}]", user.getEmail());
                     return ok().body(responseBody);
                 } else {
-                    responseBody.setDescription("Houve um erro ao enviar o email com sua nova senha, tente novamente.");
 
-                    log.info("Houve um erro ao enviar o email com sua nova senha, tente novamente.:  [{}]", updatedUser);
-                    return ResponseEntity.status(500).body(responseBody);
+                    log.error("Usuario com o email " + user.getEmail() + " nao existe");
+                    return notFound().build();
                 }
             }
 
@@ -256,56 +240,46 @@ public class UserController {
     //TODO - FALTA CONFIGURAR EMAIL, SENHA SMTP E ETC DO SERVIDOR
     //TODO - FALTA CRIAR TESTES E VALIDAR
     //REFERENCIA: https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
-    @RequestMapping(path = "/users", method = RequestMethod.PUT)
+    @RequestMapping(path = "/users/password_reset", method = RequestMethod.PUT)
     public HttpEntity<UserResponseBody> passwordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
 
-        try {
-            if (bindingResult.hasErrors()) {
+        // Se o generateToken do request estiver  nulo, retornar BAD REQUEST
+        UserResponseBody responseBody = new UserResponseBody();
 
-                log.error("Erros na requisicao: {}", bindingResult.toString());
-                return badRequest().body(buildErrorResponse(bindingResult));
-
-            } else if (request.getEntity().getEmail() == null) {
-
-                UserResponseBody responseBody = new UserResponseBody();
-                responseBody.setDescription("E-mail não informado!");
-                log.error("BAD REQUEST: E-mail não informado!");
-                return badRequest().body(responseBody);
-
-            } else if(!service.verifyEmailExists(request.getEntity().getEmail())) {
-                UserResponseBody responseBody = new UserResponseBody();
-                responseBody.setDescription("E-mail inexistente.");
-                log.error("NOT FOUND: E-mail inexistente.");
-                return notFound().build();
-
-            } else {
-
-                Optional<User> userOptional = service.update(request);
-                User updatedUser = userOptional.get();
-                Boolean sendEmail = mailSenderService.sendEmail(updatedUser.getEmail(), "jh", "jhjhg");
-
-                UserResponseBody responseBody = new UserResponseBody();
-
-                if (sendEmail) {
-                    responseBody.setDescription("Uma nova senha foi enviada para o email cadastrado");
-
-                    log.info("Uma nova senha foi enviada para o email cadastrado:  [{}]", updatedUser);
-                    return ok().body(responseBody);
-                } else {
-                    responseBody.setDescription("Houve um erro ao enviar o email com sua nova senha, tente novamente.");
-
-                    log.info("Houve um erro ao enviar o email com sua nova senha, tente novamente.:  [{}]", updatedUser);
-                    return ResponseEntity.status(500).body(responseBody);
-                }
-            }
-
-        } catch (Exception e) {
-            log.error("Falha na atualizacao: {}", e.getMessage(), e);
-            UserResponseBody responseBody = new UserResponseBody();
-            responseBody.setDescription(e.getMessage());
-            return ResponseEntity.status(500).body(responseBody);
+        String receivedToken = request.getEntity().getGenerateToken();
+        if(receivedToken == null || receivedToken.isEmpty() ){
+            responseBody.setDescription("Token vazio");
+            return badRequest().body(responseBody);
         }
 
+        // Buscar o User no banco atraves de service.find(user.getId()) e ver se o
+        // token recebido no request eh igual ao token do user que foi retornado pelo service. Se nao for igual, retornar BAD REQUEST.
+        Optional<User> userOptional = service.findByEmail(request.getEntity().getEmail());
+
+        if (userOptional.isPresent()) {
+            if(!receivedToken.equals(userOptional.get().getGenerateToken())){
+                responseBody.setDescription("Token Invalido");
+                return badRequest().body(responseBody);
+            }
+        }else{
+            return notFound().build();
+        }
+
+        request.getEntity().setIdLogin(userOptional.get().getIdLogin());
+
+        ResponseEntity<UserResponseBody> response = (ResponseEntity<UserResponseBody>) update(request, bindingResult);
+
+        if(HttpStatus.OK.equals(response.getStatusCode()))
+        {
+            service.sendSuccesfullPasswordResetMessage(request.getEntity().getEmail());
+
+            return response;
+
+        }
+        else
+        {
+            return response;
+        }
     }
 
     private boolean validateCreditCards(Set<CreditCard> creditCardCollection) {

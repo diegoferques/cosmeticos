@@ -58,7 +58,7 @@ public class ProfessionalController {
                     userEmail = request.getProfessional().getUser().getEmail();
                 }
 
-                if(userService.verifyEmailExists(userEmail)) {
+                if(userService.verifyEmailExistsforCreate(userEmail)) {
 
                     ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
                     responseBody.setDescription("E-mail já existente.");

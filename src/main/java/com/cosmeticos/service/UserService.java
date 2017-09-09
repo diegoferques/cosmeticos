@@ -1,15 +1,16 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
+import com.cosmeticos.smtp.MailSenderService;
+import com.cosmeticos.validation.UserValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -24,6 +25,12 @@ public class UserService {
 
     @Autowired
     private VoteService voteService;
+
+    @Autowired
+    private MailSenderService mailSenderService;
+
+    @Autowired
+    private RandomCode randomCodeService;
 
     public User create(UserRequestBody request){
 
@@ -61,6 +68,7 @@ public class UserService {
             persistentUser.setPersonType(userFromRequest.getPersonType());
             persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
             persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
+            persistentUser.setGenerateToken(userFromRequest.getGenerateToken());
 
             repository.save(persistentUser);
         }
@@ -84,13 +92,29 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public Boolean verifyEmailExists(String email) {
+    public Boolean verifyEmailExistsforCreate(String email) {
 
         Optional<User> userOptional = repository.findByEmail(email);
 
         Boolean emailExists = userOptional.isPresent();
 
         return emailExists;
+
+    }
+
+    public Boolean verifyEmailExistsforUpdate(User receivedUser) {
+
+        User persistentUser = repository.findOne(receivedUser.getIdLogin());
+
+
+        if (receivedUser.getEmail() != null && !receivedUser.getEmail().isEmpty()) {
+            Boolean emailExists = persistentUser.getEmail().equals(receivedUser.getEmail());
+
+            return emailExists;
+        } else {
+            return false;
+        }
+
 
     }
 
@@ -102,8 +126,8 @@ public class UserService {
         if (userOptional.isPresent()) {
             User persistentUser = userOptional.get();
 
-            RandomCode random =  new RandomCode(4);
-            String code = random.nextString();
+            //RandomCode random =  new RandomCode(4);
+            String code = randomCodeService.nextString();
             
             persistentUser.setGenerateToken(code);
 
@@ -113,4 +137,40 @@ public class UserService {
         return userOptional;
     }
 
+    public User preparePasswordReset(User entity) {
+
+        Optional<User> userOptional = repository.findByEmail(entity.getEmail());
+
+        if (userOptional.isPresent()) {
+
+            User persistentUser = userOptional.get();
+
+            String code = randomCodeService.nextString();
+
+            Boolean sendEmail = mailSenderService.sendEmail(entity.getEmail(),
+                    "Esqueci minha senha",
+                    "Seu token pra recriar sua senha é: " + code);
+
+            if(sendEmail == true){
+                persistentUser.setGenerateToken(code);
+
+                update(persistentUser);
+
+                return persistentUser;
+            }else{
+                throw new UserValidationException(ErrorCode.USER_PASSWORD_RESET_EMAIL_FAIL, "Falha ao enviar email com token.");
+            }
+        } else {
+            return null;
+        }
+
+    }
+
+    public void sendSuccesfullPasswordResetMessage(String email) {
+        mailSenderService.sendEmail(email, "Atualização de senha", "Senha atualizada com sucesso");
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
 }

@@ -1,5 +1,7 @@
 package com.cosmeticos.service;
 
+import org.springframework.stereotype.Service;
+
 import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
@@ -7,6 +9,7 @@ import java.util.Random;
 /**
  * Created by Vinicius on 06/09/2017.
  */
+@Service
 public class RandomCode {
 
     private static final String elements = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -57,7 +60,7 @@ public class RandomCode {
      * Create session identifiers.
      */
     public RandomCode() {
-        this(8);
+        this(4);
     }
 
 }
