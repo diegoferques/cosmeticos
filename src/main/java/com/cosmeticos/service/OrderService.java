@@ -193,7 +193,8 @@ public class OrderService {
             if (persistentCreditCards.isEmpty()) {
                 throw new OrderValidationException(
                         ErrorCode.INVALID_PAYMENT_TYPE,
-                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
+                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
+                                persistentCustomer.toString()
                 );
             }
             else
