@@ -47,7 +47,7 @@ public class CustomerController {
                     userEmail = request.getCustomer().getUser().getEmail();
                 }
 
-                if(userService.verifyEmailExists(userEmail)) {
+                if(userService.verifyEmailExistsforCreate(userEmail)) {
 
                     CustomerResponseBody responseBody = new CustomerResponseBody();
                     responseBody.setDescription("E-mail já existente.");
@@ -131,6 +131,7 @@ public class CustomerController {
 
     }
 
+    @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
     public HttpEntity<CustomerResponseBody> findById(@PathVariable Long idCustomer) {
 

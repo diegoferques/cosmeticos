@@ -2,8 +2,7 @@ package com.cosmeticos.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.cosmeticos.payment.superpay.ws.DadosCadastroPagamentoOneClickWS;
-import com.cosmeticos.payment.superpay.ws.ResultadoPagamentoWS;
+import com.cosmeticos.payment.superpay.ws.oneclick.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

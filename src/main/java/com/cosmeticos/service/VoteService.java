@@ -36,19 +36,24 @@ public class VoteService {
     }
 
     public float getUserEvaluation(User user) {
+
         float evaluation = 0;
         Integer totalVotes = 0;
 
         List<Vote> votes = findAllByUser(user);
 
-        for (Vote vote: votes) {
-            int voteValue = vote.getValue() == null ? 0 : vote.getValue();
-            totalVotes += voteValue;
+        if (votes.size() > 0) {
+            for (Vote vote: votes) {
+                int voteValue = vote.getValue() == null ? 0 : vote.getValue();
+                totalVotes += voteValue;
+            }
+            evaluation = totalVotes / votes.size();
+            return evaluation;
         }
-
-        evaluation = totalVotes / votes.size();
-
-        return evaluation;
+        else
+        {
+            return 0.0f;
+        }
     }
 
 

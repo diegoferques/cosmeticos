@@ -193,7 +193,8 @@ public class OrderService {
             if (persistentCreditCards.isEmpty()) {
                 throw new OrderValidationException(
                         ErrorCode.INVALID_PAYMENT_TYPE,
-                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
+                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
+                                persistentCustomer.toString()
                 );
             }
             else
@@ -249,7 +250,7 @@ public class OrderService {
     }
 
     public Order update(OrderRequestBody request) throws Exception {
-        Order receivedOrder = request.getOrder();
+        Order receivedOrder = request.getOrder();// Po, ta pegando o q veio do request.. ate agora . nada anormal...
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
 		MDC.put("previousOrderStatus", String.valueOf(receivedOrder.getStatus()));
@@ -414,6 +415,9 @@ public class OrderService {
             ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
             User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
 
+            // tm algo errado aki...  eu nomeio os objetos com receivedXXX pra saber o q veio do request e persistentXXX pra saber o q veio do banco
+            // esse erro de lazy só faz sentido se o objeto veio do banco. Acho q em algum momento rolou confussao e  o receivedXX recebeu algo
+            // persistente. Vo dar uma debugada reversa rsrsjah eh
             Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
 
             addVotesToUser(persistentUser, receivedvote);

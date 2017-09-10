@@ -1,7 +1,8 @@
 package com.cosmeticos.payment;
 
-import com.cosmeticos.payment.superpay.ws.*;
+import com.cosmeticos.payment.superpay.ws.oneclick.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -13,6 +14,7 @@ import javax.xml.bind.JAXBElement;
 public class SuperpayOneClickClient {
 
 	@Autowired
+	@Qualifier("webServiceTemplateOneClick")
 	private WebServiceTemplate webServiceTemplate;
 
 	@Value("${superpay.senha}")
@@ -271,5 +273,7 @@ public class SuperpayOneClickClient {
 
 		return oneclickResponse.getReturn();
 	}
+
+
 
 }
