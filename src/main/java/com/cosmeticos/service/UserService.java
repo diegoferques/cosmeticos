@@ -87,8 +87,8 @@ public class UserService {
             if (userFromRequest.getVoteCollection() != null) {
                 persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
             }
-            if (userFromRequest.getGenerateToken() != null) {
-                persistentUser.setGenerateToken(userFromRequest.getGenerateToken());
+            if (userFromRequest.getLostPasswordToken() != null) {
+                persistentUser.setLostPasswordToken(userFromRequest.getLostPasswordToken());
             }
 
             persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
@@ -150,7 +150,7 @@ public class UserService {
             //RandomCode random =  new RandomCode(4);
             String code = randomCodeService.nextString();
             
-            persistentUser.setGenerateToken(code);
+            persistentUser.setLostPasswordToken(code);
 
             repository.save(persistentUser);
         }
@@ -173,7 +173,7 @@ public class UserService {
                     "Seu token pra recriar sua senha é: " + code);
 
             if(sendEmail == true){
-                persistentUser.setGenerateToken(code);
+                persistentUser.setLostPasswordToken(code);
 
                 update(persistentUser);
 

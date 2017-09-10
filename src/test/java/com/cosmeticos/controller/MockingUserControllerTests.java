@@ -93,7 +93,7 @@ public class MockingUserControllerTests {
                 "\t\"entity\": \n" +
                 "\t{\n" +
                 "\t    \"email\": \""+ userCreated.getEmail() +"\", \n" +
-                "\t    \"generateToken\": \"0000\"\n" +
+                "\t    \"lostPasswordToken\": \"0000\"\n" +
                 "\t}\n" +
                 "\t\n" +
                 "}";

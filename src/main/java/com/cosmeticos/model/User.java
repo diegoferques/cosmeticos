@@ -70,7 +70,7 @@ public class User implements Serializable {
 
     private String password;
 
-    private String generateToken;
+    private String lostPasswordToken;
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,

@@ -237,7 +237,7 @@ public class UserController {
         // Se o generateToken do request estiver  nulo, retornar BAD REQUEST
         UserResponseBody responseBody = new UserResponseBody();
 
-        String receivedToken = request.getEntity().getGenerateToken();
+        String receivedToken = request.getEntity().getLostPasswordToken();
         if(receivedToken == null || receivedToken.isEmpty() ){
             responseBody.setDescription("Token vazio");
             return badRequest().body(responseBody);
@@ -248,7 +248,7 @@ public class UserController {
         Optional<User> userOptional = service.findByEmail(request.getEntity().getEmail());
 
         if (userOptional.isPresent()) {
-            if(!receivedToken.equals(userOptional.get().getGenerateToken())){
+            if(!receivedToken.equals(userOptional.get().getLostPasswordToken())){
                 responseBody.setDescription("Token Invalido");
                 return badRequest().body(responseBody);
             }
