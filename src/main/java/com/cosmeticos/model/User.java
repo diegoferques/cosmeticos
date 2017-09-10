@@ -48,9 +48,10 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-        ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +60,7 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -75,6 +77,7 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,

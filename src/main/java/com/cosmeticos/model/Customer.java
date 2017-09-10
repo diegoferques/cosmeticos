@@ -36,6 +36,7 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerUpdate.class
     })
     @Id
@@ -45,7 +46,8 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
     })
     @NotEmpty(message = "nameCustomer was not set!")
     private String nameCustomer;
@@ -73,12 +75,14 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
     })
     private String cellPhone;
 
     @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegister;
@@ -92,7 +96,8 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
     })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
@@ -135,7 +140,7 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Customer[ idCustomer=" + idCustomer + " ]";
+        return "Customer[ idCustomer=" + idCustomer + ", email="+user.getEmail()+" ]";
     }
     
 }

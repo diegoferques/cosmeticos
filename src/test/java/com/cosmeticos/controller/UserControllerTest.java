@@ -272,7 +272,7 @@ public class UserControllerTest {
                 "\t\t\"idLogin\": \""+user.getIdLogin()+"\",\n" +
                 "\t\t\"username\": \"KILLER337\",\n" +
                 "\t    \"password\": \"109809876\",\n" +
-                "\t    \"email\": \"Killer33@gmail.com\",\n" +
+                "\t    \"email\": \"Killer33@gmail.com\",\n" + // Aplicacao nao deve permitir atualizar email pro user.
                 "\t    \"sourceApp\": \"facebook\",\n" +
                 "\t    \"status\": \"GONE\",\n" +
                 "\t    \"personType\":\"FISICA\",\n" +
@@ -293,7 +293,7 @@ public class UserControllerTest {
 
         // Conferindo se o controller executou a operacao com sucesso
         Assert.assertNotNull(rspUpdate);
-        Assert.assertEquals(HttpStatus.OK, rspUpdate.getStatusCode());
+        Assert.assertEquals("Aplicacao permitiu alterar o e-mail. Esta errado.", HttpStatus.BAD_REQUEST, rspUpdate.getStatusCode());
 
 
     }
