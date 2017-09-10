@@ -1,6 +1,7 @@
 package com.cosmeticos.payment;
 
 import com.cosmeticos.payment.superpay.ws.completo.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import javax.xml.bind.JAXBElement;
 @lombok.extern.slf4j.Slf4j
 public class SuperpayCompletoClient {
 
+    @Autowired
     @Qualifier("webServiceTemplateCompleto")
     private WebServiceTemplate webserviceTemplate;
 

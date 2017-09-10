@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Created by Vinicius on 10/09/2017.
  */
-//@ActiveProfiles("integrationTest")
+@ActiveProfiles("integrationTest")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SuperpayCompletoClientIntegrationTest {

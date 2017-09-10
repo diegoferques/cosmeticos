@@ -13,7 +13,8 @@ import javax.xml.bind.JAXBElement;
 @lombok.extern.slf4j.Slf4j
 public class SuperpayOneClickClient {
 
-	@Qualifier("webServiceTemplateOneClick")
+	@Autowired
+	@Qualifier("webServiceTemplat]eOneClick")
 	private WebServiceTemplate webServiceTemplate;
 
 	@Value("${superpay.senha}")
