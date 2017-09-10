@@ -5,11 +5,13 @@ import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.service.MulticlickPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,8 @@ public class PaymentController {
     private String estabelecimento;
 
     @Autowired
-    private MulticlickPaymentService paymentService;
+    @Qualifier("charger")
+    private Charger paymentService;
 
     @Autowired
     private PaymentRepository paymentRepository;

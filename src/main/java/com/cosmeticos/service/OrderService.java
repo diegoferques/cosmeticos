@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,7 @@ public class OrderService {
     private PenaltyService penaltyService;
 
     @Autowired
+    @Qualifier("charger")
     private Charger paymentService;
 
     @Autowired

@@ -65,4 +65,9 @@ public class OneClickPaymentService implements Charger<Order, RetornoTransacao> 
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
         return null;
     }
+
+    @Override
+    public Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
+        return null;
+    }
 }
