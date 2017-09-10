@@ -180,7 +180,7 @@
 							<generatePackage>com.cosmeticos.payment.superpay.ws.oneclick</generatePackage>
 							<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
 							<schemaIncludes>
-								<include>servicosPagamentoCompletoWS.Services.wsdl</include>
+								<include>servicosPagamentoOneClickWS.Services.wsdl</include>
 							</schemaIncludes>
 						</configuration>
 					</execution>

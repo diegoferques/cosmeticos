@@ -16,9 +16,21 @@ import org.springframework.ws.config.annotation.EnableWs;
 public class SoapClientConfig {
 
 	  @Bean
-	  Jaxb2Marshaller jaxb2Marshaller() {
+	  Jaxb2Marshaller jaxb2MarshallerOneclick() {
 	    Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
-	    jaxb2Marshaller.setContextPath("com.cosmeticos.payment.superpay.ws");
+	    jaxb2Marshaller.setContextPath(
+	    		"com.cosmeticos.payment.superpay.ws.oneclick"
+		);
+
+	    return jaxb2Marshaller;
+	  }
+
+	  @Bean
+	  Jaxb2Marshaller jaxb2MarshallerCompleto() {
+	    Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
+	    jaxb2Marshaller.setContextPath(
+				"com.cosmeticos.payment.superpay.ws.completo"
+		);
 
 	    return jaxb2Marshaller;
 	  }
@@ -26,8 +38,8 @@ public class SoapClientConfig {
 	  @Bean
 	  public WebServiceTemplate webServiceTemplateOneClick() {
 	    WebServiceTemplate webServiceTemplateOneClick = new WebServiceTemplate();
-	    webServiceTemplateOneClick.setMarshaller(jaxb2Marshaller());
-	    webServiceTemplateOneClick.setUnmarshaller(jaxb2Marshaller());
+	    webServiceTemplateOneClick.setMarshaller(jaxb2MarshallerOneclick());
+	    webServiceTemplateOneClick.setUnmarshaller(jaxb2MarshallerOneclick());
 	    webServiceTemplateOneClick.setDefaultUri("https://homologacao.superpay.com.br/checkout/servicosPagamentoOneClickWS.Services");
 
 	    return webServiceTemplateOneClick;
@@ -36,8 +48,8 @@ public class SoapClientConfig {
 	@Bean
 	public WebServiceTemplate webServiceTemplateCompleto() {
 		WebServiceTemplate webServiceTemplateCompleto = new WebServiceTemplate();
-		webServiceTemplateCompleto.setMarshaller(jaxb2Marshaller());
-		webServiceTemplateCompleto.setUnmarshaller(jaxb2Marshaller());
+		webServiceTemplateCompleto.setMarshaller(jaxb2MarshallerCompleto());
+		webServiceTemplateCompleto.setUnmarshaller(jaxb2MarshallerCompleto());
 		webServiceTemplateCompleto.setDefaultUri("https://homologacao.superpay.com.br/checkout/servicosPagamentoCompletoWS.Services?wsdl");
 
 		return webServiceTemplateCompleto;
