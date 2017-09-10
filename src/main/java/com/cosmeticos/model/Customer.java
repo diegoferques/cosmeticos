@@ -37,7 +37,8 @@ public class Customer implements Serializable {
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.OrderControllerUpdate.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +48,7 @@ public class Customer implements Serializable {
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     @NotEmpty(message = "nameCustomer was not set!")
@@ -79,11 +81,15 @@ public class Customer implements Serializable {
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     private String cellPhone;
 
     @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
@@ -100,6 +106,8 @@ public class Customer implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
@@ -144,7 +152,7 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication2.entity.Customer[ idCustomer=" + idCustomer + " ]";
+        return "Customer[ idCustomer=" + idCustomer + ", email="+user.getEmail()+" ]";
     }
     
 }

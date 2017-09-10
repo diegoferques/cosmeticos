@@ -1,15 +1,16 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
+import com.cosmeticos.smtp.MailSenderService;
+import com.cosmeticos.validation.UserValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -24,6 +25,12 @@ public class UserService {
 
     @Autowired
     private VoteService voteService;
+
+    @Autowired
+    private MailSenderService mailSenderService;
+
+    @Autowired
+    private RandomCode randomCodeService;
 
     public User create(UserRequestBody request){
 
@@ -50,17 +57,41 @@ public class UserService {
         if (optional.isPresent()) {
             User persistentUser = optional.get();
 
-            persistentUser.setUsername(userFromRequest.getUsername());
-            persistentUser.setPassword(userFromRequest.getPassword());
-            persistentUser.setEmail(userFromRequest.getEmail());
-            persistentUser.setSourceApp(userFromRequest.getSourceApp());
-            persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
-            persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
-            persistentUser.setStatus(userFromRequest.getStatus());
-            persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
-            persistentUser.setPersonType(userFromRequest.getPersonType());
+            if (userFromRequest.getUsername() != null) {
+                persistentUser.setUsername(userFromRequest.getUsername());
+            }
+            if (userFromRequest.getPassword() != null) {
+                persistentUser.setPassword(userFromRequest.getPassword());
+            }
+            if (userFromRequest.getEmail() != null) {
+                persistentUser.setEmail(userFromRequest.getEmail());
+            }
+            if (userFromRequest.getSourceApp() != null) {
+                persistentUser.setSourceApp(userFromRequest.getSourceApp());
+            }
+            if (userFromRequest.getRoleCollection() != null) {
+                persistentUser.setRoleCollection(userFromRequest.getRoleCollection());
+            }
+            if (userFromRequest.getCreditCardCollection() != null) {
+                persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
+            }
+            if (userFromRequest.getStatus() != null) {
+                persistentUser.setStatus(userFromRequest.getStatus());
+            }
+            if (userFromRequest.getGoodByeReason() != null) {
+                persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
+            }
+            if (userFromRequest.getPersonType() != null) {
+                persistentUser.setPersonType(userFromRequest.getPersonType());
+            }
+            if (userFromRequest.getVoteCollection() != null) {
+                persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
+            }
+            if (userFromRequest.getLostPasswordToken() != null) {
+                persistentUser.setLostPasswordToken(userFromRequest.getLostPasswordToken());
+            }
+
             persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
-            persistentUser.setVoteCollection(userFromRequest.getVoteCollection());
 
             repository.save(persistentUser);
         }
@@ -84,7 +115,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public Boolean verifyEmailExists(String email) {
+    public Boolean verifyEmailExistsforCreate(String email) {
 
         Optional<User> userOptional = repository.findByEmail(email);
 
@@ -94,14 +125,32 @@ public class UserService {
 
     }
 
-    public Optional<User> passwordReset(UserRequestBody request){
+    public Boolean verifyEmailExistsforUpdate(User receivedUser) {
+
+        User persistentUser = repository.findOne(receivedUser.getIdLogin());
+
+
+        if (receivedUser.getEmail() != null && !receivedUser.getEmail().isEmpty()) {
+            Boolean emailExists = persistentUser.getEmail().equals(receivedUser.getEmail());
+
+            return !emailExists;
+        } else {
+            return false;
+        }
+    }
+
+    public Optional<User> saveToken(UserRequestBody request){
 
         Optional<User> userOptional = repository.findByEmail(request.getEntity().getEmail());
+
 
         if (userOptional.isPresent()) {
             User persistentUser = userOptional.get();
 
-            persistentUser.setPassword(generateRandomPassword(8));
+            //RandomCode random =  new RandomCode(4);
+            String code = randomCodeService.nextString();
+            
+            persistentUser.setLostPasswordToken(code);
 
             repository.save(persistentUser);
         }
@@ -109,22 +158,40 @@ public class UserService {
         return userOptional;
     }
 
-    private String generateRandomPassword(int length) {
+    public User preparePasswordReset(User entity) {
 
-        Random RANDOM = new SecureRandom();
+        Optional<User> userOptional = repository.findByEmail(entity.getEmail());
 
-        //http://www.java2s.com/Code/Java/Security/GeneratearandomStringsuitableforuseasatemporarypassword.htm
-        // Pick from some letters that won't be easily mistaken for each
-        // other. So, for example, omit o O and 0, 1 l and L.
-        String letters = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789+@";
+        if (userOptional.isPresent()) {
 
-        String pw = "";
-        for (int i=0; i<length; i++)
-        {
-            int index = (int)(RANDOM.nextDouble()*letters.length());
-            pw += letters.substring(index, index+1);
+            User persistentUser = userOptional.get();
+
+            String code = randomCodeService.nextString();
+
+            Boolean sendEmail = mailSenderService.sendEmail(entity.getEmail(),
+                    "Esqueci minha senha",
+                    "Seu token pra recriar sua senha é: " + code);
+
+            if(sendEmail == true){
+                persistentUser.setLostPasswordToken(code);
+
+                update(persistentUser);
+
+                return persistentUser;
+            }else{
+                throw new UserValidationException(ErrorCode.USER_PASSWORD_RESET_EMAIL_FAIL, "Falha ao enviar email com token.");
+            }
+        } else {
+            return null;
         }
 
-        return pw;
+    }
+
+    public void sendSuccesfullPasswordResetMessage(String email) {
+        mailSenderService.sendEmail(email, "Atualização de senha", "Senha atualizada com sucesso");
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email);
     }
 }

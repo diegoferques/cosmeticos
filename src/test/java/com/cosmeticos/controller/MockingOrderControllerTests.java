@@ -5,7 +5,7 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.TypedCcPaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ public class MockingOrderControllerTests {
     private OrderService orderService;
 
     @MockBean
-    TypedCcPaymentService paymentService;
+    MulticlickPaymentService paymentService;
 
     @MockBean
     private PaymentController paymentController;

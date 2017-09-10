@@ -8,7 +8,7 @@ import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.TypedCcPaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.cosmeticos.service.VoteService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -31,7 +31,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 
@@ -83,7 +82,7 @@ public class OrderControllerTests {
      * Apesar de nao ser uma classe de teste mocking, precisamos mocar a ida ao superpay,.
      */
     @MockBean
-    private TypedCcPaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
     @Before
     public void setup() throws ParseException, JsonProcessingException {
@@ -1352,9 +1351,17 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.CLOSED +"\"\n" +
-                "   },\n" +
-                "   \"vote\" : 3\n" +
+                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" + // semi closed envia voto pro customer. CLOSED eh pro profissional
+                "    \"idCustomer\" : {\n" +
+                "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
+                "        \"user\" : {\n" +
+                "            \"voteCollection\" : [\n" +
+                "                {\n" +
+                "                    \"value\" : 3\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    }\n" +
                 "\n}\n" +
                 "}";
 
@@ -1373,12 +1380,14 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Order orderUpdateAccepted = exchangeUpdate.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+        Order orderUpdateSemiclosed = exchangeUpdate.getBody().getOrderList().get(0);
+        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateSemiclosed.getStatus());
 
-        float vote = voteService.getUserEvaluation(ps1.getProfessional().getUser());
+        Customer updatedCustomer = orderUpdateSemiclosed.getIdCustomer();
+
+        float vote = voteService.getUserEvaluation(updatedCustomer.getUser());
         Assert.assertNotNull(vote);
-        Assert.assertTrue((float)3.0 == vote);
+        Assert.assertTrue("O valor de vote eh: " + vote, (float)3.0 == vote);
         //-------
     }
 
@@ -1560,6 +1569,7 @@ public class OrderControllerTests {
                     "            ]\n" +
                     "        }\n" +
                     "       },\n" +
+
                     "      \"professionalCategoryId\": " +ps1.getProfessionalCategoryId()+ "\n" +
                     "    }\n" +
 

@@ -5,6 +5,7 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.*;
@@ -55,7 +56,7 @@ public class OrderService {
     private PenaltyService penaltyService;
 
     @Autowired
-    private TypedCcPaymentService paymentService;
+    private Charger paymentService;
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
@@ -198,7 +199,8 @@ public class OrderService {
             if (persistentCreditCards.isEmpty()) {
                 throw new OrderValidationException(
                         ErrorCode.INVALID_PAYMENT_TYPE,
-                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado."
+                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
+                                persistentCustomer.toString()
                 );
             }
             else
@@ -254,7 +256,7 @@ public class OrderService {
     }
 
     public Order update(OrderRequestBody request) throws Exception {
-        Order receivedOrder = request.getOrder();
+        Order receivedOrder = request.getOrder();// Po, ta pegando o q veio do request.. ate agora . nada anormal...
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
         MDC.put("previousOrderStatus", String.valueOf(persistentOrder.getStatus()));
@@ -427,6 +429,9 @@ public class OrderService {
             ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
             User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
 
+            // tm algo errado aki...  eu nomeio os objetos com receivedXXX pra saber o q veio do request e persistentXXX pra saber o q veio do banco
+            // esse erro de lazy só faz sentido se o objeto veio do banco. Acho q em algum momento rolou confussao e  o receivedXX recebeu algo
+            // persistente. Vo dar uma debugada reversa rsrsjah eh
             Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
 
             addVotesToUser(persistentUser, receivedvote);
@@ -696,16 +701,6 @@ public class OrderService {
                     log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
                 }
 
-                    //TODO - URGENTE
-                    //ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
-                    //OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
-                    Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.getBody());
-
-                    if (!updateStatusPagamento) {
-                        //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
-                        log.error("Erro ao salvar o status do pagamento");
-                        throw new RuntimeException("Erro salvar o status do pagamento");
-                    }
 
 
                     /* STATUS 31 RESPONDEMOS OK com o responseCode=31 e o client se vira pra responder adequadamente ao usuario.

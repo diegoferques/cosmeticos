@@ -9,7 +9,7 @@ import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.TypedCcPaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -47,7 +47,7 @@ public class PaymentControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private TypedCcPaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
     @Autowired
     AddressRepository addressRepository;

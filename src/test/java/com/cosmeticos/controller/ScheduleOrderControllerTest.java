@@ -6,7 +6,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.TypedCcPaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,7 +60,7 @@ public class ScheduleOrderControllerTest {
     private OrderRepository orderRepository;
 
     @MockBean
-    private TypedCcPaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
     private Order orderRestultFrom_createScheduledOrderOk = null;
 

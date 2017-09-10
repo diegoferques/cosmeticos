@@ -9,7 +9,7 @@ import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.service.TypedCcPaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class CashOrderControllerTests {
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @MockBean
-    private TypedCcPaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {
@@ -172,8 +172,46 @@ public class CashOrderControllerTests {
 
         Order readyOrder = exchangeUpdateInProgress.getBody().getOrderList().get(0);
 
-        ResponseEntity<OrderResponseBody> exchangeUpdaterSemiClosed = this.updateOrderStatus(
-                readyOrder.getIdOrder(), Order.Status.SEMI_CLOSED);
+
+
+
+
+
+
+
+
+        String jsonUpdateSemiclosed = "{\n" +
+                "  \"order\" : {\n" +
+                "    \"idOrder\" : "+ readyOrder.getIdOrder() +",\n" +
+                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
+
+                "    \"idCustomer\" : {\n" +
+                "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
+                "        \"user\" : {\n" +
+                "            \"voteCollection\" : [\n" +
+                "                {\n" +
+                "                    \"value\" : 4\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    }\n" +
+
+                "\n}\n" + // order
+                "}"; // root
+
+        System.out.println(jsonUpdateSemiclosed);
+
+        RequestEntity<String> entityUpdateSemiClosed =  RequestEntity
+                .put(new URI("/orders")) // put pra atualizar o que inserimos la em cima
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonUpdateSemiclosed);
+
+        ResponseEntity<OrderResponseBody> exchangeUpdaterSemiClosed = restTemplate
+                .exchange(entityUpdateSemiClosed, OrderResponseBody.class);
+
+
+
 
         Assert.assertNotNull(exchangeUpdaterSemiClosed);
         Assert.assertNotNull(exchangeUpdaterSemiClosed.getBody().getOrderList());
@@ -186,9 +224,22 @@ public class CashOrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ orderId +",\n" +
-                "    \"status\" : \""+ status +"\"\n" +
-                "\n}\n" +
-                "}";
+                "    \"status\" : \""+ status +"\",\n" +
+
+                "    \"professionalCategory\" : {\n" +
+                "       \"professional\" : {\n" +
+                "        \"user\" : {\n" +
+                "            \"voteCollection\" : [\n" +
+                "                {\n" +
+                "                    \"value\" : 2\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" + //user
+                "     }\n" +// professional
+                "    }\n" + // professionalCategory
+
+                "\n}\n" + // order
+                "}"; // root
 
         System.out.println(jsonUpdate);
 

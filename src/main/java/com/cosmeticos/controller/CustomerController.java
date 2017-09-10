@@ -47,7 +47,7 @@ public class CustomerController {
                     userEmail = request.getCustomer().getUser().getEmail();
                 }
 
-                if(userService.verifyEmailExists(userEmail)) {
+                if(userService.verifyEmailExistsforCreate(userEmail)) {
 
                     CustomerResponseBody responseBody = new CustomerResponseBody();
                     responseBody.setDescription("E-mail já existente.");

@@ -6,7 +6,6 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -48,8 +47,10 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-        ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
@@ -60,6 +61,7 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -72,9 +74,12 @@ public class User implements Serializable {
 
     private String password;
 
+    private String lostPasswordToken;
+
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -119,9 +124,10 @@ public class User implements Serializable {
     private PersonType personType;
 
     @JsonView({
-            ResponseJsonView.OrderControllerUpdate.class
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
-    // @Transient TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
+    @Transient
     private float evaluation;
 
     @JsonView({
@@ -145,20 +151,17 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    @JsonView({
-            ResponseJsonView.CustomerControllerGet.class,
-    })
-    public Integer getCreditCardCount() {
-        return creditCardCount = this.creditCardCollection.size();
-    }
-
     public void addCreditCard(CreditCard cc)
    {
        cc.setUser(this);
        this.getCreditCardCollection().add(cc);
    }
 
-   //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
+    public Integer getCreditCardCount() {
+        return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
+    }
+
+    //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
     public String getPassword() {
         return password;
     }

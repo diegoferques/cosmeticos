@@ -11,10 +11,9 @@ import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.TypedCcPaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jdk.nashorn.internal.ir.CaseNode;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,9 +34,7 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 
@@ -49,7 +46,7 @@ import static java.time.LocalDateTime.now;
 public class MockingPaymentControllerTests {
 
     @MockBean
-    private TypedCcPaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
    // @MockBean
    // private PaymentController paymentController;
@@ -373,6 +370,7 @@ public class MockingPaymentControllerTests {
         Assert.assertTrue(paymentStatus.isSuccess());
     }
 
+    @Ignore
     @Test
     public void testCapturarTransacaoOK2() throws Exception {
 
@@ -452,6 +450,11 @@ public class MockingPaymentControllerTests {
         OrderRequestBody orderRequestAccepted = new OrderRequestBody();
         orderRequestAccepted.setOrder(orderAccepted);
 
+
+
+
+
+        // TODO: apontar pro controller em vez do service.
         Order orderAcceptedUpdated = orderService.update(orderRequestAccepted);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderAcceptedUpdated);
