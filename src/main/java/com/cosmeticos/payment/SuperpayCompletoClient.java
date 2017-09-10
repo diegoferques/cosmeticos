@@ -29,31 +29,39 @@ public class SuperpayCompletoClient {
     @Value("${superpay.estabelecimento}")
     private String codigoEstabelecimento;
 
-    public ResultadoPagamentoWS capturePayment(Long numeroTransacao, int operacao){
+    public ResultadoPagamentoWS capturePayment(int codigoFormaPagamento,
+                                               String codigoSeguranca,
+                                               int idioma,
+                                               String ip,
+                                               String nomeTitularCarttaoCredito,
+                                               String origemTransacao,
+                                               int parcelas,
+                                               String urlCampainha,
+                                               String urlRedirecionamentoNaoPago,
+                                               String urlRedirecionamentoPago,
+                                               Long valor,
+                                               long valorDesconto){
 
         ObjectFactory factory = new ObjectFactory();
 
         TransacaoCompletaWS transacaoCompletaWS = factory.createTransacaoCompletaWS();
         transacaoCompletaWS.setCodigoEstabelecimento(codigoEstabelecimento);
-        transacaoCompletaWS.setCodigoEstabelecimento();
-        transacaoCompletaWS.setCodigoFormaPagamento();
-        transacaoCompletaWS.setCodigoSeguranca();
-        transacaoCompletaWS.setDadosUsuarioTransacao();
-        transacaoCompletaWS.setDataValidadeCartao();
-        transacaoCompletaWS.setIdioma();
-        transacaoCompletaWS.setIP();
-        transacaoCompletaWS.setNomeTitularCartaoCredito();
-        transacaoCompletaWS.setNumeroCartaoCredito();
-        transacaoCompletaWS.setNumeroTransacao();
-        transacaoCompletaWS.setOrigemTransacao();
-        transacaoCompletaWS.setParcelas();
-        transacaoCompletaWS.setTaxaEmbarque();
-        transacaoCompletaWS.setUrlCampainha();
-        transacaoCompletaWS.setUrlRedirecionamentoNaoPago();
-        transacaoCompletaWS.setUrlRedirecionamentoPago();
-        transacaoCompletaWS.setValor();
-        transacaoCompletaWS.setValorDesconto();
-        transacaoCompletaWS.setVencimentoBoleto();
+        transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento);
+        transacaoCompletaWS.setCodigoSeguranca(codigoSeguranca);
+        //transacaoCompletaWS.setDadosUsuarioTransacao(dadosUsuarios);
+        //transacaoCompletaWS.setDataValidadeCartao(dataValidadeCartao);
+        transacaoCompletaWS.setIdioma(idioma);
+        transacaoCompletaWS.setIP(ip);
+        transacaoCompletaWS.setNomeTitularCartaoCredito(nomeTitularCarttaoCredito);
+        //transacaoCompletaWS.setNumeroTransacao(numeroTransacao);
+        transacaoCompletaWS.setOrigemTransacao(origemTransacao);
+        transacaoCompletaWS.setParcelas(parcelas);
+        transacaoCompletaWS.setUrlCampainha(urlCampainha);
+        transacaoCompletaWS.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
+        transacaoCompletaWS.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
+        transacaoCompletaWS.setValor(valor);
+        transacaoCompletaWS.setValorDesconto(valorDesconto);
+        //transacaoCompletaWS.setVencimentoBoleto(vencimentoBoleto);
 
 
          CapturarTransacaoCompleta capturarTransacaoCompleta = factory.createCapturarTransacaoCompleta();

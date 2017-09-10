@@ -14,7 +14,7 @@ import javax.xml.bind.JAXBElement;
 public class SuperpayOneClickClient {
 
 	@Autowired
-	@Qualifier("webServiceTemplat]eOneClick")
+	@Qualifier("webServiceTemplateOneClick")
 	private WebServiceTemplate webServiceTemplate;
 
 	@Value("${superpay.senha}")
