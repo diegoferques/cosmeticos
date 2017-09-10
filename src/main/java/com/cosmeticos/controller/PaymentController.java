@@ -8,7 +8,6 @@ import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.PaymentRepository;
-import com.cosmeticos.service.MulticlickPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
