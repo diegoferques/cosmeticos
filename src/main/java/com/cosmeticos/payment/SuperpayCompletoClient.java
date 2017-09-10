@@ -33,19 +33,42 @@ public class SuperpayCompletoClient {
 
         ObjectFactory factory = new ObjectFactory();
 
+        TransacaoCompletaWS transacaoCompletaWS = factory.createTransacaoCompletaWS();
+        transacaoCompletaWS.setCodigoEstabelecimento(codigoEstabelecimento);
+        transacaoCompletaWS.setCodigoEstabelecimento();
+        transacaoCompletaWS.setCodigoFormaPagamento();
+        transacaoCompletaWS.setCodigoSeguranca();
+        transacaoCompletaWS.setDadosUsuarioTransacao();
+        transacaoCompletaWS.setDataValidadeCartao();
+        transacaoCompletaWS.setIdioma();
+        transacaoCompletaWS.setIP();
+        transacaoCompletaWS.setNomeTitularCartaoCredito();
+        transacaoCompletaWS.setNumeroCartaoCredito();
+        transacaoCompletaWS.setNumeroTransacao();
+        transacaoCompletaWS.setOrigemTransacao();
+        transacaoCompletaWS.setParcelas();
+        transacaoCompletaWS.setTaxaEmbarque();
+        transacaoCompletaWS.setUrlCampainha();
+        transacaoCompletaWS.setUrlRedirecionamentoNaoPago();
+        transacaoCompletaWS.setUrlRedirecionamentoPago();
+        transacaoCompletaWS.setValor();
+        transacaoCompletaWS.setValorDesconto();
+        transacaoCompletaWS.setVencimentoBoleto();
 
-         CapturarTransacaoCompleta transacaoCompleta = factory.createCapturarTransacaoCompleta();
-         transacaoCompleta.setUsuario(user);
-         transacaoCompleta.setSenha(password);
+
+         CapturarTransacaoCompleta capturarTransacaoCompleta = factory.createCapturarTransacaoCompleta();
+         capturarTransacaoCompleta.setUsuario(user);
+         capturarTransacaoCompleta.setSenha(password);
+         capturarTransacaoCompleta.setTransacao(transacaoCompletaWS);
 
 
-        OperacaoVO vo = factory.createOperacaoVO();
-        vo.setCodigoEstabelecimento(codigoEstabelecimento);
-        vo.setNumeroTransacao(numeroTransacao);
-        vo.setOperacao(operacao); // Código que identifica o processo que deseja realizar. Para captura, deve-se enviar o valor 1
+       // OperacaoVO vo = factory.createOperacaoVO();
+       // vo.setCodigoEstabelecimento(codigoEstabelecimento);
+       // vo.setNumeroTransacao(numeroTransacao);
+       // vo.setOperacao(operacao); // Código que identifica o processo que deseja realizar. Para captura, deve-se enviar o valor 1
 
         JAXBElement<CapturarTransacaoCompleta> requestBody =
-                factory.createCapturarTransacaoCompleta(transacaoCompleta);
+                factory.createCapturarTransacaoCompleta(capturarTransacaoCompleta);
 
         JAXBElement<CapturarTransacaoCompletaResponse> jaxbResponse =
                 (JAXBElement<CapturarTransacaoCompletaResponse>) webserviceTemplate.marshalSendAndReceive(requestBody);

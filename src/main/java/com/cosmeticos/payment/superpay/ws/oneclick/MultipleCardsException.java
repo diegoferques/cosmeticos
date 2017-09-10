@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.11 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2017.09.10 às 01:45:15 PM BRT 
+// Gerado em: 2017.09.10 às 03:52:45 PM BRT 
 //
 
 
@@ -50,8 +50,8 @@ public class MultipleCardsException {
     @XmlElementRefs({
         @XmlElementRef(name = "message", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "key", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "cartao", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "cartoesVo", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "cartoesVo", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "cartao", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<?>> content;
 
@@ -61,8 +61,8 @@ public class MultipleCardsException {
      * <p>
      * Você está obtendo esta propriedade "catch-all" pelo seguinte motivo: 
      * O nome do campo "Message" é usado por duas partes diferentes de um esquema. Consulte: 
-     * linha 244 de file:/C:/Users/Vinicius/Desktop/Dev%20Docs/cosmeticos-diego/cosmeticos/src/main/resources/wsdl/servicosPagamentoOneClickWS.Services.wsdl
-     * linha 240 de file:/C:/Users/Vinicius/Desktop/Dev%20Docs/cosmeticos-diego/cosmeticos/src/main/resources/wsdl/servicosPagamentoOneClickWS.Services.wsdl
+     * linha 244 de file:/C:/Users/magarrett.dias/Documents/Garry/estudos/projetos/cosmeticos/src/main/resources/wsdl/servicosPagamentoOneClickWS.Services.wsdl
+     * linha 240 de file:/C:/Users/magarrett.dias/Documents/Garry/estudos/projetos/cosmeticos/src/main/resources/wsdl/servicosPagamentoOneClickWS.Services.wsdl
      * <p>
      * Para eliminar esta propriedade, aplique uma personalização de propriedade a uma 
      * das seguintes declarações, a fim de alterar seus nomes: 
@@ -83,10 +83,10 @@ public class MultipleCardsException {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link TransacaoDadosCobrancaCartaoVo }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link TransacaoDadosCobrancaCartaoVo }{@code >}
+     * {@link JAXBElement }{@code <}{@link TransacaoDadosCobrancaCartaoVo }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * 
      * 
      */
