@@ -131,6 +131,7 @@ public class CustomerController {
 
     }
 
+    @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
     public HttpEntity<CustomerResponseBody> findById(@PathVariable Long idCustomer) {
 

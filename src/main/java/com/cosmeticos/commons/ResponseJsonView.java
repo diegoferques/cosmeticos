@@ -30,4 +30,7 @@ public class ResponseJsonView {
 
     public interface CustomerControllerUpdate {
     }
+
+    public interface CustomerControllerGet {
+    }
 }
