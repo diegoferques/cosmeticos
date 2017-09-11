@@ -76,7 +76,7 @@ public class User implements Serializable {
 
     //TODO: FALTA IMPLEMENTAR ISSO QUANDO UTILIZAR O TOKEN
     //(Voltar pra 0 após utilizar o token para trocar a senha)
-    private Integer lostPassword = 0;
+    private Boolean lostPassword = false;
 
     //TOKEN GERADO PARA TROCAR A SENHA
     private String lostPasswordToken;

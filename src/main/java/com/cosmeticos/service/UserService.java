@@ -174,7 +174,7 @@ public class UserService {
 
             if(sendEmail == true){
                 persistentUser.setLostPasswordToken(code);
-                persistentUser.setLostPassword(1);
+                persistentUser.setLostPassword(true);
 
                 update(persistentUser);
 
@@ -202,7 +202,7 @@ public class UserService {
         if(!persistentUser.getLostPasswordToken().equals(request.getLostPasswordToken())) {
             return false;
 
-        } else if(persistentUser.getLostPassword() != 1) {
+        } else if(persistentUser.getLostPassword() != true) {
             return false;
         }else {
             return true;
@@ -211,7 +211,7 @@ public class UserService {
     }
 
     public void invalidateToken(User user) {
-        user.setLostPassword(0);
+        user.setLostPassword(false);
         user.setLostPasswordToken(null);
         repository.save(user);
     }
