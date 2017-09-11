@@ -121,7 +121,7 @@ public class OrderController {
                     orderService.abort(request.getOrder());
                 }
 
-                orderService.validateUpdate(request.getOrder());
+                orderService.validateUpdate(request.getOrder());// Só se esse validate ta fazendo mais do q se espera e ta alterando o order.
 
                 Order order = orderService.update(request);
 

@@ -155,20 +155,37 @@
 				<!-- <version>${maven-jaxb2-plugin.version}</version> -->
 				<version>0.13.2</version>
 				<executions>
+
 					<execution>
+						<id>completo</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
+						<configuration>
+							<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
+							<generatePackage>com.cosmeticos.payment.superpay.ws.completo</generatePackage>
+							<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
+							<schemaIncludes>
+								<include>servicosPagamentoCompletoWS.Services.wsdl</include>
+							</schemaIncludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>oneclick</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
+							<generatePackage>com.cosmeticos.payment.superpay.ws.oneclick</generatePackage>
+							<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
+							<schemaIncludes>
+								<include>servicosPagamentoOneClickWS.Services.wsdl</include>
+							</schemaIncludes>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
-					<generatePackage>com.cosmeticos.payment.superpay.ws</generatePackage>
-					<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
-					<schemaIncludes>
-						<include>*.wsdl</include>
-					</schemaIncludes>
-				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>

@@ -48,9 +48,11 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonView({
-        ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,10 +61,12 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @NotEmpty(message = "UserName cannot be empty")
     @Column(unique = true)
@@ -70,13 +74,17 @@ public class User implements Serializable {
 
     private String password;
 
+    private String lostPasswordToken;
+
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Column(unique = true)
     private String email;
@@ -101,6 +109,12 @@ public class User implements Serializable {
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerGet.class
+    })
+    @Transient
+    private Integer creditCardCount;
+
     @JsonBackReference(value="user-customer")
     @OneToOne(mappedBy = "user")
     @JoinColumn(name = "idUser")
@@ -117,8 +131,8 @@ public class User implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
-
     @Transient
     private float evaluation;
 
@@ -143,7 +157,11 @@ public class User implements Serializable {
        this.getCreditCardCollection().add(cc);
    }
 
-   //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
+    public Integer getCreditCardCount() {
+        return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
+    }
+
+    //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
     public String getPassword() {
         return password;
     }

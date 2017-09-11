@@ -15,13 +15,15 @@ public class CustomerResponseBody {
 
     @JsonView(
             {
-                    ResponseJsonView.CustomerControllerUpdate.class
+                    ResponseJsonView.CustomerControllerUpdate.class,
+                    ResponseJsonView.CustomerControllerGet.class
             })
     private String description;
 
     @JsonView(
             {
-                    ResponseJsonView.CustomerControllerUpdate.class
+                    ResponseJsonView.CustomerControllerUpdate.class,
+                    ResponseJsonView.CustomerControllerGet.class
             })
     private List<Customer> customerList = new ArrayList<>(10);
 

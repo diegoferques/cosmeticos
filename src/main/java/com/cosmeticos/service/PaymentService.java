@@ -31,15 +31,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -240,7 +233,7 @@ public class PaymentService {
 
         //TODO - PRECISAMOS DE ALGO PARECIDO COMO O QUE SEGUE ABAIXO PARA PEGAR OS DADOS DA FORMA DE PAGAMENTO DE ORDER
         //CreditCard creditCard = order.getPayment().getCreditCard();
-        CreditCard creditCard = this.getCartaoTeste();
+        CreditCard creditCard = this.getPaymentCreditCard(order);
 
         TransacaoRequest request = new TransacaoRequest();
 
@@ -405,25 +398,22 @@ public class PaymentService {
     }
 
     //GERAMOS UM CARTAO DE TESTE DA SUPERPAY PARA USAR NOS TESTES
-    public CreditCard getCartaoTeste() throws ParseException {
+    public CreditCard getPaymentCreditCard(Order order) throws ParseException {
 
-        CreditCard creditCard = new CreditCard();
-        creditCard.setOwnerName("Cliente Teste");
-        creditCard.setCardNumber("0000000000000001");
-        creditCard.setSecurityCode("123");
+        Customer persistentCustomer = customerRepository.findOne(order.getIdCustomer().getIdCustomer());
 
-        //SimpleDateFormat dateFormat = new SimpleDateFormat("mm,yyyy");
-        //Date expiration = dateFormat.parse("12,2026");
-        //creditCard.setExpirationDate(expiration);
-        //new Date(2026,12,01);
-        //new LocalDate(2026,12, 01).get();
+        Optional<CreditCard> optionalCc = persistentCustomer
+                .getUser()
+                .getCreditCardCollection()
+                .stream()
+                .findFirst();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        creditCard.setExpirationDate(sdf.parse("01/12/2026"));
+        if (optionalCc.isPresent()){
+            return optionalCc.get();
+        }else{
+            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_TYPE, "Cartão não cadastrado");
+        }
 
-        creditCard.setVendor("Visa");
-
-        return creditCard;
     }
 
 
