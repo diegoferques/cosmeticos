@@ -1,9 +1,5 @@
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-
-import javax.persistence.*;
-
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
