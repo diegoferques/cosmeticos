@@ -68,8 +68,8 @@ public class User implements Serializable {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-    @NotEmpty(message = "UserName cannot be empty")
-    @Column(unique = true)
+
+    //TODO - DELETAR ESTE PARAMETRO
     private String username;
 
     private String password;
