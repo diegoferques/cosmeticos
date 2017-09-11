@@ -6,7 +6,6 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -16,6 +15,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -74,7 +74,17 @@ public class User implements Serializable {
 
     private String password;
 
+    //TODO: FALTA IMPLEMENTAR ISSO QUANDO UTILIZAR O TOKEN
+    //(Voltar pra 0 após utilizar o token para trocar a senha)
+    private Boolean lostPassword = false;
+
+    //TOKEN GERADO PARA TROCAR A SENHA
     private String lostPasswordToken;
+
+    //TODO: FALTA IMPLEMENTAR ISSO QUANDO GERA O TOKEN
+    //DATA SOLICITADA + X HORAS OU DIAS;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lostPasswordValidThru;
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,

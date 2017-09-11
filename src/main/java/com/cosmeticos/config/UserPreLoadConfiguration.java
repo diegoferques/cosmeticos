@@ -121,12 +121,20 @@ public class UserPreLoadConfiguration {
         u5.setSourceApp("google+");
         u5.setPersonType(User.PersonType.FISICA);
 
+        User u6 = new User();
+        u6.setUsername("diegoferques");
+        u6.setPassword("abc123");
+        u6.setEmail("diegoferques@gmail.com");
+        u6.setSourceApp("google+");
+        u6.setPersonType(User.PersonType.FISICA);
+
 
         repository.save(u1);
         repository.save(u2);
         repository.save(u3);
         repository.save(u4);
         repository.save(u5);
+        repository.save(u6);
 
 
     }
