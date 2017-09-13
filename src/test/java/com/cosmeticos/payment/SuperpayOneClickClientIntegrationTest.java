@@ -144,15 +144,15 @@ public class SuperpayOneClickClientIntegrationTest {
 	}
 
 	private String addCard(String dataValidadeCartao, String emailComprador, Long formaPagamento, String nomeTitularCartaoCredito, String numeroCartaoCredito) {
-		String result = oneClickClient.addCard(
+		String result = String.valueOf(oneClickClient.addCard(
 				dataValidadeCartao,
 				emailComprador,
 				formaPagamento,
 				nomeTitularCartaoCredito,
-				numeroCartaoCredito);
+				numeroCartaoCredito));
 
 		System.out.println(result);
-		return result;
+		return String.valueOf(result);
 	}
 
 	private ResultadoPagamentoWS pay(Long numeroTransacao,
@@ -186,16 +186,11 @@ public class SuperpayOneClickClientIntegrationTest {
 									 Long valorUnitarioProduto, String cvv) {
 		ResultadoPagamentoWS result = (oneClickClient.pay(
 				numeroTransacao,
-				idioma,
 				ip,
 				origemTransacao,
-				parcelas,
 				token,
 				campainha,
-				urlRedirecionamentoNaoPago,
-				urlRedirecionamentoPago,
 				valor,
-				valorDesconto,
 				bairroEnderecoComprador,
 				cepEnderecoComprador,
 				cidadeEnderecoCompra,
@@ -207,16 +202,9 @@ public class SuperpayOneClickClientIntegrationTest {
 				nomeComprador,
 				numeroEnderecoComprador,
 				paisComprar,
-				sexoComprador,
-				telefoneAdicionalComprador,
-				telefoneComprador,
 				tipoCliente,
-				codigoTipoTelefoneAdicionalComprador,
 				codigoCategoria,
 				nomeCategoria,
-				codigoProduto,
-				nomeProduto,
-				quantidadeProduto,
 				valorUnitarioProduto,
 				nomeComprador,
 				estadoEnderecoComprador,
@@ -224,7 +212,7 @@ public class SuperpayOneClickClientIntegrationTest {
 				sexoComprador,
 				telefoneAdicionalComprador,
 				telefoneComprador,
-				cvv));
+				nomeProduto, cvv));
 
 		System.out.println(result);
 		return result;

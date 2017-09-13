@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class MulticlickPaymentService implements Charger<Order, RetornoTransacao> {
+public class MulticlickPaymentService implements Charger<Order> {
 
     @Value("${superpay.url.transacao}")
     private String urlTransacao;
@@ -76,7 +75,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     private Map<String, Integer> formasPagamentoMap = getFormasPagamentoMap();
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
-    private ChargeResponse<RetornoTransacao> sendRequest(Order orderCreated) {
+    private ChargeResponse<Object> sendRequest(Order orderCreated) {
 
         try {
             Order order = orderRepository.findOne(orderCreated.getIdOrder());
@@ -97,7 +96,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
             //String response = postJson(urlTransacao, formasPagamentoMap, jsonRequest);
             ChargeResponse<RetornoTransacao> retornoTransacao = postJson(urlTransacao, usuarioMap, jsonRequest);
 
-            return retornoTransacao;
+            return new ChargeResponse<>(retornoTransacao);
         } catch (JsonProcessingException e) {
             throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha convertendo json", e);
         }
@@ -494,11 +493,13 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     }
 
     @Override
-    public ChargeResponse<RetornoTransacao> reserve(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> reserve(ChargeRequest<Order> chargeRequest) {
 
-        ChargeResponse<RetornoTransacao> response = this.sendRequest(chargeRequest.getBody());
+        ChargeResponse<Object> response = this.sendRequest(chargeRequest.getBody());
 
-        Integer superpayStatusStransacao = response.getBody().getStatusTransacao();
+        RetornoTransacao retornoTransacao = (RetornoTransacao) response.getBody();
+
+        Integer superpayStatusStransacao = retornoTransacao.getStatusTransacao();
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
@@ -520,12 +521,12 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     }
 
     @Override
-    public ChargeResponse<RetornoTransacao> capture(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> capture(ChargeRequest<Order> chargeRequest) {
         return new ChargeResponse(validatePaymentStatusAndSendCapture(chargeRequest.getBody()));
     }
 
     @Override
-    public ChargeResponse<RetornoTransacao> getStatus(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> getStatus(ChargeRequest<Order> chargeRequest) {
         // TODO: aplicar logica pra pegar o payment com o id (q eh o cod de transacao) correto.
         Order order = chargeRequest.getBody();
         Set<Payment> payments = order.getPaymentCollection();
@@ -535,5 +536,10 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
             return new ChargeResponse(consultaTransacao(payment.get().getId()));
         else
             throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Nao conseguimos encontrar o id da transacao");
+    }
+
+    @Override
+    public Boolean updatePaymentStatus(Object retornoTransacao) {
+        return true;
     }
 }

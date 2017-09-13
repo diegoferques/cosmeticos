@@ -372,11 +372,13 @@ public class PaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        ChargeResponse<RetornoTransacao> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+
+        RetornoTransacao retornoTransacao1 = (RetornoTransacao) retornoTransacao.getBody();
 
         Assert.assertNotNull(retornoTransacao.getBody());
-        Assert.assertNotNull(retornoTransacao.getBody().getAutorizacao());
-        Assert.assertNotNull(retornoTransacao.getBody().getNumeroTransacao());
+        Assert.assertNotNull(retornoTransacao1.getAutorizacao());
+        Assert.assertNotNull(retornoTransacao1.getNumeroTransacao());
 
     }
 
@@ -388,9 +390,11 @@ public class PaymentControllerTests {
         //CERTIFIQUE-SE QUE A ORDER ABAIXO ESTA COM O STATUS READY2CHARGE, CASO CONTRARIO RETORNARA UM ERRO!
         Order order = orderRepository.findOne(14L);
 
-        ChargeResponse<RetornoTransacao> chargeResponse = paymentService.capture(new ChargeRequest<>(order));
+        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(order));
 
-        Integer superpayStatusTransacao = chargeResponse.getBody().getStatusTransacao();
+        RetornoTransacao retornoTransacao = (RetornoTransacao) chargeResponse.getBody();
+
+        Integer superpayStatusTransacao = retornoTransacao.getStatusTransacao();
 
         Assert.assertTrue(Payment.Status.fromSuperpayStatus(superpayStatusTransacao).isSuccess());
 

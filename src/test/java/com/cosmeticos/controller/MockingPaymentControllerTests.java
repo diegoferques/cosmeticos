@@ -79,7 +79,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testNonScheduledPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())
@@ -151,18 +151,20 @@ public class MockingPaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        ChargeResponse<RetornoTransacao> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+
+        RetornoTransacao retornoTransacao1 = (RetornoTransacao) retornoTransacao.getBody();
 
         Assert.assertNotNull(retornoTransacao.getBody());
-        Assert.assertNotNull(retornoTransacao.getBody().getAutorizacao());
-        Assert.assertNotNull(retornoTransacao.getBody().getNumeroTransacao());
+        Assert.assertNotNull(retornoTransacao1.getAutorizacao());
+        Assert.assertNotNull(retornoTransacao1.getNumeroTransacao());
 
     }
 
     @Test
     public void testScheduledOrderPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())
@@ -342,7 +344,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
         ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao(1);
 
         Mockito.when(
@@ -361,9 +363,11 @@ public class MockingPaymentControllerTests {
         // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
         // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
 
-        ChargeResponse<RetornoTransacao> retornoTransacaoSuperpay = paymentService.capture(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacaoSuperpay = paymentService.capture(new ChargeRequest<>(order));
 
-        Integer superpayStatusStransacao = retornoTransacaoSuperpay.getBody().getStatusTransacao();
+        RetornoTransacao retornoTransacao = (RetornoTransacao) retornoTransacaoSuperpay.getBody();
+
+        Integer superpayStatusStransacao = retornoTransacao.getStatusTransacao();
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
@@ -374,7 +378,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCapturarTransacaoOK2() throws Exception {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
         ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao(1);
 
         Mockito.when(
@@ -516,7 +520,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCampainhaOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
 
         Mockito.when(
                 paymentService.getStatus(Mockito.any())
@@ -540,7 +544,7 @@ public class MockingPaymentControllerTests {
 
     }
 
-    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {
         return new ChargeResponse(this.getFakeRetornoTransacao(statusTransacao));
     }
 
@@ -600,7 +604,7 @@ public class MockingPaymentControllerTests {
 
         //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())

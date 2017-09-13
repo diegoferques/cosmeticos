@@ -37,10 +37,10 @@ public class SuperpayOneClickClient {
 	 * @return
 	 */
 	public String addCard(
-			String dataValidadeCartao, 
-			String emailComprador, 
+			String dataValidadeCartao,
+			String emailComprador,
 			Long formaPagamento,
-			String nomeTitularCartaoCredito, 
+			String nomeTitularCartaoCredito,
 			String numeroCartaoCredito) {
 		
 		ObjectFactory factory = new ObjectFactory();
@@ -78,14 +78,11 @@ public class SuperpayOneClickClient {
 	}
 
 	public ResultadoPagamentoWS pay(Long numeroTransacao,
-									int idioma, String ip,
+									String ip,
 									String origemTransacao,
-									int parcelas,
 									String token,
 									String campainha,
-									String urlRedirecionamentoNaoPago,
-									String urlRedirecionamentoPago,
-									long valor, long valorDesconto,
+									long valor,
 									String bairroEnderecoComprador,
 									String cepEnderecoComprador,
 									String cidadeEnderecoCompra,
@@ -97,23 +94,16 @@ public class SuperpayOneClickClient {
 									String ddiAdicionalComprador,
 									String ddiComprador,
 									String documento2Comprador,
-									String documentoComprador,
-									String emailComprador,
-									String enderecoComprador,
 									long tipoCliente,
-									long codigoTipoTelefoneAdicionalComprador,
 									String codigoCategoria,
 									String nomeCategoria,
-									String codigoProduto,
-									String nomeProduto,
-									int quantidadeProduto,
 									Long valorUnitarioProduto,
 									String nomeComprador,
 									String estadoEnderecoComprador,
 									String numeroEnderecoComprador,
 									String paisComprador,
 									String sexoComprador,
-									String telefoneAdicionalComprador, String cvv){
+									String telefoneAdicionalComprador, String nomeProduto, String cvv){
 
 		ObjectFactory factory = new ObjectFactory();
 
@@ -129,9 +119,6 @@ public class SuperpayOneClickClient {
 		dadosUsuarioTransacao.setDdiAdicionalComprador(ddiAdicionalComprador);
 		dadosUsuarioTransacao.setDdiComprador(ddiComprador);
 		dadosUsuarioTransacao.setDocumento2Comprador(documento2Comprador);
-		dadosUsuarioTransacao.setDocumentoComprador(documentoComprador);
-		dadosUsuarioTransacao.setEmailComprador(emailComprador);
-		dadosUsuarioTransacao.setEnderecoComprador(enderecoComprador);
 		dadosUsuarioTransacao.setEstadoEnderecoComprador(estadoEnderecoComprador);
 		dadosUsuarioTransacao.setNomeComprador(nomeComprador);
 		dadosUsuarioTransacao.setNumeroEnderecoComprador(numeroEnderecoComprador);
@@ -139,7 +126,6 @@ public class SuperpayOneClickClient {
 		dadosUsuarioTransacao.setSexoComprador(sexoComprador);
 		dadosUsuarioTransacao.setTelefoneAdicionalComprador(telefoneAdicionalComprador);
 		dadosUsuarioTransacao.setTipoCliente(tipoCliente);
-		dadosUsuarioTransacao.setCodigoTipoTelefoneAdicionalComprador(codigoTipoTelefoneAdicionalComprador);
 		//dadosUsuarioTransacao.setCidadeEnderecoEntrega();
 		//dadosUsuarioTransacao.setCepEnderecoEntrega();
 		//dadosUsuarioTransacao.setCodigoTipoTelefoneAdicionalEntrega();
@@ -162,26 +148,26 @@ public class SuperpayOneClickClient {
 		transacaoOneClickWSV2.setNumeroTransacao(numeroTransacao);
 		transacaoOneClickWSV2.setCodigoEstabelecimento(codigoEstabelecimento);
 		transacaoOneClickWSV2.setDadosUsuarioTransacao(dadosUsuarioTransacao);
-		transacaoOneClickWSV2.setIdioma(idioma);
+		//transacaoOneClickWSV2.setIdioma(idioma);
 		transacaoOneClickWSV2.setIP(ip);
 		transacaoOneClickWSV2.setOrigemTransacao(origemTransacao);
-		transacaoOneClickWSV2.setParcelas(parcelas);
+		//transacaoOneClickWSV2.setParcelas(parcelas);
 		//transacaoOneClickWS.setTaxaEmbarque(taxaEmbarque);
 		transacaoOneClickWSV2.setToken(token);
 		transacaoOneClickWSV2.setUrlCampainha(campainha);
-		transacaoOneClickWSV2.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
-		transacaoOneClickWSV2.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
+		//transacaoOneClickWSV2.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
+		//transacaoOneClickWSV2.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
 		transacaoOneClickWSV2.setValor(valor);
-		transacaoOneClickWSV2.setValorDesconto(valorDesconto);
+		//transacaoOneClickWSV2.setValorDesconto(valorDesconto);
 		//transacaoOneClickWSV2.setVencimentoBoleto(vencimentoBoleto);
 
 
 		ItemPedidoTransacaoWS item = factory.createItemPedidoTransacaoWS();
 		item.setCodigoCategoria(codigoCategoria);
 		item.setNomeCategoria(nomeCategoria);
-		item.setCodigoProduto(codigoProduto);
+		//item.setCodigoProduto(codigoProduto);
 		item.setNomeProduto(nomeProduto);
-		item.setQuantidadeProduto(quantidadeProduto);
+		//item.setQuantidadeProduto(quantidadeProduto);
 		item.setValorUnitarioProduto(valorUnitarioProduto);
 
 		transacaoOneClickWSV2.getItensDoPedido().add(item);

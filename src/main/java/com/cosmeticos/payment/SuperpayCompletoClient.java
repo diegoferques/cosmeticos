@@ -29,38 +29,29 @@ public class SuperpayCompletoClient {
     @Value("${superpay.estabelecimento}")
     private String codigoEstabelecimento;
 
-    public ResultadoPagamentoWS capturePayment(int codigoFormaPagamento,
-                                               String codigoSeguranca,
-                                               int idioma,
+    public ResultadoPagamentoWS capturePayment(String codigoSeguranca,
                                                String ip,
                                                String nomeTitularCarttaoCredito,
-                                               String origemTransacao,
-                                               int parcelas,
-                                               String urlCampainha,
-                                               String urlRedirecionamentoNaoPago,
-                                               String urlRedirecionamentoPago,
-                                               Long valor,
-                                               long valorDesconto){
+                                               Long valor, String urlCampainha){
 
         ObjectFactory factory = new ObjectFactory();
 
         TransacaoCompletaWS transacaoCompletaWS = factory.createTransacaoCompletaWS();
         transacaoCompletaWS.setCodigoEstabelecimento(codigoEstabelecimento);
-        transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento);
+        //transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento);
         transacaoCompletaWS.setCodigoSeguranca(codigoSeguranca);
         //transacaoCompletaWS.setDadosUsuarioTransacao(dadosUsuarios);
         //transacaoCompletaWS.setDataValidadeCartao(dataValidadeCartao);
-        transacaoCompletaWS.setIdioma(idioma);
+        //transacaoCompletaWS.setIdioma(idioma);
         transacaoCompletaWS.setIP(ip);
         transacaoCompletaWS.setNomeTitularCartaoCredito(nomeTitularCarttaoCredito);
         //transacaoCompletaWS.setNumeroTransacao(numeroTransacao);
-        transacaoCompletaWS.setOrigemTransacao(origemTransacao);
-        transacaoCompletaWS.setParcelas(parcelas);
+        //transacaoCompletaWS.setParcelas(parcelas);
         transacaoCompletaWS.setUrlCampainha(urlCampainha);
-        transacaoCompletaWS.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
-        transacaoCompletaWS.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
+        //transacaoCompletaWS.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
+        //transacaoCompletaWS.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
         transacaoCompletaWS.setValor(valor);
-        transacaoCompletaWS.setValorDesconto(valorDesconto);
+        //transacaoCompletaWS.setValorDesconto(valorDesconto);
         //transacaoCompletaWS.setVencimentoBoleto(vencimentoBoleto);
 
 
