@@ -26,28 +26,26 @@ import java.util.Optional;
 public class LostPaymentReprocessor {
     @Autowired
     @Qualifier("charger")
-    private Charger paymentService;
+    private Charger charger;
 
     @Autowired
     private PaymentRepository paymentRepository;
 
 
     @Scheduled(cron = "0 0 0/6 * * ?")
-    public ChargeResponse<CapturaTransacao> retryFailedPayments(ChargeRequest<Payment> chargeRequest){
+    public ChargeResponse<Object> retryFailedPayments(ChargeRequest<Payment> chargeRequest){
 
         List<Payment> paymentList = paymentRepository.findFailedPayments();
 
         for (Payment p : paymentList) {
+            ChargeResponse<Object> response = charger.capture(new ChargeRequest<>(p.getOrder()));
 
-            ChargeResponse<Object> response = paymentService.capture(new ChargeRequest<>(p.getOrder()));
-
-            paymentService.updatePaymentStatus(response);
+            charger.updatePaymentStatus(response);
 
             log.info("Transacao " + p.getId() + ": resultado da captura: " + response.getResponseCode());
 
 
         }
-
 
     }
 
