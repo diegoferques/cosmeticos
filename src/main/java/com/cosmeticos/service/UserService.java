@@ -174,6 +174,7 @@ public class UserService {
 
             if(sendEmail == true){
                 persistentUser.setLostPasswordToken(code);
+                persistentUser.setLostPassword(true);
 
                 update(persistentUser);
 
@@ -193,5 +194,25 @@ public class UserService {
 
     public Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
+    }
+
+    public boolean validateToken(User persistentUser, User request) {
+
+        //VERIFICAMOS SE O TOKEN DO USUARIO NO BANCO EH O MESMO QUE O INFORMADO
+        if(!persistentUser.getLostPasswordToken().equals(request.getLostPasswordToken())) {
+            return false;
+
+        } else if(persistentUser.getLostPassword() != true) {
+            return false;
+        }else {
+            return true;
+        }
+
+    }
+
+    public void invalidateToken(User user) {
+        user.setLostPassword(false);
+        user.setLostPasswordToken(null);
+        repository.save(user);
     }
 }
