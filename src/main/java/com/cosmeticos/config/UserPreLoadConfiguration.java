@@ -36,15 +36,13 @@ public class UserPreLoadConfiguration {
 
         CreditCard cc = new CreditCard();
         cc.setToken("4321");
-        cc.setCardNumber("45518700000001831");
-        cc.setSecurityCode("123");
+        cc.setTailNumber("1831");
         cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
 
         CreditCard ccNovo = new CreditCard();
-        ccNovo.setToken("77777");
-        ccNovo.setSecurityCode("321");
+        ccNovo.setToken("7777");
         ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
         //ccNovo.setExpirationDate("03/2018");
         ccNovo.setVendor("Visa");
@@ -67,8 +65,7 @@ public class UserPreLoadConfiguration {
 
         CreditCard cc2 = new CreditCard();
         cc2.setToken("7772344377");
-        cc2.setCardNumber("67730922222223053");
-        cc2.setSecurityCode("123");
+        cc2.setTailNumber("3053");
         cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
         //cc2.setExpirationDate("12/2018");
         cc2.setVendor("Master");
@@ -76,8 +73,7 @@ public class UserPreLoadConfiguration {
 
         CreditCard cc3 = new CreditCard();
         cc3.setToken("7772344377");
-        cc3.setCardNumber("67730922222223053");
-        cc3.setSecurityCode("123");
+        cc3.setTailNumber("3053");
         cc3.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
         cc3.setVendor("Master");
         cc3.setStatus(CreditCard.Status.ACTIVE);

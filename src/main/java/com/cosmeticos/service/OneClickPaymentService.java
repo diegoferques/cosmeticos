@@ -56,6 +56,10 @@ public class OneClickPaymentService implements Charger<Order, RetornoTransacao> 
 
     @Override
     public ChargeResponse<RetornoTransacao> capture(ChargeRequest<Order> chargeRequest) {
+
+
+
+
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
         return null;
     }

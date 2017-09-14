@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -305,7 +304,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
         //TODO - COMO NAO TEMOS COMO PEGAR OS DADOS DO CARTAO UTILIZADO PARA PAGAMENTO EM ORDER, SETEI MANUALMENTE
         DadosCartao dadosCartao = new DadosCartao();
         dadosCartao.setNomePortador(creditCard.getOwnerName());
-        dadosCartao.setNumeroCartao(creditCard.getCardNumber());
+        dadosCartao.setNumeroCartao(creditCard.getTailNumber());
         dadosCartao.setCodigoSeguranca(creditCard.getSecurityCode());
 
         SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/yyyy");

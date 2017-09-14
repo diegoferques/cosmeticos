@@ -43,12 +43,11 @@ public class CreditCard implements Serializable {
     })
     private String ownerName;
 
-    // TODO: Eliminar, nao podemos ter isso registrado.
-    @Column(unique = true)
-    private String cardNumber;
-
-    // TODO: Eliminar, nao podemos ter isso registrado.
-    private String securityCode;
+    /**
+     * Registraremos os 4 ultimos digitos do cartao
+     */
+    @Column(unique = true, length = 4)
+    private String tailNumber;
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class
@@ -60,6 +59,9 @@ public class CreditCard implements Serializable {
             ResponseJsonView.CreditCardFindAll.class
     })
     private String vendor;
+
+    // TODO: Incluir @Transient do jpa assim q  o problema  entre o jackson e as a notacoes jpq terminarem.
+    private String securityCode;
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class
