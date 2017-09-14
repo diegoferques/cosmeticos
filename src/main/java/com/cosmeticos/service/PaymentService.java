@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -70,7 +71,7 @@ public class PaymentService {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
-    private Map<String, Integer> usuarioMap = getFormasPagamento();
+    private SuperpayFormaPagamento superpayFormaPagamento;
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
     public Optional<RetornoTransacao> sendRequest(Order orderCreated) throws ParseException, JsonProcessingException {
@@ -223,7 +224,6 @@ public class PaymentService {
 
     //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE
     public Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
-
         return true;
     }
 
@@ -239,7 +239,7 @@ public class PaymentService {
 
         request.setCodigoEstabelecimento(estabelecimento);
 
-        request.setCodigoFormaPagamento(usuarioMap.get(creditCard.getVendor()));
+        request.setCodigoFormaPagamento(superpayFormaPagamento.fromCardType());
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);
