@@ -25,7 +25,7 @@ public class OrderResponseBody {
                 ResponseJsonView.OrderControllerFindBy.class
             })
 	@JsonEnumDefaultValue	
-	private ErrorCode errorCode;
+	private ResponseCode responseCode;
 	
     @JsonView(
             {

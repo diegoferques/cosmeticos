@@ -31,24 +31,16 @@ public class LostPaymentReprocessor {
     @Autowired
     private PaymentRepository paymentRepository;
 
-
     @Scheduled(cron = "0 0 0/6 * * ?")
-    public ChargeResponse<CapturaTransacao> retryFailedPayments(ChargeRequest<Payment> chargeRequest){
+    public void retryFailedPayments(){
 
         List<Payment> paymentList = paymentRepository.findFailedPayments();
 
         for (Payment p : paymentList) {
 
-            ChargeResponse<Object> response = paymentService.capture(new ChargeRequest<>(p.getOrder()));
+            ChargeResponse<Object> response = paymentService.capture(new ChargeRequest<>(p));
 
-            paymentService.updatePaymentStatus(response);
-
-            log.info("Transacao " + p.getId() + ": resultado da captura: " + response.getResponseCode());
-
-
+            log.info("com paymentId[" + p.getId() + "] -  Resultado da captura: " + response.getResponseCode());
         }
-
-
     }
-
 }

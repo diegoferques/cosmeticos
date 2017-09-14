@@ -5,7 +5,6 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.VoteService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
@@ -78,15 +77,15 @@ public class OrderController {
         } catch (OrderValidationException e) {
 
         	String auditError = String.valueOf(System.nanoTime());
-            String msg = MessageFormat.format("Falha da validacao da requisicao! errorCode: {0}, message: {1}", auditError, e.getMessage());
+            String msg = MessageFormat.format("Falha da validacao da requisicao! responseCode: {0}, message: {1}", auditError, e.getMessage());
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
-            orderResponseBody.setErrorCode(e.getCode());
+            orderResponseBody.setResponseCode(e.getCode());
             orderResponseBody.setDescription(msg);
             orderResponseBody.setUserFriendlyMessage(e.getMessage());
 
             MDC.put("auditError", auditError);
-            MDC.put("errorCode", String.valueOf(e.getCode()));
+            MDC.put("responseCode", String.valueOf(e.getCode()));
             MDC.put("httpStatus", String.valueOf(e.getCode().getHttpStatus()));
 
             log.error("Erro no insert: {} ", msg, e);
@@ -99,7 +98,7 @@ public class OrderController {
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription("Erro interno: " + errorCode);
 
-            MDC.put("errorCode", errorCode);
+            MDC.put("responseCode", errorCode);
             MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
@@ -151,7 +150,7 @@ public class OrderController {
             OrderResponseBody response = new OrderResponseBody();
             response.setDescription(e.getMessage());
 
-            MDC.put("errorCode", errorCode);
+            MDC.put("responseCode", errorCode);
             MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);
@@ -164,7 +163,7 @@ public class OrderController {
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setDescription(e.getMessage());
 
-            MDC.put("errorCode", errorCode);
+            MDC.put("responseCode", errorCode);
             MDC.put("httpStatus", String.valueOf(e.getCode().getHttpStatus()));
 
             log.error("Erro no update: {} - {}", errorCode, e.getMessage(), e);
@@ -177,7 +176,7 @@ public class OrderController {
             OrderResponseBody response = new OrderResponseBody();
             response.setDescription("Erro interno: " + errorCode);
 
-            MDC.put("errorCode", errorCode);
+            MDC.put("responseCode", errorCode);
             MDC.put("httpStatus", String.valueOf(e.getMessage()));
 
             log.error("Erro na atualização do Order: {} - {}", errorCode, e.getMessage(), e);

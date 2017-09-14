@@ -1,12 +1,12 @@
 package com.cosmeticos.payment;
 
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.ResponseCode;
 import lombok.Data;
 
 @Data
 public class ChargeResponse<B> {
 
-    private ErrorCode responseCode;
+    private ResponseCode responseCode;
 
     private B body;
 

@@ -2,25 +2,18 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.*;
-import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by matto on 08/08/2017.
  */
 @Slf4j
 @Service
-public class OneClickPaymentService implements Charger<Order> {
+public class OneClickPaymentService implements Charger{
 
     @Autowired
     private SuperpayOneClickClient oneClickClient;
@@ -30,10 +23,9 @@ public class OneClickPaymentService implements Charger<Order> {
 
 
     @Override
-    public ChargeResponse<Object> addCard(ChargeRequest<Order> chargeRequest) {
-        // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
+    public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
 
-        Order order = chargeRequest.getBody();
+        Order order = chargeRequest.getBody().getOrder();
 
         String emailComprador = order.getIdCustomer().getUser().getEmail();
         Customer customer = order.getIdCustomer();
@@ -64,10 +56,10 @@ public class OneClickPaymentService implements Charger<Order> {
     }
 
     @Override
-    public ChargeResponse<Object> reserve(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> reserve(ChargeRequest<Payment> chargeRequest) {
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
 
-        Order order = chargeRequest.getBody();
+        Order order = chargeRequest.getBody().getOrder();
 
         ProfessionalCategory professionalCategory = order.getProfessionalCategory();
         Category category = professionalCategory.getCategory();
@@ -154,10 +146,10 @@ public class OneClickPaymentService implements Charger<Order> {
     }
 
     @Override
-    public ChargeResponse<Object> capture(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
 
-        Order order = chargeRequest.getBody();
+        Order order = chargeRequest.getBody().getOrder();
 
         CreditCard creditCard = order.getCreditCardCollection()
                 .stream()
@@ -169,34 +161,35 @@ public class OneClickPaymentService implements Charger<Order> {
                 .findFirst()
                 .get();
 
-        //Long numeroTransacao;
-        //int codigoFormaPagamento = 2;
-        String codigoSeguranca = creditCard.getSecurityCode();
-        String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
-        //int idioma = 1;
-        //String ip = "09876";
         String nomeTitularCarttaoCredito = creditCard.getOwnerName();
+        String urlCampainha = "http://ngrok/campainha/superpay";
+        Long valor = payment.getValue();
+        String codigoSeguranca = creditCard.getSecurityCode();
+        String ip = "09876";
+        //String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
+        //String urlRedirecionamentoNaoPago = "urlRedirecionamentoNaoPago.com";
+        //String urlRedirecionamentoPago = "urlRedirecionamentoPago.com";
+        //long valorDesconto = 10L;
         //String origemTransacao = "ORIGEM";
         //int parcelas = 1;
-        String urlCampainha = "http://ngrok/campainha/superpay";
-        String urlRedirecionamentoNaoPago = "urlRedirecionamentoNaoPago.com";
-        String urlRedirecionamentoPago = "urlRedirecionamentoPago.com";
-        Long valor = payment.getValue();
-        //long valorDesconto = 10L;
+        //int idioma = 1;
+        //Long numeroTransacao;
+        //int codigoFormaPagamento = 2;
 
         com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS result = completoClient.capturePayment(
-                dataValidadeCartao,
+                codigoSeguranca,
+                ip,
                 nomeTitularCarttaoCredito,
-                urlCampainha,
-                valor, urlCampainha);
+                valor,
+                urlCampainha);
 
         return new ChargeResponse<Object>(result);
     }
 
     @Override
-    public ChargeResponse<Object> getStatus(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> getStatus(ChargeRequest<Payment> chargeRequest) {
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
-        Order order = chargeRequest.getBody();
+        Order order = chargeRequest.getBody().getOrder();
 
         CreditCard creditCard = order.getCreditCardCollection().stream().findFirst().get();
         Customer customer = order.getIdCustomer();
@@ -222,8 +215,9 @@ public class OneClickPaymentService implements Charger<Order> {
         return new ChargeResponse<Object>(result);
     }
 
+    // TODO avaliar se as classes concretas realmente devem implementar isso pra expor ou se isso fica de reposabilidade de cada classe concreta.
     @Override
-    public Boolean updatePaymentStatus(Object data) {
+    public Boolean updatePaymentStatus(Payment payment) {
         return true;
     }
 

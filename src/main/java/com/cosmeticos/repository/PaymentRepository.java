@@ -1,5 +1,6 @@
 package com.cosmeticos.repository;
 
+import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.Charger;
 import org.springframework.data.jpa.repository.Query;
@@ -24,5 +25,5 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
             "NOT IN (1, 2, 5)")
     List<Payment> findFailedPayments();
 
-
+    List<Payment> findByOrderStatus(Order.Status orderStatus);
 }

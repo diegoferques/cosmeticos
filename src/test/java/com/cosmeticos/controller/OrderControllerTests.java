@@ -1,7 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
@@ -1833,7 +1833,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangeCreate);
         Assert.assertEquals(HttpStatus.BAD_REQUEST, exchangeCreate.getStatusCode());
-        Assert.assertEquals(ErrorCode.INVALID_PAYMENT_TYPE, exchangeCreate.getBody().getErrorCode());
+        Assert.assertEquals(ResponseCode.INVALID_PAYMENT_TYPE, exchangeCreate.getBody().getResponseCode());
     }
 
     private ProfessionalCategory buildProfessionalCateogry(Professional professional, PriceRule priceRule) {

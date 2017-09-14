@@ -1,9 +1,6 @@
 package com.cosmeticos.model;
 
-import java.io.Serializable;
-
-import javax.persistence.*;
-
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -23,37 +20,53 @@ public class Payment implements Serializable {
 	}
 
 	public enum Status{
-		PAGO_E_CAPTURADO(true, 1, HttpStatus.OK),
-		PAGO_E_NAO_CAPTURADO(true, 2, HttpStatus.ACCEPTED),
-		NAO_PAGO(false, 3, HttpStatus.FORBIDDEN),
-		TRANSACAO_EM_ANDAMENTO(false, 5, HttpStatus.CONFLICT),
-		AGUARDANDO_PAGAMENTO(false, 8, HttpStatus.BAD_REQUEST),
-		FALHA_NA_OPERADORA(false, 9, HttpStatus.BAD_GATEWAY),
-		CANCELADA(false, 13, HttpStatus.GONE),
-		ESTORNADA(false, 14, HttpStatus.GONE),
-		EM_ANALISE_DE_FRAUDE(true, 15, HttpStatus.ACCEPTED),
-		RECUSADO_PELO_ANTI_FRAUDE(false, 17, HttpStatus.UNAUTHORIZED),
-		FALHA_NA_ANTIFRAUDE(false, 18, HttpStatus.BAD_GATEWAY),
-		BOLETO_PAGO_A_MENOR(false, 21, HttpStatus.NOT_IMPLEMENTED),
-		BOLETO_PAGO_A_MAIOR(false, 22, HttpStatus.NOT_IMPLEMENTED),
-		ESTORNO_PARCIAL(true, 23, HttpStatus.OK),
-		ESTORNO_NAO_AUTORIZADO(false, 24, HttpStatus.UNAUTHORIZED),
-		FALHA_ESTORNO(false, 25, HttpStatus.BAD_GATEWAY),
-		TRANSACAO_EM_CURSO(false, 30, HttpStatus.CONFLICT),
+		PAGO_E_CAPTURADO(true, 1, HttpStatus.OK, ResponseCode.SUCCESS),
+		PAGO_E_NAO_CAPTURADO(true, 2, HttpStatus.ACCEPTED, ResponseCode.SUCCESS),
+		NAO_PAGO(false, 3, HttpStatus.FORBIDDEN, ResponseCode.FORBIDEN_PAYMENT),
+		TRANSACAO_EM_ANDAMENTO(false, 5, HttpStatus.CONFLICT, ResponseCode.GATEWAY_DUPLICATE_PAYMENT),
+		AGUARDANDO_PAGAMENTO(false, 8, HttpStatus.BAD_REQUEST, ResponseCode.UNFINISHED_PAYMENT),
+		FALHA_NA_OPERADORA(false, 9, HttpStatus.BAD_GATEWAY, ResponseCode.GATEWAY_FAILURE),
+		CANCELADA(false, 13, HttpStatus.GONE, ResponseCode.CANCELED_PAYMENT),
+		ESTORNADA(false, 14, HttpStatus.GONE, ResponseCode.REFUNDED_PAYMENT),
+		EM_ANALISE_DE_FRAUDE(true, 15, HttpStatus.ACCEPTED, ResponseCode.SUCCESS),
+		RECUSADO_PELO_ANTI_FRAUDE(false, 17, HttpStatus.UNAUTHORIZED, ResponseCode.INVALID_PAYMENT_CONFIGURATION),
+		FALHA_NA_ANTIFRAUDE(false, 18, HttpStatus.BAD_GATEWAY, ResponseCode.GATEWAY_FAILURE),
+		BOLETO_PAGO_A_MENOR(false, 21, HttpStatus.NOT_IMPLEMENTED, ResponseCode.INTERNAL_ERROR),
+		BOLETO_PAGO_A_MAIOR(false, 22, HttpStatus.NOT_IMPLEMENTED, ResponseCode.INTERNAL_ERROR),
+		ESTORNO_PARCIAL(true, 23, HttpStatus.OK, ResponseCode.SUCCESS),
+		ESTORNO_NAO_AUTORIZADO(false, 24, HttpStatus.UNAUTHORIZED, ResponseCode.INVALID_OPERATION),
+		FALHA_ESTORNO(false, 25, HttpStatus.BAD_GATEWAY, ResponseCode.GATEWAY_FAILURE),
+		TRANSACAO_EM_CURSO(false, 30, HttpStatus.CONFLICT, ResponseCode.GATEWAY_DUPLICATE_PAYMENT),
 
 		/**
 		 * Este caso eh um pouco complicado. Nao esta claro se pode ser um erro ou sucesso.
 		 * Acho q podemo fazer vista grossa pra esse status e responder OK pro usuarios.
 		 */
-		TRANSACAO_JA_PAGA(true, 31, HttpStatus.OK),// vai quebrar testes que assertam conflict no status 31.
-		AGUARDANDO_CANCELAMETO(true, 40, HttpStatus.ACCEPTED);
+		TRANSACAO_JA_PAGA(true, 31, HttpStatus.OK, ResponseCode.SUCCESS),// vai quebrar testes que assertam conflict no status 31.
+		AGUARDANDO_CANCELAMETO(true, 40, HttpStatus.ACCEPTED, ResponseCode.SUCCESS);
 
-		private final Integer superpayStatus;		private final HttpStatus httpStatus;		private boolean success;
+		private final Integer superpayStatus;
 
-		private Status(Boolean success, Integer superpayStatus, HttpStatus status) {
+		/**
+		 * @deprecated ResponseCode ja possui http status. Devemos usar o http status dentro do ResponseCode.
+		 */
+		@Deprecated
+		private final HttpStatus httpStatus;
+		private final ResponseCode responseCode;
+		private boolean success;
+
+		/**
+		 *
+		 * @param success Informa se consideramos o status retornado do superpay como sucesso ou nao. Simplifica nossos IFs.
+		 * @param superpayStatus Codigo da superpay. Detalhes sobre este codigo na documentacao do superpay.
+		 * @param status Http Status que determinamos que serao retornados ao App de acordo com cada status do superpay
+		 * @param responseCode Codigo de resposta da nossa aplicacao. Consulte a documentacao dessa classe.
+		 */
+		private Status(Boolean success, Integer superpayStatus, HttpStatus status, ResponseCode responseCode) {
 			this.httpStatus = status;
 			this.superpayStatus = superpayStatus;
 			this.success = success;
+			this.responseCode = responseCode;
 		}
 		public HttpStatus getHttpStatus() {
 			return httpStatus;
@@ -61,6 +74,9 @@ public class Payment implements Serializable {
 		public Integer getSuperpayStatusTransacao() { return superpayStatus; }
 		public boolean isSuccess() {
 			return success;
+		}
+		public ResponseCode getResponseCode() {
+			return responseCode;
 		}
 
 		public static Status fromSuperpayStatus(Integer superpayStatusStransacao) {

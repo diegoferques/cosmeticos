@@ -60,7 +60,7 @@ public class PaymentController {
 
         CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
 
-        Optional<Payment> paymentOptional = Optional.ofNullable(paymentRepository.findByOrder_idOrder(numeroTransacao));
+        Optional<Payment> paymentOptional = Optional.ofNullable(paymentRepository.findOne(numeroTransacao));
 
         if(paymentOptional.isPresent()) {
 
@@ -96,13 +96,15 @@ public class PaymentController {
                     //AQUI VAMOS CHAMAR O METODO QUE VAI NO SUPERPAY VERIFICAR SE HOUVE UMA ATUALIZACAO NA TRANSACAO
                     //ESTE METODO SERA RESPONSAVEL PELA ATUALZICAO DO STATUS DO PAGAMENTO, QUE AINDA DEVERA SER IMPLEMENTADO
 
-                    ChargeResponse<RetornoTransacao> transacaoChargeResponse = paymentService.getStatus(chargeRequest);
+                    // Nao acho que necessitamos ir no superpay pq eles acabaram de enviar a notificacao na campainha.
+                    // ChargeResponse<RetornoTransacao> transacaoChargeResponse = paymentService.getStatus(chargeRequest);
+                    // Optional<RetornoTransacao> retornoConsulta = Optional.ofNullable(transacaoChargeResponse.getBody());
 
-                    Optional<RetornoTransacao> retornoConsulta = Optional.ofNullable(transacaoChargeResponse.getBody());
+                    if (paymentOptional.isPresent()) {
 
-                    if (retornoConsulta.isPresent()) {
-
-                        Boolean updateStatus = paymentService.updatePaymentStatus(retornoConsulta.get());
+                        // Comentado pq comentei o getStatus
+                        // Boolean updateStatus = paymentService.updatePaymentStatus(retornoConsulta.get());
+                        Boolean updateStatus = paymentService.updatePaymentStatus(paymentOptional.get());
 
                         if (updateStatus) {
                             responseBody.setDescription("Campainha sinalizada e status do pagamento para Order com o ID [" +
