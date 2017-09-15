@@ -239,7 +239,11 @@ public class PaymentService {
 
         request.setCodigoEstabelecimento(estabelecimento);
 
-        request.setCodigoFormaPagamento(superpayFormaPagamento.fromCardType());
+        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(
+                creditCard.getVendor().trim().toUpperCase()
+        );
+
+        request.setCodigoFormaPagamento(formaPagamento.getCodigoFormaPagamento());
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);

@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
-@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "cadastraPagamentoOneClickV2", propOrder = {
     "dadosOneClick",
