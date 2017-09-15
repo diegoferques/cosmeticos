@@ -60,15 +60,11 @@ public class SuperpayOneClickClient {
 
 		log.info("Client sending pagamentoOneClickV2[user={},estabelecimento={}]", user, codigoEstabelecimento);
 
-		JAXBElement<CadastraPagamentoOneClickV2> requestBody =
-				factory.createCadastraPagamentoOneClickV2(pagamentoOneClickV2);
+		JAXBElement<CadastraPagamentoOneClickV2> jaxbCadastraPagamento =
+				factory.createCadastraPagamentoOneClickV2(person);
 
-		// Referencia pra acabar com o problema do @XmlRootElement: https://stackoverflow.com/a/2172942/3810036
 		JAXBElement<CadastraPagamentoOneClickV2Response> jaxbResponse =
-				(JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(
-						requestBody
-				);
-
+				(JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(jaxbCadastraPagamento);
 
 		CadastraPagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
 		

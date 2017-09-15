@@ -217,8 +217,12 @@ public class UserController {
                     return ok().body(responseBody);
                 } else {
 
-                    log.error("Usuario com o email " + user.getEmail() + " nao existe");
-                    return notFound().build();
+                    UserResponseBody responseBody = new UserResponseBody(user);
+                    responseBody.setDescription("Usuario com o email " + request.getEntity().getEmail() + " nao existe");
+
+                    log.error(responseBody.getDescription());
+
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
                 }
             }
 

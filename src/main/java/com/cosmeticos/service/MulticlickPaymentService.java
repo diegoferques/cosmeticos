@@ -7,6 +7,7 @@ import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -72,7 +73,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
-    private Map<String, Integer> formasPagamentoMap = getFormasPagamentoMap();
+    private SuperpayFormaPagamento superpayFormaPagamento;
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
     private ChargeResponse<RetornoTransacao> sendRequest(Order orderCreated) {
@@ -231,7 +232,6 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
 
     //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE
     public Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
-
         return true;
     }
 
@@ -247,7 +247,11 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
 
         request.setCodigoEstabelecimento(estabelecimento);
 
-        request.setCodigoFormaPagamento(formasPagamentoMap.get(creditCard.getVendor()));
+        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(
+                creditCard.getVendor().trim().toUpperCase()
+        );
+
+        request.setCodigoFormaPagamento(formaPagamento.getCodigoFormaPagamento());
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);
