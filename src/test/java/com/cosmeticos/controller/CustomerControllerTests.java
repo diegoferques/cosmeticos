@@ -337,6 +337,7 @@ public class CustomerControllerTests {
 		c1.setAddress(createFakeAddress(c1));
 		c1.setUser(createFakeLogin(c1));
 
+
 		return c1;
 	}
 }
