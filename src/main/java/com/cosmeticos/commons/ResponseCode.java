@@ -4,8 +4,13 @@ import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * Classe criada para retornar no request http para informar detalhes sobre a requisicao feita pelo cliente.
+ * Como antes retornavamos apenas o http status, agora retornamos o http status e mais este enum,
+ * que funcionara como um codigo de detalhamento.
+ */
 @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-public enum ErrorCode {
+public enum ResponseCode {
 
     INVALID_SCHEDULE_END(HttpStatus.BAD_REQUEST),
     INVALID_SCHEDULE_START(HttpStatus.BAD_REQUEST),
@@ -20,11 +25,16 @@ public enum ErrorCode {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
     GATEWAY_FAILURE(HttpStatus.BAD_GATEWAY),
     FORBIDEN_PAYMENT(HttpStatus.FORBIDDEN),
-    USER_PASSWORD_RESET_EMAIL_FAIL(HttpStatus.BAD_GATEWAY);
+    USER_PASSWORD_RESET_EMAIL_FAIL(HttpStatus.BAD_GATEWAY),
+    SUCCESS(HttpStatus.OK),
+    UNFINISHED_PAYMENT(HttpStatus.BAD_REQUEST),
+    CANCELED_PAYMENT(HttpStatus.GONE),
+    REFUNDED_PAYMENT(HttpStatus.GONE),
+    INVALID_OPERATION(HttpStatus.UNAUTHORIZED);
 
     private HttpStatus httpStatus;
 
-    private ErrorCode(HttpStatus status) {
+    private ResponseCode(HttpStatus status) {
         this.httpStatus = status;
     }
 

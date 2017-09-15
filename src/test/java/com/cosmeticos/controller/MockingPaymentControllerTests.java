@@ -10,8 +10,8 @@ import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.MulticlickPaymentService;
+import com.cosmeticos.service.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -151,7 +151,7 @@ public class MockingPaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
 
         RetornoTransacao retornoTransacao1 = (RetornoTransacao) retornoTransacao.getBody();
 
@@ -363,7 +363,7 @@ public class MockingPaymentControllerTests {
         // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
         // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
 
-        ChargeResponse<Object> retornoTransacaoSuperpay = paymentService.capture(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacaoSuperpay = paymentService.capture(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
 
         RetornoTransacao retornoTransacao = (RetornoTransacao) retornoTransacaoSuperpay.getBody();
 

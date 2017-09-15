@@ -2,8 +2,8 @@
 <configuration>
 
     <!-- Aplica uma funcao que remove campos do mdc vazios do log -->
-    <!-- <variable scope="context" name="mdcPattern" value="%replace(errorCode: %X{errorCode}, httpStatus: %X{httpStatus},){'[a-zA-Z]+=( |$)', ''}"/> -->
-   <variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, idOrder: %X{idOrder}, previousOrderStatus: %X{previousOrderStatus}, newStatus: %X{newStatus}, superpayStatusStransacao: %X{superpayStatusStransacao}, httpStatus: %X{httpStatus}, urlPath: %X{urlPath}-"/>
+    <!-- <variable scope="context" name="mdcPattern" value="%replace(responseCode: %X{responseCode}, httpStatus: %X{httpStatus},){'[a-zA-Z]+=( |$)', ''}"/> -->
+   <variable scope="context" name="mdcPattern" value="responseCode: %X{responseCode}, idOrder: %X{idOrder}, previousOrderStatus: %X{previousOrderStatus}, newStatus: %X{newStatus}, superpayStatusStransacao: %X{superpayStatusStransacao}, httpStatus: %X{httpStatus}, urlPath: %X{urlPath}-"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

@@ -372,7 +372,7 @@ public class PaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
 
         RetornoTransacao retornoTransacao1 = (RetornoTransacao) retornoTransacao.getBody();
 
@@ -390,7 +390,7 @@ public class PaymentControllerTests {
         //CERTIFIQUE-SE QUE A ORDER ABAIXO ESTA COM O STATUS READY2CHARGE, CASO CONTRARIO RETORNARA UM ERRO!
         Order order = orderRepository.findOne(14L);
 
-        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(order));
+        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
 
         RetornoTransacao retornoTransacao = (RetornoTransacao) chargeResponse.getBody();
 

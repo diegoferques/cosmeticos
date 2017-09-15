@@ -38,22 +38,21 @@ public class SuperpayCompletoClient {
 
         TransacaoCompletaWS transacaoCompletaWS = factory.createTransacaoCompletaWS();
         transacaoCompletaWS.setCodigoEstabelecimento(codigoEstabelecimento);
-        //transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento);
         transacaoCompletaWS.setCodigoSeguranca(codigoSeguranca);
+        transacaoCompletaWS.setIP(ip);
+        transacaoCompletaWS.setNomeTitularCartaoCredito(nomeTitularCarttaoCredito);
+        transacaoCompletaWS.setUrlCampainha(urlCampainha);
+        transacaoCompletaWS.setValor(valor);
+        //transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento);
         //transacaoCompletaWS.setDadosUsuarioTransacao(dadosUsuarios);
         //transacaoCompletaWS.setDataValidadeCartao(dataValidadeCartao);
         //transacaoCompletaWS.setIdioma(idioma);
-        transacaoCompletaWS.setIP(ip);
-        transacaoCompletaWS.setNomeTitularCartaoCredito(nomeTitularCarttaoCredito);
         //transacaoCompletaWS.setNumeroTransacao(numeroTransacao);
         //transacaoCompletaWS.setParcelas(parcelas);
-        transacaoCompletaWS.setUrlCampainha(urlCampainha);
         //transacaoCompletaWS.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
         //transacaoCompletaWS.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
-        transacaoCompletaWS.setValor(valor);
         //transacaoCompletaWS.setValorDesconto(valorDesconto);
         //transacaoCompletaWS.setVencimentoBoleto(vencimentoBoleto);
-
 
          CapturarTransacaoCompleta capturarTransacaoCompleta = factory.createCapturarTransacaoCompleta();
          capturarTransacaoCompleta.setUsuario(user);
