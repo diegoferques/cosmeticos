@@ -10,8 +10,8 @@ import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.MulticlickPaymentService;
+import com.cosmeticos.service.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -35,6 +35,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 
@@ -79,7 +80,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testNonScheduledPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())
@@ -151,18 +152,20 @@ public class MockingPaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        ChargeResponse<RetornoTransacao> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
+
+        RetornoTransacao retornoTransacao1 = (RetornoTransacao) retornoTransacao.getBody();
 
         Assert.assertNotNull(retornoTransacao.getBody());
-        Assert.assertNotNull(retornoTransacao.getBody().getAutorizacao());
-        Assert.assertNotNull(retornoTransacao.getBody().getNumeroTransacao());
+        Assert.assertNotNull(retornoTransacao1.getAutorizacao());
+        Assert.assertNotNull(retornoTransacao1.getNumeroTransacao());
 
     }
 
     @Test
     public void testScheduledOrderPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())
@@ -342,7 +345,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
         ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao(1);
 
         Mockito.when(
@@ -361,9 +364,11 @@ public class MockingPaymentControllerTests {
         // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
         // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
 
-        ChargeResponse<RetornoTransacao> retornoTransacaoSuperpay = paymentService.capture(new ChargeRequest<>(order));
+        ChargeResponse<Object> retornoTransacaoSuperpay = paymentService.capture(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
 
-        Integer superpayStatusStransacao = retornoTransacaoSuperpay.getBody().getStatusTransacao();
+        RetornoTransacao retornoTransacao = (RetornoTransacao) retornoTransacaoSuperpay.getBody();
+
+        Integer superpayStatusStransacao = retornoTransacao.getStatusTransacao();
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
@@ -374,7 +379,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCapturarTransacaoOK2() throws Exception {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
         ResponseEntity<RetornoTransacao> responseEntityFakeRetornoTransacao = this.getResponseEntityFakeRetornoTransacao(1);
 
         Mockito.when(
@@ -516,7 +521,7 @@ public class MockingPaymentControllerTests {
     @Test
     public void testCampainhaOK() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
 
         Mockito.when(
                 paymentService.getStatus(Mockito.any())
@@ -540,7 +545,7 @@ public class MockingPaymentControllerTests {
 
     }
 
-    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {
         return new ChargeResponse(this.getFakeRetornoTransacao(statusTransacao));
     }
 
@@ -594,13 +599,14 @@ public class MockingPaymentControllerTests {
 
         return exchange;
     }
-
+@Ignore
+//TODO: devemos separar testes do oneClick e MultiClick atraves do active profile.
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
-        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())

@@ -1,6 +1,6 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
@@ -180,7 +180,7 @@ public class UserService {
 
                 return persistentUser;
             }else{
-                throw new UserValidationException(ErrorCode.USER_PASSWORD_RESET_EMAIL_FAIL, "Falha ao enviar email com token.");
+                throw new UserValidationException(ResponseCode.USER_PASSWORD_RESET_EMAIL_FAIL, "Falha ao enviar email com token.");
             }
         } else {
             return null;

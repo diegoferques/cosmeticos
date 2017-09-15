@@ -77,7 +77,7 @@ public class ScheduleOrderControllerTest {
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////// Mocando o controller que vai no superpay e vai sofrer um refactoring monstruoso //////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())
@@ -411,7 +411,7 @@ public class ScheduleOrderControllerTest {
         return exchangeUpdate;
     }
 
-    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");

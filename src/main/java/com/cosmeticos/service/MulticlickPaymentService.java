@@ -3,10 +3,14 @@ package com.cosmeticos.service;
 import java.net.URI;
 import java.util.Optional;
 
+import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
+import com.cosmeticos.repository.PaymentRepository;
+import org.slf4j.MDC;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class MulticlickPaymentService implements Charger<Order, RetornoTransacao> {
+public class MulticlickPaymentService implements Charger {
 
     @Value("${superpay.url.transacao}")
     private String urlTransacao;
@@ -65,6 +69,9 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     private OrderRepository orderRepository;
 
     @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
     private AddressRepository addressRepository;
 
     @Autowired
@@ -76,7 +83,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     private SuperpayFormaPagamento superpayFormaPagamento;
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
-    private ChargeResponse<RetornoTransacao> sendRequest(Order orderCreated) {
+    private ChargeResponse<Object> sendRequest(Order orderCreated) {
 
         try {
             Order order = orderRepository.findOne(orderCreated.getIdOrder());
@@ -97,9 +104,9 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
             //String response = postJson(urlTransacao, formasPagamentoMap, jsonRequest);
             ChargeResponse<RetornoTransacao> retornoTransacao = postJson(urlTransacao, usuarioMap, jsonRequest);
 
-            return retornoTransacao;
+            return new ChargeResponse<>(retornoTransacao);
         } catch (JsonProcessingException e) {
-            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha convertendo json", e);
+            throw new OrderValidationException(ResponseCode.INTERNAL_ERROR, "Falha convertendo json", e);
         }
 
     }
@@ -138,7 +145,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
 
             return new ChargeResponse<>(retornoTransacao);
         } catch (URISyntaxException e) {
-           throw  new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Url invalida ao chamar superpay", e);
+           throw  new OrderValidationException(ResponseCode.INTERNAL_ERROR, "Url invalida ao chamar superpay", e);
         }
     }
 
@@ -171,7 +178,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
 
             return exchange;
         } catch (JsonProcessingException | URISyntaxException e) {
-            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha preparando a captura de pagamento", e);
+            throw new OrderValidationException(ResponseCode.INTERNAL_ERROR, "Falha preparando a captura de pagamento", e);
         }
     }
 
@@ -195,7 +202,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
         try {
             jsonHeader = om.writeValueAsString(new Usuario(login, senha));
         } catch (JsonProcessingException e) {
-            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Falha convertendo json", e);
+            throw new OrderValidationException(ResponseCode.INTERNAL_ERROR, "Falha convertendo json", e);
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -229,12 +236,6 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
                 //        param
         );
     }
-
-    //TODO - COMO AINDA NAO TEMOS STATUS DE PAGAMENTO DE ORDER, SERA NECESSARIO IMPLEMENTAR ESTE METODO POSTERIORMENTE
-    public Boolean updatePaymentStatus(RetornoTransacao retornoTransacao) {
-        return true;
-    }
-
 
     //MONTAMOS A REQUISICAO PARA ENVIAR PARA A SUPERPAY
     private TransacaoRequest createRequest(Order order)  {
@@ -423,7 +424,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
         if (optionalCc.isPresent()){
             return optionalCc.get();
         }else{
-            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_TYPE, "Cartão não cadastrado");
+            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE, "Cartão não cadastrado");
         }
     }
 
@@ -431,21 +432,28 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
     //BRANCH: RNF101
     //TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
-    public Boolean validatePaymentStatusAndSendCapture(Order order)  {
+    public Boolean validatePaymentStatusAndSendCapture(Payment payment)  {
 
-        //Payment payment = paymentRepository.findOne(order.getPayment().getId());
+        Order order = payment.getOrder();
 
         Boolean validateAndCapture = false;
 
         if (order.getStatus() == Order.Status.READY2CHARGE) {
 
-            Optional<RetornoTransacao> retornoConsultaTransacao = consultaTransacao(order.getIdOrder());
+            Optional<RetornoTransacao> retornoConsultaTransacao = consultaTransacao(payment.getId());
 
             if (retornoConsultaTransacao.isPresent()) {
 
                 //SE O STATUS ESTIVER NA SUPERPAY COMO PAGO E NAO CAPTURADO, ENTAO ENVIAMOS O PEDIDO DE CAPTURA
                 if (retornoConsultaTransacao.get().getStatusTransacao() == 2) {
                     ResponseEntity<RetornoTransacao> exchange = this.capturaTransacao(order.getIdOrder());
+
+                    RetornoTransacao retornoTransacao = exchange.getBody();
+
+                    payment.setStatus(Payment.Status.fromSuperpayStatus(retornoTransacao.getStatusTransacao()));
+
+                    updatePaymentStatus(payment);
+
                     validateAndCapture = true;
                 } else {
                     log.error("Status do pagamento na Superpay não permite captura");
@@ -453,7 +461,7 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
             }
 
         } else {
-            throw new OrderValidationException(ErrorCode.FORBIDEN_PAYMENT, "Status da Order não permite efetuar captura do pagamento");
+            throw new OrderValidationException(ResponseCode.FORBIDEN_PAYMENT, "Status da Order não permite efetuar captura do pagamento");
         }
 
         return validateAndCapture;
@@ -469,10 +477,17 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
 
         if (exchange.getStatusCode() == HttpStatus.OK) {
 
-            Boolean result = updatePaymentStatus(exchange.getBody());
+            RetornoTransacao retornoTransacao = exchange.getBody();
+
+            Payment payment = paymentRepository.findOne(numeroTransacao);
+            payment.setStatus(Payment.Status.fromSuperpayStatus(retornoTransacao.getStatusTransacao()));
+
+            Boolean result = updatePaymentStatus(payment);
 
             if (result == false) {
-                log.error("Erro ao atualizar o status de Order ID {} após capturar na Superpay", numeroTransacao);
+                throw new OrderValidationException(ResponseCode.INTERNAL_ERROR,
+                        "Erro ao atualizar o status de Payment ID {"+numeroTransacao+"} após capturar na Superpay"
+                );
             }
         }
 
@@ -497,46 +512,73 @@ public class MulticlickPaymentService implements Charger<Order, RetornoTransacao
     }
 
     @Override
-    public ChargeResponse<RetornoTransacao> reserve(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> reserve(ChargeRequest<Payment> chargeRequest) {
 
-        ChargeResponse<RetornoTransacao> response = this.sendRequest(chargeRequest.getBody());
+        Payment payment = chargeRequest.getBody();
 
-        Integer superpayStatusStransacao = response.getBody().getStatusTransacao();
+        ChargeResponse<Object> response = this.sendRequest(payment.getOrder());
+
+        RetornoTransacao retornoTransacao = (RetornoTransacao) response.getBody();
+
+        Integer superpayStatusStransacao = retornoTransacao.getStatusTransacao();
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
-        if (paymentStatus.isSuccess()) {
-            //TODO - URGENTE
-            //ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
-            //OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
-            Boolean updateStatusPagamento = updatePaymentStatus(response.getBody());
+        payment.setStatus(paymentStatus);
 
-            if (!updateStatusPagamento) {
-                //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
-                // DIEGO, nao devemos lancar ero aqui pq o pagamento ja foi feito. Devemos prosseguir com a trasacao, logar um warn e trabalhar na correçao
-                log.warn("Erro ao salvar o status do pagamento");
-               // throw new RuntimeException("Erro salvar o status do pagamento");
-            }
+        MDC.put("paymentStatus", paymentStatus.toString());
+
+        // Atualiza o status, sendo sucesso ou nao.
+        Boolean updateStatusPagamento = updatePaymentStatus(payment);
+
+        if (!updateStatusPagamento) {
+            log.warn("Erro ao salvar o status do pagamento");
         }
 
+        //if (paymentStatus.isSuccess()) {
+        //
+        //    //TODO - URGENTE
+        //    //ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
+        //    //OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
+        //    Boolean updateStatusPagamento =updatePaymentStatus(payment);
+//
+        //    if (!updateStatusPagamento) {
+        //        //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
+        //        // DIEGO, nao devemos lancar ero aqui pq o pagamento ja foi feito. Devemos prosseguir com a trasacao, logar um warn e trabalhar na correçao
+        //        log.warn("Erro ao salvar o status do pagamento");
+        //       // throw new RuntimeException("Erro salvar o status do pagamento");
+        //    }
+        //}
+
+        if (paymentStatus.isSuccess()) {
+            response.setResponseCode(ResponseCode.SUCCESS);
+        }
+        else
+        {
+            response.setResponseCode(paymentStatus.getResponseCode());
+        }
         return response;
     }
 
     @Override
-    public ChargeResponse<RetornoTransacao> capture(ChargeRequest<Order> chargeRequest) {
+    public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
         return new ChargeResponse(validatePaymentStatusAndSendCapture(chargeRequest.getBody()));
     }
 
     @Override
-    public ChargeResponse<RetornoTransacao> getStatus(ChargeRequest<Order> chargeRequest) {
-        // TODO: aplicar logica pra pegar o payment com o id (q eh o cod de transacao) correto.
-        Order order = chargeRequest.getBody();
-        Set<Payment> payments = order.getPaymentCollection();
-        Optional<Payment> payment = payments.stream().findFirst();
+    public ChargeResponse<Object> getStatus(ChargeRequest<Payment> chargeRequest) {
 
+
+        Optional<Payment> payment = Optional.ofNullable(chargeRequest.getBody());
         if(payment.isPresent())
             return new ChargeResponse(consultaTransacao(payment.get().getId()));
         else
-            throw new OrderValidationException(ErrorCode.INTERNAL_ERROR, "Nao conseguimos encontrar o id da transacao");
+            throw new OrderValidationException(ResponseCode.INTERNAL_ERROR, "Nao conseguimos encontrar o id da transacao");
     }
+
+    @Override
+    public Boolean updatePaymentStatus(Payment payment) {
+        return true;
+    }
+
 }

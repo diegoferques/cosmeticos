@@ -1,18 +1,19 @@
 package com.cosmeticos.payment;
 
+import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 
-public interface Charger<B, R> {
+public interface Charger {
 
-    ChargeResponse<R> addCard(ChargeRequest<B> chargeRequest);
-    ChargeResponse<R> reserve(ChargeRequest<B> chargeRequest);
-    ChargeResponse<R> capture(ChargeRequest<B> chargeRequest);
-    ChargeResponse<R> getStatus(ChargeRequest<B> chargeRequest);
+    ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest);
+    ChargeResponse<Object> reserve(ChargeRequest<Payment> chargeRequest);
+    ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest);
+    ChargeResponse<Object> getStatus(ChargeRequest<Payment> chargeRequest);
 
     /**
      * Responsavel pro atualizar o status do usuario com base na resposta du superpay. A principio, usado no processamento de callbacks.
-     * @param retornoTransacao
+     * @param payment
      * @return
      */
-    Boolean updatePaymentStatus(RetornoTransacao retornoTransacao);
+    Boolean updatePaymentStatus(Payment payment);
 }

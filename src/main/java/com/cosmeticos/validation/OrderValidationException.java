@@ -3,7 +3,7 @@ package com.cosmeticos.validation;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.ResponseCode;
 
 import lombok.Data;
 
@@ -14,23 +14,23 @@ import lombok.Data;
 public class OrderValidationException extends RuntimeException {
 
     @Enumerated(EnumType.STRING)
-    private ErrorCode code;
+    private ResponseCode code;
 
     public OrderValidationException() {
         super();
     }
 
-    public OrderValidationException(ErrorCode code, String message) {
+    public OrderValidationException(ResponseCode code, String message) {
         super(message);
         this.code = code;
     }
 
-    public OrderValidationException(ErrorCode code, String message, Throwable cause) {
+    public OrderValidationException(ResponseCode code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
 
-    public OrderValidationException(ErrorCode code, Throwable cause) {
+    public OrderValidationException(ResponseCode code, Throwable cause) {
         super(cause);
         this.code = code;
     }

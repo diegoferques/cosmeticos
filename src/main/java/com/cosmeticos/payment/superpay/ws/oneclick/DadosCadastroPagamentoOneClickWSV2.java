@@ -141,7 +141,7 @@ public class DadosCadastroPagamentoOneClickWSV2 {
 
     /**
      * Define o valor da propriedade formaPagamento.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Long }

@@ -59,7 +59,7 @@ public class CashOrderControllerTests {
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {
 
-        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
+        ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(1);
 
         Mockito.when(
                 paymentService.reserve(Mockito.any())
@@ -256,7 +256,7 @@ public class CashOrderControllerTests {
     }
 
 
-    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");

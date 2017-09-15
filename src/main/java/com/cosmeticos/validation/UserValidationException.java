@@ -1,6 +1,6 @@
 package com.cosmeticos.validation;
 
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.ResponseCode;
 import lombok.Data;
 
 import javax.persistence.EnumType;
@@ -13,23 +13,23 @@ import javax.persistence.Enumerated;
 public class UserValidationException extends RuntimeException {
 
     @Enumerated(EnumType.STRING)
-    private ErrorCode code;
+    private ResponseCode code;
 
     public UserValidationException() {
         super();
     }
 
-    public UserValidationException(ErrorCode code, String message) {
+    public UserValidationException(ResponseCode code, String message) {
         super(message);
         this.code = code;
     }
 
-    public UserValidationException(ErrorCode code, String message, Throwable cause) {
+    public UserValidationException(ResponseCode code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
 
-    public UserValidationException(ErrorCode code, Throwable cause) {
+    public UserValidationException(ResponseCode code, Throwable cause) {
         super(cause);
         this.code = code;
     }

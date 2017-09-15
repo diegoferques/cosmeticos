@@ -1,6 +1,6 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.net.URISyntaxException;
@@ -72,6 +71,9 @@ public class OrderService {
     @Autowired
     private VoteService voteService;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
     }
@@ -105,7 +107,7 @@ public class OrderService {
         /********************************************************/
         Payment validatedPayment = null;
         if (paymentCollection.isEmpty()) {
-            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
+            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
         }
         else {
             validatedPayment = paymentCollection.stream().findFirst().get();
@@ -114,13 +116,13 @@ public class OrderService {
         if(persistentProfessionalCategory == null)
         {
             throw new OrderValidationException(
-                    ErrorCode.INVALID_PROFESSIONAL_CATEGORY,
+                    ResponseCode.INVALID_PROFESSIONAL_CATEGORY,
                     "ProfessionalCategoryId invalido: " + receivedProfessionalCategoryId);
 
         }
 
         if (paymentCollection.isEmpty()) {
-            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
+            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
         }
         else {
             validatedPayment = paymentCollection.stream().findFirst().get();
@@ -172,7 +174,7 @@ public class OrderService {
         PriceRule chosenPriceRule = receivedPayment.getPriceRule();
 
         if (chosenPriceRule == null) {
-            throw new OrderValidationException(ErrorCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
+            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
         }
         else
         {
@@ -200,7 +202,7 @@ public class OrderService {
 
             if (persistentCreditCards.isEmpty()) {
                 throw new OrderValidationException(
-                        ErrorCode.INVALID_PAYMENT_TYPE,
+                        ResponseCode.INVALID_PAYMENT_TYPE,
                         "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
                                 persistentCustomer.toString()
                 );
@@ -266,7 +268,7 @@ public class OrderService {
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(persistentOrder.getStatus() == receivedOrder.getStatus()) {
 			//throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
-			throw new OrderValidationException(ErrorCode.INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
+			throw new OrderValidationException(ResponseCode.INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
 		}
 
         if (Order.Status.CLOSED == persistentOrder.getStatus()) {
@@ -311,7 +313,7 @@ public class OrderService {
         if (!isEmpty(receivedOrder.getIdCustomer())) {
             if(receivedOrder.getIdCustomer().getIdCustomer() != persistentOrder.getIdCustomer().getIdCustomer())
             {
-                throw new OrderValidationException(ErrorCode.ILLEGAL_ORDER_OWNER_CHANGE,
+                throw new OrderValidationException(ResponseCode.ILLEGAL_ORDER_OWNER_CHANGE,
                         "Nao se pode alterar o customer de uma order para outro customer");
             }
         }
@@ -353,15 +355,26 @@ public class OrderService {
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
         // Utilizamos a order persistente pois ela possui TODOS os atributos setados
         if (receivedOrder.getStatus() == Order.Status.ACCEPTED) {
-            this.sendPaymentRequest(persistentOrder);
-        }
 
+
+            for(Payment newPayment : persistentOrder.getPaymentCollection())
+            {
+                persistentOrder.addPayment(newPayment);
+                orderRepository.save(persistentOrder);
+                this.sendPaymentRequest(newPayment);
+            }
+        }
         //TIVE QUE COMENTAR A VALIDACAO ABAIXO POIS ESTAVA DANDO O ERRO ABAIXO:
         //QUANDO VAMOS ATUALIZAR PARA SCHEDULED, AINDA NAO TEMOS OS DADOS QUE VAO SER ATUALIZADOS
         //-- VALIDANDO O COMENTARIO ACIMA --//
         //AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-        if (receivedOrder.getStatus() == Order.Status.SCHEDULED) {
-            this.validateScheduledAndsendPaymentRequest(persistentOrder);
+        else if (receivedOrder.getStatus() == Order.Status.SCHEDULED) {
+
+            for(Payment newPayment : persistentOrder.getPaymentCollection()) {
+                persistentOrder.addPayment(newPayment);
+                orderRepository.save(persistentOrder);
+                this.validateScheduledAndsendPaymentRequest(newPayment);
+            }
         }
 
 		//TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
@@ -380,7 +393,7 @@ public class OrderService {
 
             if (Payment.Type.CC.equals(payment.getType())) {
                 //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-                if(this.sendPaymentCapture(persistentOrder)) {
+                if(this.sendPaymentCapture(payment)) {
 
                     //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
                     //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
@@ -452,17 +465,24 @@ public class OrderService {
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
 	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
-	private Boolean sendPaymentCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
-        ChargeResponse<RetornoTransacao> chargeResponse = paymentService.getStatus(new ChargeRequest<>(order));
+	private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
+        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
 
-        Integer superpayStatusStransacao = chargeResponse.getBody().getStatusTransacao();
+        return chargeResponse.getResponseCode().equals(ResponseCode.SUCCESS);
 
-        Optional<Payment.Status> paymentStatus = Arrays.asList(Payment.Status.values()).stream()
-                .filter( status -> status.getSuperpayStatusTransacao().equals(superpayStatusStransacao))
-                .findFirst();
+// ChargeResponse<RetornoTransacao> chargeResponse = paymentService.getStatus(new ChargeRequest<>(order));
 
-		Boolean paymentCapture = HttpStatus.OK.equals(paymentStatus.get().getHttpStatus())
-            || HttpStatus.ACCEPTED.equals(paymentStatus.get().getHttpStatus());
+        //Integer superpayStatusStransacao = chargeResponse.getBody().getStatusTransacao();
+//
+        //Optional<Payment.Status> paymentStatus = Arrays.asList(Payment.Status.values()).stream()
+        //        .filter( status -> status.getSuperpayStatusTransacao().equals(superpayStatusStransacao))
+        //        .findFirst();
+
+
+       // Boolean paymentCapture = HttpStatus.OK.equals(paymentStatus.get().getHttpStatus())
+         //   || HttpStatus.ACCEPTED.equals(paymentStatus.get().getHttpStatus());
+
+
 
         //DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
 		//POIS O CRON PEGA TODOS OS READY2CHARGE E ENVIA PARA ESTE METODO, SE DER ALGUM ERRO, TEMOS QUE FAZER ALGO
@@ -473,11 +493,12 @@ public class OrderService {
 		}
 		*/
 
-		return paymentCapture;
+		//return paymentCapture;
 	}
 
-	private Boolean validateScheduledAndsendPaymentRequest(Order persistenOrder) throws Exception {
+	private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
 
+        Order persistenOrder = payment.getOrder();
 
         Boolean success = false;
 
@@ -522,7 +543,7 @@ public class OrderService {
         //TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
 		if(sdf.format(now).equals(sdf.format(dateToStartNotification))) {
 			//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-			if(!sendPaymentRequest(persistenOrder)) {
+			if(!sendPaymentRequest(payment)) {
 				//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
 				log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
 			} else {
@@ -532,7 +553,7 @@ public class OrderService {
 		//TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
 		} else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
 			//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-			if(!sendPaymentRequest(persistenOrder)) {
+			if(!sendPaymentRequest(payment)) {
 				//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
 				log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
 						" forma de pagamento seja alterado para dinheiro");
@@ -544,7 +565,7 @@ public class OrderService {
 		//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
 		} else if (now.after(dateToStartPayment)) {
 			//AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
-			if(sendPaymentRequest(persistenOrder)) {
+			if(sendPaymentRequest(payment)) {
                 success = true;
             }
 
@@ -563,10 +584,17 @@ public class OrderService {
 	@Scheduled(cron = "${order.payment.ready2charge.cron}")
 	private void findReady2ChargeOrdersAndSendPaymentCron() throws Exception {
 
-		List<Order> orderList = orderRepository.findByStatus(Order.Status.READY2CHARGE);
+        // TODO: nao buscamos order, buscamos payments com status de falha
+		///List<Order> orderList = orderRepository.findByStatus(Order.Status.READY2CHARGE);
 
-		for (Order order: orderList) {
-			this.sendPaymentCapture(order);
+        /*for (Order order: orderList) {
+            this.sendPaymentCapture(order);
+        }*/
+
+		List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.READY2CHARGE);
+
+		for (Payment payment: paymentList) {
+			this.sendPaymentCapture(payment);
 		}
 
 	}
@@ -578,17 +606,27 @@ public class OrderService {
 	//@Scheduled(cron = "${order.payment.accepted.cron}")
 	private void findAcceptedOrdersAndSendPaymentCron() throws Exception {
 
-		List<Order> orderList = orderRepository.findByStatus(Order.Status.ACCEPTED);
+        // TODO:  Nao buscamos order, buscamos por payment.
+		/*List<Order> orderList = orderRepository.findByStatus(Order.Status.ACCEPTED);
 
 		for (Order order: orderList) {
 			//TODO - URGENTE: SE DER ALGUM ERRO NA HORA DE EFETUAR A RESERVA QUANDO MUDAR O STATUS PARA ACCEPTED...
 			//AQUI FARIAMOS A RETENTATIVA NO CRON, POREM, EM QUAL SITUACAO DEVEMOS EFETUAR A TENTATIVA NOVAMENTE...
 			//E EM QUAL DEVEMOS TOMAR OUTRAS ATITUDES, BEM COMO NAO PERMITIR A CONTINUIDADE DE ORDER SE NAO PAGAR EM DINHEIRO
+
+            // TODO:  NAO tem como estar vazio. Quando chega um pedido de pagamento, eh nossa obrigacao salvar um payment junto com a order.
 			if (order.getPaymentCollection().isEmpty()) {
+
 				this.sendPaymentCapture(order);
 			}
 
-		}
+		}*/
+
+        List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.ACCEPTED);
+
+        for (Payment payment: paymentList) {
+            this.sendPaymentCapture(payment);
+        }
 
 	}
 
@@ -597,7 +635,7 @@ public class OrderService {
 	@Scheduled(cron = "${order.payment.secheduled.cron}")
 	private void findScheduledOrdersValidateAndSendPaymentRequest() throws Exception {
 
-		List<Order> orderList = orderRepository.findByStatus(Order.Status.SCHEDULED);
+		List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.SCHEDULED);
 
 		int daysToStart = Integer.parseInt(daysToStartPayment);
 		int daysBeforeStart = Integer.parseInt(daysBeforeStartToNotification);
@@ -611,15 +649,13 @@ public class OrderService {
 		//EX.: 20/08/2017
 		Date now = c.getTime();
 
-		for (Order order: orderList) {
+		for (Payment payment: paymentList) {
 
 		    // TODO: requer refactoring quando comecarmos a fazer pagamento com 2 cartoes.
 			if(Payment.Status.PAGO_E_NAO_CAPTURADO ==
-                    order.getPaymentCollection()
-                            .stream()
-                            .findFirst()
-                            .get()
-                            .getStatus()) {
+                    payment.getStatus()) {
+
+			    Order order = payment.getOrder();
 
 				//PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
 				Date scheduleDateStart = order.getScheduleId().getScheduleStart();
@@ -647,7 +683,7 @@ public class OrderService {
 				//TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
 				if(sdf.format(now).equals(sdf.format(dateToStartNotification))) {
 					//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-					if(!sendPaymentRequest(order)) {
+					if(!sendPaymentRequest(payment)) {
 						//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
 						log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
 					}
@@ -655,7 +691,7 @@ public class OrderService {
 					//TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
 				} else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
 					//TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-					if(!sendPaymentRequest(order)) {
+					if(!sendPaymentRequest(payment)) {
 						//AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
 						log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
 								" forma de pagamento seja alterado para dinheiro");
@@ -665,7 +701,7 @@ public class OrderService {
 					//SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
 				} else if (now.after(dateToStartPayment)) {
 					//AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
-					sendPaymentRequest(order);
+					sendPaymentRequest(payment);
 
 					//TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
 				} else {
@@ -677,11 +713,13 @@ public class OrderService {
 	}
 
 	//TODO - ACHO QUE ESSE METODO MERECE UMA ATENCAO ESPECIAL PARA MELHORIAS NOS SEUS TRATAMENTOS DE ERROS E VALIDACOES
-	private Boolean sendPaymentRequest(Order orderRequest) throws ParseException, JsonProcessingException, Exception {
+	private Boolean sendPaymentRequest(Payment payment) throws ParseException, JsonProcessingException, Exception {
 
-        ChargeResponse<RetornoTransacao> retornoTransacaoSuperpay = paymentService.reserve(new ChargeRequest<Order>(orderRequest));
+        ChargeResponse<Object> retornoTransacaoSuperpay = paymentService.reserve(new ChargeRequest<>(payment));
 
-        Integer superpayStatusStransacao = retornoTransacaoSuperpay.getBody().getStatusTransacao();
+        RetornoTransacao retornoTransacao = (RetornoTransacao)retornoTransacaoSuperpay.getBody();
+
+        Integer superpayStatusStransacao = retornoTransacao.getStatusTransacao();
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
@@ -713,7 +751,7 @@ public class OrderService {
                 //TIVE QUE ADICIONAR O STATUS 31 (Transação já Paga), ENQUANTO NAO FAZEMOS AS VALIDACOES DOS STATUS
                 case 31:
                     throw new OrderValidationException(
-                    		ErrorCode.GATEWAY_DUPLICATE_PAYMENT,
+                    		ResponseCode.GATEWAY_DUPLICATE_PAYMENT,
                             "Gateway de pagamento informou que a trasacacao ja consta como paga."
                     );
 
@@ -728,7 +766,7 @@ public class OrderService {
                     return true;
         } else {
 
-            throw new OrderValidationException(ErrorCode.GATEWAY_FAILURE, "Gateway respondeu com status  de erro");
+            throw new OrderValidationException(ResponseCode.GATEWAY_FAILURE, "Gateway respondeu com status  de erro");
         }
     }
 
@@ -860,7 +898,7 @@ public class OrderService {
 
         if (!orderList.isEmpty()) {
             // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-            throw new OrderValidationException(ErrorCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
+            throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
         }
     }
 
@@ -868,7 +906,7 @@ public class OrderService {
 
         Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
         if (newOrderScheduleStart == null) {
-            throw new OrderValidationException(ErrorCode.INVALID_SCHEDULE_START, "Data de inicio de agendamento vazia");
+            throw new OrderValidationException(ResponseCode.INVALID_SCHEDULE_START, "Data de inicio de agendamento vazia");
         }
 
 
@@ -890,7 +928,7 @@ public class OrderService {
                     if (existingOrderStart.before(newOrderScheduleStart) &&
                             existingOrderEnd.after(newOrderScheduleStart)) {
                         // conflitou!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        throw new OrderValidationException(ErrorCode.CONFLICTING_SCHEDULES, "Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
+                        throw new OrderValidationException(ResponseCode.CONFLICTING_SCHEDULES, "Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
                     }
                 }
             }
@@ -948,7 +986,7 @@ public class OrderService {
 
         if (receivedOrder.getScheduleId().getScheduleEnd() == null
                 && Order.Status.SCHEDULED.equals(receivedOrder.getStatus())) {
-            throw new OrderValidationException(ErrorCode.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
+            throw new OrderValidationException(ResponseCode.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
         }
 
     }
