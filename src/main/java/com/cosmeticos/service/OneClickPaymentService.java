@@ -74,7 +74,7 @@ public class OneClickPaymentService implements Charger{
                 .get();
         Long numeroTransacao = payment.getId();
 
-        CreditCard creditCard = order.getCreditCardCollection()
+        CreditCard creditCard = user.getCreditCardCollection()
                 .stream()
                 .findFirst()
                 .get();

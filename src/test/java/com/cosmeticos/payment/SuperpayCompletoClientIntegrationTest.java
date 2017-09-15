@@ -1,11 +1,20 @@
 package com.cosmeticos.payment;
 
+import com.cosmeticos.payment.superpay.ws.completo.CapturarTransacaoCompletaResponse;
+import com.cosmeticos.payment.superpay.ws.completo.DadosUsuarioTransacaoCompletaWS;
+import com.cosmeticos.payment.superpay.ws.completo.ObjectFactory;
 import com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.ws.client.core.WebServiceTemplate;
+
+import javax.xml.bind.JAXBElement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,6 +27,31 @@ public class SuperpayCompletoClientIntegrationTest {
 
     @Autowired
     private SuperpayCompletoClient superpayCompletoClient;
+
+    @MockBean(name = "webServiceTemplateCompleto")
+    private WebServiceTemplate webServiceTemplate;
+
+    @Before
+    public void setup(){
+
+
+        ObjectFactory factory = new ObjectFactory();
+
+        ResultadoPagamentoWS resultadoPagamentoWS = new ResultadoPagamentoWS();
+        resultadoPagamentoWS.setStatusTransacao(1);
+
+        CapturarTransacaoCompletaResponse response = new CapturarTransacaoCompletaResponse();
+        response.setReturn(resultadoPagamentoWS);
+
+        JAXBElement<CapturarTransacaoCompletaResponse> jaxbResponse =
+                factory.createCapturarTransacaoCompletaResponse(response);
+
+        Mockito.when(
+                webServiceTemplate.marshalSendAndReceive(Mockito.any())
+        ).thenReturn(jaxbResponse);
+
+
+    }
 
     @Test
     public void testCapturar(){

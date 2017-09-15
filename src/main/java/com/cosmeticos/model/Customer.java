@@ -71,8 +71,7 @@ public class Customer implements Serializable {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-    //TODO - Troquei o TemporalType de TIMESTAMP para DATE, verificar se essa alteração não tem problema
-    //Voltei para TimeStamp
+
     @NotNull(message = "birthDate was not set!")
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthDate;

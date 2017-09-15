@@ -357,7 +357,7 @@ public class OrderService {
         if (receivedOrder.getStatus() == Order.Status.ACCEPTED) {
 
 
-            for(Payment newPayment : receivedOrder.getPaymentCollection())
+            for(Payment newPayment : persistentOrder.getPaymentCollection())
             {
                 persistentOrder.addPayment(newPayment);
                 orderRepository.save(persistentOrder);
@@ -370,7 +370,7 @@ public class OrderService {
         //AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
         else if (receivedOrder.getStatus() == Order.Status.SCHEDULED) {
 
-            for(Payment newPayment : receivedOrder.getPaymentCollection()) {
+            for(Payment newPayment : persistentOrder.getPaymentCollection()) {
                 persistentOrder.addPayment(newPayment);
                 orderRepository.save(persistentOrder);
                 this.validateScheduledAndsendPaymentRequest(newPayment);

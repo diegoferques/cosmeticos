@@ -168,6 +168,11 @@ public class ScheduleOrderControllerTest {
     @Test
     public void scheduledOrderPutOk() throws URISyntaxException {
 
+
+        Mockito.doReturn(true).when(paymentService).
+                updatePaymentStatus(Mockito.anyObject()
+                );
+
 /*
          PRE-CONDICOES para o teste:
          Criamos um Customer qualquer. Criamos um Profissional qualquer e o associamos a um Service.

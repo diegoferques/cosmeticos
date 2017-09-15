@@ -35,6 +35,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 
@@ -598,11 +599,12 @@ public class MockingPaymentControllerTests {
 
         return exchange;
     }
-
+@Ignore
+//TODO: devemos separar testes do oneClick e MultiClick atraves do active profile.
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 
-        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao();
+        //Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 
         ChargeResponse<Object> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(31);
 

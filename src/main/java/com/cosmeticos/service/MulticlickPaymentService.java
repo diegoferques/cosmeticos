@@ -3,6 +3,7 @@ package com.cosmeticos.service;
 import java.net.URI;
 import java.util.Optional;
 
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
@@ -77,7 +78,7 @@ public class MulticlickPaymentService implements Charger {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
-    private Map<String, Integer> formasPagamentoMap = getFormasPagamentoMap();
+    private SuperpayFormaPagamento superpayFormaPagamento;
 
     //POR AQUI QUE CHEGA ORDER COM STATUS PARA SOLICITAR A COBRANCA/RESERVA NA SUPERPAY
     private ChargeResponse<Object> sendRequest(Order orderCreated) {
@@ -245,7 +246,11 @@ public class MulticlickPaymentService implements Charger {
 
         request.setCodigoEstabelecimento(estabelecimento);
 
-        request.setCodigoFormaPagamento(formasPagamentoMap.get(creditCard.getVendor()));
+        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(
+                creditCard.getVendor().trim().toUpperCase()
+        );
+
+        request.setCodigoFormaPagamento(formaPagamento.getCodigoFormaPagamento());
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);

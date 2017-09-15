@@ -187,6 +187,7 @@ public class UserController {
         }
     }
 
+    //TODO - AO CHAMAR ESTE ENDPOINT COM UM EMAIL QUE NAO EXISTE NO BANCO, RETORNA ERRO 500
     @RequestMapping(path = "/users/prepare_send_token", method = RequestMethod.POST)
     public HttpEntity<UserResponseBody> preparePasswordReset(@RequestBody UserRequestBody request, BindingResult bindingResult) {
 
@@ -216,8 +217,12 @@ public class UserController {
                     return ok().body(responseBody);
                 } else {
 
-                    log.error("Usuario com o email " + user.getEmail() + " nao existe");
-                    return notFound().build();
+                    UserResponseBody responseBody = new UserResponseBody(user);
+                    responseBody.setDescription("Usuario com o email " + request.getEntity().getEmail() + " nao existe");
+
+                    log.error(responseBody.getDescription());
+
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
                 }
             }
 
@@ -230,6 +235,8 @@ public class UserController {
 
     }
 
+    //TODO - CHAMEI ESTE ENDPOINT SEM PASSAR A SENHA E DEU ERRO 500
+    //TODO - CHAMEI ESTE ENDPOINT SEM PASSANDO A SENHA E DEU ERRO 500, MAS ALTEROU A SENHA E NAO FINALIZOU COM SUCESSO
     //TODO - FALTA TERMINAR A CONFIGURACAO DO SMTP E TESTAR COM USUARIO E SENHA
     //TODO - FALTA CONFIGURAR EMAIL, SENHA SMTP E ETC DO SERVIDOR
     //TODO - FALTA CRIAR TESTES E VALIDAR
@@ -265,6 +272,7 @@ public class UserController {
 
         if(HttpStatus.OK.equals(response.getStatusCode()))
         {
+            service.invalidateToken(request.getEntity());
             service.sendSuccesfullPasswordResetMessage(request.getEntity().getEmail());
 
             return response;
@@ -274,6 +282,59 @@ public class UserController {
         {
             return response;
         }
+    }
+
+    @RequestMapping(path = "/users/validate_token", method = RequestMethod.POST)
+    public HttpEntity<UserResponseBody> validateToken(@RequestBody UserRequestBody request) {
+
+        try {
+
+            if(request.getEntity().getEmail().isEmpty() || request.getEntity().getLostPasswordToken().isEmpty()) {
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("Requisição inválida!");
+                log.error("Requisição inválida!.");
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+
+            } else {
+
+                Optional<User> userOptional = service.findByEmail(request.getEntity().getEmail());
+
+                if (!userOptional.isPresent()) {
+                    UserResponseBody responseBody = new UserResponseBody();
+                    responseBody.setDescription("E-mail informado não encontrado!");
+                    log.error("E-mail informado não encontrado.");
+
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+
+                } else if(!service.validateToken(userOptional.get(), request.getEntity())) {
+                    UserResponseBody responseBody = new UserResponseBody();
+                    responseBody.setDescription("Token ou email inválido!");
+                    log.error("Token ou email inválido!.");
+
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+
+                } else {
+                    UserResponseBody responseBody = new UserResponseBody();
+                    responseBody.setDescription("Token validado com sucesso!");
+                    log.info("Token validado com sucesso:  [{}]", request.getEntity().getLostPasswordToken());
+
+                    return ok().body(responseBody);
+                }
+
+            }
+
+
+
+        } catch (Exception e) {
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription("Houve um erro ao processar a sua solicitação, tente novamente mais tarde!");
+
+            log.error("Falha na validação do token: {}", e.getMessage(), e);
+
+            return ResponseEntity.status(500).body(responseBody);
+        }
+
     }
 
     private boolean validateCreditCards(Set<CreditCard> creditCardCollection) {
