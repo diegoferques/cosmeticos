@@ -74,63 +74,6 @@ public class CustomerController {
         }
     }
 
-    @JsonView(ResponseJsonView.CustomerControllerUpdate.class)
-    @RequestMapping(path = "/customers", method = RequestMethod.PUT)
-    public HttpEntity<CustomerResponseBody> update(@RequestBody CustomerRequestBody request,
-                                                   BindingResult bindingResult) {
-
-        try {
-			if (bindingResult.hasErrors()) {
-				log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
-				return badRequest().body(buildErrorResponse(bindingResult));
-
-			} else {
-
-				Optional<Customer> optional = service.find(request.getCustomer().getIdCustomer());
-
-				if (optional.isPresent()) {
-
-					Customer persistentCustomer = optional.get();
-
-					String emailInDatabase = persistentCustomer.getUser().getEmail();
-					String emailFromRequest = request.getCustomer().getUser().getEmail();
-
-					if (emailFromRequest == null || // Se nao foi informado email no request nao precisamos checar se os emails gravados recebidos sao iguais.
-                            emailInDatabase.equals(emailFromRequest)) {
-
-						optional = Optional.ofNullable(service.update(request));
-
-						Customer customer = optional.get();
-
-						CustomerResponseBody responseBody = new CustomerResponseBody(customer);
-						log.info("Customer atualizado com sucesso: id[{}]", customer.getIdCustomer());
-						return ok(responseBody);
-					} else {
-						CustomerResponseBody responseBody = new CustomerResponseBody();
-						responseBody.setDescription("E-mail já existente.");
-						log.error("Nao e permitido atualizar cliente para um email já existente.");
-
-						return badRequest().body(responseBody);
-					}
-				} else {
-					log.info("Customer inexistente:  [{}]", request.getCustomer());
-					return ResponseEntity.notFound().build();
-				}
-			}
-
-        } catch (Exception e) {
-            String errorCode = String.valueOf(System.nanoTime());
-
-            CustomerResponseBody response = new CustomerResponseBody();
-            response.setDescription("Erro interno: " + errorCode);
-
-            log.error("Erro na atualização do Customer: {} - {}", errorCode, e.getMessage(), e);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-
-    }
-
     @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
     public HttpEntity<CustomerResponseBody> findById(@PathVariable Long idCustomer) {
@@ -161,6 +104,63 @@ public class CustomerController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @JsonView(ResponseJsonView.CustomerControllerUpdate.class)
+    @RequestMapping(path = "/customers", method = RequestMethod.PUT)
+    public HttpEntity<CustomerResponseBody> update(@RequestBody CustomerRequestBody request,
+                                                   BindingResult bindingResult) {
+
+        try {
+            if (bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+
+            } else {
+
+                Optional<Customer> optional = service.find(request.getCustomer().getIdCustomer());
+
+                if (optional.isPresent()) {
+
+                    Customer persistentCustomer = optional.get();
+
+                    String emailInDatabase = persistentCustomer.getUser().getEmail();
+                    String emailFromRequest = request.getCustomer().getUser().getEmail();
+
+                    if (emailFromRequest == null || // Se nao foi informado email no request nao precisamos checar se os emails gravados recebidos sao iguais.
+                            emailInDatabase.equals(emailFromRequest)) {
+
+                        optional = Optional.ofNullable(service.update(request));
+
+                        Customer customer = optional.get();
+
+                        CustomerResponseBody responseBody = new CustomerResponseBody(customer);
+                        log.info("Customer atualizado com sucesso: id[{}]", customer.getIdCustomer());
+                        return ok(responseBody);
+                    } else {
+                        CustomerResponseBody responseBody = new CustomerResponseBody();
+                        responseBody.setDescription("E-mail já existente.");
+                        log.error("Nao e permitido atualizar cliente para um email já existente.");
+
+                        return badRequest().body(responseBody);
+                    }
+                } else {
+                    log.info("Customer inexistente:  [{}]", request.getCustomer());
+                    return ResponseEntity.notFound().build();
+                }
+            }
+
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            CustomerResponseBody response = new CustomerResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na atualização do Customer: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
     }
 
     @RequestMapping(path = "/customers/", method = RequestMethod.GET)

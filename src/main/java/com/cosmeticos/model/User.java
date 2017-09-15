@@ -52,6 +52,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     @Id
@@ -114,18 +115,9 @@ public class User implements Serializable {
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
-    @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
-    })
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
-
-    @JsonView({
-            ResponseJsonView.CustomerControllerGet.class
-    })
-    @Transient
-    private Integer creditCardCount;
 
     @JsonBackReference(value="user-customer")
     @OneToOne(mappedBy = "user")
@@ -148,6 +140,13 @@ public class User implements Serializable {
     @Transient
     private float evaluation;
 
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
+    //@Transient  TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
+    private Integer creditCardCount = 0;
+
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<Vote> voteCollection = new HashSet<>();
@@ -163,7 +162,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
-   public void addCreditCard(CreditCard cc)
+    public void addCreditCard(CreditCard cc)
    {
        cc.setUser(this);
        this.getCreditCardCollection().add(cc);

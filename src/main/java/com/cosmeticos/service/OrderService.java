@@ -3,6 +3,9 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.*;
@@ -11,8 +14,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.net.URISyntaxException;
@@ -52,7 +57,8 @@ public class OrderService {
     private PenaltyService penaltyService;
 
     @Autowired
-    private PaymentService paymentService;
+    @Qualifier("charger")
+    private Charger paymentService;
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
@@ -146,6 +152,8 @@ public class OrderService {
         order.addPayment(validatedPayment);
 
         Order newOrder = orderRepository.save(order);
+
+        org.apache.log4j.MDC.put("idOrder", newOrder.getIdOrder());
         // Buscando se o customer que chegou no request esta na wallet
 
         addInWallet(persistentProfessionalCategory.getProfessional(), persistentCustomer);
@@ -253,7 +261,7 @@ public class OrderService {
         Order receivedOrder = request.getOrder();// Po, ta pegando o q veio do request.. ate agora . nada anormal...
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
-		MDC.put("previousOrderStatus", String.valueOf(receivedOrder.getStatus()));
+        MDC.put("previousOrderStatus", String.valueOf(persistentOrder.getStatus()));
 
 		//ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
 		if(persistentOrder.getStatus() == receivedOrder.getStatus()) {
@@ -396,13 +404,21 @@ public class OrderService {
 
             User persistentUser = persistentOrder.getIdCustomer().getUser();
 
-            User receivedUser = receivedOrder.getIdCustomer().getUser();
+            Customer receivedCustomer = receivedOrder.getIdCustomer();
 
-            Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+            if (receivedCustomer != null) {
+                User receivedUser = receivedOrder.getIdCustomer().getUser();
 
-            addVotesToUser(persistentUser, receivedvote);
+                if (receivedUser != null) {
+                    Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
 
-            MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
+                    if (receivedvote != null) {
+                        addVotesToUser(persistentUser, receivedvote);
+
+                        MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
+                    }
+                }
+            }
 
         }
         else if(receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
@@ -437,10 +453,18 @@ public class OrderService {
 	//BRANCH: RNF101
 	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
 	private Boolean sendPaymentCapture(Order order) throws JsonProcessingException, URISyntaxException, OrderValidationException {
+        ChargeResponse<RetornoTransacao> chargeResponse = paymentService.getStatus(new ChargeRequest<>(order));
 
-		Boolean paymentCapture = paymentService.validatePaymentStatusAndSendCapture(order);
+        Integer superpayStatusStransacao = chargeResponse.getBody().getStatusTransacao();
 
-		//DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
+        Optional<Payment.Status> paymentStatus = Arrays.asList(Payment.Status.values()).stream()
+                .filter( status -> status.getSuperpayStatusTransacao().equals(superpayStatusStransacao))
+                .findFirst();
+
+		Boolean paymentCapture = HttpStatus.OK.equals(paymentStatus.get().getHttpStatus())
+            || HttpStatus.ACCEPTED.equals(paymentStatus.get().getHttpStatus());
+
+        //DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
 		//POIS O CRON PEGA TODOS OS READY2CHARGE E ENVIA PARA ESTE METODO, SE DER ALGUM ERRO, TEMOS QUE FAZER ALGO
 		//CASO CONTRARIO, VAI FICAR TENTANDO CAPTURAR E NUNCA VAI CONSEGUIR ATE CADUCAR!
 		/*
@@ -655,50 +679,33 @@ public class OrderService {
 	//TODO - ACHO QUE ESSE METODO MERECE UMA ATENCAO ESPECIAL PARA MELHORIAS NOS SEUS TRATAMENTOS DE ERROS E VALIDACOES
 	private Boolean sendPaymentRequest(Order orderRequest) throws ParseException, JsonProcessingException, Exception {
 
-		Boolean senPaymentStatus = false;
+        ChargeResponse<RetornoTransacao> retornoTransacaoSuperpay = paymentService.reserve(new ChargeRequest<Order>(orderRequest));
 
-        Optional<RetornoTransacao> retornoTransacaoSuperpay = paymentService.sendRequest(orderRequest);
+        Integer superpayStatusStransacao = retornoTransacaoSuperpay.getBody().getStatusTransacao();
 
-        if (retornoTransacaoSuperpay.isPresent()) {
+        Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
 
-            Integer statusTransacao = retornoTransacaoSuperpay.get().getStatusTransacao();
+        org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
 
-            MDC.put("superpayStatusTrasacao", String.valueOf(statusTransacao));
+        if (paymentStatus.isSuccess()) {
 
-            //VALIDAMOS SE VEIO O STATUS QUE ESPERAMOS
-            //1 = Pago e Capturado | 2 = Pago e não Capturado (O CORRETO SERIA 2, POIS FAREMOS A CAPTURA POSTERIORMENTE)
-            switch (statusTransacao)
-            {
-                case 1:
-                case 2:
+            Integer statusTransacao = paymentStatus.getSuperpayStatusTransacao();
+
+
 
 				//SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
-				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 1) {
+				if (statusTransacao == 1) {
 					log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
-					senPaymentStatus = true;
-				}
-
-				//SE FOR PAGO E NAO CAPTURADO, CORREU TUDO CERTO!
-				if (retornoTransacaoSuperpay.get().getStatusTransacao() == 2) {
-				    senPaymentStatus = true;
 				}
 
                 //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
-                if (retornoTransacaoSuperpay.get().getStatusTransacao() == 31) {
+                if (statusTransacao == 31) {
                     log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
-					senPaymentStatus = true;
                 }
 
-                    //TODO - URGENTE
-                    //ENVIAMOS OS DADOS DO PAGAMENTO EFETUADO NA SUPERPAY PARA SALVAR O STATUS DO PAGAMENTO
-                    //OBS.: COMO ESSE METODO AINDA NAO FOI IMPLEMENTADO, ELE ESTA RETORNANDO BOOLEAN
-                    Boolean updateStatusPagamento = paymentService.updatePaymentStatus(retornoTransacaoSuperpay.get());
 
-                    if (!updateStatusPagamento) {
-                        //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO AO ATUALIZAR O STATUS DO PAGAMENTO
-                        log.error("Erro ao salvar o status do pagamento");
-                        throw new RuntimeException("Erro salvar o status do pagamento");
-                    }
+
+                    /* STATUS 31 RESPONDEMOS OK com o responseCode=31 e o client se vira pra responder adequadamente ao usuario.
 
                     //SE NAO VIER O STATUS DO PAGAMENTO 1 OU 2, VAMOS LANCAR UMA EXCECAO COM O STATUS VINDO DA SUPERPAY
                     break;
@@ -713,18 +720,16 @@ public class OrderService {
                 default:
                     //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO O STATUS FOR OUTRO
                     //TODO - SE FOR MESMO RETORNAR O CODIGO DO STATUS DO PAGAMENTO, PODERIA RETORNAR A MENSAGEM, NAO O CODIGO
-                    throw new Exception("Erro ao efetuar o pagamento: " + retornoTransacaoSuperpay.get().getStatusTransacao());
+                    throw new Exception("Erro ao efetuar o pagamento: " + retornoTransacaoSuperpay.getBody().getStatusTransacao());
 
-            }
 
+            }*/
+
+                    return true;
         } else {
-            //TODO - NAO SEI QUAL SERIA A MALHOR SOLUCAO QUANDO DER UM ERRO NO PAGAMENTO NA SUPERPAY
-            log.error("Erro ao enviar a requisição de pagamento");
-            throw new Exception("Erro ao enviar a requisição de pagamento");
+
+            throw new OrderValidationException(ErrorCode.GATEWAY_FAILURE, "Gateway respondeu com status  de erro");
         }
-
-		return senPaymentStatus;
-
     }
 
     public String delete() {
@@ -806,13 +811,8 @@ public class OrderService {
             MDC.put("idProfessional: ", String.valueOf(professional.getIdProfessional()));
             MDC.put("professionalUserStatus: ", String.valueOf(professional.getUser().getStatus()));
 
-            List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
-                    professional.getIdProfessional(), 0L);
-
-            if (!orderList.isEmpty()) {
-                // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-                throw new OrderValidationException(ErrorCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
-            }
+            // Passando zero pq eh create
+            validateIfThereAreRunningOrders(0L, professional);
         }
     }
 
@@ -848,8 +848,13 @@ public class OrderService {
             // Nao precisa validar pq so valida scheduleStart, que ja foi validado no PUT
             //validateBusyScheduled1(receivedOrder);
         }
+        validateIfThereAreRunningOrders(idOrder, professional);
 
 
+    }
+
+    private void validateIfThereAreRunningOrders(Long idOrder, Professional professional) {
+        // Profissional ja possui order em andamento?...
         List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
                 professional.getIdProfessional(), idOrder);
 
@@ -857,7 +862,6 @@ public class OrderService {
             // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
             throw new OrderValidationException(ErrorCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
         }
-
     }
 
     private void validateBusyScheduled1(Order order) throws ValidationException, OrderValidationException {

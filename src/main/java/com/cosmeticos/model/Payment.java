@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Entity
 @Data
@@ -16,24 +18,60 @@ public class Payment implements Serializable {
 		CC, CASH, BOLETO
 	}
 
-	public enum Status {
-		PAGO_E_CAPTURADO(HttpStatus.OK), PAGO_E_NAO_CAPTURADO(HttpStatus.ACCEPTED), NAO_PAGO(HttpStatus.FORBIDDEN),
-		TRANSACAO_EM_ANDAMENTO(HttpStatus.CONFLICT), AGUARDANDO_PAGAMENTO(HttpStatus.BAD_REQUEST),
-		FALHA_NA_OPERADORA(HttpStatus.BAD_GATEWAY), CANCELADA(HttpStatus.GONE), ESTORNADA(HttpStatus.GONE),
-		EM_ANALISE_DE_FRAUDE(HttpStatus.ACCEPTED), RECUSADO_PELO_ANTI_FRAUDE(HttpStatus.UNAUTHORIZED),
-		FALHA_NA_ANTIFRAUDE(HttpStatus.BAD_GATEWAY), BOLETO_PAGO_A_MENOR(HttpStatus.NOT_IMPLEMENTED),
-		BOLETO_PAGO_A_MAIOR(HttpStatus.NOT_IMPLEMENTED), ESTORNO_PARCIAL(HttpStatus.OK),
-		ESTORNO_NAO_AUTORIZADO(HttpStatus.UNAUTHORIZED), TRANSACAO_EM_CURSO(HttpStatus.CONFLICT),
-		TRANSACAO_JA_PAGA(HttpStatus.CONFLICT), AGUARDANDO_CANCELAMETO(HttpStatus.ACCEPTED);
+	public enum Status{
+		PAGO_E_CAPTURADO(true, 1, HttpStatus.OK),
+		PAGO_E_NAO_CAPTURADO(true, 2, HttpStatus.ACCEPTED),
+		NAO_PAGO(false, 3, HttpStatus.FORBIDDEN),
+		TRANSACAO_EM_ANDAMENTO(false, 5, HttpStatus.CONFLICT),
+		AGUARDANDO_PAGAMENTO(false, 8, HttpStatus.BAD_REQUEST),
+		FALHA_NA_OPERADORA(false, 9, HttpStatus.BAD_GATEWAY),
+		CANCELADA(false, 13, HttpStatus.GONE),
+		ESTORNADA(false, 14, HttpStatus.GONE),
+		EM_ANALISE_DE_FRAUDE(true, 15, HttpStatus.ACCEPTED),
+		RECUSADO_PELO_ANTI_FRAUDE(false, 17, HttpStatus.UNAUTHORIZED),
+		FALHA_NA_ANTIFRAUDE(false, 18, HttpStatus.BAD_GATEWAY),
+		BOLETO_PAGO_A_MENOR(false, 21, HttpStatus.NOT_IMPLEMENTED),
+		BOLETO_PAGO_A_MAIOR(false, 22, HttpStatus.NOT_IMPLEMENTED),
+		ESTORNO_PARCIAL(true, 23, HttpStatus.OK),
+		ESTORNO_NAO_AUTORIZADO(false, 24, HttpStatus.UNAUTHORIZED),
+		FALHA_ESTORNO(false, 25, HttpStatus.BAD_GATEWAY),
+		TRANSACAO_EM_CURSO(false, 30, HttpStatus.CONFLICT),
 
-		private HttpStatus httpStatus;
+		/**
+		 * Este caso eh um pouco complicado. Nao esta claro se pode ser um erro ou sucesso.
+		 * Acho q podemo fazer vista grossa pra esse status e responder OK pro usuarios.
+		 */
+		TRANSACAO_JA_PAGA(true, 31, HttpStatus.OK),// vai quebrar testes que assertam conflict no status 31.
+		AGUARDANDO_CANCELAMETO(true, 40, HttpStatus.ACCEPTED);
 
-		private Status(HttpStatus status) {
+		private final Integer superpayStatus;		private final HttpStatus httpStatus;		private boolean success;
+
+		private Status(Boolean success, Integer superpayStatus, HttpStatus status) {
 			this.httpStatus = status;
+			this.superpayStatus = superpayStatus;
+			this.success = success;
 		}
-
 		public HttpStatus getHttpStatus() {
 			return httpStatus;
+		}
+		public Integer getSuperpayStatusTransacao() { return superpayStatus; }
+		public boolean isSuccess() {
+			return success;
+		}
+
+		public static Status fromSuperpayStatus(Integer superpayStatusStransacao) {
+			Optional<Status> paymentStatus = Arrays.asList(Payment.Status.values()).stream()
+					.filter( status -> status.getSuperpayStatusTransacao().equals(superpayStatusStransacao))
+					.findFirst();
+
+			if(paymentStatus.isPresent())
+			{
+				return paymentStatus.get();
+			}
+			else
+			{
+				throw new IllegalArgumentException("Status do superpay nao mapeado: " + superpayStatusStransacao);
+			}
 		}
 	}
 

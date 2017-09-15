@@ -27,10 +27,6 @@ public class ResponseJsonView {
     public interface ProfessionalCreate {}
 	public interface CategoryGetAll {	}
 	public interface ScheduleByProfessionalInRunningOrders {}
-
-    public interface CustomerControllerUpdate {
-    }
-
-    public interface CustomerControllerGet {
-    }
+    public interface CustomerControllerUpdate {}
+    public interface CustomerControllerGet {}
 }

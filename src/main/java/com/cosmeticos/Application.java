@@ -1,10 +1,15 @@
 package com.cosmeticos;
 
 import com.cosmeticos.controller.ControllersInterceptor;
+import com.cosmeticos.payment.Charger;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -14,6 +19,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableScheduling
 @SpringBootApplication
 public class Application {
+
+	@Value("${paymnet.charger}")
+	private String chargerBeanName;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -53,4 +61,15 @@ public class Application {
 			}
 		};
 	}
+
+	@Bean
+	public Charger charger(ApplicationContext springApplicationContext)
+	{
+		Object configuredPaymentBean = springApplicationContext.getBean(this.chargerBeanName);
+
+		Charger charger = (Charger) configuredPaymentBean;
+
+		return charger;
+	}
+
 }

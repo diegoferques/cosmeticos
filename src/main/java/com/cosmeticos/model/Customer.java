@@ -81,13 +81,15 @@ public class Customer implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class,
-            ResponseJsonView.CustomerControllerUpdate.class
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String cellPhone;
 
     @JsonView({
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     @Temporal(TemporalType.TIMESTAMP)
@@ -105,6 +107,7 @@ public class Customer implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     @OneToOne(cascade = CascadeType.ALL, optional = false)

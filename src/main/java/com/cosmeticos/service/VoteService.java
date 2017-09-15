@@ -36,7 +36,6 @@ public class VoteService {
     }
 
     public float getUserEvaluation(User user) {
-
         float evaluation = 0;
         Integer totalVotes = 0;
 

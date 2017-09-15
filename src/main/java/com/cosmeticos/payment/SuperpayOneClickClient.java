@@ -53,12 +53,12 @@ public class SuperpayOneClickClient {
 		dados.setNomeTitularCartaoCredito(nomeTitularCartaoCredito);
 		dados.setNumeroCartaoCredito(numeroCartaoCredito);
 
-		CadastraPagamentoOneClickV2 person = factory.createCadastraPagamentoOneClickV2();
-		person.setDadosOneClick(dados);
-		person.setSenha(password);
-		person.setUsuario(user);
+		CadastraPagamentoOneClickV2 pagamentoOneClickV2 = factory.createCadastraPagamentoOneClickV2();
+		pagamentoOneClickV2.setDadosOneClick(dados);
+		pagamentoOneClickV2.setSenha(password);
+		pagamentoOneClickV2.setUsuario(user);
 
-		log.info("Client sending person[user={},estabelecimento={}]", user, codigoEstabelecimento);
+		log.info("Client sending pagamentoOneClickV2[user={},estabelecimento={}]", user, codigoEstabelecimento);
 
 		JAXBElement<CadastraPagamentoOneClickV2> jaxbCadastraPagamento =
 				factory.createCadastraPagamentoOneClickV2(person);

@@ -3,9 +3,10 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,9 +33,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static java.time.LocalDateTime.now;
 
 /**
  * Created by Vinicius on 04/08/2017.
@@ -62,7 +60,7 @@ public class ScheduleOrderControllerTest {
     private OrderRepository orderRepository;
 
     @MockBean
-    private PaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
     private Order orderRestultFrom_createScheduledOrderOk = null;
 
@@ -79,10 +77,10 @@ public class ScheduleOrderControllerTest {
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////// Mocando o controller que vai no superpay e vai sofrer um refactoring monstruoso //////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////
-        Optional<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
+        ChargeResponse<RetornoTransacao> optionalFakeRetornoTransacao = this.getOptionalFakeRetornoTransacao(2);
 
         Mockito.when(
-                paymentService.sendRequest(Mockito.any())
+                paymentService.reserve(Mockito.any())
         ).thenReturn(optionalFakeRetornoTransacao);
     }
 
@@ -413,7 +411,7 @@ public class ScheduleOrderControllerTest {
         return exchangeUpdate;
     }
 
-    private Optional<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
+    private ChargeResponse<RetornoTransacao> getOptionalFakeRetornoTransacao(int statusTransacao) {
         RetornoTransacao retornoTransacao = new RetornoTransacao();
         retornoTransacao.setNumeroTransacao(3);
         retornoTransacao.setCodigoEstabelecimento("1501698887865");
@@ -433,7 +431,7 @@ public class ScheduleOrderControllerTest {
         cartaoUtilizado.add("000000******0001");
         retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
 
-        return Optional.of(retornoTransacao);
+        return new ChargeResponse(retornoTransacao);
 
     }
 }

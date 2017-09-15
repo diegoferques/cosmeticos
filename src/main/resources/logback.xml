@@ -3,35 +3,19 @@
 
     <!-- Aplica uma funcao que remove campos do mdc vazios do log -->
     <!-- <variable scope="context" name="mdcPattern" value="%replace(errorCode: %X{errorCode}, httpStatus: %X{httpStatus},){'[a-zA-Z]+=( |$)', ''}"/> -->
-   <variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, httpStatus: %X{httpStatus}, urlPath: %X{urlPath}-"/>
+   <variable scope="context" name="mdcPattern" value="errorCode: %X{errorCode}, idOrder: %X{idOrder}, previousOrderStatus: %X{previousOrderStatus}, newStatus: %X{newStatus}, superpayStatusStransacao: %X{superpayStatusStransacao}, httpStatus: %X{httpStatus}, urlPath: %X{urlPath}-"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
        </encoder>
-
-<!--
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp><fieldName>timestamp</fieldName></timestamp>
-                <logLevel/>
-                <loggerName><fieldName>logger</fieldName></loggerName>
-                <globalCustomFields><customFields>{"@source_host":"${HOSTNAME}"}</customFields></globalCustomFields>
-                <globalCustomFields><customFields>{"application": "cosmeticos-backend"}</customFields></globalCustomFields>
-                <mdc />
-                <message />
-            </providers>
-        </encoder>
--->
     </appender>
 
 
-  <!-- Talvez usaremos mais pra frente ainda neste sprint
-  <property name="LOG_PATH" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}" />
 
-   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+   <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
        <Append>true</Append>
-       <File>${logFolder:-.}/voucher-cocacola-json.log</File>
+       <File>${LOG_PATH:-.}/log/server.log.json</File>
        <filter class="ch.qos.logback.classic.filter.LevelFilter">
            <level>INFO</level>
            <onMatch>ACCEPT</onMatch>
@@ -50,31 +34,43 @@
            </providers>
        </encoder>
        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-           <fileNamePattern>${logFolder:-.}/server-json.log%d{yyyy-MM-dd}</fileNamePattern>
+           <fileNamePattern>${LOG_PATH:-.}/log/older/server.log.json.%d{yyyy-MM-dd}</fileNamePattern>
            <maxHistory>30</maxHistory>
        </rollingPolicy>
    </appender>
--->
 
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <Append>true</Append>
-        <File>log/server.log</File>
+        <File>${LOG_PATH:-.}/log/error.log</File>
+
+        <!-- root-logger esta configurado pra logar infos neste aquivo, mas este filter so permitira errors -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
         <encoder>
-            <pattern>%date{dd/MMM/yyyy HH:mm:ss} %c %5p - %m %n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>log/older/server.log.%d{yyyy-MM-dd}
+            <fileNamePattern>${LOG_PATH:-.}/log/error.log.%d{yyyy-MM-dd}
             </fileNamePattern>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
     </appender>
 
 
+    <!-- Loga todos os INFO das classes abaixo do pacote com.cosmeticos -->
+    <logger name="com.cosmeticos" additivity="false" level="INFO" >
+        <appender-ref ref="JSON" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
     <!-- Estabelece o nivel de Log pra TODAS as classes do sistema incluindo as classes de framework. -->
     <root level="INFO" >
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="ERROR" />
     </root>
 
 </configuration>

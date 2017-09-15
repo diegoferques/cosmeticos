@@ -1,11 +1,14 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.service.UserService;
+import com.cosmeticos.smtp.MailSenderService;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -133,11 +136,12 @@ public class UserController {
 
     }
 
+    @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
     @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
-    public HttpEntity<UserResponseBody> findById(@PathVariable String id) {
+    public HttpEntity<UserResponseBody> findById(@PathVariable Long id) {
 
         try {
-            Optional<User> optional = service.find(Long.valueOf(id));
+            Optional<User> optional = service.find(id);
 
             if (optional.isPresent()) {
 

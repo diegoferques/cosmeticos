@@ -5,9 +5,11 @@ import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.PaymentService;
+import com.cosmeticos.service.MulticlickPaymentService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -27,7 +29,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.Optional;
 
 /**
  * Created by matto on 08/08/2017.
@@ -46,7 +47,7 @@ public class PaymentControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private PaymentService paymentService;
+    private MulticlickPaymentService paymentService;
 
     @Autowired
     AddressRepository addressRepository;
@@ -371,11 +372,11 @@ public class PaymentControllerTests {
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
-        Optional<RetornoTransacao> retornoTransacao = paymentService.sendRequest(order);
+        ChargeResponse<RetornoTransacao> retornoTransacao = paymentService.reserve(new ChargeRequest<>(order));
 
-        Assert.assertNotNull(retornoTransacao.isPresent());
-        Assert.assertNotNull(retornoTransacao.get().getAutorizacao());
-        Assert.assertNotNull(retornoTransacao.get().getNumeroTransacao());
+        Assert.assertNotNull(retornoTransacao.getBody());
+        Assert.assertNotNull(retornoTransacao.getBody().getAutorizacao());
+        Assert.assertNotNull(retornoTransacao.getBody().getNumeroTransacao());
 
     }
 
@@ -387,10 +388,11 @@ public class PaymentControllerTests {
         //CERTIFIQUE-SE QUE A ORDER ABAIXO ESTA COM O STATUS READY2CHARGE, CASO CONTRARIO RETORNARA UM ERRO!
         Order order = orderRepository.findOne(14L);
 
-        Boolean capturaTransacao = paymentService.validatePaymentStatusAndSendCapture(order);
+        ChargeResponse<RetornoTransacao> chargeResponse = paymentService.capture(new ChargeRequest<>(order));
 
-        Assert.assertNotNull(capturaTransacao);
-        Assert.assertEquals(true, capturaTransacao);
+        Integer superpayStatusTransacao = chargeResponse.getBody().getStatusTransacao();
+
+        Assert.assertTrue(Payment.Status.fromSuperpayStatus(superpayStatusTransacao).isSuccess());
 
     }
 

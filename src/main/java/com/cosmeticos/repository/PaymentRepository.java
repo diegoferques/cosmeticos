@@ -13,4 +13,5 @@ import java.util.List;
 public interface PaymentRepository extends CrudRepository<Payment, Long> {
     List<Payment> findByStatus(Payment.Status status);
 
+    Payment findByOrder_idOrder(Long idOrder);
 }
