@@ -115,9 +115,6 @@ public class User implements Serializable {
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
-    @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class
-    })
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
@@ -144,6 +141,7 @@ public class User implements Serializable {
     private float evaluation;
 
     @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     //@Transient  TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.

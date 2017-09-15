@@ -5,11 +5,13 @@ import java.util.Optional;
 
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.commons.ErrorCode;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.PaymentRepository;
 import org.slf4j.MDC;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -307,7 +309,7 @@ public class MulticlickPaymentService implements Charger {
         //TODO - COMO NAO TEMOS COMO PEGAR OS DADOS DO CARTAO UTILIZADO PARA PAGAMENTO EM ORDER, SETEI MANUALMENTE
         DadosCartao dadosCartao = new DadosCartao();
         dadosCartao.setNomePortador(creditCard.getOwnerName());
-        dadosCartao.setNumeroCartao(creditCard.getCardNumber());
+        dadosCartao.setNumeroCartao(creditCard.getTailNumber());
         dadosCartao.setCodigoSeguranca(creditCard.getSecurityCode());
 
         SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/yyyy");
