@@ -68,7 +68,9 @@ public class User implements Serializable {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
+  
     //@NotEmpty(message = "UserName cannot be empty")
+    // TODO: apagaremos este atributo pois usaremos somente email
     @Column(unique = true)
     private String username;
 
