@@ -53,7 +53,8 @@ public class User implements Serializable {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,7 +98,8 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class
     })
     @Column(unique = true)
     private String email;
@@ -135,10 +137,11 @@ public class User implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class
     })
-    @Transient
-    private float evaluation;
+    //@Transient
+    private float evaluation = 0;
 
     @JsonView({
             ResponseJsonView.CustomerControllerUpdate.class,
