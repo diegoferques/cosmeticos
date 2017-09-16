@@ -61,7 +61,7 @@ public class SuperpayOneClickClient {
 		log.info("Client sending pagamentoOneClickV2[user={},estabelecimento={}]", user, codigoEstabelecimento);
 
 		JAXBElement<CadastraPagamentoOneClickV2> jaxbCadastraPagamento =
-				factory.createCadastraPagamentoOneClickV2(person);
+				factory.createCadastraPagamentoOneClickV2(pagamentoOneClickV2);
 
 		JAXBElement<CadastraPagamentoOneClickV2Response> jaxbResponse =
 				(JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(jaxbCadastraPagamento);

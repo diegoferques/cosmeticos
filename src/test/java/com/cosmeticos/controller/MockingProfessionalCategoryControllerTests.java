@@ -90,7 +90,19 @@ public class MockingProfessionalCategoryControllerTests {
                 "    \"nameProfessional\": \"aaa\",\n" +
                 "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
-                "        \"professional\": null,\n" +
+
+
+                "       \"professional\" : {\n" +
+                "        \"user\" : {\n" +
+                "            \"voteCollection\" : [\n" +
+                "                {\n" +
+                "                    \"value\" : 2\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "       },\n" +
+
+
                 "        \"category\": {\n" +
                 "          \"name\": \"testNearbyWithDistance-service\",\n" +
                 "          \"idCategory\": "+s1.getIdCategory()+"\n" +
@@ -145,6 +157,7 @@ public class MockingProfessionalCategoryControllerTests {
             Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
             Assert.assertEquals("testNearbyWithDistance-service", s.getName());
             Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
+            Assert.assertNotNull("Evaluation nao esta sendo exibido", p.getUser().getEvaluation());
         }
     }
 
