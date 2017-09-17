@@ -1,46 +1,32 @@
 package com.cosmeticos.service;
 
-import java.net.URI;
-import java.util.Optional;
-
-import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.ErrorCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.controller.PaymentController;
+import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
-import com.cosmeticos.repository.PaymentRepository;
-import org.slf4j.MDC;
-import com.cosmeticos.commons.SuperpayFormaPagamento;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
-import com.cosmeticos.payment.superpay.client.rest.model.Usuario;
-import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
-import com.cosmeticos.controller.PaymentController;
-import com.cosmeticos.model.*;
 import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.OrderRepository;
+import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
