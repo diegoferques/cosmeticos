@@ -122,6 +122,11 @@ public class ProfessionalCategoryController {
         try {
             List<ProfessionalCategory> entitylist = category.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
 
+            //TODO - REMOVER O CODIGO ABAIXO E PEGAR O EVALUATION CORRETO.
+            //BRANCH APP: RNFApp47 | BRANCH BACKEND: RNF143
+            for (ProfessionalCategory professionalCategory: entitylist) {
+                professionalCategory.getProfessional().getUser().setEvaluation((float) 3.7);
+            }
             ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setProfessionalCategoryList(entitylist);
             responseBody.setDescription("All Services retrieved.");
