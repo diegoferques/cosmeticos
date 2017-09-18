@@ -130,6 +130,7 @@ public class OrderController {
 
                 Order order = orderService.update(request);
 
+
                 MDC.put("idCustomer", String.valueOf(order.getIdCustomer().getIdCustomer()));
                 MDC.put("customerUserStatus", String.valueOf(order.getIdCustomer().getStatus()));
                 MDC.put("idProfessional", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
