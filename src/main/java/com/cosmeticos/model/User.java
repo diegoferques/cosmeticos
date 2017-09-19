@@ -114,9 +114,14 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
 
+
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
@@ -153,8 +158,6 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<Vote> voteCollection = new HashSet<>();
-
-
 
     public User() {
     }

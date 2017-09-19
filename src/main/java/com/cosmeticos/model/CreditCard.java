@@ -27,7 +27,9 @@ public class CreditCard implements Serializable {
     private static final long serialVersionUID = 1l;
 
     @JsonView({
-            ResponseJsonView.CreditCardFindAll.class
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +48,11 @@ public class CreditCard implements Serializable {
     /**
      * Registraremos os 4 ultimos digitos do cartao
      */
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
     @Column(unique = true, length = 4)
     private String tailNumber;
 
@@ -56,7 +63,9 @@ public class CreditCard implements Serializable {
     private Date expirationDate;
 
     @JsonView({
-            ResponseJsonView.CreditCardFindAll.class
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String vendor;
 
@@ -64,7 +73,9 @@ public class CreditCard implements Serializable {
     private String securityCode;
 
     @JsonView({
-            ResponseJsonView.CreditCardFindAll.class
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Enumerated
     private Status status;
@@ -75,10 +86,23 @@ public class CreditCard implements Serializable {
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsage;
+
+/*
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
+    private Boolean oneClick = false;*/
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
     private Collection<Order> orders = new ArrayList<>();
