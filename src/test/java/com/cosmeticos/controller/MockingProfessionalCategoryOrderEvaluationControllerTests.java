@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -67,17 +68,19 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
 
     PriceRule pr = null;
 
+    @Transactional
     @Before
     public void setUp() throws Exception {
 
         // Nao sei que lugar eh esse..... Acho que eh o endereço da casa do Garry.
-        LocationGoogle sourceLocation = new LocationGoogle();
-        sourceLocation.setLat(-22.7387053);
-        sourceLocation.setLng(-43.5109277);
-
-        Mockito.when(
-                locationService.getGeoCode(Mockito.any())
-        ).thenReturn(sourceLocation);
+        // so precisa mocar isso se criassemos o professional com post ao controlller
+       // LocationGoogle sourceLocation = new LocationGoogle();
+       // sourceLocation.setLat(-22.7387053);
+       // sourceLocation.setLng(-43.5109277);
+//
+       // Mockito.when(
+       //         locationService.getGeoCode(Mockito.any())
+       // ).thenReturn(sourceLocation);
 
         c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
@@ -87,8 +90,10 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         professional.getUser().setUsername(System.nanoTime()+ "-createOrderOk" + "-professional");
         professional.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-professional@bol");
 
-        professional.getAddress().setLatitude("-22.951115");
-        professional.getAddress().setLongitude("-43.181162");
+        professional.getAddress().setLatitude("-22.7245761");
+        professional.getAddress().setLongitude("-43.51020159999999");
+        professional.getAddress().setProfessional(professional);
+
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
@@ -277,7 +282,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
                                 // Coordenadas do cliente: Casa do garry
                                 "&latitude=-22.7331757&longitude=-43.5209273" +
 
-                                "&radius=100000",
+                                "&radius=90000000",
                         HttpMethod.GET, //
                         null,
                         ProfessionalCategoryResponseBody.class);
@@ -290,16 +295,23 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         for (int i = 0; i < entityList.size(); i++) {
             ProfessionalCategory ps =  entityList.get(i);
 
-            Professional p = ps.getProfessional();
-            Category s = ps.getCategory();
+            // Podem retornar varios profissionais aqui mas queremos so o que foi inserido no setup
+            if (ps.getProfessionalCategoryId() == ps1.getProfessionalCategoryId()) {
+                Professional p = ps.getProfessional();
+                Category s = ps.getCategory();
 
-            Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
-            Assert.assertEquals("PEDICURE", s.getName());
-            Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
+                Assert.assertNotNull("ProfessionalServices deve ter Servico e Profissional", p);
+                Assert.assertEquals("PEDICURE", s.getName());
+                Assert.assertNotNull("Professional deve ter distance setado", p.getDistance());
 
-            float evaluation = p.getUser().getEvaluation();
-            Assert.assertTrue("Evaluation invalido: " + evaluation, 2.0f == evaluation);
+                float evaluation = p.getUser().getEvaluation();
+                Assert.assertTrue("Evaluation invalido: " + evaluation, 2.0f == evaluation);
+
+                // Encerramos o metodo pq ja achamos o que queriamos
+                return;
+            }
         }
+        Assert.fail("O profissional inserido no setup idProfessional=" + this.professional.getIdProfessional() + " nao foi retornado no nearby.");
     }
 
     private ResponseEntity<OrderResponseBody> post(String json) throws URISyntaxException {
