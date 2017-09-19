@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,6 +69,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     PriceRule pr = null;
 
     @Before
+    @Transactional
     public void setUp() throws Exception {
 
         // Nao sei que lugar eh esse..... Acho que eh o endereço da casa do Garry.
@@ -89,6 +91,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
 
         professional.getAddress().setLatitude("-22.951115");
         professional.getAddress().setLongitude("-43.181162");
+        professional.getAddress().setProfessional(professional);
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
