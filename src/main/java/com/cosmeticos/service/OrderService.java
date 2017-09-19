@@ -296,13 +296,6 @@ public class OrderService {
             }
         }
 
-        if (Order.Status.READY2CHARGE == persistentOrder.getStatus()) {
-
-		    float receivedEvaluation = receivedOrder.getProfessionalCategory().getProfessional().getUser().getEvaluation();
-
-            persistentOrder.getProfessionalCategory().getProfessional().getUser().setEvaluation(receivedEvaluation);
-
-        }
 
         if (!isEmpty(receivedOrder.getDate())) {
             persistentOrder.setDate(receivedOrder.getDate());
