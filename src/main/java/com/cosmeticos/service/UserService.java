@@ -2,11 +2,18 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.UserRequestBody;
+import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Payment;
 import com.cosmeticos.model.User;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
+import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.smtp.MailSenderService;
 import com.cosmeticos.validation.UserValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +38,13 @@ public class UserService {
 
     @Autowired
     private RandomCode randomCodeService;
+
+    @Autowired
+    @Qualifier("charger")
+    private Charger charger;
+
+    @Autowired
+    private CreditCardRepository creditCardRepository;
 
     public User create(UserRequestBody request){
 
@@ -214,5 +228,13 @@ public class UserService {
         user.setLostPassword(false);
         user.setLostPasswordToken(null);
         repository.save(user);
+    }
+
+    public ChargeResponse<Object> addCreditCard(Payment payment){
+
+        ChargeResponse<Object> result = charger.addCard(new ChargeRequest<>(payment));
+
+        return result;
+
     }
 }

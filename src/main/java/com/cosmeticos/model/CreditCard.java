@@ -60,6 +60,11 @@ public class CreditCard implements Serializable {
     })
     private String vendor;
 
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
+    private boolean oneClick;
     // TODO: Incluir @Transient do jpa assim q  o problema  entre o jackson e as a notacoes jpq terminarem.
     private String securityCode;
 

@@ -74,6 +74,13 @@ public class OrderService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    private CreditCard cc;
+
+    private OneClickPaymentService oneClickPaymentService;
+
+    @Autowired
+    private Payment payment;
+
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
     }
@@ -127,6 +134,11 @@ public class OrderService {
         else {
             validatedPayment = paymentCollection.stream().findFirst().get();
         }
+
+        if(cc.isOneClick() && Payment.Type.CC.equals(orderRequest.getOrder().getPaymentCollection().stream().findFirst().get().getType())){
+            userService.addCreditCard(orderRequest.getOrder().getPaymentCollection().stream().findFirst().get());
+        }
+
 
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
         validateAndApplyPaymentPriceRule(validatedPayment);
