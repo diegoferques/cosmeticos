@@ -36,7 +36,7 @@ public class UserPreLoadConfiguration {
 
         CreditCard cc = new CreditCard();
         cc.setToken("4321");
-        cc.setTailNumber("1831");
+        cc.setSuffix("1831");
         cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
@@ -65,7 +65,7 @@ public class UserPreLoadConfiguration {
 
         CreditCard cc2 = new CreditCard();
         cc2.setToken("7772344377");
-        cc2.setTailNumber("3053");
+        cc2.setSuffix("3053");
         cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
         //cc2.setExpirationDate("12/2018");
         cc2.setVendor("Master");
@@ -73,7 +73,7 @@ public class UserPreLoadConfiguration {
 
         CreditCard cc3 = new CreditCard();
         cc3.setToken("7772344377");
-        cc3.setTailNumber("3053");
+        cc3.setSuffix("3053");
         cc3.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
         cc3.setVendor("Master");
         cc3.setStatus(CreditCard.Status.ACTIVE);

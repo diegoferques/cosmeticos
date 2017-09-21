@@ -47,7 +47,7 @@ public class CreditCard implements Serializable {
      * Registraremos os 4 ultimos digitos do cartao
      */
     @Column(unique = true, length = 4)
-    private String tailNumber;
+    private String suffix;
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class

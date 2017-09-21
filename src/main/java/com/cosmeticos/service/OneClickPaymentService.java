@@ -37,7 +37,7 @@ public class OneClickPaymentService implements Charger{
                 .findFirst()
                 .get();
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
-        String numeroCartaoCredito = creditCard.getTailNumber();
+        String numeroCartaoCredito = creditCard.getSuffix();
         String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
 
         Payment payment = (Payment) order.getPaymentCollection();
@@ -201,7 +201,7 @@ public class OneClickPaymentService implements Charger{
         String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
         String emailComprador = user.getEmail();
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
-        String numeroCartaoCredito = creditCard.getTailNumber();
+        String numeroCartaoCredito = creditCard.getSuffix();
         String token = creditCard.getToken();
 
         DadosCadastroPagamentoOneClickWS result = (oneClickClient.readCard(

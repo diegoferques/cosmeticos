@@ -57,7 +57,7 @@ public class UserControllerTest {
                 "\t\t    {\n" +
                 "\t\t        \"token\": \"4321\",\n" +
                 "\t\t        \"ownerName\": \"Teste\",\n" +
-                "\t\t        \"tailNumber\": \"0987654555775434567\",\n" +
+                "\t\t        \"suffix\": \"0987654555775434567\",\n" +
                 "\t\t        \"securityCode\": \"098\",\n" +
                 "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 11, 10, 0, 0)).getTime() +"\",\n" +
                 "\t\t        \"vendor\": \"MasterCard\",\n" +
@@ -101,7 +101,7 @@ public class UserControllerTest {
                 "      \"idCreditCard\": 2,\n"+
                 "\t\t        \"token\": \"4321\",\n" +
                 "\t\t        \"ownerName\": \"Teste\",\n" +
-                "\t\t        \"tailNumber\": \"0987654555775434567\",\n" +
+                "\t\t        \"suffix\": \"0987654555775434567\",\n" +
                 "\t\t        \"securityCode\": \"098\",\n" +
                 "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 11, 10, 0, 0)).getTime() +"\",\n" +
                 "\t\t        \"vendor\": \"MasterCard\",\n" +
@@ -135,7 +135,7 @@ public class UserControllerTest {
         // Configurcao do usuario q vai ter o cartao alterado
         CreditCard cc1 = new CreditCard();
         cc1.setToken("4321");
-        cc1.setTailNumber("67730934681683053");
+        cc1.setSuffix("67730934681683053");
         cc1.setSecurityCode("321");
         cc1.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 11, 11, 0, 0)));
         //cc1.setExpirationDate("11/2018");
@@ -144,7 +144,7 @@ public class UserControllerTest {
 
         CreditCard cc2 = new CreditCard();
         cc2.setToken("1234");
-        cc2.setTailNumber("67730987357243053");
+        cc2.setSuffix("67730987357243053");
         cc2.setSecurityCode("123");
         cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2020, 07, 07, 0, 0)));
         //cc2.setExpirationDate("07/2020");
@@ -190,7 +190,7 @@ public class UserControllerTest {
                 "            \"idCreditCard\": "+ idToken1234 +",\n"+
                 "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
                 "\t\t        \"ownerName\": \"Teste\",\n" +
-                "\t\t        \"tailNumber\": \"67730987357243053\",\n" +
+                "\t\t        \"suffix\": \"67730987357243053\",\n" +
                 "\t\t        \"securityCode\": \"098\",\n" +
                 "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 11, 10, 0, 0)).getTime() +"\",\n" +
                 "\t\t        \"vendor\": \"MasterCard\",\n" +
