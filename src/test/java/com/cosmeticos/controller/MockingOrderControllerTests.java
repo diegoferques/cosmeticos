@@ -6,6 +6,7 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OneClickPaymentService;
 import com.cosmeticos.service.OrderService;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -66,6 +68,10 @@ public class MockingOrderControllerTests {
 
     @Autowired
     private CreditCardRepository creditcardRepository;
+
+    @Autowired
+    @Qualifier(value = "charger")
+    private Charger charger;
 
     @Test
     public void testCreateError500() throws IOException, OrderService.ValidationException {
@@ -129,9 +135,13 @@ public class MockingOrderControllerTests {
         ChargeResponse<Object> response = new ChargeResponse<>("tokenFake");
         response.setResponseCode(ResponseCode.SUCCESS);
 
-        Mockito.doReturn(response)
-                .when(oneClickPaymentService.addCard(Mockito.anyObject())
-        );
+        //comentei o lance aki de baixo pra testar uma parada q a stacktrace orientou a fazer. nesse caso agora tah vindo nullpointer..
+        //Mockito.doReturn(response)
+          //      .when(oneClickPaymentService.addCard(Mockito.anyObject())
+        //);
+        Mockito.when(
+                charger.addCard(Mockito.anyObject())
+        ).thenReturn(response);
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername(System.nanoTime() + "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"

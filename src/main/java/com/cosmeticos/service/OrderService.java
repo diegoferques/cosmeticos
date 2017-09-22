@@ -135,12 +135,15 @@ public class OrderService {
             validatedPayment = paymentCollection.stream().findFirst().get();
         }
 
-        // TODO: evita de fazer esse monte de ponto. Vc ta indo em Payment duas vezes fazendo o mesmo caminho longo
-        // TODO aqui vc tem q pegar o cartao de credito que chegou no request
-        if(cc.isOneClick() && Payment.Type.CC.equals(orderRequest.getOrder().getPaymentCollection().stream().findFirst().get().getType())){
+        Order order1 = orderRequest.getOrder();
+        Set<Payment> payment = order1.getPaymentCollection();
+        Payment.Type payment1 = payment.stream().findFirst().get().getType();
 
+
+        if(cc.isOneClick() && Payment.Type.CC.equals(payment1)){
             // Aqui vc pode alterar este metodo pra passar (user, paymentComCcQueSeraAdicionado)
-            userService.addCreditCard(orderRequest.getOrder().getPaymentCollection().stream().findFirst().get());
+            userService.addCreditCard(orderRequest.getOrder().getIdCustomer().getUser(),
+                    orderRequest.getOrder().getPaymentCollection().stream().findFirst().get());
         }
 
 

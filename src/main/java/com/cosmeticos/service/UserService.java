@@ -230,7 +230,7 @@ public class UserService {
         repository.save(user);
     }
 
-    public User addCreditCard(Payment payment){// TODO no diagrama aqui passa User. Pode altera-lo pra receber User e Payment
+    public User addCreditCard(User user, Payment payment){
 
         ChargeResponse<Object> result = charger.addCard(new ChargeRequest<>(payment));
 
@@ -239,12 +239,9 @@ public class UserService {
         CreditCard cc = payment.getCreditCard();
         cc.setToken(token);
 
-        // Adiciona o cc ao User que vc vai receber no parametro
+        update(user);
 
-        // TODO: descomentar abaixo dpois que o User for colocado como parametro
-        //update(user);
-
-        return result;// TODO: retorna o user depois de ser salvo no banco.
+        return user;
 
     }
 }
