@@ -51,6 +51,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
@@ -92,6 +93,7 @@ public class User implements Serializable {
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,

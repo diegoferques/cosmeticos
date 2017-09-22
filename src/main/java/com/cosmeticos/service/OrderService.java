@@ -296,6 +296,7 @@ public class OrderService {
             }
         }
 
+
         if (!isEmpty(receivedOrder.getDate())) {
             persistentOrder.setDate(receivedOrder.getDate());
         }
@@ -434,7 +435,6 @@ public class OrderService {
 
                     if (receivedvote != null) {
                         addVotesToUser(persistentUser, receivedvote);
-
                         MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
                     }
                 }
@@ -466,6 +466,9 @@ public class OrderService {
 
             persistentUser.addVote(receivedVote);
             voteService.create(receivedVote);
+
+            persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
+
 
     }
 
