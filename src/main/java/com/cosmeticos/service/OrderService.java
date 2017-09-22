@@ -74,13 +74,6 @@ public class OrderService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    private CreditCard cc;
-
-    private OneClickPaymentService oneClickPaymentService;
-
-    @Autowired
-    private Payment payment;
-
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
     }
@@ -136,13 +129,22 @@ public class OrderService {
         }
 
         Order order1 = orderRequest.getOrder();
+
+       // TODO: neste paymnet deveria ter um cartao de credito. creditCard esta null. Acho q o eh o json do teste que ta furado.
         Set<Payment> payment = order1.getPaymentCollection();
         Payment.Type payment1 = payment.stream().findFirst().get().getType();
 
-
-        if(cc.isOneClick() && Payment.Type.CC.equals(payment1)){
+        // TODO: Tava muito errado isso aqui. Vc declarou um atributo cc, vc tem q pegar o q veio no payment da order recebida.
+        if(//cc.isOneClick()
+                true && //TODO: depois q consertar o cc acima, remover este "true"
+                        Payment.Type.CC.equals(payment1)){
             // Aqui vc pode alterar este metodo pra passar (user, paymentComCcQueSeraAdicionado)
-            userService.addCreditCard(orderRequest.getOrder().getIdCustomer().getUser(),
+            userService.addCreditCard(
+
+                    // TODO: Pega o user do persistentProfessionalCategory.professional, pega do orderRequest nao pq o app pode mandar nulo.
+                    orderRequest.getOrder().getIdCustomer().getUser(),
+
+                    // TODO vc esta navegando o objeto inteiro atras de um objeto q ja ta disponivel pra vc na linha 132.
                     orderRequest.getOrder().getPaymentCollection().stream().findFirst().get());
         }
 
