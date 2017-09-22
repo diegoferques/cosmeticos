@@ -392,6 +392,8 @@ public class OrderService {
         //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
         //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
         if(persistentOrder.getStatus() == Order.Status.READY2CHARGE) {
+            //TODO - VERIFICAR SE ESTA FUNCIONANDO PARA EFETUAR A CAPTURA CORRETAMENTE
+            //O CARTAO ESTA VINDO NULL
             Payment payment = persistentOrder.getPaymentCollection()
                     .stream()
                     .findFirst()
@@ -836,21 +838,21 @@ payment.getStatus()) {
     }
 
     /**
-     * @param order TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a
+     * @param receivedOrder TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a
      *              OrderValidationException mas tem q alterar  a classe la ainda
      * @throws OrderValidationException
      * @throws ValidationException
      */
-    public void validateCreate(Order order) throws OrderValidationException, ValidationException {//
+    public void validateCreate(Order receivedOrder) throws OrderValidationException, ValidationException {//
 
-        if (order.isScheduled()) {
-            validateScheduleEndDate(order);
+        if (receivedOrder.isScheduled()) {
+            validateScheduleEndDate(receivedOrder);
 
             // Aqui vc escolhe o que quer usar.
             //validateBusyScheduled2(order);
-            validateBusyScheduled1(order);
+            validateBusyScheduled1(receivedOrder);
         } else {
-            Long idProfessionalCategory = order.getProfessionalCategory().getProfessionalCategoryId();
+            Long idProfessionalCategory = receivedOrder.getProfessionalCategory().getProfessionalCategoryId();
 
             ProfessionalCategory professionalCategory = professionalCategoryRepository.findOne(idProfessionalCategory);
 
@@ -860,7 +862,7 @@ payment.getStatus()) {
             MDC.put("professionalUserStatus: ", String.valueOf(professional.getUser().getStatus()));
 
             // Passando zero pq eh create
-            validateIfThereAreRunningOrders(0L, professional);
+            validateIfThereAreRunningOrders(receivedOrder, professional);
         }
     }
 
@@ -896,20 +898,31 @@ payment.getStatus()) {
             // Nao precisa validar pq so valida scheduleStart, que ja foi validado no PUT
             //validateBusyScheduled1(receivedOrder);
         }
-        validateIfThereAreRunningOrders(idOrder, professional);
+        validateIfThereAreRunningOrders(receivedOrder, professional);
 
 
     }
 
-    private void validateIfThereAreRunningOrders(Long idOrder, Professional professional) {
-        // Profissional ja possui order em andamento?...
-        List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
-                professional.getIdProfessional(), idOrder);
+    private void validateIfThereAreRunningOrders(Order receivedOrder, Professional professional) {
+        //ESSA VALIDACAO SO DEVERA SER EXECUTADA NOS STATUS ABAIXO
 
-        if (!orderList.isEmpty()) {
-            // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-            throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER, "profissional ja esta com outra order em andamento.");
-        }
+            if (Order.Status.OPEN.equals(receivedOrder.getStatus()) ||
+                    Order.Status.ACCEPTED.equals(receivedOrder.getStatus()) ||
+                    Order.Status.INPROGRESS.equals(receivedOrder.getStatus())) {
+
+                Long idOrder = receivedOrder.getIdOrder() == null ? 0L : receivedOrder.getIdOrder();
+
+                // Profissional ja possui order em andamento?...
+                List<Order> orderList = orderRepository.findRunningOrdersByProfessional(
+                        professional.getIdProfessional(), idOrder);
+
+                if (!orderList.isEmpty()) {
+                    // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
+                    throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER,
+                            "profissional ja esta com outra order em andamento.");
+                }
+            }
+
     }
 
     private void validateBusyScheduled1(Order order) throws ValidationException, OrderValidationException {

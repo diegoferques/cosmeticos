@@ -141,7 +141,8 @@ public class Professional  implements Serializable {
         ResponseJsonView.ProfessionalFindAll.class,
         ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.ProfessionalCategoryFindAll.class
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
