@@ -391,6 +391,8 @@ public class OrderService {
         //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
         //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
         if(persistentOrder.getStatus() == Order.Status.READY2CHARGE) {
+            //TODO - VERIFICAR SE ESTA FUNCIONANDO PARA EFETUAR A CAPTURA CORRETAMENTE
+            //O CARTAO ESTA VINDO NULL
             Payment payment = persistentOrder.getPaymentCollection()
                     .stream()
                     .findFirst()
