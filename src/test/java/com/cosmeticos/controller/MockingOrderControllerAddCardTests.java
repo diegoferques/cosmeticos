@@ -81,6 +81,9 @@ public class MockingOrderControllerAddCardTests {
                 charger.addCard(Mockito.anyObject())
         ).thenReturn(response);
 
+        CreditCard creditCard = new CreditCard();
+
+
         Customer c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername(System.nanoTime() + "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-cliente");
@@ -92,6 +95,7 @@ public class MockingOrderControllerAddCardTests {
                 + "-professional");
         professional.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-professional@bol");
+
 
         customerRepository.save(c1);
         professionalRepository.save(professional);
