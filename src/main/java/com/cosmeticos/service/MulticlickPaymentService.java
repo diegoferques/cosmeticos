@@ -295,7 +295,7 @@ public class MulticlickPaymentService implements Charger {
         //TODO - COMO NAO TEMOS COMO PEGAR OS DADOS DO CARTAO UTILIZADO PARA PAGAMENTO EM ORDER, SETEI MANUALMENTE
         DadosCartao dadosCartao = new DadosCartao();
         dadosCartao.setNomePortador(creditCard.getOwnerName());
-        dadosCartao.setNumeroCartao(creditCard.getTailNumber());
+        dadosCartao.setNumeroCartao(creditCard.getSuffix());
         dadosCartao.setCodigoSeguranca(creditCard.getSecurityCode());
 
         SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/yyyy");

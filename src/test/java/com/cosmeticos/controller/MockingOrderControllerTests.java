@@ -4,13 +4,17 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.service.OrderService;
+import com.cosmeticos.payment.Charger;
+import com.cosmeticos.repository.*;
 import com.cosmeticos.service.MulticlickPaymentService;
+import com.cosmeticos.service.OneClickPaymentService;
+import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -31,16 +35,10 @@ import java.io.IOException;
 public class MockingOrderControllerTests {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private TestRestTemplate testRestTemplate;
 
     @MockBean
     private OrderService orderService;
-
-    @MockBean
-    MulticlickPaymentService paymentService;
-
-    @MockBean
-    private PaymentController paymentController;
 
     @Test
     public void testCreateError500() throws IOException, OrderService.ValidationException {
@@ -57,7 +55,7 @@ public class MockingOrderControllerTests {
         or.setOrder(s1);
 
         final ResponseEntity<OrderResponseBody> exchange = //
-        restTemplate.exchange( //
+        testRestTemplate.exchange( //
                 "/orders", //
                 HttpMethod.POST, //
                 new HttpEntity(or), // Body
@@ -82,7 +80,7 @@ public class MockingOrderControllerTests {
         or.setOrder(s1);
 
         final ResponseEntity<OrderResponseBody> exchange = //
-                restTemplate.exchange( //
+                testRestTemplate.exchange( //
                         "/orders", //
                         HttpMethod.PUT, //
                         new HttpEntity(or), // Body

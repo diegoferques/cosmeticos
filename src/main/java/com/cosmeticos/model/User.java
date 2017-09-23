@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -52,9 +51,11 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class,
-            ResponseJsonView.ProfessionalCategoryFindAll.class
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,6 +93,7 @@ public class User implements Serializable {
 
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
@@ -143,7 +145,8 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class,
-            ResponseJsonView.ProfessionalCategoryFindAll.class
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     //@Transient
     private float evaluation = 0;

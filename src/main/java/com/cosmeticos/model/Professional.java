@@ -46,6 +46,7 @@ public class Professional  implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -57,6 +58,7 @@ public class Professional  implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -64,7 +66,8 @@ public class Professional  implements Serializable {
     private String nameProfessional;
 
     @JsonView({
-    	
+
+            ResponseJsonView.OrderControllerCreate.class,
     ResponseJsonView.ProfessionalFindAll.class,
     ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,})
@@ -96,6 +99,7 @@ public class Professional  implements Serializable {
     private String specialization;
 
     @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
     	ResponseJsonView.ProfessionalFindAll.class,
     	ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
@@ -103,7 +107,8 @@ public class Professional  implements Serializable {
     private String typeService;
 
     @JsonView({
-    	
+
+            ResponseJsonView.OrderControllerCreate.class,
     ResponseJsonView.ProfessionalCategoryFindAll.class,
     ResponseJsonView.ProfessionalFindAll.class,
     ResponseJsonView.ProfessionalUpdate.class,
@@ -112,6 +117,7 @@ public class Professional  implements Serializable {
 	
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
@@ -121,6 +127,7 @@ public class Professional  implements Serializable {
     private Status status;
 
     @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
@@ -130,10 +137,12 @@ public class Professional  implements Serializable {
     private Type attendance;
 
     @JsonView({
+            ResponseJsonView.OrderControllerCreate.class,
         ResponseJsonView.ProfessionalFindAll.class,
         ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.ProfessionalCategoryFindAll.class
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
