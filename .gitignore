@@ -29,3 +29,4 @@ nbdist/
 log/
 **/superpay/ws/*
 src/main/java/META-INF/sun-jaxb.episode
+src/main/java/com/cosmeticos/payment/superpay/ws/*
