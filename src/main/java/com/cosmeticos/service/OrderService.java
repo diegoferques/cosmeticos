@@ -128,6 +128,17 @@ public class OrderService {
             validatedPayment = paymentCollection.stream().findFirst().get();
         }
 
+        Payment receivedPayment = validatedPayment;
+        Payment.Type payment = receivedPayment.getType();
+
+        if(receivedPayment.getCreditCard().isOneClick() && 
+                        Payment.Type.CC.equals(payment)){
+            userService.addCreditCard(
+                    persistentCustomer.getUser(), receivedPayment);
+
+        }
+
+
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
         validateAndApplyPaymentPriceRule(validatedPayment);
 

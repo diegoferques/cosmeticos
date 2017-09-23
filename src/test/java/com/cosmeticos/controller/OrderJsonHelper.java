@@ -73,7 +73,8 @@ class OrderJsonHelper {
                 "         \"parcelas\": 1,\n" +
                 "         \"priceRule\": {\n" +
                 "             \"id\": " + priceRule.getId() + "\n" +
-                "         }\n" +
+                "         },\n" +
+
                 "       }\n" +
                 "    ]\n" +
 

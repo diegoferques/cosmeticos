@@ -234,7 +234,7 @@ public class MockingPaymentControllerTests {
                     "         {\n" +
                     "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
                     "\t\t        \"ownerName\": \"Teste\",\n" +
-                    "\t\t        \"tailNumber\": \""+new RandomCode(4).nextString()+"\",\n" +
+                    "\t\t        \"suffix\": \""+new RandomCode(4).nextString()+"\",\n" +
                     "\t\t        \"securityCode\": \"098\",\n" +
                     "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(now().plusDays(30)).getTime() +"\",\n" +
                     "\t\t        \"vendor\": \"MasterCard\",\n" +

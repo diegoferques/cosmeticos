@@ -34,7 +34,7 @@ public class CustomerPreLoadConfiguration {
 
             CreditCard cc = new CreditCard();
             cc.setToken("4321");
-            cc.setTailNumber("1853");
+            cc.setSuffix("1853");
             cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
             cc.setVendor("MasterCard");
             cc.setStatus(CreditCard.Status.ACTIVE);
