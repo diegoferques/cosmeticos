@@ -239,6 +239,8 @@ public class UserService {
         CreditCard cc = payment.getCreditCard();
         cc.setToken(token);
 
+        user.addCreditCard(cc);
+
         update(user);
 
         return user;

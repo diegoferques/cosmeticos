@@ -137,7 +137,7 @@ public class OrderService {
                         Payment.Type.CC.equals(payment)){
             userService.addCreditCard(
                     // TODO: Pega o user do persistentProfessionalCategory.professional, pega do orderRequest nao pq o app pode mandar nulo.
-                    persistentProfessionalCategory.getProfessional().getUser(), receivedPayment);
+                    persistentCustomer.getUser(), receivedPayment);
 
                     // TODO vc esta navegando o objeto inteiro atras de um objeto q ja ta disponivel pra vc na linha 132.
         }
