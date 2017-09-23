@@ -12,6 +12,7 @@ import com.cosmeticos.service.MulticlickPaymentService;
 import com.cosmeticos.service.OneClickPaymentService;
 import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -26,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,8 +65,13 @@ public class MockingOrderControllerAddCardTests {
     @Qualifier(value = "charger")
     private Charger charger;
 
-    @Test
-    public void testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard() throws Exception {
+    private Customer c1;
+    private Professional professional;
+    private ProfessionalCategory ps1;
+    private PriceRule priceRule;
+
+    @Before
+    public void setup() throws ParseException {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         ////////////// SETUP     //////////////////////////////////////////////////////////////////////
@@ -73,24 +80,18 @@ public class MockingOrderControllerAddCardTests {
         ChargeResponse<Object> response = new ChargeResponse<>("tokenFake");
         response.setResponseCode(ResponseCode.SUCCESS);
 
-        //comentei o lance aki de baixo pra testar uma parada q a stacktrace orientou a fazer. nesse caso agora tah vindo nullpointer..
-        //Mockito.doReturn(response)
-          //      .when(oneClickPaymentService.addCard(Mockito.anyObject())
-        //);
         Mockito.when(
                 charger.addCard(Mockito.anyObject())
         ).thenReturn(response);
 
-        CreditCard creditCard = new CreditCard();
 
-
-        Customer c1 = CustomerControllerTests.createFakeCustomer();
+        c1 = CustomerControllerTests.createFakeCustomer();
         c1.getUser().setUsername(System.nanoTime() + "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-cliente");
         c1.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-cliente@bol");
 
-        Professional professional = ProfessionalControllerTests.createFakeProfessional();
+        professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-professional");
         professional.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
@@ -100,21 +101,28 @@ public class MockingOrderControllerAddCardTests {
         customerRepository.save(c1);
         professionalRepository.save(professional);
 
-        PriceRule priceRule = new PriceRule();
+        priceRule = new PriceRule();
         priceRule.setName("RULE");
         priceRule.setPrice(7600L);
 
         Category service = serviceRepository.findByName("PEDICURE");
         service = serviceRepository.findWithSpecialties(service.getIdCategory());
 
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, service);
+         ps1 = new ProfessionalCategory(professional, service);
         ps1.addPriceRule(priceRule);
 
         professionalCategoryRepository.save(ps1);
+    }
+
+    @Test
+    public void testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard() throws Exception {
+
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         ////////////// TESTING   //////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////
+
         String json = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : "+ Timestamp.valueOf(LocalDateTime.now()).getTime()+",\n" +
@@ -146,6 +154,7 @@ public class MockingOrderControllerAddCardTests {
 
                 "  }\n" +
                 "}";
+
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
