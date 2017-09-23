@@ -128,18 +128,14 @@ public class OrderService {
             validatedPayment = paymentCollection.stream().findFirst().get();
         }
 
-       // TODO: neste paymnet deveria ter um cartao de credito. creditCard esta null. Acho q o eh o json do teste que ta furado.
         Payment receivedPayment = validatedPayment;
         Payment.Type payment = receivedPayment.getType();
 
-        // TODO: Tava muito errado isso aqui. Vc declarou um atributo cc, vc tem q pegar o q veio no payment da order recebida.
-        if(receivedPayment.getCreditCard().isOneClick() && //TODO: depois q consertar o cc acima, remover este "true"
+        if(receivedPayment.getCreditCard().isOneClick() && 
                         Payment.Type.CC.equals(payment)){
             userService.addCreditCard(
-                    // TODO: Pega o user do persistentProfessionalCategory.professional, pega do orderRequest nao pq o app pode mandar nulo.
                     persistentCustomer.getUser(), receivedPayment);
 
-                    // TODO vc esta navegando o objeto inteiro atras de um objeto q ja ta disponivel pra vc na linha 132.
         }
 
 
