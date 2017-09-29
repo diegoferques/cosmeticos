@@ -6,7 +6,6 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.validation.OrderValidationException;
@@ -18,10 +17,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -274,8 +271,7 @@ public class OrderService {
             /**
              * Buscamos o pricerule no banco pq o q chega no request é so o ID.
              */
-            receivedPayment.setPriceRule(chosenPriceRule);
-            chosenPriceRule.setPayment(receivedPayment);
+            chosenPriceRule.addPayment(receivedPayment);
 
             MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
 

@@ -12,10 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PaymentRepositoryTests {
@@ -79,7 +75,7 @@ public class PaymentRepositoryTests {
 
 		Payment p = new Payment(Payment.Type.CASH);
 		p.setPriceRule(pr);
-		pr.setPayment(p);
+		pr.addPayment(p);
 
 		Order o = new Order();
 		o.setProfessionalCategory(pr.getProfessionalCategory());
