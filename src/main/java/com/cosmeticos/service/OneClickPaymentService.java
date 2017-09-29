@@ -1,12 +1,20 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.*;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
+import com.cosmeticos.repository.PaymentRepository;
+import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Created by matto on 08/08/2017.
@@ -21,26 +29,30 @@ public class OneClickPaymentService implements Charger{
     @Autowired
     private SuperpayCompletoClient completoClient;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     @Override
     public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
 
         Order order = chargeRequest.getBody().getOrder();
 
-        String emailComprador = order.getIdCustomer().getUser().getEmail();
-        Customer customer = order.getIdCustomer();
+        String emailComprador = order
+                .getIdCustomer()
+                .getUser()
+                .getEmail();
 
-        User user = customer.getUser();
+        Payment payment = chargeRequest.getBody();
 
-        CreditCard creditCard = user.getCreditCardCollection()
-                .stream()
-                .findFirst()
-                .get();
+        CreditCard creditCard = payment.getCreditCard();
+
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getSuffix();
         String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
 
-        Payment payment = (Payment) order.getPaymentCollection();
         Long formaPagamento = Long.valueOf(payment.getType().ordinal());
 
         String result = oneClickClient.addCard(dataValidadeCartao,
@@ -59,30 +71,33 @@ public class OneClickPaymentService implements Charger{
     public ChargeResponse<Object> reserve(ChargeRequest<Payment> chargeRequest) {
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
 
-        Order order = chargeRequest.getBody().getOrder();
+        Payment receivedPayment = chargeRequest.getBody();
 
-        ProfessionalCategory professionalCategory = order.getProfessionalCategory();
+        Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
+
+        Order persistentOrder = persistentPayment.getOrder();
+
+        ProfessionalCategory professionalCategory = persistentOrder.getProfessionalCategory();
         Category category = professionalCategory.getCategory();
 
-        Customer customer = order.getIdCustomer();
+        Customer customer = persistentOrder.getIdCustomer();
         Address address = customer.getAddress();
         User user = customer.getUser();
 
-        Payment payment = order.getPaymentCollection()
-                .stream()
-                .findFirst()
-                .get();
-        Long numeroTransacao = payment.getId();
+        Long numeroTransacao = persistentPayment.getId();
 
+        // Nao se pega do payment pois o usuario pode ter alterado o cartao antees de concluir a order.
+        // TODO incluir trava pra nao deixar alterar cartao caso haja order aberta
         CreditCard creditCard = user.getCreditCardCollection()
                 .stream()
                 .findFirst()
                 .get();
+
         String token = creditCard.getToken();
         String campainha = "http://ngrok/campainha/superpay";
         String urlRedirecionamentoNaoPago = "";
         String urlRedirecionamentoPago = "";
-        long valor = payment.getValue();
+        long valor = persistentPayment.getPriceRule().getPrice();
         String bairroEnderecoComprador = address.getNeighborhood();
         String cepEnderecoComprador = address.getCep();
         String cidadeEnderecoCompra = address.getCity();
@@ -94,11 +109,15 @@ public class OneClickPaymentService implements Charger{
         String paisComprar = address.getCountry();
         String sexoComprador = String.valueOf(customer.getGenre());
         String telefoneComprador = customer.getCellPhone();
-        long tipoCliente = user.getPersonType().ordinal();
         String cvv = creditCard.getSecurityCode();
-        String nomeCategoria = category.getOwnerCategory().getName();
         String nomeProduto = category.getName();
-        Long valorUnitarioProduto = payment.getValue();
+        Long valorUnitarioProduto = valor;
+        long tipoCliente = user.getPersonType().ordinal();
+
+        String nomeCategoria = ofNullable(category.getOwnerCategory())
+                .map(c -> c.getName())
+                .orElse(category.getName());
+
         //String origemTransacao;
         //String ip;
         //long valorDesconto;
@@ -112,78 +131,122 @@ public class OneClickPaymentService implements Charger{
         //long codigoTipoTelefoneAdicionalComprador;
         //String dataNascimentoComprador;
 
-        ResultadoPagamentoWS result = (oneClickClient.pay(
-                numeroTransacao,
-                token,
-                campainha,
-                urlRedirecionamentoNaoPago,
-                urlRedirecionamentoPago,
-                valor,
-                bairroEnderecoComprador,
-                cepEnderecoComprador,
-                cidadeEnderecoCompra,
-                emailComprador,
-                enderecoComprador,
-                estadoEnderecoComprador,
-                nomeComprador,
-                numeroEnderecoComprador,
-                paisComprar,
-                sexoComprador,
-                telefoneComprador,
-                tipoCliente,
-                nomeCategoria,
-                nomeProduto,
-                valorUnitarioProduto,
-                nomeComprador,
-                estadoEnderecoComprador,
-                numeroEnderecoComprador,
-                sexoComprador,
-                telefoneComprador,
-                cvv, nomeProduto, cvv));
+        SuperpayOneClickClient.RequestWrapper requestWrapper = new SuperpayOneClickClient.RequestWrapper();
+        requestWrapper.setBairroEnderecoComprador(bairroEnderecoComprador);
+        requestWrapper.setCampainha(campainha);
+        requestWrapper.setCepEnderecoComprador(cepEnderecoComprador);
+        requestWrapper.setCidadeEnderecoCompra(cidadeEnderecoCompra);
+        requestWrapper.setCvv(cvv);
+        requestWrapper.setEstadoEnderecoComprador(estadoEnderecoComprador);
+        requestWrapper.setEnderecoComprador(enderecoComprador);
+        requestWrapper.setEmailComprador(emailComprador);
+        requestWrapper.setNomeCategoria(nomeCategoria);
+        requestWrapper.setNomeComprador(nomeComprador);
+        requestWrapper.setNomeProduto(nomeProduto);
+        requestWrapper.setNumeroEnderecoComprador(numeroEnderecoComprador);
+        requestWrapper.setNumeroTransacao(numeroTransacao);
+        requestWrapper.setPaisComprador(paisComprar);
+        requestWrapper.setSexoComprador(sexoComprador);
+        requestWrapper.setTelefoneAdicionalComprador(telefoneComprador);
+        requestWrapper.setTelefoneComprador(telefoneComprador);
+        requestWrapper.setTipoCliente(tipoCliente);
+        requestWrapper.setToken(token);
+        requestWrapper.setValor(valor);
+        requestWrapper.setValorUnitarioProduto(valorUnitarioProduto);
+        requestWrapper.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
+        requestWrapper.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
 
-        return new ChargeResponse<Object>(result);
+        ResultadoPagamentoWS result = oneClickClient.pay(requestWrapper);
 
+        return buildResponse(result);
+    }
+
+    private ChargeResponse<Object> buildResponse(ResultadoPagamentoWS result) {
+
+        Integer superpayStatusStransacao = result.getStatusTransacao();
+
+        Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
+
+        org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
+
+        if (paymentStatus.isSuccess()) {
+
+            //SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
+            if (Payment.Status.PAGO_E_CAPTURADO.equals(paymentStatus)) {
+                log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
+            }
+
+            //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
+            if (Payment.Status.TRANSACAO_JA_PAGA.equals(paymentStatus)) {
+                log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
+            }
+
+            ChargeResponse<Object> response = new ChargeResponse<>(result);
+            response.setResponseCode(paymentStatus.getResponseCode());
+
+            return response;
+
+        } else {
+            throw new OrderValidationException(ResponseCode.GATEWAY_FAILURE, "Gateway respondeu com status  de erro");
+        }
     }
 
     @Override
     public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
 
-        Order order = chargeRequest.getBody().getOrder();
+        Payment receivedPayment = chargeRequest.getBody();
 
-        CreditCard creditCard = order.getCreditCardCollection()
+        Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
+
+        Order persistentOrder = persistentPayment.getOrder();
+
+        Customer persistentCustomer = persistentOrder.getIdCustomer();
+
+        User persistentUser = persistentCustomer.getUser();
+
+        Optional<CreditCard> optionalcc = persistentUser.getCreditCardCollection()
                 .stream()
-                .findFirst()
-                .get();
+                .findFirst();
 
-        Payment payment = order.getPaymentCollection()
-                .stream()
-                .findFirst()
-                .get();
+        if(optionalcc.isPresent()) {
+            CreditCard creditCard = optionalcc.get();
 
-        String nomeTitularCarttaoCredito = creditCard.getOwnerName();
-        String urlCampainha = "http://ngrok/campainha/superpay";
-        Long valor = payment.getValue();
-        String codigoSeguranca = creditCard.getSecurityCode();
-        String ip = "09876";
-        //String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
-        //String urlRedirecionamentoNaoPago = "urlRedirecionamentoNaoPago.com";
-        //String urlRedirecionamentoPago = "urlRedirecionamentoPago.com";
-        //long valorDesconto = 10L;
-        //String origemTransacao = "ORIGEM";
-        //int parcelas = 1;
-        //int idioma = 1;
-        //Long numeroTransacao;
-        //int codigoFormaPagamento = 2;
+            String nomeTitularCarttaoCredito = creditCard.getOwnerName();
 
-        com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS result = completoClient.capturePayment(
-                codigoSeguranca,
-                ip,
-                nomeTitularCarttaoCredito,
-                valor,
-                urlCampainha);
+            // TODO: incluir  a url verdadeira
+            String urlCampainha = "http://ngrok/campainha/superpay";
+            Long valor = receivedPayment.getPriceRule().getPrice();
+            String codigoSeguranca = creditCard.getSecurityCode();
+            String ip = httpServletRequest.getRemoteAddr();
+            //String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
+            //String urlRedirecionamentoNaoPago = "urlRedirecionamentoNaoPago.com";
+            //String urlRedirecionamentoPago = "urlRedirecionamentoPago.com";
+            //long valorDesconto = 10L;
+            //String origemTransacao = "ORIGEM";
+            //int parcelas = 1;
+            //int idioma = 1;
+            //Long numeroTransacao;
+            //int codigoFormaPagamento = 2;
 
-        return new ChargeResponse<Object>(result);
+            /*
+            Existem duas classes com o mesmo nome nos dois wsdls da superpay. Como usamos as duas (oneclick e completo),
+            precisamos dar o qualified name da classe que queremos usar.
+             */
+            com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS result = completoClient.capturePayment(
+                    codigoSeguranca,
+                    ip,
+                    nomeTitularCarttaoCredito,
+                    valor,
+                    urlCampainha);
+
+            return new ChargeResponse<Object>(result);
+        }
+        else
+        {
+            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE, "Usuario nao possui mais cartao. " +
+                    "Verifique se no meio do processo de contratação do profissional ele descadastrou seu cartao de credito");
+        }
     }
 
     @Override

@@ -18,6 +18,20 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     Payment findByOrder_idOrder(Long idOrder);
 
+    /**
+     *
+     * https://stackoverflow.com/a/36540371/3810036 Diz que payment nao pode ser opcional. Mas payment eh opciional, pq
+     * a pricerule eh criada pelo profissional no momento do cadastro,e no cadastro nao ha payment.
+     * @param paymentId
+     * @return
+     */
+    /*@Query(value = "" +
+            "SELECT p " +
+            "FROM Payment p " +
+            "JOIN p.priceRule " +
+            "WHERE p.id = ?1")
+    Payment findWithPriceRule(Long paymentId);*/
+
     @Query(value = "" +
             "SELECT p " +
             "FROM Payment p " +

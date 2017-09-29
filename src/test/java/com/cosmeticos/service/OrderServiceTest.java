@@ -71,6 +71,12 @@ public class OrderServiceTest {
         // Atualizando associando o Profeissional ao Servico
         professionalRepository.save(professional);
 
+        PriceRule priceRule3 = new PriceRule("payment3", 2000);
+        priceRule3.setProfessionalCategory(ps1);
+
+        Payment payment3 = new Payment(Payment.Type.CASH);
+        payment3.setPriceRule(priceRule3);
+        payment3.setType(Payment.Type.CASH);
 
         o3 = new Order();
         o3.setStatus(Order.Status.OPEN);
@@ -79,9 +85,17 @@ public class OrderServiceTest {
         o3.setIdCustomer(c1);
         //o3.setIdLocation();
         o3.setProfessionalCategory(ps1);
-        o3.addPayment(new Payment(Payment.Type.CASH));
+        o3.addPayment(payment3);
         //o3.setScheduleId(s1);
         orderRepository.save(o3);
+
+
+        PriceRule priceRule4 = new PriceRule("payment4", 4000);
+        priceRule4.setProfessionalCategory(ps1);
+
+        Payment payment4 = new Payment(Payment.Type.CASH);
+        payment4.setPriceRule(priceRule4);
+        payment4.setType(Payment.Type.CASH);
 
         LocalDateTime ldt1 = LocalDateTime.now();
         ldt1.minusDays(3);
@@ -93,9 +107,17 @@ public class OrderServiceTest {
         o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
         o4.setStatus(Order.Status.SEMI_CLOSED);
-        o4.addPayment(new Payment(Payment.Type.CASH));
+        o4.addPayment(payment4);
 
         orderRepository.save(o4);
+
+
+        PriceRule priceRule5 = new PriceRule("payment5", 5000);
+        priceRule5.setProfessionalCategory(ps1);
+
+        Payment payment5 = new Payment(Payment.Type.CASH);
+        payment5.setPriceRule(priceRule5);
+        payment5.setType(Payment.Type.CASH);
 
         LocalDateTime ldt2 = LocalDateTime.now();
         ldt2.minusDays(8);
@@ -107,7 +129,7 @@ public class OrderServiceTest {
         o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
         o5.setStatus(Order.Status.SEMI_CLOSED);
-        o5.addPayment(new Payment(Payment.Type.CASH));
+        o5.addPayment(payment5);
         orderRepository.save(o5);
     }
 
@@ -116,13 +138,13 @@ public class OrderServiceTest {
     public void testUpdateStatus(){
 
         orderService.updateStatus();
-            o3 = orderRepository.findOne(o3.getIdOrder());
-            o4 = orderRepository.findOne(o4.getIdOrder());
-            o5 = orderRepository.findOne(o5.getIdOrder());
+        o3 = orderRepository.findOne(o3.getIdOrder());
+        o4 = orderRepository.findOne(o4.getIdOrder());
+        o5 = orderRepository.findOne(o5.getIdOrder());
 
-            Assert.assertEquals(Order.Status.SEMI_CLOSED, o4.getStatus());
+        Assert.assertEquals(Order.Status.SEMI_CLOSED, o4.getStatus());
 
-            Assert.assertEquals(Order.Status.AUTO_CLOSED, o5.getStatus());
-            Assert.assertEquals(Order.Status.OPEN, o3.getStatus());
+        Assert.assertEquals(Order.Status.AUTO_CLOSED, o5.getStatus());
+        Assert.assertEquals(Order.Status.OPEN, o3.getStatus());
     }
 }

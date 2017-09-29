@@ -117,8 +117,6 @@ public class Payment implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Status status;
 
-	private Long value;
-
 	@JsonView({
 			ResponseJsonView.OrderControllerCreate.class,
 			ResponseJsonView.OrderControllerUpdate.class,
@@ -135,7 +133,7 @@ public class Payment implements Serializable {
 			ResponseJsonView.OrderControllerUpdate.class,
 			ResponseJsonView.OrderControllerFindBy.class
 	})
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
 	@JoinColumn(name = "id")
 	private PriceRule priceRule;
 

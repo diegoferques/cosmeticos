@@ -145,18 +145,32 @@ public class OrderPreLoadConfiguration {
         o6.setScheduleId(s1);
         orderRepository.save(o6);
 
+        PriceRule pr7 = new PriceRule("pr7preload", 1000);
+        pr7.setProfessionalCategory(ps1);
+
+        Payment p7 = new Payment(Payment.Type.CASH);
+        p7.setPriceRule(pr7);
+
         //Scheduled Order
         Order o7 = new Order();
         o7.setStatus(Order.Status.OPEN);
         o7.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setIdCustomer(c1);
-        o7.addPayment(new Payment(Payment.Type.CASH));
+        o7.addPayment(p7);
 
         //o5.setIdLocation();
         o7.setProfessionalCategory(ps1);
         o7.setScheduleId(s2);
         orderRepository.save(o7);
+
+
+
+        PriceRule pr8 = new PriceRule("pr8preload", 10000);
+pr8.setProfessionalCategory(ps1);
+
+        Payment p8 = new Payment(Payment.Type.CASH);
+        p8.setPriceRule(pr8);
 
         //Scheduled Order
         Order o8 = new Order();
@@ -164,7 +178,7 @@ public class OrderPreLoadConfiguration {
         o8.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setIdCustomer(c1);
-        o8.addPayment(new Payment(Payment.Type.CASH));
+        o8.addPayment(p8);
         o8.setProfessionalCategory(ps1);
 
         Schedule s8 = new Schedule();
@@ -174,13 +188,22 @@ public class OrderPreLoadConfiguration {
 
         orderRepository.save(o8);
 
+
+
+        PriceRule pr9 = new PriceRule("pr9preload", 100000);
+        pr9.setProfessionalCategory(ps1);
+
+        Payment p9 = new Payment(Payment.Type.CASH);
+        p9.setPriceRule(pr9);
+
+
         //Scheduled Order
         Order o9 = new Order();
         o9.setStatus(Order.Status.SCHEDULED);
         o9.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setIdCustomer(c1);
-        o9.addPayment(new Payment(Payment.Type.CASH));
+        o9.addPayment(p9);
         o9.setProfessionalCategory(ps1);
 
         Schedule s9 = new Schedule();
@@ -190,12 +213,20 @@ public class OrderPreLoadConfiguration {
         orderRepository.save(o9);
 
         //Scheduled Order
+
+
+        PriceRule pr10 = new PriceRule("pr10preload", 1000000);
+        pr10.setProfessionalCategory(ps1);
+
+        Payment p10 = new Payment(Payment.Type.CASH);
+        p10.setPriceRule(pr10);
+
         Order o10 = new Order();
         o10.setStatus(Order.Status.SCHEDULED);
         o10.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setIdCustomer(c1);
-        o10.addPayment(new Payment(Payment.Type.CASH));
+        o10.addPayment(p10);
         o10.setProfessionalCategory(ps1);
 
         Schedule s10 = new Schedule();

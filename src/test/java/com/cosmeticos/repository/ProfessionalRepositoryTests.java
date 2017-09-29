@@ -44,6 +44,7 @@ public class ProfessionalRepositoryTests {
 
         Address address = new Address();
         User u1 = new User("username123","654321","username123@gmail" );
+        u1.setPersonType(User.PersonType.JURIDICA);
 
         Professional p1 = new Professional();
         p1.setBirthDate(Timestamp.valueOf(LocalDateTime.of(1980, 01, 20, 0, 0, 0)));
@@ -83,10 +84,13 @@ public class ProfessionalRepositoryTests {
         cw1.getCustomers().add(c1);
         cw1.getCustomers().add(c2);
 
+        User u1 = new User("garrydias", "123qwe", "garrydias@bol");
+        u1.setPersonType(User.PersonType.FISICA);
+
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
         p1.setAddress(new Address());
-        p1.setUser(new User("garrydias", "123qwe", "garrydias@bol"));
+        p1.setUser(u1);
         p1.setWallet(cw1);
         cw1.setProfessional(p1);
 
@@ -101,6 +105,8 @@ public class ProfessionalRepositoryTests {
     public void testFindByNameEqualFubanga() {
 
         User user6 = new User("fubangamaloca", "123abc", "joana6@bol");
+        user6.setPersonType(User.PersonType.FISICA);
+
         Address address6 = new Address();
         address6.setAddress("Travessa Tuviassuiara, 32");
         address6.setNeighborhood("Rodilândia");
@@ -121,6 +127,8 @@ public class ProfessionalRepositoryTests {
         repository.save(s6);
 
         User user7 = new User("bocada", "123abc", "joao7@bol");
+        user7.setPersonType(User.PersonType.JURIDICA);
+
         Address address7 = new Address();
         address7.setAddress("Avenida Marechal Floriano, 46");
         address7.setNeighborhood("Centro ");

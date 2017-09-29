@@ -232,6 +232,7 @@ public class UserControllerTest {
         u.setPassword("123qwe");
         u.setSourceApp("google+");
         u.setUsername(username);
+        u.setPersonType(User.PersonType.FISICA);
         //u.getCustomerCollection().add(c);
         //userRepository.save(u);
         return u;
@@ -247,6 +248,7 @@ public class UserControllerTest {
                 "\t    \"password\": \"109809876\",\n" +
                 "\t    \"email\": \"Killer@gmail.com\",\n" +
                 "\t    \"sourceApp\": \"facebook\",\n" +
+                "\t    \"personType\": \""+ User.PersonType.FISICA+"\",\n" +
                 "\t    \"status\": \"ACTIVE\"\n" +
                 "\t}\n" +
                 "\t\n" +

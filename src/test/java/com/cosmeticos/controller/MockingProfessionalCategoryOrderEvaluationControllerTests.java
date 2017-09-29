@@ -240,7 +240,6 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
                 "\n}\n" +
                 "}";
 
-// todo: FAZER O PUT
 
         RequestEntity<String> entityUpdateReady2Charger =  RequestEntity
                 .put(new URI("/orders"))

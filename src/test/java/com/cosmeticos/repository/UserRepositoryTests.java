@@ -53,6 +53,7 @@ public class UserRepositoryTests {
         u1.setPassword("109809876");
         u1.setEmail("KillerUserrepositorytest@gmail.com");
         u1.setSourceApp("facebook");
+        u1.setPersonType(User.PersonType.FISICA);
         u1.addCreditCard(cc);
 
         // Aqui o cascade funciona
@@ -90,6 +91,7 @@ public class UserRepositoryTests {
          do transiente nao ocorre. Eh necessario apelar ao creditCardRepository
           */
         User u = userRepository.findOne(userId);
+        u.setPersonType(User.PersonType.JURIDICA);
         u.addCreditCard(newCC);
 
         creditCardRepository.save(newCC);
@@ -116,6 +118,7 @@ public class UserRepositoryTests {
         u2.setPassword("10980999876");
         u2.setEmail("Killercard22222@gmail.com");
         u2.setSourceApp("facebook");
+        u2.setPersonType(User.PersonType.FISICA);
 
         userRepository.save(u2);
 
@@ -146,6 +149,7 @@ public class UserRepositoryTests {
 
 
         User u2 = userRepository.findOne(this.userId);
+        u2.setPersonType(User.PersonType.JURIDICA);
         u2.getCreditCardCollection().forEach(cc -> cc.setToken("ALTEREI"));
 
         userRepository.save(u2);
@@ -178,6 +182,7 @@ public class UserRepositoryTests {
         u1.setSourceApp("facebook");
         u1.addCreditCard(cc1);
         u1.addCreditCard(cc2);
+        u1.setPersonType(User.PersonType.FISICA);
 
         cc1.setUser(u1);
         cc2.setUser(u1);

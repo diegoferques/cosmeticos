@@ -13,4 +13,5 @@ public class ChargeResponse<B> {
     public ChargeResponse(B body) {
         this.body = body;
     }
+
 }

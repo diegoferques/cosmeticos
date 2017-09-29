@@ -58,6 +58,16 @@ public class PriceRule implements Serializable {
     @ManyToOne(optional = false)
     private ProfessionalCategory professionalCategory;
 
+    /**
+     * Eh opcional pois nao depende de payment pra existir. Por exemplo: profissional cadastra regra de preco mas
+     * essa regra so estara associada a um payment quando o cliente desejar fazer um pedido.
+     *
+     * https://stackoverflow.com/a/36540371/3810036 Diz que payment nao pode ser opcional. Mas payment eh opciional, pq
+     * a pricerule eh criada pelo profissional no momento do cadastro,e no cadastro nao ha payment.
+     */
+    @OneToOne
+    private Payment payment;
+
     public PriceRule() {
     }
 
