@@ -163,7 +163,7 @@
 						</goals>
 						<configuration>
 							<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
-							<generatePackage>com.cosmeticos.paymentCollection.superpay.ws.completo</generatePackage>
+							<generatePackage>com.cosmeticos.payment.superpay.ws.completo</generatePackage>
 							<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
 							<schemaIncludes>
 								<include>servicosPagamentoCompletoWS.Services.wsdl</include>
@@ -177,7 +177,7 @@
 						</goals>
 						<configuration>
 							<schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
-							<generatePackage>com.cosmeticos.paymentCollection.superpay.ws.oneclick</generatePackage>
+							<generatePackage>com.cosmeticos.payment.superpay.ws.oneclick</generatePackage>
 							<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
 							<schemaIncludes>
 								<include>servicosPagamentoOneClickWS.Services.wsdl</include>
