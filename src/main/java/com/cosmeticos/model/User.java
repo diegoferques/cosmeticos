@@ -13,6 +13,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -139,6 +140,7 @@ public class User implements Serializable {
     private Professional professional;
 
 
+    @NotNull(message = "Tipo de Pessoa nao pode ser nulo pois eh necessario para compras com cartao.")
     @Enumerated(EnumType.STRING)
     private PersonType personType;
 

@@ -125,7 +125,7 @@ public class Order implements Serializable {
 			ResponseJsonView.OrderControllerUpdate.class,
 			ResponseJsonView.OrderControllerFindBy.class
 	})
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Payment> paymentCollection = new HashSet<>();
 
 	public Order() {

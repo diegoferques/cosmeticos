@@ -573,6 +573,7 @@ public class ProfessionalControllerTests {
 				"\t\t{\n" +
 				"\t\t\t\"email\":\"E-mail\",\n" +
 				"\t\t\t\"idLogin\":null,\n" +
+				"\t\t\t\"personType\": \""+ User.PersonType.FISICA+"\",\n" +
 				"\t\t\t\"password\":\"123\",\n" +
 				"\t\t\t\"sourceApp\":null,\n" +
 				"\t\t\t\"username\":\"E-mail\"\n" +
@@ -788,6 +789,7 @@ public class ProfessionalControllerTests {
 		c1.setAddress(createFakeAddress());
 		c1.setUser(UserControllerTest.createFakeUser(String.valueOf(System.nanoTime()) , String.valueOf(System.nanoTime()) + "@2.com"));
 		c1.getUser().setProfessional(c1);
+		c1.getUser().setPersonType(User.PersonType.JURIDICA);
 
 		return c1;
 	}

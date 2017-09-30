@@ -58,10 +58,10 @@ public class OrderControllerTests {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private CategoryRepository serviceRepository;
+    private ProfessionalRepository professionalRepository;
 
     @Autowired
-    private ProfessionalRepository professionalRepository;
+    private CategoryRepository serviceRepository;
 
     @Autowired
     private ScheduleRepository scheduleRepository;
@@ -1133,6 +1133,8 @@ public class OrderControllerTests {
                 ps1.getPriceRuleList().stream().findFirst().get()
         );
 
+        System.out.printf(">>> jsonCreate2 >>> \n%s\n", jsonCreate2);
+
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -1289,6 +1291,8 @@ public class OrderControllerTests {
                 Payment.Type.CASH,
                 ps1.getPriceRuleList().stream().findFirst().get()
         );
+
+        System.out.printf(">>> jsonCreate2 >>> \n%s\n", jsonCreate2);
 
         RequestEntity<String> entity2 =  RequestEntity
                 .post(new URI("/orders"))
@@ -1818,7 +1822,7 @@ public class OrderControllerTests {
                 c1,
                 ps1,
                 priceRule,
-                Payment.Type.CC,
+                Payment.Type.CC, true, false,
                 Timestamp.valueOf(now().plusDays(1)).getTime() // Marcado pra amanha
         );
 

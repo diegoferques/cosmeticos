@@ -303,6 +303,7 @@ public class CustomerControllerTests {
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername(String.valueOf(System.nanoTime()) );
+		u.setPersonType(User.PersonType.JURIDICA);
 		//u.getCustomerCollection().add(c);
 		return u;
 	}

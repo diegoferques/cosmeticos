@@ -32,7 +32,8 @@ public class SuperpayCompletoClient {
     public ResultadoPagamentoWS capturePayment(String codigoSeguranca,
                                                String ip,
                                                String nomeTitularCarttaoCredito,
-                                               Long valor, String urlCampainha){
+                                               Long valor,
+                                               String urlCampainha){
 
         ObjectFactory factory = new ObjectFactory();
 
