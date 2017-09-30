@@ -63,20 +63,23 @@ public class OrderServiceTest {
         serviceProgramador.setName("PROGRAMADOR");
         serviceRepository.save(serviceProgramador);
 
-        ProfessionalCategory ps1 = new ProfessionalCategory(professional, serviceProgramador);
-        professionalCategoryRepository.save(ps1);
-        
-        professional.getProfessionalCategoryCollection().add(ps1);
-
-        // Atualizando associando o Profeissional ao Servico
-        professionalRepository.save(professional);
-
         PriceRule priceRule3 = new PriceRule("payment3", 2000);
-        priceRule3.setProfessionalCategory(ps1);
+        PriceRule priceRule4 = new PriceRule("payment4", 4000);
+        PriceRule priceRule5 = new PriceRule("payment5", 5000);
+
+        ProfessionalCategory ps1 = new ProfessionalCategory(professional, serviceProgramador);
+        ps1.addPriceRule(priceRule3);
+        ps1.addPriceRule(priceRule4);
+        ps1.addPriceRule(priceRule5);
+
+        professionalCategoryRepository.save(ps1);
+
+
+
 
         Payment payment3 = new Payment(Payment.Type.CASH);
-        payment3.setPriceRule(priceRule3);
-        payment3.setType(Payment.Type.CASH);
+
+        priceRule3.addPayment(payment3);
 
         o3 = new Order();
         o3.setStatus(Order.Status.OPEN);
@@ -90,12 +93,10 @@ public class OrderServiceTest {
         orderRepository.save(o3);
 
 
-        PriceRule priceRule4 = new PriceRule("payment4", 4000);
-        priceRule4.setProfessionalCategory(ps1);
 
         Payment payment4 = new Payment(Payment.Type.CASH);
-        payment4.setPriceRule(priceRule4);
-        payment4.setType(Payment.Type.CASH);
+
+        priceRule4.addPayment(payment4);
 
         LocalDateTime ldt1 = LocalDateTime.now();
         ldt1.minusDays(3);
@@ -112,12 +113,10 @@ public class OrderServiceTest {
         orderRepository.save(o4);
 
 
-        PriceRule priceRule5 = new PriceRule("payment5", 5000);
-        priceRule5.setProfessionalCategory(ps1);
 
         Payment payment5 = new Payment(Payment.Type.CASH);
-        payment5.setPriceRule(priceRule5);
-        payment5.setType(Payment.Type.CASH);
+
+        priceRule5.addPayment(payment5);
 
         LocalDateTime ldt2 = LocalDateTime.now();
         ldt2.minusDays(8);
