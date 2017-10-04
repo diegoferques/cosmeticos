@@ -1,21 +1,24 @@
 package com.cosmeticos.payment;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.cosmeticos.payment.superpay.ws.oneclick.*;
-import org.junit.Ignore;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
+import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@Ignore //TODO: Ver pq executar os testes sem profile esta executando esta classe.
+import java.time.LocalDate;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.assertj.core.api.Assertions.assertThat;
+
+//@Ignore //TODO: Ver pq executar os testes sem profile esta executando esta classe.
 @ActiveProfiles("integrationTest")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest
 public class SuperpayOneClickClientIntegrationTest {
 
 	@Autowired
@@ -25,9 +28,9 @@ public class SuperpayOneClickClientIntegrationTest {
 	public void testSayHello() {
 		// vo rodar de novo
 
-		String dataValidadeCartao = "10/10";
+		String dataValidadeCartao = LocalDate.of(2021, 12, 1).format(ofPattern("MM/yy"));
 		String emailComprador = "deivison.1@gmail.com";
-		Long formaPagamento = 1L;
+		SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.VISA;
 		String nomeTitularCartaoCredito = "deivison";
 		String numeroCartaoCredito = "1234567890";
 
@@ -39,9 +42,9 @@ public class SuperpayOneClickClientIntegrationTest {
 	@Test
 	public void testPagamento(){
 
-		String dataValidadeCartao = "10/10";
+		String dataValidadeCartao = LocalDate.of(2022, 12, 1).format(ofPattern("MM/yy"));
 		String emailComprador = "deivison.1@gmail.com";
-		Long formaPagamento = 1L;
+		SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.MASTERCARD;
 		String nomeTitularCartaoCredito = "deivison";
 		String numeroCartaoCredito = "1234567890";
 
@@ -99,9 +102,9 @@ public class SuperpayOneClickClientIntegrationTest {
 	@Test
 	public void testUpdateCard() {
 
-		String dataValidadeCartao = "01/10";
+		String dataValidadeCartao = LocalDate.of(2020, 10, 1).format(ofPattern("MM/yy"));
 		String emailComprador = "deivison.2@gmail.com";
-		Long formaPagamento = 1L;
+		SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.VISA;
 		String nomeTitularCartaoCredito = "deivison";
 		String numeroCartaoCredito = "1234567899990";
 
@@ -123,9 +126,9 @@ public class SuperpayOneClickClientIntegrationTest {
 	@Test
 	public void testReadCard() {
 
-		String dataValidadeCartao = "10/10";
+		String dataValidadeCartao = LocalDate.of(2021, 12, 1).format(ofPattern("MM/yy"));
 		String emailComprador = "deivison.1@gmail.com";
-		Long formaPagamento = 1L;
+		SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.MASTERCARD;
 		String nomeTitularCartaoCredito = "deivison";
 		String numeroCartaoCredito = "1234567890";
 
@@ -145,7 +148,7 @@ public class SuperpayOneClickClientIntegrationTest {
 		assertThat(result).isNotNull();
 	}
 
-	private String addCard(String dataValidadeCartao, String emailComprador, Long formaPagamento, String nomeTitularCartaoCredito, String numeroCartaoCredito) {
+	private String addCard(String dataValidadeCartao, String emailComprador, SuperpayFormaPagamento formaPagamento, String nomeTitularCartaoCredito, String numeroCartaoCredito) {
 		String result = String.valueOf(oneClickClient.addCard(
 				dataValidadeCartao,
 				emailComprador,

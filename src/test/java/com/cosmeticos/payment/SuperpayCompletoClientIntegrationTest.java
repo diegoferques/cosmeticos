@@ -1,7 +1,7 @@
 package com.cosmeticos.payment;
 
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.superpay.ws.completo.CapturarTransacaoCompletaResponse;
-import com.cosmeticos.payment.superpay.ws.completo.DadosUsuarioTransacaoCompletaWS;
 import com.cosmeticos.payment.superpay.ws.completo.ObjectFactory;
 import com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS;
 import org.junit.Before;
@@ -75,7 +75,11 @@ public class SuperpayCompletoClientIntegrationTest {
                 dataValidadeCartao,
                 ip,
                 nomeTitularCarttaoCredito,
-                valor, urlCampainha));
+                valor,
+                urlCampainha,
+                numeroTransacao,
+                parcelas,
+                SuperpayFormaPagamento.MASTERCARD));
 
         assertThat(result.getStatusTransacao())
                 .isIn(1, 2, 5); // 5=Transacao em Andamento. Acho q tbm vale como OK.

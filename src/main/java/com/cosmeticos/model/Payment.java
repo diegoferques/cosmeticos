@@ -15,6 +15,12 @@ import java.util.Optional;
 @Data
 public class Payment implements Serializable {
 
+	private Long externalTransactionId;
+
+	public Long getExternalTransactionId() {
+		return externalTransactionId;
+	}
+
 	public enum Type{
 		CC, CASH, BOLETO
 	}
@@ -138,6 +144,11 @@ public class Payment implements Serializable {
 	@JoinColumn(name = "price_rule_id", referencedColumnName = "id")
 	private PriceRule priceRule;
 
+	/**
+	 * TODO: o cartao de credito que vem com Payment no request de abertura de order eh diferente do que gravamos no
+	 * banco. No banco fica so o token e o que vem no request vem com dados completos.
+	 * Precisamos de um outro objeto para representar ESTE cartao de credito.
+	 */
 	@Transient
 	private CreditCard creditCard;
 

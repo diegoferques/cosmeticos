@@ -53,14 +53,20 @@ public class CreditCard implements Serializable {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-    @Column(unique = true, length = 4)
+    @Column(length = 4)
     private String suffix;
+
+    @JsonView({
+            ResponseJsonView.CreditCardFindAll.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
+    private String number;
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class
     })
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date expirationDate;
+    private String expirationDate;
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class,

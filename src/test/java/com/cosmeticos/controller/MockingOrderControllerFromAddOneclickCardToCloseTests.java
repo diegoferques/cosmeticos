@@ -3,21 +3,21 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.SuperpayCompletoClient;
 import com.cosmeticos.payment.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OneClickPaymentService;
+import com.cosmeticos.service.RandomCode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -34,6 +34,8 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
 
 /**
  * Created by matto on 28/06/2017.
@@ -120,8 +122,10 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                         Mockito.anyString(),
                         Mockito.anyString(),
                         Mockito.anyObject(),
-                        Mockito.anyString()
-                )
+                        Mockito.anyString(),
+                        Mockito.anyObject(),
+                        Mockito.anyObject(),
+                        Mockito.anyObject())
         ).thenReturn(oneclickCaptureResult);
 
 
@@ -165,6 +169,8 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         ////////////// TESTING   //////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
+        String ccNumber = new RandomCode(16).nextString();
+
         String json = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : "+ Timestamp.valueOf(LocalDateTime.now()).getTime()+",\n" +
@@ -188,6 +194,15 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                 "         },\n" +
 
                 "         \"creditCard\": {\n" +
+                "         {\n" +
+                "            \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
+                "            \"ownerName\": \"Teste\",\n" +
+                "            \"suffix\": \""+ccNumber.substring(12)+"\",\n" +
+                "            \"number\": \""+ccNumber+"\",\n" +
+                "            \"securityCode\": \"098\",\n" +
+                "            \"expirationDate\": \""+ Timestamp.valueOf(now().plusDays(30)).getTime() +"\",\n" +
+                "            \"vendor\": \""+ SuperpayFormaPagamento.MASTERCARD +"\",\n" +
+                "            \"status\": \"ACTIVE\",\n" +
                 "            \"oneClick\": true"+
                 "         }\n" +
 

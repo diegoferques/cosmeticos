@@ -188,6 +188,8 @@ public class OrderService {
 
                 // 6 horas de validade
                 21600000));
+
+        validatedPayment.setExternalTransactionId(System.nanoTime());
         order.addPayment(validatedPayment);
 
         Order newOrder = orderRepository.save(order);
@@ -381,7 +383,7 @@ public class OrderService {
                     .get();
 
             if (Payment.Type.CASH.equals(payment.getType())) {
-                persistentOrder.setStatus(receivedOrder.getStatus());
+                persistentOrder.setStatus(Order.Status.CLOSED);
             }
         }
 
@@ -440,6 +442,7 @@ public class OrderService {
 
         applyVote(receivedOrder, persistentOrder);
 
+        // TODO: remover isso de antes de chamar o superpay
         orderRepository.save(persistentOrder);
 
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
@@ -495,11 +498,17 @@ public class OrderService {
                     //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
                     //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
                     //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA SEMI_CLOSED
-                    //persistentOrder.setStatus(Order.Status.SEMI_CLOSED);
+                    persistentOrder.setStatus(Order.Status.CLOSED);
 
-                    //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
                     orderRepository.save(persistentOrder);
                 }
+                else
+                {
+                    persistentOrder.setStatus(Order.Status.FAILED_ON_PAYMENT);
+                }
+
+                //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
+                orderRepository.save(persistentOrder);
             }
         }
 
@@ -567,7 +576,8 @@ public class OrderService {
 	private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
         ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
 
-        return ResponseCode.SUCCESS.equals(chargeResponse.getResponseCode());
+        return ResponseCode.SUCCESS.equals(chargeResponse.getResponseCode())
+        || ResponseCode.GATEWAY_DUPLICATE_PAYMENT.equals(chargeResponse.getResponseCode());
 
 // ChargeResponse<RetornoTransacao> chargeResponse = paymentService.getStatus(new ChargeRequest<>(order));
 

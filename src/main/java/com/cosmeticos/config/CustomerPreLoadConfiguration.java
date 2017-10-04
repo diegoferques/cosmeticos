@@ -14,9 +14,12 @@ import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * Created by matto on 24/06/2017.
@@ -35,7 +38,7 @@ public class CustomerPreLoadConfiguration {
             CreditCard cc = new CreditCard();
             cc.setToken("4321");
             cc.setSuffix("1853");
-            cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
+            cc.setExpirationDate(LocalDate.of(2017, 12, 1).format(ofPattern("MM/yy")));
             cc.setVendor("MasterCard");
             cc.setStatus(CreditCard.Status.ACTIVE);
 
@@ -141,11 +144,12 @@ public class CustomerPreLoadConfiguration {
     private Address createFakeAddress() {
         Address a = new Address();
         a.setAddress("Rua Perlita");
-        a.setCep("0000000");
+        a.setCep("268723-897");
         a.setCity("RJO");
         a.setCountry("BRA");
         a.setNeighborhood("Austin");
         a.setState("RJ");
+        a.setNumber("66");
         //a.getCustomerCollection().add(customer);
         //addressRepository.save(a);
         return a;
