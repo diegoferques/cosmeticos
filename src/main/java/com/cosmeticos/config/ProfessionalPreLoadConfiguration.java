@@ -60,6 +60,7 @@ public class ProfessionalPreLoadConfiguration {
         p1.setDateRegister(Timestamp.valueOf(now()));
         address1.setProfessional(p1);
 
+
         // bidirecional reference
         p1.setUser(user1);
         user1.setProfessional(p1);
@@ -84,7 +85,6 @@ public class ProfessionalPreLoadConfiguration {
         s2.setAddress(address2);
         s2.setUser(user2);
         s2.setDateRegister(Timestamp.valueOf(now()));
-
 
 
         user2.setProfessional(s2);

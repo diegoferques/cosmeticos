@@ -1401,6 +1401,128 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdateRule.getStatusCode());
 	}
 
+	@Test
+	public void testAdicionarEmployees() throws URISyntaxException {
+
+		String email = "professionalServicesRNF58@email.com";
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"address\": null,\n" +
+				"    \"birthDate\": 1120705200000,\n" +
+				"    \"cellPhone\": null,\n" +
+				"    \"dateRegister\": null,\n" +
+				"    \"genre\": null,\n" +
+				"    \"status\": null,\n" +
+				"    \"user\": {\n" +
+				"      \"email\": \""+ email +"\",\n" +
+				"      \"idLogin\": null,\n" +
+				"      \"password\": \"123\",\n" +
+				"      \"sourceApp\": null,\n" +
+				"         \"personType\":\"FISICA\",\n" +
+				"      \"username\": \""+ email +"\"\n" +
+				"    },\n" +
+				"    \"cnpj\": \"05404277726\",\n" +
+				"    \"idProfessional\": null,\n" +
+				"    \"location\": 506592589,\n" +
+				"    \"nameProfessional\": \"aaa\",\n" +
+				"    \"professionalCategoryCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"category\": {\n" +
+				"          \"name\": \"LUZES\",\n" +
+				"          \"idCategory\": 1\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity =  RequestEntity
+				.post(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+				.exchange(entity, ProfessionalResponseBody.class);
+
+		//Professional professional = exchange.getBody().getProfessionalList().get(0);
+		Assert.assertNotNull(exchange);
+
+		Professional professionalUpdate1 = exchange.getBody().getProfessionalList().get(0);
+
+		String jsonUpdate = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": \"" + professionalUpdate1.getIdProfessional() + "\",\n" +
+				"    \"employeesCollection\": [\n" +
+				"      {\n" +
+				"    	 \"idProfessional\":  13,\n" +
+				"        \"nameProfessional\": \"ota-foo-miga\",\n" +
+				"    	 \"boss\": {\n" +
+				"    	 \"idProfessional\": \"" + professionalUpdate1.getIdProfessional() + "\"\n" +
+				"     	}\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(jsonUpdate);
+
+
+		RequestEntity<String> entityUpdate =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonUpdate);
+
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
+				.exchange(entityUpdate, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchangeUpdate);
+		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+
+		Professional professionalUpdate2 = exchange.getBody().getProfessionalList().get(0);
+
+
+		String jsonUpdate2 = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": " + professionalUpdate2.getIdProfessional() + ",\n" +
+				"    \"employeesCollection\": [\n" +
+				"      {\n" +
+				"    	 \"idProfessional\": 23,\n" +
+				"        \"nameProfessional\": \"foo-miga\",\n" +
+				"    	 \"boss\": {\n" +
+				"    	 \"idProfessional\": " + professionalUpdate2.getIdProfessional() + "\n" +
+				"     	}\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(jsonUpdate2);
+
+
+		RequestEntity<String> entityUpdate2 =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(jsonUpdate2);
+
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate2 = restTemplate
+				.exchange(entityUpdate2, ProfessionalResponseBody.class);
+
+		Assert.assertNotNull(exchangeUpdate2);
+		Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
+		Assert.assertEquals(2, exchangeUpdate2.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getBoss()
+				.getEmployeesCollection().size());
+	}
+
 	public String getProfessionalCreatedFake(Professional professional){
 
 		String json = "{\n" +
