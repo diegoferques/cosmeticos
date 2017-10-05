@@ -30,6 +30,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.Exception;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;

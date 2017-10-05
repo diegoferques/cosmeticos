@@ -235,8 +235,9 @@ public class Professional  implements Serializable {
     
     @Override
     public int hashCode() {
+
         int hash = 0;
-        hash += (idProfessional != null ? idProfessional.hashCode() : 0);
+        hash += (idProfessional != null ? idProfessional.hashCode() : nameProfessional != null ? nameProfessional.hashCode() : 0);
         return hash;
     }
 
