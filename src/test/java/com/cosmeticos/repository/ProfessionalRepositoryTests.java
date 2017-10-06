@@ -214,8 +214,6 @@ public class ProfessionalRepositoryTests {
         boss.getEmployeesCollection().add(employee2);
 
         repository.save(boss);
-        repository.save(employee1);
-        repository.save(employee2);
 
         Assert.assertNotNull(boss.getEmployeesCollection()
                 .stream()

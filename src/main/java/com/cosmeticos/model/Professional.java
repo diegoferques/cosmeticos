@@ -199,7 +199,6 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
     })
     @ManyToOne(cascade = CascadeType.ALL)
-
     @JoinColumn(name = "boss_id")
     private Professional boss;
 
