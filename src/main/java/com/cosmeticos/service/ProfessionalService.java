@@ -98,6 +98,14 @@ public class ProfessionalService {
                 professional.setAttendance(cr.getAttendance());
             }
 
+            if(!StringUtils.isEmpty(cr.getEmployeesCollection())){
+                professional.setEmployeesCollection(cr.getEmployeesCollection());
+            }
+
+            if(!StringUtils.isEmpty(cr.getBoss())){
+                professional.setBoss(cr.getBoss());
+            }
+
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
             if (cr.getAddress() != null) {
                 addressService.updateGeocodeFromProfessionalUpdate(cr);
@@ -158,8 +166,6 @@ public class ProfessionalService {
 			});
 		}
     }
-
-
 
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {
         Collection<Hability> habilityList = receivedProfessional.getHabilityCollection();

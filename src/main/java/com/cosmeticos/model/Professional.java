@@ -144,7 +144,7 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     private User user;
 
     @JsonView({
@@ -193,13 +193,20 @@ public class Professional  implements Serializable {
     private Long distance;
 
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
     @ManyToOne(cascade = CascadeType.ALL)
+
     @JoinColumn(name = "boss_id")
     private Professional boss;
 
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
     })
     @OneToMany(mappedBy = "boss", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Professional> employeesCollection = new HashSet<>();
@@ -212,11 +219,6 @@ public class Professional  implements Serializable {
     @Transient
     private float evaluation;
     */
-
-    public void addEmployes(Professional boss){
-        getEmployeesCollection().add(boss);
-        boss.setBoss(this);
-    }
 
     public void addProfessionalCategory(ProfessionalCategory ps1) {
         getProfessionalCategoryCollection().add(ps1);

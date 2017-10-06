@@ -185,4 +185,48 @@ public class ProfessionalRepositoryTests {
         Assert.assertEquals("20080-001", p2.get(0).getAddress().getCep());
     }
     */
+    @Test
+    public void testEmployees(){
+
+        User userBoss = new User();
+
+        User userEmployees1 = new User();
+
+        User userEmployees2 = new User();
+
+        Professional boss = new Professional();
+        boss.setNameProfessional("boss");
+        userBoss.setProfessional(boss);
+        boss.setUser(userBoss);
+
+        Professional employee1 = new Professional();
+        employee1.setNameProfessional("employee1");
+        userEmployees1.setProfessional(employee1);
+        employee1.setUser(userEmployees1);
+
+
+        Professional employee2 = new Professional();
+        employee2.setNameProfessional("employee2");
+        userEmployees2.setProfessional(employee2);
+        employee2.setUser(userEmployees2);
+
+        boss.getEmployeesCollection().add(employee1);
+        boss.getEmployeesCollection().add(employee2);
+
+        repository.save(boss);
+        repository.save(employee1);
+        repository.save(employee2);
+
+        Assert.assertNotNull(boss.getEmployeesCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getIdProfessional());
+
+        System.out.println(boss);
+        System.out.println(employee1);
+        System.out.println(employee2);
+
+
+    }
 }
