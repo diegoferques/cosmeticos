@@ -13,6 +13,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -58,6 +60,16 @@ public class PriceRule implements Serializable {
     @ManyToOne(optional = false)
     private ProfessionalCategory professionalCategory;
 
+    /**
+     * Eh opcional pois nao depende de paymentCollection pra existir. Por exemplo: profissional cadastra regra de preco mas
+     * essa regra so estara associada a um paymentCollection quando o cliente desejar fazer um pedido.
+     *
+     * https://stackoverflow.com/a/36540371/3810036 Diz que paymentCollection nao pode ser opcional. Mas paymentCollection eh opciional, pq
+     * a pricerule eh criada pelo profissional no momento do cadastro,e no cadastro nao ha paymentCollection.
+     */
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "priceRule")
+    private Set<Payment> paymentCollection = new HashSet<>();
+
     public PriceRule() {
     }
 
@@ -70,14 +82,11 @@ public class PriceRule implements Serializable {
         this.price = price;
     }
 
-/*
-    /**
-     * Nao retornamos esse dado no json.
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "priceCollection")
-    private Collection<Professional> professionalCollection = new ArrayList<>();
-*/
+    public void addPayment(Payment payment)
+    {
+        paymentCollection.add(payment);
+        payment.setPriceRule(this);
+    }
 
     @Override
     public int hashCode() {

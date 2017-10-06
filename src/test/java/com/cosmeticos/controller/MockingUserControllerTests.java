@@ -60,6 +60,7 @@ public class MockingUserControllerTests {
         User user = new User();
         user.setUsername("Killer");
         user.setEmail("killerhomage@gmail.com");
+        user.setPersonType(User.PersonType.FISICA);
 
         userRepository.save(user);
 
@@ -67,6 +68,7 @@ public class MockingUserControllerTests {
                 "\t\"entity\": \n" +
                 "\t{\n" +
                 "\t    \"username\": \""+ user.getUsername() +"\", \n" +
+                "\t    \"personType\": \""+ User.PersonType.FISICA +"\", \n" +
                 "\t    \"email\": \""+ user.getEmail() +"\"\n" +
                 "\t}\n" +
                 "\t\n" +
@@ -93,6 +95,7 @@ public class MockingUserControllerTests {
                 "\t\"entity\": \n" +
                 "\t{\n" +
                 "\t    \"email\": \""+ userCreated.getEmail() +"\", \n" +
+                "\t    \"personType\": \""+ User.PersonType.FISICA +"\", \n" +
                 "\t    \"lostPasswordToken\": \"0000\"\n" +
                 "\t}\n" +
                 "\t\n" +

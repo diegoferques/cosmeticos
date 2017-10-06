@@ -227,7 +227,7 @@ public class MulticlickPaymentService implements Charger {
     private TransacaoRequest createRequest(Order order)  {
 
         //TODO - PRECISAMOS DE ALGO PARECIDO COMO O QUE SEGUE ABAIXO PARA PEGAR OS DADOS DA FORMA DE PAGAMENTO DE ORDER
-        //CreditCard creditCard = order.getPayment().getCreditCard();
+        //CreditCard creditCard = order.getPaymentCollection().getCreditCard();
         CreditCard creditCard = this.getPaymentCreditCard(order);
 
         TransacaoRequest request = new TransacaoRequest();

@@ -242,6 +242,7 @@ public class ProfessionalPreLoadConfiguration {
         c1.setAddress(createFakeAddress());
         c1.setUser(createFakeUser("222", "222@2.com"));
         c1.getUser().setProfessional(c1);
+        c1.getUser().setPersonType(User.PersonType.JURIDICA);
 
         return c1;
     }

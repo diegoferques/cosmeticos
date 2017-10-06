@@ -82,7 +82,8 @@ public class MockingProfessionalCategoryControllerTests {
                 "      \"idLogin\": null,\n" +
                 "      \"password\": \"123\",\n" +
                 "      \"sourceApp\": null,\n" +
-                "      \"username\": \""+ emailUsuario +"\"\n" +
+                "      \"username\": \""+ emailUsuario +"\",\n" +
+                "      \"personType\": \"FISICA\"\n" +
                 "    },\n" +
                 "    \"cnpj\": \"05404277726\",\n" +
                 "    \"idProfessional\": null,\n" +

@@ -83,6 +83,7 @@ public class WalletControllerTests {
 		s5.setAddress(new Address());
 		s5.setUser(user5 = new User("Habib12345", "123qwe", "Habib12345@bol"));
 		user5.setProfessional(s5);
+		user5.setPersonType(User.PersonType.FISICA);
 
 		// apagueme
 

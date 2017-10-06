@@ -100,7 +100,7 @@ public class MockingPaymentControllerTests {
 
         Customer customer = postCustomerWhatever("testPaymentOk-customer1@email.com");
 
-        putCustomerAddCreditCard(customer);
+        //putCustomerAddCreditCard(customer);
 
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
@@ -177,7 +177,7 @@ public class MockingPaymentControllerTests {
 
         Customer customer = postCustomerWhatever("testScheduledOrderPaymentOk-customer1@email.com");
 
-        putCustomerAddCreditCard(customer);
+        //putCustomerAddCreditCard(customer);
 
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
@@ -225,9 +225,15 @@ public class MockingPaymentControllerTests {
 
     }
 
+    /**
+     * Adicionar cartao ao usuario sempre grava cartao oneclick
+     * @param customer
+     * @throws URISyntaxException
+     */
     private void putCustomerAddCreditCard(Customer customer) throws URISyntaxException {
         String jsonCustomerCreate = "{\n" +
                 "   \"customer\":{\n" +
+                "      \"personType\": \"FISICA\",\n" +
                 "      \"idCustomer\": "+ customer.getIdCustomer() +",\n" +
                 "      \"user\":{\n" +
                 "         \"idLogin\":"+customer.getUser().getIdLogin()+",\n" +
@@ -307,7 +313,8 @@ public class MockingPaymentControllerTests {
                 "         \"idLogin\":null,\n" +
                 "         \"password\":\"123\",\n" +
                 "         \"sourceApp\":null,\n" +
-                "         \"username\":\""+ emailCustomer +"\"\n" +
+                "         \"username\":\""+ emailCustomer +"\",\n" +
+                "         \"personType\": \"FISICA\"\n" +
                 "      },\n" +
                 "      \"cpf\":\"123.605.789-05\",\n" +
                 "      \"idAddress\":null,\n" +
@@ -404,7 +411,8 @@ public class MockingPaymentControllerTests {
 
         Customer customer = postCustomerWhatever("testCapturarTransacaoOK-customer@email.com");
 
-        putCustomerAddCreditCard(customer);
+        // O cartao nao sera  adicionado assim por enquanto. Devera ir na criacao da order e marcado se eh ou nao oneclick
+        //putCustomerAddCreditCard(customer);
 
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/

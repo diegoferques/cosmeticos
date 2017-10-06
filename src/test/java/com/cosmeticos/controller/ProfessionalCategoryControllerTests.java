@@ -70,6 +70,7 @@ public class ProfessionalCategoryControllerTests {
 				"      \"idLogin\": null,\n" +
 				"      \"password\": \"123\",\n" +
 				"      \"sourceApp\": null,\n" +
+				"      \"personType\": \""+ User.PersonType.JURIDICA+"\",\n" +
 				"      \"username\": \""+ email +"\"\n" +
 				"    },\n" +
 				"    \"cnpj\": \"05404277726\",\n" +
@@ -132,6 +133,7 @@ public class ProfessionalCategoryControllerTests {
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
 		u.setUsername("diegoferques");
+		u.setPersonType(User.PersonType.JURIDICA);
 
 		return u;
 	}

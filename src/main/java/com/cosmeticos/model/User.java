@@ -13,6 +13,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -116,9 +117,14 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
 
+
     /*
     Sobre o cascade: https://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/
      */
+    @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
@@ -134,6 +140,7 @@ public class User implements Serializable {
     private Professional professional;
 
 
+    @NotNull(message = "Tipo de Pessoa nao pode ser nulo pois eh necessario para compras com cartao.")
     @Enumerated(EnumType.STRING)
     private PersonType personType;
 
@@ -156,8 +163,6 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<Vote> voteCollection = new HashSet<>();
-
-
 
     public User() {
     }

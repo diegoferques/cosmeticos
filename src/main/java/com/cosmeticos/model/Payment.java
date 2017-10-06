@@ -117,8 +117,6 @@ public class Payment implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Status status;
 
-	private Long value;
-
 	@JsonView({
 			ResponseJsonView.OrderControllerCreate.class,
 			ResponseJsonView.OrderControllerUpdate.class,
@@ -135,8 +133,9 @@ public class Payment implements Serializable {
 			ResponseJsonView.OrderControllerUpdate.class,
 			ResponseJsonView.OrderControllerFindBy.class
 	})
-	@OneToOne
-	@JoinColumn(name = "id")
+	// O certo eh ser optional = false mas ta dando muito problema @ManyToOne(cascade = CascadeType.ALL, optional = false)
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "price_rule_id", referencedColumnName = "id")
 	private PriceRule priceRule;
 
 	@Transient

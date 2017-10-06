@@ -32,6 +32,7 @@ public class CustomerController {
     @Autowired
     private UserService userService;
 
+    @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers", method = RequestMethod.POST)
     public HttpEntity<CustomerResponseBody> create(@Valid @RequestBody CustomerRequestBody request,
                                                    BindingResult bindingResult) {
@@ -163,6 +164,7 @@ public class CustomerController {
 
     }
 
+    @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/", method = RequestMethod.GET)
     public HttpEntity<CustomerResponseBody> findById(@ModelAttribute Customer customer) {
 
@@ -177,6 +179,7 @@ public class CustomerController {
                 response.setCustomerList(customers);
 
                 //return ok().body(response);
+                
                 return ok(response);
             } else {
                 log.error("Nenhum registro encontrado para customer: {}", customer);

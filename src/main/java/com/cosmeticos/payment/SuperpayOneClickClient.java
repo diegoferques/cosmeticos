@@ -1,6 +1,7 @@
 package com.cosmeticos.payment;
 
 import com.cosmeticos.payment.superpay.ws.oneclick.*;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,55 +74,29 @@ public class SuperpayOneClickClient {
 		return oneclickResponse.getReturn();
 	}
 
-	public ResultadoPagamentoWS pay(Long numeroTransacao,
-									String ip,
-									String origemTransacao,
-									String token,
-									String campainha,
-									long valor,
-									String bairroEnderecoComprador,
-									String cepEnderecoComprador,
-									String cidadeEnderecoCompra,
-									String codigoCliente,
-									String complementoEnderecoComprador,
-									String dataNascimentoComprador,
-									String dddAdicionalComprador,
-									String dddComprador,
-									String ddiAdicionalComprador,
-									String ddiComprador,
-									String documento2Comprador,
-									long tipoCliente,
-									String codigoCategoria,
-									String nomeCategoria,
-									Long valorUnitarioProduto,
-									String nomeComprador,
-									String estadoEnderecoComprador,
-									String numeroEnderecoComprador,
-									String paisComprador,
-									String sexoComprador,
-									String telefoneAdicionalComprador, String nomeProduto, String cvv){
+	public ResultadoPagamentoWS pay(SuperpayOneClickClient.RequestWrapper requestWrapper){
 
 		ObjectFactory factory = new ObjectFactory();
 
 		DadosUsuarioTransacaoCompletaWS dadosUsuarioTransacao = factory.createDadosUsuarioTransacaoCompletaWS();
-		dadosUsuarioTransacao.setBairroEnderecoComprador(bairroEnderecoComprador);
-		dadosUsuarioTransacao.setCepEnderecoComprador(cepEnderecoComprador);
-		dadosUsuarioTransacao.setCidadeEnderecoComprador(cidadeEnderecoCompra);
-		dadosUsuarioTransacao.setCodigoCliente(codigoCliente);
-		dadosUsuarioTransacao.setComplementoEnderecoComprador(complementoEnderecoComprador);
-		dadosUsuarioTransacao.setDataNascimentoComprador(dataNascimentoComprador);
-		dadosUsuarioTransacao.setDddAdicionalComprador(dddAdicionalComprador);
-		dadosUsuarioTransacao.setDddComprador(dddComprador);
-		dadosUsuarioTransacao.setDdiAdicionalComprador(ddiAdicionalComprador);
-		dadosUsuarioTransacao.setDdiComprador(ddiComprador);
-		dadosUsuarioTransacao.setDocumento2Comprador(documento2Comprador);
-		dadosUsuarioTransacao.setEstadoEnderecoComprador(estadoEnderecoComprador);
-		dadosUsuarioTransacao.setNomeComprador(nomeComprador);
-		dadosUsuarioTransacao.setNumeroEnderecoComprador(numeroEnderecoComprador);
-		dadosUsuarioTransacao.setPaisComprador(paisComprador);
-		dadosUsuarioTransacao.setSexoComprador(sexoComprador);
-		dadosUsuarioTransacao.setTelefoneAdicionalComprador(telefoneAdicionalComprador);
-		dadosUsuarioTransacao.setTipoCliente(tipoCliente);
+		dadosUsuarioTransacao.setBairroEnderecoComprador(requestWrapper.getBairroEnderecoComprador());
+		dadosUsuarioTransacao.setCepEnderecoComprador(requestWrapper.getCepEnderecoComprador());
+		dadosUsuarioTransacao.setCidadeEnderecoComprador(requestWrapper.getCidadeEnderecoCompra());
+		dadosUsuarioTransacao.setCodigoCliente(requestWrapper.getCodigoCliente());
+		dadosUsuarioTransacao.setComplementoEnderecoComprador(requestWrapper.getComplementoEnderecoComprador());
+		dadosUsuarioTransacao.setDataNascimentoComprador(requestWrapper.getDataNascimentoComprador());
+		dadosUsuarioTransacao.setDddAdicionalComprador(requestWrapper.getDddAdicionalComprador());
+		dadosUsuarioTransacao.setDddComprador(requestWrapper.getDddComprador());
+		dadosUsuarioTransacao.setDdiAdicionalComprador(requestWrapper.getDdiAdicionalComprador());
+		dadosUsuarioTransacao.setDdiComprador(requestWrapper.getDdiComprador());
+		dadosUsuarioTransacao.setDocumento2Comprador(requestWrapper.getDocumento2Comprador());
+		dadosUsuarioTransacao.setEstadoEnderecoComprador(requestWrapper.getEstadoEnderecoComprador());
+		dadosUsuarioTransacao.setNomeComprador(requestWrapper.getNomeComprador());
+		dadosUsuarioTransacao.setNumeroEnderecoComprador(requestWrapper.getNumeroEnderecoComprador());
+		dadosUsuarioTransacao.setPaisComprador(requestWrapper.getPaisComprador());
+		dadosUsuarioTransacao.setSexoComprador(requestWrapper.getSexoComprador());
+		dadosUsuarioTransacao.setTelefoneAdicionalComprador(requestWrapper.getTelefoneAdicionalComprador());
+		dadosUsuarioTransacao.setTipoCliente(requestWrapper.getTipoCliente());
 		//dadosUsuarioTransacao.setCidadeEnderecoEntrega();
 		//dadosUsuarioTransacao.setCepEnderecoEntrega();
 		//dadosUsuarioTransacao.setCodigoTipoTelefoneAdicionalEntrega();
@@ -140,31 +115,31 @@ public class SuperpayOneClickClient {
 		//dadosUsuarioTransacao.setTelefoneEntrega();
 
 		TransacaoOneClickWSV2 transacaoOneClickWSV2 = factory.createTransacaoOneClickWSV2();
-		transacaoOneClickWSV2.setCvv(cvv);
-		transacaoOneClickWSV2.setNumeroTransacao(numeroTransacao);
+		transacaoOneClickWSV2.setCvv(requestWrapper.getCvv());
+		transacaoOneClickWSV2.setNumeroTransacao(requestWrapper.getNumeroTransacao());
 		transacaoOneClickWSV2.setCodigoEstabelecimento(codigoEstabelecimento);
 		transacaoOneClickWSV2.setDadosUsuarioTransacao(dadosUsuarioTransacao);
 		//transacaoOneClickWSV2.setIdioma(idioma);
-		transacaoOneClickWSV2.setIP(ip);
-		transacaoOneClickWSV2.setOrigemTransacao(origemTransacao);
+		transacaoOneClickWSV2.setIP(requestWrapper.getIp());
+		transacaoOneClickWSV2.setOrigemTransacao(requestWrapper.getOrigemTransacao());
 		//transacaoOneClickWSV2.setParcelas(parcelas);
 		//transacaoOneClickWS.setTaxaEmbarque(taxaEmbarque);
-		transacaoOneClickWSV2.setToken(token);
-		transacaoOneClickWSV2.setUrlCampainha(campainha);
+		transacaoOneClickWSV2.setToken(requestWrapper.getToken());
+		transacaoOneClickWSV2.setUrlCampainha(requestWrapper.getCampainha());
 		//transacaoOneClickWSV2.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
 		//transacaoOneClickWSV2.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
-		transacaoOneClickWSV2.setValor(valor);
+		transacaoOneClickWSV2.setValor(requestWrapper.getValor());
 		//transacaoOneClickWSV2.setValorDesconto(valorDesconto);
 		//transacaoOneClickWSV2.setVencimentoBoleto(vencimentoBoleto);
 
 
 		ItemPedidoTransacaoWS item = factory.createItemPedidoTransacaoWS();
-		item.setCodigoCategoria(codigoCategoria);
-		item.setNomeCategoria(nomeCategoria);
+		item.setCodigoCategoria(requestWrapper.getCodigoCategoria());
+		item.setNomeCategoria(requestWrapper.getNomeCategoria());
 		//item.setCodigoProduto(codigoProduto);
-		item.setNomeProduto(nomeProduto);
+		item.setNomeProduto(requestWrapper.getNomeProduto());
 		//item.setQuantidadeProduto(quantidadeProduto);
-		item.setValorUnitarioProduto(valorUnitarioProduto);
+		item.setValorUnitarioProduto(requestWrapper.getValorUnitarioProduto());
 
 		transacaoOneClickWSV2.getItensDoPedido().add(item);
 
@@ -263,6 +238,41 @@ public class SuperpayOneClickClient {
 		return oneclickResponse.getReturn();
 	}
 
-
-
+	@Data
+	public static class RequestWrapper {
+		private Long numeroTransacao;
+		private String ip;
+		private String origemTransacao;
+		private String token;
+		private String campainha;
+		private long valor;
+		private String bairroEnderecoComprador;
+		private String cepEnderecoComprador;
+		private String cidadeEnderecoCompra;
+		private String codigoCliente;
+		private String complementoEnderecoComprador;
+		private String dataNascimentoComprador;
+		private String dddAdicionalComprador;
+		private String dddComprador;
+		private String ddiAdicionalComprador;
+		private String ddiComprador;
+		private String documento2Comprador;
+		private long tipoCliente;
+		private String codigoCategoria;
+		private String nomeCategoria;
+		private Long valorUnitarioProduto;
+		private String nomeComprador;
+		private String estadoEnderecoComprador;
+		private String numeroEnderecoComprador;
+		private String paisComprador;
+		private String sexoComprador;
+		private String telefoneAdicionalComprador;
+		private String nomeProduto;
+		private String cvv;
+		private String enderecoComprador;
+		private String emailComprador;
+		private String telefoneComprador;
+		private String urlRedirecionamentoNaoPago;
+		private String urlRedirecionamentoPago;
+	}
 }
