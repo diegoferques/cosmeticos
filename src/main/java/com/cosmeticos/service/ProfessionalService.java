@@ -45,7 +45,7 @@ public class ProfessionalService {
         newProfessional.setUser(request.getProfessional().getUser());
 		newProfessional.getUser().setProfessional(newProfessional);
         newProfessional.setAddress(request.getProfessional().getAddress());
-		
+
         professionalRepository.save(newProfessional);
 
         //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
@@ -55,7 +55,7 @@ public class ProfessionalService {
 
         configureHability(request.getProfessional(), newProfessional);
         configureProfessionalServices(request.getProfessional(), newProfessional);
-        
+
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
     }
@@ -96,6 +96,17 @@ public class ProfessionalService {
 
             if(!StringUtils.isEmpty(cr.getAttendance())){
                 professional.setAttendance(cr.getAttendance());
+            }
+
+            if(cr.getEmployeesCollection() != null){
+                for(Professional professionalItem : cr.getEmployeesCollection()){
+                    Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
+                    professional.addEmployees(persistentProfessionalItem);
+                }
+            }
+
+            if(cr.getBoss() != null){
+                professional.setBoss(cr.getBoss());
             }
 
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
@@ -182,4 +193,6 @@ public class ProfessionalService {
             }
         }
     }
+
 }
+

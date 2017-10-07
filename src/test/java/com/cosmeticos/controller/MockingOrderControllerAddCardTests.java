@@ -25,6 +25,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.lang.Exception;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.text.ParseException;

@@ -60,6 +60,7 @@ public class ProfessionalPreLoadConfiguration {
         p1.setDateRegister(Timestamp.valueOf(now()));
         address1.setProfessional(p1);
 
+
         // bidirecional reference
         p1.setUser(user1);
         user1.setProfessional(p1);
@@ -69,7 +70,6 @@ public class ProfessionalPreLoadConfiguration {
         p1.setWallet(cw1);
         cw1.setProfessional(p1);
 
-        repository.save(p1);
 
         ////////////////////////////////////////
         User user2 = new User("Diego", "123qwe", "Diego@bol");
@@ -84,7 +84,8 @@ public class ProfessionalPreLoadConfiguration {
         s2.setAddress(address2);
         s2.setUser(user2);
         s2.setDateRegister(Timestamp.valueOf(now()));
-
+        s2.setBoss(p1);
+        p1.getEmployeesCollection().add(s2);
 
 
         user2.setProfessional(s2);
@@ -103,7 +104,8 @@ public class ProfessionalPreLoadConfiguration {
         Professional s3 = new Professional();
         s3.setNameProfessional("Deivison");
         s3.setDateRegister(Timestamp.valueOf(now()));
-
+        s3.setBoss(p1);
+        p1.getEmployeesCollection().add(s3);
 
         s3.setAddress(address3);
         address3.setProfessional(s3);
@@ -146,6 +148,7 @@ public class ProfessionalPreLoadConfiguration {
         user5.setProfessional(s5);
         user5.setPersonType(User.PersonType.JURIDICA);
 
+        repository.save(p1);
         repository.save(s2);
         repository.save(s3);
         repository.save(s4);

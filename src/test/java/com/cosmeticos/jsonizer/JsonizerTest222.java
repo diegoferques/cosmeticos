@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
 
+import java.lang.Exception;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -154,6 +155,26 @@ public class JsonizerTest222 {
         scheduleRequest.setIdProfessional(1L);
 
         String json = om.writeValueAsString(scheduleRequest);
+
+        System.out.println(json);
+    }
+    @Test
+    public void jsonizeBossEmployees() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+        Professional boss = new Professional();
+        boss.setNameProfessional("boss");
+
+        Professional employee1 = new Professional();
+        employee1.setNameProfessional("employee1");
+
+        Professional employee2 = new Professional();
+        employee2.setNameProfessional("employee2");
+
+        boss.getEmployeesCollection().add(employee1);
+        boss.getEmployeesCollection().add(employee2);
+
+        String json = om.writeValueAsString(boss);
 
         System.out.println(json);
     }
