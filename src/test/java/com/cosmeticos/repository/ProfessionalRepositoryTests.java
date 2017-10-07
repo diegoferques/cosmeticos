@@ -1,5 +1,6 @@
 package com.cosmeticos.repository;
 
+import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -195,28 +196,15 @@ public class ProfessionalRepositoryTests {
     */
     @Test
     public void testEmployees(){
-
-        User userBoss = new User();
-
-        User userEmployees1 = new User();
-
-        User userEmployees2 = new User();
-
-        Professional boss = new Professional();
+        
+        Professional boss = ProfessionalControllerTests.createFakeProfessional();
         boss.setNameProfessional("boss");
-        userBoss.setProfessional(boss);
-        boss.setUser(userBoss);
 
-        Professional employee1 = new Professional();
+        Professional employee1 = ProfessionalControllerTests.createFakeProfessional();
         employee1.setNameProfessional("employee1");
-        userEmployees1.setProfessional(employee1);
-        employee1.setUser(userEmployees1);
 
-
-        Professional employee2 = new Professional();
+        Professional employee2 = ProfessionalControllerTests.createFakeProfessional();
         employee2.setNameProfessional("employee2");
-        userEmployees2.setProfessional(employee2);
-        employee2.setUser(userEmployees2);
 
         boss.getEmployeesCollection().add(employee1);
         boss.getEmployeesCollection().add(employee2);
@@ -229,9 +217,7 @@ public class ProfessionalRepositoryTests {
                 .get()
                 .getIdProfessional());
 
-        System.out.println(boss);
-        System.out.println(employee1);
-        System.out.println(employee2);
+
 
 
     }

@@ -35,7 +35,7 @@ public class ExceptionService {
 
             exception.setStackTrace(nova);
         }
-        return exceptionRepository.save(requestBody.getEntity());
+        return exceptionRepository.save(exception);
     }
 
     public Optional<Exception> update(ExceptionRequestBody request) {
