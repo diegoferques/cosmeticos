@@ -10,8 +10,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -138,13 +141,12 @@ public class Professional  implements Serializable {
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
-        ResponseJsonView.ProfessionalFindAll.class,
-        ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @JsonView({
@@ -207,6 +209,7 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
     })
+
     @OneToMany(mappedBy = "boss", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Professional> employeesCollection = new HashSet<>();
 
@@ -218,6 +221,11 @@ public class Professional  implements Serializable {
     @Transient
     private float evaluation;
     */
+
+    public void addEmployees(Professional employees) {
+        getEmployeesCollection().add(employees);
+        employees.setBoss(this);
+    }
 
     public void addProfessionalCategory(ProfessionalCategory ps1) {
         getProfessionalCategoryCollection().add(ps1);

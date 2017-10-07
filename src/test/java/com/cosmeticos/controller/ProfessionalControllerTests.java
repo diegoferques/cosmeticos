@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -1403,41 +1404,29 @@ public class ProfessionalControllerTests {
         @Test
         public void test2employees() throws URISyntaxException {
 
-            User userBoss = new User();
-            User userEmployees1 = new User();
-            User userEmployees2 = new User();
-
             Professional professionalBoss = createFakeProfessional();
-            professionalBoss.setNameProfessional("YourName");
-            userBoss.setProfessional(professionalBoss);
-            professionalBoss.setUser(userBoss);
+            professionalBoss.setNameProfessional("BossName");
+			professionalRepository.save(professionalBoss);
 
-	        Professional professionalEmployees1 = createFakeProfessional();
-            professionalEmployees1.setNameProfessional("YourName");
-            userEmployees1.setProfessional(professionalEmployees1);
-            professionalEmployees1.setUser(userEmployees1);
+			Professional professionalEmployees1 = createFakeProfessional();
+			professionalBoss.setNameProfessional("EmployeesName1");
+			professionalRepository.save(professionalEmployees1);
 
             Professional professionalEmployees2 = createFakeProfessional();
-            professionalEmployees2.setNameProfessional("OtherName");
-            userEmployees2.setProfessional(professionalEmployees2);
-            professionalEmployees2.setUser(userEmployees2);
+			professionalBoss.setNameProfessional("EmployeesName2");
+			professionalRepository.save(professionalEmployees2);
 
-            professionalRepository.save(professionalBoss);
-            professionalRepository.save(professionalEmployees1);
-            professionalRepository.save(professionalEmployees2);
-
-
-            String jsonUpdate = "{\n" +
+			String jsonUpdate = "{\n" +
                     "  \"professional\": {\n" +
                     "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
                     "        \"employeesCollection\": [\n" +
                     "          {\n" +
                     "            \"nameProfessional\": \""+professionalEmployees1.getNameProfessional()+"\",\n" +
-                    "            \"idprofessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
+                    "            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
                     "          },\n" +
                     "          {\n" +
                     "            \"nameProfessional\": \""+professionalEmployees2.getNameProfessional()+"\",\n" +
-                    "            \"idprofessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
+                    "            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
                     "          }\n" +
                     "          ]\n" +
                     "  }\n" +

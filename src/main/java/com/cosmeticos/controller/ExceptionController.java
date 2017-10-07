@@ -2,7 +2,10 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.ExceptionRequestBody;
 import com.cosmeticos.commons.ExceptionResponseBody;
+import com.cosmeticos.commons.RoleRequestBody;
+import com.cosmeticos.commons.RoleResponseBody;
 import com.cosmeticos.model.Exception;
+import com.cosmeticos.model.Role;
 import com.cosmeticos.repository.ExceptionRepository;
 import com.cosmeticos.service.ExceptionService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,7 @@ import org.springframework.http.HttpEntity;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.*;
@@ -55,7 +59,7 @@ public class ExceptionController {
 
                 Exception exception = exceptionService.create(request);
 
-                log.info("Service adicionado com sucesso:  [{}]", exception);
+                log.info("Exception adicionado com sucesso:  [{}]", exception);
 
                 return ok(new ExceptionResponseBody(exception));
 
@@ -70,6 +74,43 @@ public class ExceptionController {
         }
     }
 
+    @RequestMapping(path = "/exceptions", method = RequestMethod.PUT)
+    public HttpEntity<ExceptionResponseBody> update(@Valid @RequestBody ExceptionRequestBody request, BindingResult
+            bindingResult) {
+
+        try {
+            if (bindingResult.hasErrors()) {
+                log.error("Erros na requisicao: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            } else if (request.getEntity().getId() == null) {
+                ExceptionResponseBody responseBody = new ExceptionResponseBody();
+                responseBody.setDescription("Entity ID must to be set!");
+                return badRequest().body(responseBody);
+            } else {
+                Optional<Exception> optional = exceptionService.update(request);
+
+                if (optional.isPresent()) {
+                    Exception updatedException = optional.get();
+
+                    ExceptionResponseBody responseBody = new ExceptionResponseBody();
+                    responseBody.getExceptionList().add(updatedException);
+
+                    log.info("Exception atualizado com sucesso:  [{}]", updatedException);
+
+                    return ok().body(responseBody);
+                } else {
+                    log.error("Role nao encontrada: idRole[{}]", request.getEntity().getId());
+                    return notFound().build();
+                }
+            }
+        } catch (java.lang.Exception e) {
+            log.error("Falha na atualizacao: {}", e.getMessage(), e);
+            ExceptionResponseBody responseBody = new ExceptionResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
+        }
+    }
+
     private ExceptionResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
@@ -80,5 +121,8 @@ public class ExceptionController {
         responseBody.setDescription(errors.toString());
         return responseBody;
     }
+
+
+
 
 }

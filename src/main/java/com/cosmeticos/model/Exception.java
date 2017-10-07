@@ -14,11 +14,16 @@ import java.io.Serializable;
 @Entity
 @Data
 public class Exception implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
+    public enum Status{
+        RESOLVED, UNRESOLVED
+    }
 
     //@Transient
     private String stackTrace;
@@ -28,6 +33,8 @@ public class Exception implements Serializable {
     private String deviceModel;
 
     private String osVersion;
+
+    private Status status;
 
     @Override
     public boolean equals(Object o) {

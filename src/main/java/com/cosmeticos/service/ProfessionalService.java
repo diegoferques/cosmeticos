@@ -98,11 +98,13 @@ public class ProfessionalService {
                 professional.setAttendance(cr.getAttendance());
             }
 
-            if(!StringUtils.isEmpty(cr.getEmployeesCollection())){
-                professional.setEmployeesCollection(cr.getEmployeesCollection());
+            if(cr.getEmployeesCollection() != null){
+                for(Professional p : cr.getEmployeesCollection()){
+                    professional.addEmployees(p);
+                }
             }
 
-            if(!StringUtils.isEmpty(cr.getBoss())){
+            if(cr.getBoss() != null){
                 professional.setBoss(cr.getBoss());
             }
 
