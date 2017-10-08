@@ -2,11 +2,14 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.ResponseJsonView;
+import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
+import javax.validation.Constraint;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Optional;
@@ -15,11 +18,11 @@ import java.util.Optional;
 @Data
 public class Payment implements Serializable {
 
-	private Long externalTransactionId;
-
-	public Long getExternalTransactionId() {
-		return externalTransactionId;
-	}
+	/**
+	 * Superpay só permite ate 8 caracteres: http://wiki.superpay.com.br/wikiSuperPay/index.php/Capturar_transação_SOAP
+	 */
+	@Size(max = 8)
+	private String externalTransactionId;
 
 	public enum Type{
 		CC, CASH, BOLETO
@@ -158,4 +161,20 @@ public class Payment implements Serializable {
 	public Payment(Type cash) {
 	}
 
+	public String getExternalTransactionId() {
+		return externalTransactionId == null ? String.valueOf(id) : externalTransactionId;
+	}
+
+	public void setExternalTransactionId(String externalTransactionId) {
+		// Superpay só permite ate 8 caracteres: http://wiki.superpay.com.br/wikiSuperPay/index.php/Capturar_transação_SOAP
+		if(String.valueOf(externalTransactionId).length() > 8)
+		{
+			throw new IllegalStateException(
+					"externalTransactionId com quantidade invalida de digitos: " + externalTransactionId);
+
+		}
+		else{
+			this.externalTransactionId = externalTransactionId;
+		}
+	}
 }

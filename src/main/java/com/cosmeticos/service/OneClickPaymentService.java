@@ -44,10 +44,10 @@ public class OneClickPaymentService implements Charger{
     @Value("${superpay.numerotransacao.fake:false}")
     private Boolean fakeNumeroTransacao;
 
-    @Value("${superpay.mock.reserve.response}")
+    //@Value("${superpay.mock.reserve.response}")
     private Integer mockReserveResponse;
 
-    @Value("${superpay.mock.capture.response}")
+    //@Value("${superpay.mock.capture.response}")
     private Integer mockCaptureResponse;
 
     @Override
@@ -99,7 +99,7 @@ public class OneClickPaymentService implements Charger{
         Address address = customer.getAddress();
         User user = customer.getUser();
 
-        Long numeroTransacao = persistentPayment.getExternalTransactionId();
+        Long numeroTransacao = Long.valueOf(persistentPayment.getExternalTransactionId());
 
         // Nao se pega do payment pois o usuario pode ter alterado o cartao antees de concluir a order.
         // TODO incluir trava pra nao deixar alterar cartao caso haja order aberta
@@ -227,7 +227,7 @@ public class OneClickPaymentService implements Charger{
             Long valor = receivedPayment.getPriceRule().getPrice();
             String codigoSeguranca = creditCard.getSecurityCode();
             String ip = httpServletRequest.getRemoteAddr();
-            Long numeroTransacao = persistentPayment.getExternalTransactionId();
+            Long numeroTransacao = Long.valueOf(persistentPayment.getExternalTransactionId());
             int parcelas = persistentOrder.getPaymentCollection().size();
             SuperpayFormaPagamento codigoFormaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
             //String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());

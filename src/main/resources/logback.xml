@@ -15,7 +15,7 @@
 
    <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
        <Append>true</Append>
-       <File>${LOG_PATH:-.}/log/server.log.json</File>
+       <File>${LOG_PATH:-./log}/server.log.json</File>
        <filter class="ch.qos.logback.classic.filter.LevelFilter">
            <level>INFO</level>
            <onMatch>ACCEPT</onMatch>
@@ -34,14 +34,14 @@
            </providers>
        </encoder>
        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-           <fileNamePattern>${LOG_PATH:-.}/log/older/server.log.json.%d{yyyy-MM-dd}</fileNamePattern>
+           <fileNamePattern>${LOG_PATH:-./log}/older/server.log.json.%d{yyyy-MM-dd}</fileNamePattern>
            <maxHistory>30</maxHistory>
        </rollingPolicy>
    </appender>
 
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <Append>true</Append>
-        <File>${LOG_PATH:-.}/log/error.log</File>
+        <File>${LOG_PATH:-./log}/error.log</File>
 
         <!-- root-logger esta configurado pra logar infos neste aquivo, mas este filter so permitira errors -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -54,7 +54,7 @@
             <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH:-.}/log/error.log.%d{yyyy-MM-dd}
+            <fileNamePattern>${LOG_PATH:-./log}/error.log.%d{yyyy-MM-dd}
             </fileNamePattern>
             <maxHistory>10</maxHistory>
         </rollingPolicy>

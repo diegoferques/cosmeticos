@@ -43,6 +43,9 @@ public class OrderService {
 	private String daysBeforeStartToNotification;
 
 	@Autowired
+    private RandomCode randomCode;
+
+	@Autowired
 	private OrderRepository orderRepository;
 
     @Autowired
@@ -176,6 +179,13 @@ public class OrderService {
         /*****   EXECUCAO      **********************************/
         /********************************************************/
 
+        //Gera numeros de ate 8 digitos
+        validatedPayment.setExternalTransactionId(
+                String.valueOf(System.currentTimeMillis() % 8)
+        );
+
+        MDC.put("superpayNumeroTransacao", validatedPayment.getExternalTransactionId());
+
         Order order = new Order();
         order.setScheduleId(receivedOrder.getScheduleId());
         order.setIdLocation(receivedOrder.getIdLocation());
@@ -189,7 +199,6 @@ public class OrderService {
                 // 6 horas de validade
                 21600000));
 
-        validatedPayment.setExternalTransactionId(System.nanoTime());
         order.addPayment(validatedPayment);
 
         Order newOrder = orderRepository.save(order);
@@ -572,37 +581,18 @@ public class OrderService {
 
 	//CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
 	//BRANCH: RNF101
-	//TODO - ACHO QUE PRECISA DE MAIS VALIDACOES, BEM COMO QUANDO DER ERRO DE CONSULTA OU CAPTURA POR 404, 500 E ETC.
+	//BRANCH: RNFapp39-templatando-plus-cartao
 	private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
         ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
 
-        return ResponseCode.SUCCESS.equals(chargeResponse.getResponseCode())
-        || ResponseCode.GATEWAY_DUPLICATE_PAYMENT.equals(chargeResponse.getResponseCode());
-
-// ChargeResponse<RetornoTransacao> chargeResponse = paymentService.getStatus(new ChargeRequest<>(order));
-
-        //Integer superpayStatusStransacao = chargeResponse.getBody().getStatusTransacao();
-//
-        //Optional<Payment.Status> paymentStatus = Arrays.asList(Payment.Status.values()).stream()
-        //        .filter( status -> status.getSuperpayStatusTransacao().equals(superpayStatusStransacao))
-        //        .findFirst();
-
-
-       // Boolean paymentCapture = HttpStatus.OK.equals(paymentStatus.get().getHttpStatus())
-         //   || HttpStatus.ACCEPTED.equals(paymentStatus.get().getHttpStatus());
-
-
-
-        //DEIXEI RESERVADO ABAIXO PARA FAZER ALGUMA COISA, CASO NAO TENHA SUCESSO NA CAPTURA QUANDO FOR READY2CHARGE
-		//POIS O CRON PEGA TODOS OS READY2CHARGE E ENVIA PARA ESTE METODO, SE DER ALGUM ERRO, TEMOS QUE FAZER ALGO
-		//CASO CONTRARIO, VAI FICAR TENTANDO CAPTURAR E NUNCA VAI CONSEGUIR ATE CADUCAR!
-		/*
-		if(!paymentCapture) {
-
-		}
-		*/
-
-		//return paymentCapture;
+        switch (chargeResponse.getResponseCode())
+        {
+            case SUCCESS:
+            case GATEWAY_DUPLICATE_PAYMENT:
+                return true;
+            default:
+                throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
+        }
 	}
 
 	private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
