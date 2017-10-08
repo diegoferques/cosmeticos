@@ -194,7 +194,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                 "             \"id\": " + priceRule.getId() + "\n" +
                 "         },\n" +
 
-                "         \"creditCard\": {\n" +
+                "         \"creditCard\": \n" +
                 "         {\n" +
                 "            \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
                 "            \"ownerName\": \"Teste\",\n" +
@@ -213,6 +213,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                 "  }\n" +
                 "}";
 
+        System.out.println(json);
 
         RequestEntity<String> entity =  RequestEntity
                 .post(new URI("/orders"))
@@ -293,8 +294,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
         Order orderUpdateReady2Charger =  exchangeUpdateReady2Charger.getBody().getOrderList().get(0);
 
-        // TODO: descomentar esta e comentar a linha abaixo Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());
-        Assert.assertEquals(Order.Status.READY2CHARGE, orderUpdateReady2Charger.getStatus());
+        Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());
 
     }
 

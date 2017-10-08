@@ -50,7 +50,13 @@ public class PaymentRepositoryTests {
 		professionalRepository.save(professional);
 
 		Category service = serviceRepository.findByName("PEDICURE");
-		service = serviceRepository.findWithSpecialties(service.getIdCategory());
+
+		if(service == null) {
+
+			Category s5 = new Category();
+			s5.setName("PEDICURE");
+			service = serviceRepository.save(s5);
+		}
 
 		pr = new PriceRule();
 		pr.setName("RULE");
