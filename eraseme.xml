@@ -1,0 +1,66 @@
+[
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns2:pagamentoOneClickV2Response xmlns:ns2="http://pagamentos.webservices.superpay.ernet.com.br/">
+            <return>
+                <autorizacao>0</autorizacao>
+                <codigoEstabelecimento>1501698887865</codigoEstabelecimento>
+                <codigoFormaPagamento>171</codigoFormaPagamento>
+                <codigoTransacaoOperadora>126</codigoTransacaoOperadora>
+                <dataAprovacaoOperadora>2017-09-30 17:13:48</dataAprovacaoOperadora>
+                <mensagemVenda>Credit Card Expiration Date is invalid</mensagemVenda>
+                <numeroComprovanteVenda/>
+                <numeroTransacao>15493685021211</numeroTransacao>
+                <parcelas>1</parcelas>
+                <statusTransacao>9</statusTransacao>
+                <taxaEmbarque>0</taxaEmbarque>
+                <urlPagamento>
+                    https://homologacao.superpay.com.br/checkout/PagamentoCielo/PagamentoCielo.do?cod=1506802428225a0950c54-a671-4e09-aecd-6b4ff30d0cb1
+                </urlPagamento>
+                <valor>15000</valor>
+                <valorDesconto>0</valorDesconto>
+            </return>
+        </ns2:pagamentoOneClickV2Response>
+    </soap:Body>
+</soap:Envelope>] for request [<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Header/>
+<SOAP-ENV:Body>
+    <ns3:pagamentoOneClickV2 xmlns:ns3="http://pagamentos.webservices.superpay.ernet.com.br/">
+        <transacao>
+            <codigoEstabelecimento>1501698887865</codigoEstabelecimento>
+            <dadosUsuarioTransacao>
+                <bairroEnderecoComprador>Austin</bairroEnderecoComprador>
+                <cepEnderecoComprador>268723-897</cepEnderecoComprador>
+                <cidadeEnderecoComprador>RJO</cidadeEnderecoComprador>
+                <codigoTipoTelefoneAdicionalComprador>0</codigoTipoTelefoneAdicionalComprador>
+                <codigoTipoTelefoneAdicionalEntrega>0</codigoTipoTelefoneAdicionalEntrega>
+                <codigoTipoTelefoneComprador>0</codigoTipoTelefoneComprador>
+                <codigoTipoTelefoneEntrega>0</codigoTipoTelefoneEntrega>
+                <estadoEnderecoComprador>RJ</estadoEnderecoComprador>
+                <nomeComprador>João da Silva</nomeComprador>
+                <numeroEnderecoComprador>66</numeroEnderecoComprador>
+                <paisComprador>BRA</paisComprador>
+                <sexoComprador>M</sexoComprador>
+                <telefoneAdicionalComprador>(21) 98877-6655</telefoneAdicionalComprador>
+                <tipoCliente>1</tipoCliente>
+            </dadosUsuarioTransacao>
+            <idioma>0</idioma>
+            <itensDoPedido>
+                <nomeCategoria>CABELEIREIRA</nomeCategoria>
+                <nomeProduto>CABELEIREIRA</nomeProduto>
+                <quantidadeProduto>0</quantidadeProduto>
+                <valorUnitarioProduto>15000</valorUnitarioProduto>
+            </itensDoPedido>
+            <numeroTransacao>15493685021211</numeroTransacao>
+            <parcelas>0</parcelas>
+            <taxaEmbarque>0</taxaEmbarque>
+            <token>15068024250432f3732bd-69d8-48f0-a778-762099a28525</token>
+            <urlCampainha>http://ngrok/campainha/superpay</urlCampainha>
+            <valor>15000</valor>
+            <valorDesconto>0</valorDesconto>
+        </transacao>
+        <usuario>superpay</usuario>
+        <senha>superpay</senha>
+    </ns3:pagamentoOneClickV2>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]

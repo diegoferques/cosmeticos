@@ -1,0 +1,11 @@
+{
+  "professional": {
+    "idProfessional": "9",
+    "employeesCollection": [
+      {
+        "nameProfessional": "EmployeesName1",
+        "idProfessional": 10
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 package com.cosmeticos.payment;
 
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.superpay.ws.completo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +34,10 @@ public class SuperpayCompletoClient {
                                                String ip,
                                                String nomeTitularCarttaoCredito,
                                                Long valor,
-                                               String urlCampainha){
+                                               String urlCampainha,
+                                               Long numeroTransacao,
+                                               Integer parcelas,
+                                               SuperpayFormaPagamento codigoFormaPagamento){
 
         ObjectFactory factory = new ObjectFactory();
 
@@ -44,12 +48,12 @@ public class SuperpayCompletoClient {
         transacaoCompletaWS.setNomeTitularCartaoCredito(nomeTitularCarttaoCredito);
         transacaoCompletaWS.setUrlCampainha(urlCampainha);
         transacaoCompletaWS.setValor(valor);
-        //transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento);
+        transacaoCompletaWS.setNumeroTransacao(numeroTransacao);
+        transacaoCompletaWS.setParcelas(parcelas);
+        transacaoCompletaWS.setCodigoFormaPagamento(codigoFormaPagamento.getCodigoFormaPagamento().intValue());
         //transacaoCompletaWS.setDadosUsuarioTransacao(dadosUsuarios);
         //transacaoCompletaWS.setDataValidadeCartao(dataValidadeCartao);
         //transacaoCompletaWS.setIdioma(idioma);
-        //transacaoCompletaWS.setNumeroTransacao(numeroTransacao);
-        //transacaoCompletaWS.setParcelas(parcelas);
         //transacaoCompletaWS.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
         //transacaoCompletaWS.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
         //transacaoCompletaWS.setValorDesconto(valorDesconto);

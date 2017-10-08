@@ -1,6 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.*;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
@@ -8,7 +9,9 @@ import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +38,18 @@ public class OneClickPaymentService implements Charger{
     @Autowired
     private HttpServletRequest httpServletRequest;
 
+    /**
+     * Feito pq em dev, usando h2, o id de payment, usado como numeroTransacao, se repete toda vez q a aplicacao eh iniciada.
+     */
+    @Value("${superpay.numerotransacao.fake:false}")
+    private Boolean fakeNumeroTransacao;
+
+    //@Value("${superpay.mock.reserve.response}")
+    private Integer mockReserveResponse;
+
+    //@Value("${superpay.mock.capture.response}")
+    private Integer mockCaptureResponse;
+
     @Override
     public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
 
@@ -50,10 +65,10 @@ public class OneClickPaymentService implements Charger{
         CreditCard creditCard = payment.getCreditCard();
 
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
-        String numeroCartaoCredito = creditCard.getSuffix();
-        String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
+        String numeroCartaoCredito = creditCard.getNumber();
+        String dataValidadeCartao = creditCard.getExpirationDate();
 
-        Long formaPagamento = Long.valueOf(payment.getType().ordinal());
+        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
 
         String result = oneClickClient.addCard(dataValidadeCartao,
                 emailComprador,
@@ -84,7 +99,7 @@ public class OneClickPaymentService implements Charger{
         Address address = customer.getAddress();
         User user = customer.getUser();
 
-        Long numeroTransacao = persistentPayment.getId();
+        Long numeroTransacao = Long.valueOf(persistentPayment.getExternalTransactionId());
 
         // Nao se pega do payment pois o usuario pode ter alterado o cartao antees de concluir a order.
         // TODO incluir trava pra nao deixar alterar cartao caso haja order aberta
@@ -105,11 +120,11 @@ public class OneClickPaymentService implements Charger{
         String enderecoComprador = address.getAddress();
         String estadoEnderecoComprador = address.getState();
         String nomeComprador = customer.getNameCustomer();
-        String numeroEnderecoComprador = address.getComplement();
+        String numeroEnderecoComprador = address.getNumber();
         String paisComprar = address.getCountry();
         String sexoComprador = String.valueOf(customer.getGenre());
         String telefoneComprador = customer.getCellPhone();
-        String cvv = creditCard.getSecurityCode();
+       // String cvv = creditCard.getSecurityCode(); //Eh oneclick.. nao precisa isso
         String nomeProduto = category.getName();
         Long valorUnitarioProduto = valor;
         long tipoCliente = user.getPersonType().ordinal();
@@ -118,25 +133,12 @@ public class OneClickPaymentService implements Charger{
                 .map(c -> c.getName())
                 .orElse(category.getName());
 
-        //String origemTransacao;
-        //String ip;
-        //long valorDesconto;
-        //int parcelas;
-        //int idioma = 0;
-        //String codigoCliente
-        //String telefoneAdicionalComprador = customer.getCellPhone();
-        //String codigoCategoria;
-        //String codigoProduto;
-        //int quantidadeProduto;
-        //long codigoTipoTelefoneAdicionalComprador;
-        //String dataNascimentoComprador;
-
         SuperpayOneClickClient.RequestWrapper requestWrapper = new SuperpayOneClickClient.RequestWrapper();
         requestWrapper.setBairroEnderecoComprador(bairroEnderecoComprador);
         requestWrapper.setCampainha(campainha);
         requestWrapper.setCepEnderecoComprador(cepEnderecoComprador);
         requestWrapper.setCidadeEnderecoCompra(cidadeEnderecoCompra);
-        requestWrapper.setCvv(cvv);
+        //requestWrapper.setCvv(cvv);
         requestWrapper.setEstadoEnderecoComprador(estadoEnderecoComprador);
         requestWrapper.setEnderecoComprador(enderecoComprador);
         requestWrapper.setEmailComprador(emailComprador);
@@ -157,6 +159,12 @@ public class OneClickPaymentService implements Charger{
         requestWrapper.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
 
         ResultadoPagamentoWS result = oneClickClient.pay(requestWrapper);
+
+        if(mockReserveResponse != null)
+        {
+            log.warn("Estamos falsificando a resposta do superpay RESERVE para fins de testes.");
+            result.setStatusTransacao(mockReserveResponse);
+        }
 
         return buildResponse(result);
     }
@@ -219,15 +227,17 @@ public class OneClickPaymentService implements Charger{
             Long valor = receivedPayment.getPriceRule().getPrice();
             String codigoSeguranca = creditCard.getSecurityCode();
             String ip = httpServletRequest.getRemoteAddr();
+            Long numeroTransacao = Long.valueOf(persistentPayment.getExternalTransactionId());
+            int parcelas = persistentOrder.getPaymentCollection().size();
+            SuperpayFormaPagamento codigoFormaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
             //String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
             //String urlRedirecionamentoNaoPago = "urlRedirecionamentoNaoPago.com";
             //String urlRedirecionamentoPago = "urlRedirecionamentoPago.com";
             //long valorDesconto = 10L;
             //String origemTransacao = "ORIGEM";
-            //int parcelas = 1;
             //int idioma = 1;
-            //Long numeroTransacao;
-            //int codigoFormaPagamento = 2;
+
+            MDC.put("superpayNumeroTransacao", String.valueOf(numeroTransacao));
 
             /*
             Existem duas classes com o mesmo nome nos dois wsdls da superpay. Como usamos as duas (oneclick e completo),
@@ -238,9 +248,28 @@ public class OneClickPaymentService implements Charger{
                     ip,
                     nomeTitularCarttaoCredito,
                     valor,
-                    urlCampainha);
+                    urlCampainha,
+                    numeroTransacao,
+                    parcelas, codigoFormaPagamento);
 
-            return new ChargeResponse<Object>(result);
+            if(mockCaptureResponse != null)
+            {
+                log.warn("Estamos falsificando a resposta do superpay CAPTURE para fins de testes.");
+                result.setStatusTransacao(mockReserveResponse);
+            }
+
+            MDC.put("superpayStatusStransacao", String.valueOf(result.getStatusTransacao()));
+            MDC.put("superpayMensagemVenda", result.getMensagemVenda());
+
+            ChargeResponse<Object> response = new ChargeResponse<>(result);
+
+
+            response.setResponseCode(Payment.Status.fromSuperpayStatus(
+                    result.getStatusTransacao())
+                    .getResponseCode()
+            );
+
+            return response;
         }
         else
         {
@@ -259,9 +288,10 @@ public class OneClickPaymentService implements Charger{
         User user = customer.getUser();
 
         Payment payment = (Payment) order.getPaymentCollection();
-        Long formaPagamento = Long.valueOf(payment.getType().ordinal());
+        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
 
-        String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
+
+        String dataValidadeCartao = creditCard.getExpirationDate();
         String emailComprador = user.getEmail();
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getSuffix();

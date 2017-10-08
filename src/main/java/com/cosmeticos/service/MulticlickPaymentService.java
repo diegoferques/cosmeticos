@@ -238,7 +238,7 @@ public class MulticlickPaymentService implements Charger {
                 creditCard.getVendor().trim().toUpperCase()
         );
 
-        request.setCodigoFormaPagamento(formaPagamento.getCodigoFormaPagamento());
+        request.setCodigoFormaPagamento(formaPagamento.getCodigoFormaPagamento().intValue());
 
         Transacao transacao = this.getTransacao(order);
         request.setTransacao(transacao);

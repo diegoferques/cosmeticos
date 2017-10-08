@@ -79,6 +79,7 @@ public class Address implements Serializable {
     @JsonIgnore
     @OneToOne
     private Professional professional;
+    private String number;
 
     @Override
     public int hashCode() {
@@ -104,5 +105,8 @@ public class Address implements Serializable {
     public String toString() {
         return "javaapplication2.entity.Address[ idAddress=" + idAddress + " ]";
     }
-    
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
 }

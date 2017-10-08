@@ -1,14 +1,22 @@
 package com.cosmeticos.payment;
 
+import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.superpay.ws.oneclick.*;
+import com.cosmeticos.validation.OrderValidationException;
 import lombok.Data;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.ws.client.WebServiceIOException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.lang.Exception;
+import java.net.UnknownHostException;
 
 @Component
 @lombok.extern.slf4j.Slf4j
@@ -27,6 +35,7 @@ public class SuperpayOneClickClient {
 	@Value("${superpay.estabelecimento}")
 	private String codigoEstabelecimento;
 
+
 	/**
 	 * 
 	 * 
@@ -40,7 +49,7 @@ public class SuperpayOneClickClient {
 	public String addCard(
 			String dataValidadeCartao,
 			String emailComprador,
-			Long formaPagamento,
+			SuperpayFormaPagamento formaPagamento,
 			String nomeTitularCartaoCredito,
 			String numeroCartaoCredito) {
 		
@@ -50,7 +59,7 @@ public class SuperpayOneClickClient {
 		dados.setCodigoEstabelecimento(codigoEstabelecimento);
 		dados.setDataValidadeCartao(dataValidadeCartao);
 		dados.setEmailComprador(emailComprador);
-		dados.setFormaPagamento(formaPagamento);
+		dados.setFormaPagamento(formaPagamento.getCodigoFormaPagamento().longValue());
 		dados.setNomeTitularCartaoCredito(nomeTitularCartaoCredito);
 		dados.setNumeroCartaoCredito(numeroCartaoCredito);
 
@@ -59,17 +68,27 @@ public class SuperpayOneClickClient {
 		pagamentoOneClickV2.setSenha(password);
 		pagamentoOneClickV2.setUsuario(user);
 
-		log.info("Client sending pagamentoOneClickV2[user={},estabelecimento={}]", user, codigoEstabelecimento);
-
 		JAXBElement<CadastraPagamentoOneClickV2> jaxbCadastraPagamento =
 				factory.createCadastraPagamentoOneClickV2(pagamentoOneClickV2);
 
 		JAXBElement<CadastraPagamentoOneClickV2Response> jaxbResponse =
-				(JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(jaxbCadastraPagamento);
+				null;
+		try {
+			jaxbResponse = (JAXBElement<CadastraPagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(jaxbCadastraPagamento);
+		} catch (WebServiceIOException e) {
+			if(e.getCause() instanceof UnknownHostException)
+			{
+				// Sabemos que essa falha eh por causa de falha de conexao do nosso servidor (sem acesso internet)
+				throw new OrderValidationException(ResponseCode.INTERNAL_ERROR, e);
+			}
+			else{
+				throw e;
+			}
+		}
 
 		CadastraPagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
 		
-		log.info("Client received result='{}'", oneclickResponse.getReturn());
+		MDC.put("superpayStatusStransacao", oneclickResponse.getReturn());
 		
 		return oneclickResponse.getReturn();
 	}
@@ -151,9 +170,31 @@ public class SuperpayOneClickClient {
 
 		JAXBElement<PagamentoOneClickV2> requestBody =
 				factory.createPagamentoOneClickV2(pagamentoOneClickV2);
-
 		JAXBElement<PagamentoOneClickV2Response> jaxbResponse =
-				(JAXBElement<PagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(requestBody);
+				null;
+
+		try {
+			/*
+			Se nao usarmos este token 15067741784287d403b60-58e7-4ff3-ac10-e86cf9917295 em homolog, fica dando este erro:
+			SoapFaultClientException: id to load is required for loading
+
+			Acho que esse erro ocorre quando o addcard cria token no superpay sem passar dados de cartao corretos.
+			 */
+			jaxbResponse = (JAXBElement<PagamentoOneClickV2Response>) webServiceTemplate.marshalSendAndReceive(requestBody);
+		} catch (SOAPFaultException e) {
+			if("id to load is required for loading".equals(e.getMessage()))
+			{
+				throw new IllegalStateException("Ocorreu um erro na reserva de pagamento. Este erro eh conhecido por " +
+						"ocorrer quando usamos um token de cartao que foi cadastrado (addCard) com dados incorretos. " +
+						"A superpay nao tratou os dados de cartao passados (formaPagamento=0, por exemplo) e entregou " +
+						"um token que nao eh valido. Este erro foi identificado, ate o momento da escrita deste resporte, " +
+						"apenas no ambiente de homologação.", e);
+			}
+			else
+			{
+				throw e;
+			}
+		}
 
 
 		PagamentoOneClickV2Response oneclickResponse = jaxbResponse.getValue();
@@ -168,7 +209,7 @@ public class SuperpayOneClickClient {
 	public String updateCard(
 			String dataValidadeCartao,
 			String emailComprador,
-			Long formaPagamento,
+			SuperpayFormaPagamento formaPagamento,
 			String nomeTitularCartaoCredito,
 			String numeroCartaoCredito, String token) {
 
@@ -178,7 +219,7 @@ public class SuperpayOneClickClient {
 		dados.setCodigoEstabelecimento(codigoEstabelecimento);
 		dados.setDataValidadeCartao(dataValidadeCartao);
 		dados.setEmailComprador(emailComprador);
-		dados.setFormaPagamento(formaPagamento);
+		dados.setFormaPagamento(formaPagamento.getCodigoFormaPagamento().longValue());
 		dados.setNomeTitularCartaoCredito(nomeTitularCartaoCredito);
 		dados.setNumeroCartaoCredito(numeroCartaoCredito);
 
@@ -205,7 +246,7 @@ public class SuperpayOneClickClient {
 	public DadosCadastroPagamentoOneClickWS readCard(
 			String dataValidadeCartao,
 			String emailComprador,
-			Long formaPagamento,
+			SuperpayFormaPagamento formaPagamento,
 			String nomeTitularCartaoCredito,
 			String numeroCartaoCredito, String token) {
 
@@ -215,7 +256,7 @@ public class SuperpayOneClickClient {
 		dados.setCodigoEstabelecimento(codigoEstabelecimento);
 		dados.setDataValidadeCartao(dataValidadeCartao);
 		dados.setEmailComprador(emailComprador);
-		dados.setFormaPagamento(formaPagamento);
+		dados.setFormaPagamento(formaPagamento.getCodigoFormaPagamento().longValue());
 		dados.setNomeTitularCartaoCredito(nomeTitularCartaoCredito);
 		dados.setNumeroCartaoCredito(numeroCartaoCredito);
 
