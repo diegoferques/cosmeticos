@@ -23,6 +23,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.Exception;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;

@@ -1,5 +1,6 @@
 package com.cosmeticos.repository;
 
+import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -193,4 +194,31 @@ public class ProfessionalRepositoryTests {
         Assert.assertEquals("20080-001", p2.get(0).getAddress().getCep());
     }
     */
+    @Test
+    public void testEmployees(){
+        
+        Professional boss = ProfessionalControllerTests.createFakeProfessional();
+        boss.setNameProfessional("boss");
+
+        Professional employee1 = ProfessionalControllerTests.createFakeProfessional();
+        employee1.setNameProfessional("employee1");
+
+        Professional employee2 = ProfessionalControllerTests.createFakeProfessional();
+        employee2.setNameProfessional("employee2");
+
+        boss.getEmployeesCollection().add(employee1);
+        boss.getEmployeesCollection().add(employee2);
+
+        repository.save(boss);
+
+        Assert.assertNotNull(boss.getEmployeesCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getIdProfessional());
+
+
+
+
+    }
 }

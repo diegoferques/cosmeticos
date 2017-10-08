@@ -12,10 +12,6 @@ import javax.validation.Valid;
 @Data
 public class ProfessionalRequestBody {
 
-    @JsonView(
-            {
-                    ResponseJsonView.ProfessionalCreate.class,
-            })
     @Valid
     private Professional professional;
 }
