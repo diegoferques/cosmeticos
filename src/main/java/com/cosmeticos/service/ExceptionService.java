@@ -35,6 +35,7 @@ public class ExceptionService {
 
             exception.setStackTrace(nova);
         }
+
         return exceptionRepository.save(requestBody.getEntity());
     }
 
@@ -60,19 +61,19 @@ public class ExceptionService {
 
     public Exception sendEmailWithException(Exception entity){
 
-        Optional<Exception> exceptionOptional = exceptionRepository.findByStatus(entity.getStatus());
+        Optional<Exception> exceptionOptional = exceptionRepository.findByStatus(Exception.Status.UNRESOLVED);
 
-        if(exceptionOptional.equals(Exception.Status.UNRESOLVED)){
+        if(exceptionOptional.isPresent()){
 
             Exception persistentException = exceptionOptional.get();
 
-            String stackTrace = persistentException.getStackTrace();
+            String stackTrace = persistentException.getStackTrace().substring(0, 254);
 
             Exception.Status status = persistentException.getStatus();
 
             Boolean sendEmail = mailSenderService.sendEmail(entity.getEmail(),
                     "Exceção lançada",
-                    "StackTrace Exceçao: " + stackTrace);
+                    stackTrace);
 
             if(sendEmail == true){
                 persistentException.setStackTrace(stackTrace);
