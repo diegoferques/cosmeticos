@@ -2,23 +2,31 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ExceptionRequestBody;
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.RoleRequestBody;
 import com.cosmeticos.model.Exception;
-import com.cosmeticos.model.Role;
+import com.cosmeticos.model.Order;
 import com.cosmeticos.repository.ExceptionRepository;
 import com.cosmeticos.smtp.MailSenderService;
 import com.cosmeticos.validation.ExceptionEntityValidationException;
-import com.cosmeticos.validation.UserValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by Vinicius on 02/10/2017.
  */
+@Slf4j
 @Service
 public class ExceptionService {
+
+    @Value("${spring.mail.usernametest}")
+    private String email;
 
     @Autowired
     private MailSenderService mailSenderService;
@@ -36,7 +44,7 @@ public class ExceptionService {
             exception.setStackTrace(nova);
         }
 
-        return exceptionRepository.save(requestBody.getEntity());
+        return exceptionRepository.save(exception);
     }
 
     public Optional<Exception> update(ExceptionRequestBody request) {
@@ -59,33 +67,30 @@ public class ExceptionService {
         return optional;
     }
 
-    public Exception sendEmailWithException(Exception entity){
+    @Scheduled(cron = "${exception.unresolved.cron}")
+    public void sendEmailWithException(){
 
-        Optional<Exception> exceptionOptional = exceptionRepository.findByStatus(Exception.Status.UNRESOLVED);
+        List<Exception> exceptionList = exceptionRepository.findByStatus(Exception.Status.UNRESOLVED);
 
-        if(exceptionOptional.isPresent()){
+        for(Exception e : exceptionList ) {
+            if (!exceptionList.isEmpty()) {
 
-            Exception persistentException = exceptionOptional.get();
 
-            String stackTrace = persistentException.getStackTrace().substring(0, 254);
+                String stackTrace = e.getStackTrace();
+                String deviceModel = e.getDeviceModel();
+                String osVersion = e.getOsVersion();
+                String email = e.getEmail();
+                Exception.Status status = e.getStatus();
 
-            Exception.Status status = persistentException.getStatus();
+                Boolean sendEmail = mailSenderService.sendEmail(this.email,
+                        "Exceção lançada",
+                        stackTrace + ", " + osVersion + ", " + deviceModel + ", " + email + ", " + status);
 
-            Boolean sendEmail = mailSenderService.sendEmail(entity.getEmail(),
-                    "Exceção lançada",
-                    stackTrace);
-
-            if(sendEmail == true){
-                persistentException.setStackTrace(stackTrace);
-                persistentException.setStatus(status);
-
-                return persistentException;
-            }else{
-                throw new ExceptionEntityValidationException(ResponseCode.EXCEPTION_SEND_EMAIL_FAIL, "Falha ao enviar Exceção.");
+                if (sendEmail == true) {
+                    log.info("" + stackTrace + "" + osVersion + "" + deviceModel + "" + email + "" + status);
+                }
             }
-        }else {
-            return null;
         }
-
     }
+
 }
