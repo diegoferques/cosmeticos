@@ -100,6 +100,7 @@ public class ProfessionalService {
 
             if(cr.getEmployeesCollection() != null){
                 for(Professional p : cr.getEmployeesCollection()){
+
                     professional.addEmployees(p);
                 }
             }
