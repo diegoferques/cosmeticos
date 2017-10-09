@@ -59,7 +59,7 @@ public class ExceptionController {
 
                 Exception exception = exceptionService.create(request);
 
-                log.info("Exception adicionado com sucesso:  [{}]", exception);
+                log.info("Exception adicionado:  [{}]", exception);
 
                 return ok(new ExceptionResponseBody(exception));
 

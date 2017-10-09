@@ -99,9 +99,9 @@ public class ProfessionalService {
             }
 
             if(cr.getEmployeesCollection() != null){
-                for(Professional p : cr.getEmployeesCollection()){
-
-                    professional.addEmployees(p);
+                for(Professional professionalItem : cr.getEmployeesCollection()){
+                    Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
+                    professional.addEmployees(persistentProfessionalItem);
                 }
             }
 

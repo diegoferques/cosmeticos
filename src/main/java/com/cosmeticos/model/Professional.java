@@ -142,6 +142,7 @@ public class Professional  implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class
@@ -194,12 +195,6 @@ public class Professional  implements Serializable {
     @Transient
     private Long distance;
 
-
-    @JsonView({
-            ResponseJsonView.ProfessionalFindAll.class,
-            ResponseJsonView.ProfessionalUpdate.class,
-            ResponseJsonView.ProfessionalCreate.class,
-    })
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "boss_id")
     private Professional boss;
