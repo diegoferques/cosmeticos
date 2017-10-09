@@ -21,7 +21,7 @@ public class Exception implements Serializable {
     private Long id;
 
     public enum Status{
-        RESOLVED, UNRESOLVED
+        RESOLVED, UNRESOLVED, UNRESOLVED_BUT_NOTIFIED
     }
 
     //@Transient
@@ -33,8 +33,7 @@ public class Exception implements Serializable {
 
     private Status status;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private LocalDateTime date;
 
     @Override
     public boolean equals(Object o) {

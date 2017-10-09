@@ -88,11 +88,15 @@ public class ExceptionService {
                         osVersion,
                         deviceModel,
                         status,
-                        stackTrace);
+                        stackTrace,
+                        e.getDate(),
+                        e.getId());
 
                 Boolean sendEmail = mailSenderService.sendEmail(email, subject, message);
 
                 if (sendEmail) {
+                    e.setStatus(Exception.Status.UNRESOLVED_BUT_NOTIFIED);
+                    exceptionRepository.save(e);
                     log.info("Enviado alerta de stacktrace para {}. ExceptionId: {}", email, e.getId());
                 }
                 else
