@@ -45,6 +45,7 @@ public class ExceptionService {
 
             exception.setStackTrace(nova);
         }
+        exception.setStatus(Exception.Status.UNRESOLVED);
 
         return exceptionRepository.save(exception);
     }
