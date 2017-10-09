@@ -1421,11 +1421,9 @@ public class ProfessionalControllerTests {
                     "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
                     "        \"employeesCollection\": [\n" +
                     "          {\n" +
-                    "            \"nameProfessional\": \""+professionalEmployees1.getNameProfessional()+"\",\n" +
                     "            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
                     "          },\n" +
                     "          {\n" +
-                    "            \"nameProfessional\": \""+professionalEmployees2.getNameProfessional()+"\",\n" +
                     "            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
                     "          }\n" +
                     "          ]\n" +

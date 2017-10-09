@@ -2,11 +2,10 @@ package com.cosmeticos.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by Vinicius on 02/10/2017.
@@ -22,19 +21,19 @@ public class Exception implements Serializable {
     private Long id;
 
     public enum Status{
-        RESOLVED, UNRESOLVED
+        RESOLVED, UNRESOLVED, UNRESOLVED_BUT_NOTIFIED
     }
 
     //@Transient
     private String stackTrace;
-
-    private String email;
 
     private String deviceModel;
 
     private String osVersion;
 
     private Status status;
+
+    private LocalDateTime date;
 
     @Override
     public boolean equals(Object o) {

@@ -1,24 +1,34 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ExceptionRequestBody;
-import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.RoleRequestBody;
 import com.cosmeticos.model.Exception;
-import com.cosmeticos.model.Role;
 import com.cosmeticos.repository.ExceptionRepository;
 import com.cosmeticos.smtp.MailSenderService;
-import com.cosmeticos.validation.ExceptionEntityValidationException;
-import com.cosmeticos.validation.UserValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by Vinicius on 02/10/2017.
  */
+@Slf4j
 @Service
 public class ExceptionService {
+
+    @Value("${exception.unresolved.destination.email}")
+    private String email;
+
+    @Value("${exception.unresolved.destination.subject}")
+    private String subject;
+
+    @Value("${exception.unresolved.destination.messagePattern}")
+    private String emailMessagePattern;
 
     @Autowired
     private MailSenderService mailSenderService;
@@ -35,6 +45,8 @@ public class ExceptionService {
 
             exception.setStackTrace(nova);
         }
+        exception.setStatus(Exception.Status.UNRESOLVED);
+
         return exceptionRepository.save(exception);
     }
 
@@ -58,33 +70,46 @@ public class ExceptionService {
         return optional;
     }
 
-    public Exception sendEmailWithException(Exception entity){
+    @Scheduled(cron = "${exception.unresolved.cron}")
+    public void sendEmailWithException(){
 
-        Optional<Exception> exceptionOptional = exceptionRepository.findByStatus(entity.getStatus());
+        List<Exception> exceptionList = exceptionRepository.findByStatus(Exception.Status.UNRESOLVED);
 
-        if(exceptionOptional.equals(Exception.Status.UNRESOLVED)){
+        if (!exceptionList.isEmpty()) {
+            for(Exception e : exceptionList ) {
 
-            Exception persistentException = exceptionOptional.get();
+                String stackTrace = e.getStackTrace();
+                String deviceModel = e.getDeviceModel();
+                String osVersion = e.getOsVersion();
+                Exception.Status status = e.getStatus();
 
-            String stackTrace = persistentException.getStackTrace();
+                // Sistema Operacional: {0}, Modelo do Aparelho: {1}, Status da Falha: {2}\n\nStack Trace:\n\n{3}
+                String message = MessageFormat.format(
+                        this.emailMessagePattern,
+                        osVersion,
+                        deviceModel,
+                        status,
+                        stackTrace,
+                        e.getDate(),
+                        e.getId());
 
-            Exception.Status status = persistentException.getStatus();
+                Boolean sendEmail = mailSenderService.sendEmail(email, subject, message);
 
-            Boolean sendEmail = mailSenderService.sendEmail(entity.getEmail(),
-                    "Exceção lançada",
-                    "StackTrace Exceçao: " + stackTrace);
-
-            if(sendEmail == true){
-                persistentException.setStackTrace(stackTrace);
-                persistentException.setStatus(status);
-
-                return persistentException;
-            }else{
-                throw new ExceptionEntityValidationException(ResponseCode.EXCEPTION_SEND_EMAIL_FAIL, "Falha ao enviar Exceção.");
+                if (sendEmail) {
+                    e.setStatus(Exception.Status.UNRESOLVED_BUT_NOTIFIED);
+                    exceptionRepository.save(e);
+                    log.info("Enviado alerta de stacktrace para {}. ExceptionId: {}", email, e.getId());
+                }
+                else
+                {
+                    log.error("Falha enviando alerta de stacktrace para {}. ExceptionId: {}", email, e.getId());
+                }
             }
-        }else {
-            return null;
         }
-
+        else
+        {
+            log.debug("Nenhuma exception UNRESOLVED registrada.");
+        }
     }
+
 }
