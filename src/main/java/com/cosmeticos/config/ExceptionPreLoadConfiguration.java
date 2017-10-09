@@ -31,21 +31,22 @@ public class ExceptionPreLoadConfiguration {
         exception1.setStackTrace("testStackTrace");
         exception1.setDeviceModel("xing-ling");
         exception1.setOsVersion("android nougat");
-        exception1.setDate(now());
+        //exception1.setDate(now());
+        exception1.setDate(Calendar.getInstance().getTime());
         exception1.setStatus(Exception.Status.RESOLVED);
 
         Exception exception2 = new Exception();
         exception2.setStackTrace(fakeStackTrace().substring(0, 244));
         exception2.setDeviceModel("xing-ling");
         exception2.setOsVersion("android lollypop");
-        exception2.setDate(now().plusDays(-2));
+        exception2.setDate(Calendar.getInstance().getTime());
         exception2.setStatus(Exception.Status.UNRESOLVED);
 
         Exception exception3 = new Exception();
         exception3.setStackTrace(fakeStackTrace().substring(0, 244));
         exception3.setDeviceModel("xing-ling");
         exception3.setOsVersion("android kit kat");
-        exception3.setDate(now());
+        exception3.setDate(Calendar.getInstance().getTime());
         exception3.setStatus(Exception.Status.UNRESOLVED);
 
         exceptionRepository.save(exception1);

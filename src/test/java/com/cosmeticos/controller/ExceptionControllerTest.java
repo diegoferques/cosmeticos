@@ -58,7 +58,6 @@ public class ExceptionControllerTest {
                     .replaceAll("\t", "\\t");
             String json = "{\n" +
                     "  \"entity\" : {\n" +
-                    "    \"email\" : \"teste@exception\",\n" +
                     "    \"stackTrace\" : \"" + sStackTrace + "\",\n" +
                     "    \"deviceModel\" : \"XING-LING\",\n" +
                     "    \"osVersion\" : \"android\"\n" +

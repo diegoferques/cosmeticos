@@ -33,7 +33,8 @@ public class Exception implements Serializable {
 
     private Status status;
 
-    private LocalDateTime date;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
 
     @Override
     public boolean equals(Object o) {
