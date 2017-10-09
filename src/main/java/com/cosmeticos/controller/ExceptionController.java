@@ -51,11 +51,11 @@ public class ExceptionController {
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
 
+                Exception exceptionEntity = request.getEntity();
 
-                MDC.put("stackTrace", String.valueOf(request.getEntity().getStackTrace()));
-                MDC.put("email", String.valueOf(request.getEntity().getEmail()));
-                MDC.put("deviceModel", String.valueOf(request.getEntity().getDeviceModel()));
-                MDC.put("osVersion", String.valueOf(request.getEntity().getOsVersion()));
+                MDC.put("stackTrace", String.valueOf(exceptionEntity.getStackTrace()));
+                MDC.put("deviceModel", String.valueOf(exceptionEntity.getDeviceModel()));
+                MDC.put("osVersion", String.valueOf(exceptionEntity.getOsVersion()));
 
                 Exception exception = exceptionService.create(request);
 

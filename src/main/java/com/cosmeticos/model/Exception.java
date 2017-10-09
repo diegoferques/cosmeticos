@@ -27,8 +27,6 @@ public class Exception implements Serializable {
     //@Transient
     private String stackTrace;
 
-    private String email;
-
     private String deviceModel;
 
     private String osVersion;

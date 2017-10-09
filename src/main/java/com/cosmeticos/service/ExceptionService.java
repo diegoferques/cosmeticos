@@ -1,20 +1,16 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ExceptionRequestBody;
-import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.Exception;
-import com.cosmeticos.model.Order;
 import com.cosmeticos.repository.ExceptionRepository;
 import com.cosmeticos.smtp.MailSenderService;
-import com.cosmeticos.validation.ExceptionEntityValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +21,14 @@ import java.util.Optional;
 @Service
 public class ExceptionService {
 
-    @Value("${spring.mail.usernametest}")
+    @Value("${exception.unresolved.destination.email}")
     private String email;
+
+    @Value("${exception.unresolved.destination.subject}")
+    private String subject;
+
+    @Value("${exception.unresolved.destination.messagePattern}")
+    private String emailMessagePattern;
 
     @Autowired
     private MailSenderService mailSenderService;
@@ -72,24 +74,36 @@ public class ExceptionService {
 
         List<Exception> exceptionList = exceptionRepository.findByStatus(Exception.Status.UNRESOLVED);
 
-        for(Exception e : exceptionList ) {
-            if (!exceptionList.isEmpty()) {
-
+        if (!exceptionList.isEmpty()) {
+            for(Exception e : exceptionList ) {
 
                 String stackTrace = e.getStackTrace();
                 String deviceModel = e.getDeviceModel();
                 String osVersion = e.getOsVersion();
-                String email = e.getEmail();
                 Exception.Status status = e.getStatus();
 
-                Boolean sendEmail = mailSenderService.sendEmail(this.email,
-                        "Exceção lançada",
-                        stackTrace + ", " + osVersion + ", " + deviceModel + ", " + email + ", " + status);
+                // Sistema Operacional: {0}, Modelo do Aparelho: {1}, Status da Falha: {2}\n\nStack Trace:\n\n{3}
+                String message = MessageFormat.format(
+                        this.emailMessagePattern,
+                        osVersion,
+                        deviceModel,
+                        status,
+                        stackTrace);
 
-                if (sendEmail == true) {
-                    log.info("" + stackTrace + "" + osVersion + "" + deviceModel + "" + email + "" + status);
+                Boolean sendEmail = mailSenderService.sendEmail(email, subject, message);
+
+                if (sendEmail) {
+                    log.info("Enviado alerta de stacktrace para {}. ExceptionId: {}", email, e.getId());
+                }
+                else
+                {
+                    log.error("Falha enviando alerta de stacktrace para {}. ExceptionId: {}", email, e.getId());
                 }
             }
+        }
+        else
+        {
+            log.debug("Nenhuma exception UNRESOLVED registrada.");
         }
     }
 
