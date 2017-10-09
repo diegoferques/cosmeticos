@@ -10,8 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * Created by Vinicius on 12/06/2017.
@@ -37,13 +38,13 @@ public class UserPreLoadConfiguration {
         CreditCard cc = new CreditCard();
         cc.setToken("4321");
         cc.setSuffix("1831");
-        cc.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2017, 12, 6, 0, 0)));
+        cc.setExpirationDate(LocalDate.of(2017, 12, 1).format(ofPattern("MM/yy")));
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
 
         CreditCard ccNovo = new CreditCard();
         ccNovo.setToken("7777");
-        ccNovo.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 03, 10, 0, 0)));
+        ccNovo.setExpirationDate(LocalDate.of(2018, 3, 1).format(ofPattern("MM/yy")));
         //ccNovo.setExpirationDate("03/2018");
         ccNovo.setVendor("Visa");
         ccNovo.setStatus(CreditCard.Status.ACTIVE);
@@ -66,7 +67,7 @@ public class UserPreLoadConfiguration {
         CreditCard cc2 = new CreditCard();
         cc2.setToken("7772344377");
         cc2.setSuffix("3053");
-        cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
+        cc2.setExpirationDate(LocalDate.of(2019, 4, 1).format(ofPattern("MM/yy")));
         //cc2.setExpirationDate("12/2018");
         cc2.setVendor("Master");
         cc2.setStatus(CreditCard.Status.INACTIVE);
@@ -74,7 +75,7 @@ public class UserPreLoadConfiguration {
         CreditCard cc3 = new CreditCard();
         cc3.setToken("7772344377");
         cc3.setSuffix("3053");
-        cc3.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 12, 2, 0, 0)));
+        cc3.setExpirationDate(LocalDate.of(2019, 12, 1).format(ofPattern("MM/yy")));
         cc3.setVendor("Master");
         cc3.setStatus(CreditCard.Status.ACTIVE);
 

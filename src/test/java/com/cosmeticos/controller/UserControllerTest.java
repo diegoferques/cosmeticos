@@ -23,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * Created by Vinicius on 29/06/2017.
@@ -137,7 +140,7 @@ public class UserControllerTest {
         cc1.setToken("4321");
         cc1.setSuffix("67730934681683053");
         cc1.setSecurityCode("321");
-        cc1.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2018, 11, 11, 0, 0)));
+        cc1.setExpirationDate(LocalDate.of(2017, 12, 1).format(ofPattern("MM/yy")));
         //cc1.setExpirationDate("11/2018");
         cc1.setVendor("MasterCard");
         cc1.setStatus(CreditCard.Status.ACTIVE);
@@ -146,7 +149,7 @@ public class UserControllerTest {
         cc2.setToken("1234");
         cc2.setSuffix("67730987357243053");
         cc2.setSecurityCode("123");
-        cc2.setExpirationDate(Timestamp.valueOf(LocalDateTime.of(2020, 07, 07, 0, 0)));
+        cc2.setExpirationDate(LocalDate.of(2018, 12, 1).format(ofPattern("MM/yy")));
         //cc2.setExpirationDate("07/2020");
         cc2.setVendor("visa");
         cc2.setStatus(CreditCard.Status.ACTIVE);

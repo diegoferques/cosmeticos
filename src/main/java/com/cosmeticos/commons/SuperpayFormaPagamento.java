@@ -10,9 +10,9 @@ public enum SuperpayFormaPagamento {
 
     VISA(170), MASTERCARD(171);
 
-    private int codigoFormaPagamento;
+    private Integer codigoFormaPagamento;
 
-    private SuperpayFormaPagamento(int i) {
+    private SuperpayFormaPagamento(Integer i) {
         this.codigoFormaPagamento = i;
     }
 
@@ -29,7 +29,7 @@ public enum SuperpayFormaPagamento {
         }
     }
 
-    public int getCodigoFormaPagamento() {
+    public Integer getCodigoFormaPagamento() {
         return codigoFormaPagamento;
     }
 }

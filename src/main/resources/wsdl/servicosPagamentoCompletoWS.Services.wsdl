@@ -1,4 +1,11 @@
-<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://pagamentos.webservices.superpay.ernet.com.br/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="ServicosPagamentoCompletoWSImplService" targetNamespace="http://pagamentos.webservices.superpay.ernet.com.br/">
+<?xml version='1.0' encoding='UTF-8'?>
+  <wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                    xmlns:tns="http://pagamentos.webservices.superpay.ernet.com.br/"
+                    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                    xmlns:ns1="http://schemas.xmlsoap.org/soap/http"
+                    name="ServicosPagamentoCompletoWSImplService"
+                    targetNamespace="http://pagamentos.webservices.superpay.ernet.com.br/">
   <wsdl:types>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://pagamentos.webservices.superpay.ernet.com.br/" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://pagamentos.webservices.superpay.ernet.com.br/">
   <xs:element name="ConsultaTransacaoWS" type="tns:consultaTransacaoWS"/>

@@ -1,17 +1,21 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.Application;
 import com.cosmeticos.commons.ExceptionResponseBody;
 import com.cosmeticos.smtp.MailSenderService;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,6 +25,8 @@ import java.net.URISyntaxException;
 /**
  * Created by Vinicius on 02/10/2017.
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ExceptionControllerTest {
 
     @Autowired

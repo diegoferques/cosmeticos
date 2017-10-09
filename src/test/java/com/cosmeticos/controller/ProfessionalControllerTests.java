@@ -1476,8 +1476,7 @@ public class ProfessionalControllerTests {
                 "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
                 "        \"employeesCollection\": [\n" +
                 "          {\n" +
-                "            \"nameProfessional\": \""+professionalEmployees1.getNameProfessional()+"\",\n" +
-                "            \"idprofessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
+                "            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
                 "          }\n" +
                 "          ]\n" +
                 "  }\n" +
@@ -1509,8 +1508,7 @@ public class ProfessionalControllerTests {
                 "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
                 "        \"employeesCollection\": [\n" +
                 "          {\n" +
-                "            \"nameProfessional\": \""+professionalEmployees2.getNameProfessional()+"\",\n" +
-                "            \"idprofessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
+                "            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
                 "          }\n" +
                 "          ]\n" +
                 "  }\n" +
@@ -1530,7 +1528,7 @@ public class ProfessionalControllerTests {
 
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
-        Assert.assertEquals(1, exchangeUpdate2
+        Assert.assertEquals(2, exchangeUpdate2
                 .getBody()
                 .getProfessionalList()
                 .get(0)
