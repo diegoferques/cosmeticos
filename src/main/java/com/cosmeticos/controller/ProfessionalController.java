@@ -223,9 +223,15 @@ public class ProfessionalController {
             responseBody.setProfessionalList(entitylist);
             responseBody.setDescription("TOP 10 successfully retrieved.");
 
-            log.info("{} Professionals successfully retrieved.", entitylist.size());
+            if (!entitylist.isEmpty()) {
+                log.info("{} Professionals successfully retrieved.", entitylist.size());
 
-            return ok().body(responseBody);
+                return ok().body(responseBody);
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(responseBody);
+            }
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
