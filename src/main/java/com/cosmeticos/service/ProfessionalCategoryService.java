@@ -1,7 +1,9 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalCategory;
+import com.cosmeticos.model.User;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -20,6 +22,9 @@ public class ProfessionalCategoryService {
 
     @Autowired
     private ProfessionalCategoryRepository repository;
+
+    @Autowired
+    private VoteService voteService;
 
     public ProfessionalCategory create(ProfessionalCategoryRequestBody request){
 
@@ -73,25 +78,31 @@ public class ProfessionalCategoryService {
 
         for (ProfessionalCategory psl: professionalCategoryList) {
 
-            if (psl.getProfessional().getAddress() != null) {
+            Professional professional = psl.getProfessional();
 
-                if (!psl.getProfessional().getAddress().getLatitude().isEmpty() &&
-                        !psl.getProfessional().getAddress().getLongitude().isEmpty()) {
+            if (professional.getAddress() != null) {
+
+                if (!professional.getAddress().getLatitude().isEmpty() &&
+                        !professional.getAddress().getLongitude().isEmpty()) {
 
                     Double distancia = getDistancia(
                             Double.parseDouble(latitude),
                             Double.parseDouble(longitude),
-                            Double.parseDouble(psl.getProfessional().getAddress().getLatitude()),
-                            Double.parseDouble(psl.getProfessional().getAddress().getLongitude())
+                            Double.parseDouble(professional.getAddress().getLatitude()),
+                            Double.parseDouble(professional.getAddress().getLongitude())
                     );
 
                     if (distancia <= distanciaLimite) {
-                        psl.getProfessional().setDistance(distancia.longValue());
+                        professional.setDistance(distancia.longValue());
                         professionalServices.add(psl);
                     }
 
                 }
             }
+
+            User persistentUser = professional.getUser();
+
+            persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
         }
 
         return professionalServices;

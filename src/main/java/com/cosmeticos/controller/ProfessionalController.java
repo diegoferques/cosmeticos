@@ -123,7 +123,7 @@ public class ProfessionalController {
 					String emailInDatabase = persistentProfessional.getUser().getEmail();
 					String emailFromRequest = user == null ? emailInDatabase : user.getEmail();
 
-					if (emailInDatabase.equals(emailFromRequest)) {
+					if (emailFromRequest != null || emailInDatabase.equals(emailFromRequest)) {
 
 						optional = service.update(request);
 
