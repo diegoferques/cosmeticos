@@ -47,6 +47,7 @@ public class ProfessionalPreLoadConfiguration {
         cw1.getCustomers().add(c2);
 
         User user1 = new User("garry", "123qwe", "garry@bol");
+        user1.setEvaluation(2.5f);
 
         Address address1 = new Address();
         address1.setLatitude("-22.7245761");
