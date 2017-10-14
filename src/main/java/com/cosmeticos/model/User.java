@@ -162,6 +162,16 @@ public class User implements Serializable {
     //@Transient  TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
     private Integer creditCardCount = 0;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+    })
+    private String profileImageUrl;
+
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<Vote> voteCollection = new HashSet<>();
