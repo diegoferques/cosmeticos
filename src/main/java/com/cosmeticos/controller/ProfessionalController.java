@@ -123,7 +123,7 @@ public class ProfessionalController {
 					String emailInDatabase = persistentProfessional.getUser().getEmail();
 					String emailFromRequest = user == null ? emailInDatabase : user.getEmail();
 
-					if (emailInDatabase.equals(emailFromRequest)) {
+					if (emailFromRequest != null || emailInDatabase.equals(emailFromRequest)) {
 
 						optional = service.update(request);
 
@@ -146,6 +146,31 @@ public class ProfessionalController {
                     return ResponseEntity.notFound().build();
                 }
             }
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            ProfessionalResponseBody response = new ProfessionalResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na atualização do Professional: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+    }
+
+    @JsonView(ResponseJsonView.ProfessionalUpdate.class)
+    @RequestMapping(path = "/professionals/{bossId}/employees/{employeeId}", method = RequestMethod.DELETE)
+    public HttpEntity<ProfessionalResponseBody> delete(
+            @PathVariable("bossId") Long bossId,
+            @PathVariable("employeeId") Long employeeId) {
+
+        try {
+
+            	service.deleteEmployee(bossId, employeeId);
+
+            	return ok().build();
+
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
@@ -223,9 +248,15 @@ public class ProfessionalController {
             responseBody.setProfessionalList(entitylist);
             responseBody.setDescription("TOP 10 successfully retrieved.");
 
-            log.info("{} Professionals successfully retrieved.", entitylist.size());
+            if (!entitylist.isEmpty()) {
+                log.info("{} Professionals successfully retrieved.", entitylist.size());
 
-            return ok().body(responseBody);
+                return ok().body(responseBody);
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(responseBody);
+            }
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());

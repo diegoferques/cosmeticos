@@ -5,6 +5,7 @@ import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.service.ProfessionalCategoryService;
+import com.cosmeticos.service.VoteService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

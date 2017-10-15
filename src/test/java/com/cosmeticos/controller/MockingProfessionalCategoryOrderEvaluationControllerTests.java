@@ -73,7 +73,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     public void setUp() throws Exception {
 
         // Nao sei que lugar eh esse..... Acho que eh o endereço da casa do Garry.
-        // so precisa mocar isso se criassemos o professional com post ao controlller
+        // so precisa mocar isso se criassemos o professional com put ao controlller
        // LocationGoogle sourceLocation = new LocationGoogle();
        // sourceLocation.setLat(-22.7387053);
        // sourceLocation.setLng(-43.5109277);

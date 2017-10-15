@@ -1,10 +1,9 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.model.Hability;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalCategory;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.validation.OrderValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -68,45 +67,55 @@ public class ProfessionalService {
 
         if(optional.isPresent()) {
 
-            Professional professional = optional.get();
+            Professional persistentProfessional = optional.get();
 
             if (!StringUtils.isEmpty(cr.getBirthDate())) {
-                professional.setBirthDate(cr.getBirthDate());
+                persistentProfessional.setBirthDate(cr.getBirthDate());
             }
 
             if (!StringUtils.isEmpty(cr.getCellPhone())) {
-                professional.setCellPhone(cr.getCellPhone());
+                persistentProfessional.setCellPhone(cr.getCellPhone());
             }
 
             if (!StringUtils.isEmpty(cr.getCnpj())) {
-                professional.setCnpj(cr.getCnpj());
+                persistentProfessional.setCnpj(cr.getCnpj());
             }
 
             if (!StringUtils.isEmpty(cr.getGenre())) {
-                professional.setGenre(cr.getGenre());
+                persistentProfessional.setGenre(cr.getGenre());
             }
 
             if (!StringUtils.isEmpty(cr.getNameProfessional())) {
-                professional.setNameProfessional(cr.getNameProfessional());
+                persistentProfessional.setNameProfessional(cr.getNameProfessional());
             }
 
             if (!StringUtils.isEmpty(cr.getStatus())) {
-                professional.setStatus(cr.getStatus());
+                persistentProfessional.setStatus(cr.getStatus());
             }
 
             if(!StringUtils.isEmpty(cr.getAttendance())){
-                professional.setAttendance(cr.getAttendance());
+                persistentProfessional.setAttendance(cr.getAttendance());
+            }
+
+            if(cr.getUser() != null){
+                User persistentUser = persistentProfessional.getUser();
+
+                Set<Vote> requestVotes = cr.getUser().getVoteCollection();
+
+                for (Vote v : requestVotes) {
+                    persistentUser.addVote(v);
+                }
             }
 
             if(cr.getEmployeesCollection() != null){
                 for(Professional professionalItem : cr.getEmployeesCollection()){
                     Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
-                    professional.addEmployees(persistentProfessionalItem);
+                    persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
 
             if(cr.getBoss() != null){
-                professional.setBoss(cr.getBoss());
+                persistentProfessional.setBoss(cr.getBoss());
             }
 
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
@@ -115,11 +124,18 @@ public class ProfessionalService {
                 //addressService.updateGeocodeFromProfessional(professional);
             }
 
-            configureProfessionalServices(cr, professional);
-            
-            professionalRepository.save(professional);
+            if(cr.getEmployeesCollection() != null){
+                for(Professional professionalItem : cr.getEmployeesCollection()){
+                    Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
+                    persistentProfessional.addEmployees(persistentProfessionalItem);
+                }
+            }
 
-            return Optional.of(professional);
+            configureProfessionalServices(cr, persistentProfessional);
+            
+            professionalRepository.save(persistentProfessional);
+
+            return Optional.of(persistentProfessional);
         }
         else{
             return optional;
@@ -194,5 +210,22 @@ public class ProfessionalService {
         }
     }
 
+    public void deleteEmployee(Long bossId, Long employeeId) {
+        Professional boss = professionalRepository.findOne(bossId);
+
+        Professional employee = boss.getEmployeesCollection()
+                .stream()
+                .filter(emp -> emp.getIdProfessional().equals(employeeId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Profissional " + employeeId + " nao esta associado ao Profissional " + bossId
+                ));
+
+        boss.getEmployeesCollection().remove(employee);
+        employee.setBoss(null);
+
+        professionalRepository.save(boss);
+        professionalRepository.save(employee);
+    }
 }
 

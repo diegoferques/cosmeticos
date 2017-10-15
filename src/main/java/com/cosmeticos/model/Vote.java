@@ -26,4 +26,11 @@ public class Vote implements Serializable {
     @Min(0)
     @Max(5)
     private Integer value;
+
+    public Vote() {
+    }
+
+    public Vote(Integer value) {
+        this.value = value;
+    }
 }

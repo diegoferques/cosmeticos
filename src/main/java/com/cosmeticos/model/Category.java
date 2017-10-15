@@ -51,6 +51,16 @@ public class Category implements Serializable {
     private String name;
 
     @JsonView({
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CategoryGetAll.class,
+    })
+    private String imageUrl;
+
+    @JsonView({
             ResponseJsonView.CategoryGetAll.class,
     })
     @ManyToOne(cascade = CascadeType.ALL)

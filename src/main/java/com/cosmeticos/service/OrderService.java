@@ -148,18 +148,24 @@ public class OrderService {
 
             Optional<CreditCard> optionalReceivedCc = ofNullable(receivedPayment.getCreditCard());
 
-            if(isOneClick(optionalReceivedCc))
+            User persistentUser = persistentCustomer.getUser();
+
+            if(
+                    // Condicoes de quando o cliente cadastra cartao oneclick
+                    ( optionalReceivedCc.isPresent() && optionalReceivedCc.get().isOneClick() )
+
+                    // Condicao pra quando o cliente compra com oneclick a partir da segunda vez (sem enviar cc no request)
+                    || userHasOneClickCard(persistentUser) )
             {
-                User persistentUser = persistentCustomer.getUser();
 
-                if(shouldSaveForOneClick(persistentUser, optionalReceivedCc))
-                {
-                    userService.addCreditCard(persistentUser, receivedPayment);
-                }
+                    if(shouldSaveForOneClick(persistentUser, optionalReceivedCc))
+                    {
+                        userService.addCreditCard(persistentUser, receivedPayment);
+                    }
 
-                // Validamos se ja foi gravado cartao antes.
-                // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-                validateAndApplyOneclickCreditcard(persistentUser, validatedPayment);
+                    // Validamos se ja foi gravado cartao antes.
+                    // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
+                    validateAndApplyOneclickCreditcard(persistentUser, validatedPayment);
 
             }
             else if(optionalReceivedCc.isPresent())
@@ -214,14 +220,24 @@ public class OrderService {
         return newOrder;
     }
 
-    private boolean isOneClick(Optional<CreditCard> optionalCc) {
+    private boolean userHasOneClickCard(User persistentUser) {
 
-        if (optionalCc.isPresent()) {
-            return optionalCc.get().isOneClick();
-        } else{
+        Set<CreditCard> cards = persistentUser.getCreditCardCollection();
+
+        if(cards.isEmpty())
+        {
             return false;
         }
+        else
+        {
+            CreditCard persistentUserCreditCard = cards.stream()
+                .findFirst()
+                .get();
+
+            return persistentUserCreditCard.isOneClick();
+        }
     }
+
 
     /**
      * Nao pode ter chegado cartao de credito no request (order.payment.cc == null) e o usuario precisa ter cartao com

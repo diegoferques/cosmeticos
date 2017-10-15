@@ -722,7 +722,7 @@ public class MockingPaymentControllerTests {
         Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getHttpStatus());
         //-------
 
- //Removi pq antes o post estava indo no ssuperpay mas agora nao vai mais.
+ //Removi pq antes o put estava indo no ssuperpay mas agora nao vai mais.
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
         String jsonCreate2 =OrderJsonHelper.buildJsonCreateScheduledOrder(
                         c2,
@@ -733,7 +733,7 @@ public class MockingPaymentControllerTests {
                 );
 
         RequestEntity<String> entity2 =  RequestEntity
-                .post(new URI("/orders"))
+                .put(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(jsonCreate2);
