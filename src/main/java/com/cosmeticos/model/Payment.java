@@ -150,7 +150,8 @@ public class Payment implements Serializable {
 	/**
 	 * TODO: o cartao de credito que vem com Payment no request de abertura de order eh diferente do que gravamos no
 	 * banco. No banco fica so o token e o que vem no request vem com dados completos.
-	 * Precisamos de um outro objeto para representar ESTE cartao de credito.
+	 * Precisamos de um outro objeto para representar ESTE cartao de credito. ATUALIZADO: talvez nao precisemos, pois
+	 * o que vai ao banco fica associado ao user e nao ao payment.
 	 */
 	@Transient
 	private CreditCard creditCard;

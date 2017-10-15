@@ -209,5 +209,8 @@ public class ProfessionalService {
         }
     }
 
+    public void deleteEmployee(Long bossId, Long employeeId) {
+        Professional
+    }
 }
 

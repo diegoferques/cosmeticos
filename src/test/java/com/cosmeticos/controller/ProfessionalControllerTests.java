@@ -11,7 +11,6 @@ import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -205,16 +203,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(json);
-
-		RequestEntity<String> entity =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(json);
-
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
-				.exchange(entity, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchange = put(json, restTemplate);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -242,16 +231,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(json);
-
-		RequestEntity<String> entity =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(json);
-
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
-				.exchange(entity, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchange = put(json, restTemplate);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
@@ -275,16 +255,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(json);
-
-		RequestEntity<String> entity =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(json);
-
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
-				.exchange(entity, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchange = put(json, restTemplate);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.NOT_FOUND, exchange.getStatusCode());
@@ -720,28 +691,48 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
 	}
 
+	/**
+	 * Teste para garantir que updates de um usuario nao atualizam o email. Nao se atualiza e-mail.
+	 * Para usar um email diferente, um usuario deve criar outra conta.
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void testUpdateUserEmailBadRequest() throws IOException, URISyntaxException {
 		emailUsuario = "onemorecheck@email.com";
 
 		testCreateOK();
 
-		emailUsuario = "onemorecheckALTERADO_PRA_FALHAR@email.com";
+		String emailAlteradoUsuario = "onemorecheckALTERADO_PRA_FALHAR@email.com";
 
 		String json = "{\n" +
 				"  \"professional\": {\n" +
 				"    \"idProfessional\": "+ returnOfCreateOK.getIdProfessional() +",\n" +
 				"    \"user\": {\n" +
 				"      \"idLogin\": "+ returnOfCreateOK.getUser().getIdLogin() +",\n" +
-				"         \"personType\":\"FISICA\",\n" +
-				"      \"email\": \""+ emailUsuario +"\"\n" +
+				"      \"personType\":\"FISICA\",\n" +
+				"      \"email\": \""+ emailAlteradoUsuario +"\"\n" +
 				"    },\n" +
 				"    \"nameProfessional\": \"Another Repeated Email\"\n" +
 				"  }\n" +
 				"}";
 
-		System.out.println(json);
+		ResponseEntity<ProfessionalResponseBody> exchange = put(json, restTemplate);
 
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+
+		Professional responseProfessional = exchange.getBody().getProfessionalList().get(0);
+
+		// Conferindo no banco que o email que tentamos alterar nao foi registrado.
+		Optional<User> optionalPersistentUser = userRepository.findByEmail(emailAlteradoUsuario);
+
+		Assert.assertEquals("E-mail foi atualizado! Não pode!",
+				false, optionalPersistentUser.isPresent());
+	}
+
+	static ResponseEntity<ProfessionalResponseBody> put(String json, TestRestTemplate restTemplate) throws URISyntaxException {
+		System.out.println(json);
 
 		RequestEntity<String> entity =  RequestEntity
 				.put(new URI("/professionals"))
@@ -749,12 +740,8 @@ public class ProfessionalControllerTests {
 				.accept(MediaType.APPLICATION_JSON)
 				.body(json);
 
-		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
+		return restTemplate
 				.exchange(entity, ProfessionalResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
-		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
 	}
 
 
@@ -902,17 +889,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(jsonUpdate);
-
-
-		RequestEntity<String> entityUpdate =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonUpdate);
-
-		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-				.exchange(entityUpdate, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1037,17 +1014,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(jsonUpdate);
-
-
-		RequestEntity<String> entityUpdate =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonUpdate);
-
-		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-				.exchange(entityUpdate, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1117,17 +1084,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(jsonUpdate);
-
-
-		RequestEntity<String> entityUpdate =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonUpdate);
-
-		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-				.exchange(entityUpdate, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1200,17 +1157,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(jsonUpdate);
-
-
-		RequestEntity<String> entityUpdate =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonUpdate);
-
-		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-				.exchange(entityUpdate, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1309,17 +1256,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(jsonUpdate);
-
-
-		RequestEntity<String> entityUpdate =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonUpdate);
-
-		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-				.exchange(entityUpdate, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1386,17 +1323,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		System.out.println(jsonUpdate2);
-
-
-		RequestEntity<String> entityUpdateRule =  RequestEntity
-				.put(new URI("/professionals"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jsonUpdate2);
-
-		ResponseEntity<ProfessionalResponseBody> exchangeUpdateRule = restTemplate
-				.exchange(entityUpdateRule, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdateRule = put(jsonUpdate2, restTemplate);
 
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdateRule.getStatusCode());
@@ -1430,17 +1357,7 @@ public class ProfessionalControllerTests {
                     "  }\n" +
                     "}";
 
-            System.out.println(jsonUpdate);
-
-
-            RequestEntity<String> entityUpdate =  RequestEntity
-                    .put(new URI("/professionals"))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(jsonUpdate);
-
-            ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-                    .exchange(entityUpdate, ProfessionalResponseBody.class);
+			ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
             Assert.assertNotNull(exchangeUpdate);
             Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1482,17 +1399,7 @@ public class ProfessionalControllerTests {
                 "  }\n" +
                 "}";
 
-        System.out.println(jsonUpdate);
-
-
-        RequestEntity<String> entityUpdate =  RequestEntity
-                .put(new URI("/professionals"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonUpdate);
-
-        ResponseEntity<ProfessionalResponseBody> exchangeUpdate = restTemplate
-                .exchange(entityUpdate, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
@@ -1514,17 +1421,7 @@ public class ProfessionalControllerTests {
                 "  }\n" +
                 "}";
 
-        System.out.println(jsonUpdate2);
-
-
-        RequestEntity<String> entityUpdate2 =  RequestEntity
-                .put(new URI("/professionals"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonUpdate2);
-
-        ResponseEntity<ProfessionalResponseBody> exchangeUpdate2 = restTemplate
-                .exchange(entityUpdate2, ProfessionalResponseBody.class);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate2 = put(jsonUpdate2, restTemplate);
 
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
