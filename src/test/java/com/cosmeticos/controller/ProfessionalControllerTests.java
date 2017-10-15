@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -1328,6 +1329,7 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(exchangeUpdate);
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdateRule.getStatusCode());
 	}
+
         @Test
         public void test2employees() throws URISyntaxException {
 
@@ -1368,6 +1370,68 @@ public class ProfessionalControllerTests {
                     .getEmployeesCollection()
                     .size());
 
+        }
+
+        @Test
+        public void testAdd2employeesAndThenRemoveOneOfThem() throws URISyntaxException {
+
+            Professional professionalBoss = createFakeProfessional();
+            professionalBoss.setNameProfessional("BossName");
+			professionalRepository.save(professionalBoss);
+
+			Professional professionalEmployees1 = createFakeProfessional();
+			professionalBoss.setNameProfessional("EmployeesName1");
+			professionalRepository.save(professionalEmployees1);
+
+            Professional professionalEmployees2 = createFakeProfessional();
+			professionalBoss.setNameProfessional("EmployeesName2");
+			professionalRepository.save(professionalEmployees2);
+
+			String jsonUpdate = "{\n" +
+                    "  \"professional\": {\n" +
+                    "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
+                    "        \"employeesCollection\": [\n" +
+                    "          {\n" +
+                    "            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
+                    "          },\n" +
+                    "          {\n" +
+                    "            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
+                    "          }\n" +
+                    "          ]\n" +
+                    "  }\n" +
+                    "}";
+
+			ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
+
+            Assert.assertNotNull(exchangeUpdate);
+            Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+            Assert.assertEquals(2, exchangeUpdate
+                    .getBody()
+                    .getProfessionalList()
+                    .get(0)
+                    .getEmployeesCollection()
+                    .size());
+
+            String url = MessageFormat.format(
+            		"/professionals/{0}/employees/{1}",
+					professionalBoss.getIdProfessional(),
+					professionalEmployees1.getIdProfessional());
+
+			RequestEntity<Void> entity =  RequestEntity
+					.delete(new URI(url))
+					.accept(MediaType.APPLICATION_JSON)
+					.build();
+
+			ResponseEntity<Void> deleteResponse = restTemplate.exchange(entity, Void.class);
+
+			Assert.assertNotNull(deleteResponse);
+			Assert.assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+			Professional persistentBoss = professionalRepository.findOne(professionalBoss.getIdProfessional());
+
+			Assert.assertEquals(1, persistentBoss
+					.getEmployeesCollection()
+					.size());
         }
 
     @Test

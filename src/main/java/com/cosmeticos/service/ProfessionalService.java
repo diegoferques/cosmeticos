@@ -3,6 +3,7 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.validation.OrderValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -210,7 +211,21 @@ public class ProfessionalService {
     }
 
     public void deleteEmployee(Long bossId, Long employeeId) {
-        Professional
+        Professional boss = professionalRepository.findOne(bossId);
+
+        Professional employee = boss.getEmployeesCollection()
+                .stream()
+                .filter(emp -> emp.getIdProfessional().equals(employeeId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Profissional " + employeeId + " nao esta associado ao Profissional " + bossId
+                ));
+
+        boss.getEmployeesCollection().remove(employee);
+        employee.setBoss(null);
+
+        professionalRepository.save(boss);
+        professionalRepository.save(employee);
     }
 }
 

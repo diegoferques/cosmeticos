@@ -160,7 +160,7 @@ public class ProfessionalController {
     }
 
     @JsonView(ResponseJsonView.ProfessionalUpdate.class)
-    @RequestMapping(path = "/professionals/{bossId}/employees/{employeeId}", method = RequestMethod.PUT)
+    @RequestMapping(path = "/professionals/{bossId}/employees/{employeeId}", method = RequestMethod.DELETE)
     public HttpEntity<ProfessionalResponseBody> delete(
             @PathVariable("bossId") Long bossId,
             @PathVariable("employeeId") Long employeeId) {
@@ -168,6 +168,8 @@ public class ProfessionalController {
         try {
 
             	service.deleteEmployee(bossId, employeeId);
+
+            	return ok().build();
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
