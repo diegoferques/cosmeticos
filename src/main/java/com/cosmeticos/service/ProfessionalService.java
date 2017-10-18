@@ -3,7 +3,6 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.validation.OrderValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -123,14 +122,14 @@ public class ProfessionalService {
                 addressService.updateGeocodeFromProfessionalUpdate(cr);
                 //addressService.updateGeocodeFromProfessional(professional);
             }
-
+            /*
             if(cr.getEmployeesCollection() != null){
                 for(Professional professionalItem : cr.getEmployeesCollection()){
                     Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
                     persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
-
+            */
             configureProfessionalServices(cr, persistentProfessional);
             
             professionalRepository.save(persistentProfessional);

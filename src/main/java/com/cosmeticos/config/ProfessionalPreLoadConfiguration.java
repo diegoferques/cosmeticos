@@ -209,6 +209,29 @@ public class ProfessionalPreLoadConfiguration {
 
         repository.save(s7);
 
+        //ADICIONADO NOVO PROFESSIONAL COM EMAIL CORRETO PARA TESTAR CORRETAMENTE NO APP
+        User user8 = new User("emailOk", "123abc", "ok@email.com");
+        Address address8 = new Address();
+        address8.setAddress("Rua José Paulino, 152");
+        address8.setNeighborhood("Rodilândia ");
+        address8.setCity("Nova Iguaçu");
+        address8.setState("Rio de Janeiro");
+        address8.setCountry("Brazil");
+        address8.setCep("26083-485");
+
+        Professional s8 = new Professional();
+        s8.setNameProfessional("emailOK");
+        s8.setAddress(address8);
+        s8.setDateRegister(Timestamp.valueOf(now()));
+
+        s8.setUser(user8);
+
+        address8.setProfessional(s8);
+        user8.setProfessional(s8);
+        user8.setPersonType(User.PersonType.FISICA);
+
+        repository.save(s8);
+
         //ADICIONADO PARA TESTAR PELO POSTMAN O CARD RNF76
         Professional professional = createFakeProfessional();
         professional.getUser().setUsername("testPaymentPreload-professional");
