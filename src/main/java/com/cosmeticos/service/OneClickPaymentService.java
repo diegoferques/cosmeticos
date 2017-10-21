@@ -6,6 +6,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.*;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
+import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,9 @@ public class OneClickPaymentService implements Charger{
     @Autowired
     private HttpServletRequest httpServletRequest;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     /**
      * Feito pq em dev, usando h2, o id de payment, usado como numeroTransacao, se repete toda vez q a aplicacao eh iniciada.
      */
@@ -55,10 +59,7 @@ public class OneClickPaymentService implements Charger{
 
         Order order = chargeRequest.getBody().getOrder();
 
-        String emailComprador = order
-                .getIdCustomer()
-                .getUser()
-                .getEmail();
+        String emailComprador = findPersistentUserEmail(order.getIdCustomer().getIdCustomer());
 
         Payment payment = chargeRequest.getBody();
 
@@ -80,6 +81,12 @@ public class OneClickPaymentService implements Charger{
 
         return chargeResponse;
 
+    }
+
+    private String findPersistentUserEmail(Long idCustomer) {
+        Customer persistentCustomer = this.customerRepository.findOne(idCustomer);
+
+        return  persistentCustomer.getUser().getEmail();
     }
 
     @Override

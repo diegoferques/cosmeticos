@@ -64,6 +64,7 @@ public class ProfessionalPreLoadConfiguration {
         p1.setAttendance(Type.HOME_CARE);
         p1.setAddress(address1);
         p1.setDateRegister(Timestamp.valueOf(now()));
+        p1.setStatus(Professional.Status.ACTIVE);
         address1.setProfessional(p1);
 
 

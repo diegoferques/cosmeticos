@@ -5,10 +5,7 @@
 package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.*;
 
@@ -117,7 +114,10 @@ public class Professional  implements Serializable {
     ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,})
     private Date dateRegister;
-	
+
+    /**
+     * O app trata como ordinal. A conversao para Ordinal fica a cardo de {@link Status}
+     */
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
@@ -126,7 +126,7 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
     })
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @JsonView({
