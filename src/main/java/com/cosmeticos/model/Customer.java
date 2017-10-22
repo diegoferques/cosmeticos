@@ -129,6 +129,14 @@ public class Customer implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCustomer")
     private Collection<Order> orderCollection;
 
+    public User.PersonType getPersonType() {
+
+        if(this.cpf.length() == 11)
+            return User.PersonType.FISICA;
+        else
+            return User.PersonType.JURIDICA;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

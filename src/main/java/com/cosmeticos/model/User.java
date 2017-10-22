@@ -153,7 +153,7 @@ public class User implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class
     })
     //@Transient
-    private float evaluation = 0;
+    private Float evaluation = .0f;
 
     @JsonView({
             ResponseJsonView.CustomerControllerUpdate.class,
@@ -199,6 +199,7 @@ public class User implements Serializable {
     public String getPassword() {
         return password;
     }
+
 
     @Override
     public int hashCode() {

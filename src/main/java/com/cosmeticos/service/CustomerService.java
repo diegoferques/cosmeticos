@@ -3,6 +3,7 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -31,6 +32,14 @@ public class CustomerService {
     }
 
     public List<Customer> findBy(Customer probe) {
+        if(probe.getUser() != null)
+        {
+            // Bacalhau dos campos q atrapalham a busca por example.
+            User u = probe.getUser();
+            u.setEvaluation(null);
+            u.setLostPassword(null);
+            u.setCreditCardCount(null);
+        }
         return repository.findAll(Example.of(probe));
     }
 
@@ -54,6 +63,7 @@ public class CustomerService {
         c.setUser(request.getCustomer().getUser());
 
         c.getUser().setCustomer(c);
+        c.getUser().setPersonType(c.getPersonType());
 
         return repository.save(c);
     }

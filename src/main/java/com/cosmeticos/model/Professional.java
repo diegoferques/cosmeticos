@@ -65,6 +65,9 @@ public class Professional  implements Serializable {
     })
     private String nameProfessional;
 
+    /**
+     * Apesar de estar cnpj, nada impede que o profissional insira um cpf.
+     */
     @JsonView({
 
             ResponseJsonView.OrderControllerCreate.class,
@@ -236,7 +239,14 @@ public class Professional  implements Serializable {
         this.user = user;
     }
 
-    
+    public User.PersonType getPersonType() {
+
+        if(this.cnpj.length() == 11)
+            return User.PersonType.FISICA;
+        else
+            return User.PersonType.JURIDICA;
+    }
+
     @Override
     public int hashCode() {
 
