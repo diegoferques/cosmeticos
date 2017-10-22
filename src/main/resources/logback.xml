@@ -62,6 +62,9 @@
 
 
     <!-- Loga todos os INFO das classes abaixo do pacote com.cosmeticos -->
+    <logger name="com.cosmeticos.smtp.MailSenderService" level="OFF" />
+
+    <!-- Loga todos os INFO das classes abaixo do pacote com.cosmeticos -->
     <logger name="com.cosmeticos" additivity="false" level="INFO" >
         <appender-ref ref="JSON" />
         <appender-ref ref="CONSOLE" />

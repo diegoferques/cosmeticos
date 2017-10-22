@@ -1045,6 +1045,8 @@ payment.getStatus()) {
         List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.OPEN);
 
         int count = 0;
+
+        // TODO: colocar esses minutos no properties
         LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
