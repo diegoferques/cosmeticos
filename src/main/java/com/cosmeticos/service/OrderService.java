@@ -766,65 +766,71 @@ public class OrderService {
 		Date now = c.getTime();
 
 		for (Payment payment: paymentList) {
-
-            if (payment.getType().equals(Payment.Type.CC)) {
+            if (payment.getType() != null) {
+                if (payment.getType().equals(Payment.Type.CC)) {
                 // TODO: requer refactoring quando comecarmos a fazer pagamento com 2 cartoes.
-                if(Payment.Status.PAGO_E_NAO_CAPTURADO ==
-payment.getStatus()) {
 
-                    Order order = payment.getOrder();
+                    if(Payment.Status.PAGO_E_NAO_CAPTURADO ==
+    payment.getStatus()) {
 
-                    //PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
-                    Date scheduleDateStart = order.getScheduleId().getScheduleStart();
+                        Order order = payment.getOrder();
 
-                    //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
-                    c.setTime(scheduleDateStart);
+                        //PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
+                        Date scheduleDateStart = order.getScheduleId().getScheduleStart();
 
-                    //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
-                    c.add(Calendar.DATE, -daysToStart);
+                        //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
+                        c.setTime(scheduleDateStart);
 
-                    //DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
-                    Date dateToStartPayment = c.getTime();
+                        //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
+                        c.add(Calendar.DATE, -daysToStart);
+
+                        //DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
+                        Date dateToStartPayment = c.getTime();
 
 
-                    //--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS NOTIFICACOES AO CLIENTE CASO FALHE ---//
-                    //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
-                    c.setTime(scheduleDateStart);
+                        //--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS NOTIFICACOES AO CLIENTE CASO FALHE ---//
+                        //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
+                        c.setTime(scheduleDateStart);
 
-                    //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
-                    c.add(Calendar.DATE, -daysBeforeStart);
+                        //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
+                        c.add(Calendar.DATE, -daysBeforeStart);
 
-                    //UM DIA ANTES PARA NOTIFICAR AO CLIENTE SE DER ERRO NA RESERVA NO CARTAO E SUGERIR TROCAR PARA DINHEIRO
-                    Date dateToStartNotification = c.getTime();
+                        //UM DIA ANTES PARA NOTIFICAR AO CLIENTE SE DER ERRO NA RESERVA NO CARTAO E SUGERIR TROCAR PARA DINHEIRO
+                        Date dateToStartNotification = c.getTime();
 
-                    //TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
-                    if(sdf.format(now).equals(sdf.format(dateToStartNotification))) {
-                        //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-                        if(!sendPaymentRequest(payment)) {
-                            //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
-                            log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
+                        //TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
+                        if(sdf.format(now).equals(sdf.format(dateToStartNotification))) {
+                            //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
+                            if(!sendPaymentRequest(payment)) {
+                                //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
+                                log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
+                            }
+
+                            //TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
+                        } else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
+                            //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
+                            if(!sendPaymentRequest(payment)) {
+                                //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
+                                log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
+                                        " forma de pagamento seja alterado para dinheiro");
+                            }
+
+                            //TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
+                            //SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
+                        } else if (now.after(dateToStartPayment)) {
+                            //AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
+                            sendPaymentRequest(payment);
+
+                            //TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
+                        } else {
+                            log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + order.getIdOrder());
                         }
-
-                        //TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
-                    } else if(sdf.format(now).equals(sdf.format(scheduleDateStart))) {
-                        //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-                        if(!sendPaymentRequest(payment)) {
-                            //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
-                            log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
-                                    " forma de pagamento seja alterado para dinheiro");
-                        }
-
-                        //TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
-                        //SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
-                    } else if (now.after(dateToStartPayment)) {
-                        //AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
-                        sendPaymentRequest(payment);
-
-                        //TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
-                    } else {
-                        log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + order.getIdOrder());
                     }
                 }
+            }
+            else {
+                log.error("Pagamento sem PaymentType: paymentId{}, orderId{}",
+                        payment.getId(), payment.getOrder().getIdOrder());
             }
         }
 
