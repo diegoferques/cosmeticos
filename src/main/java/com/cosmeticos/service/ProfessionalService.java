@@ -169,6 +169,12 @@ public class ProfessionalService {
 	 Fonte: http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#query-by-example
 	 */
     public List<Professional> findAllBy(Professional professionalProbe) {
+
+        // Se esses 3 atributos forem passados vai bugar pq chegando aqui os anularemos.
+        professionalProbe.getUser().setLostPassword(null);
+        professionalProbe.getUser().setCreditCardCount(null);
+        professionalProbe.getUser().setEvaluation(null);
+
         return professionalRepository.findAll(Example.of(professionalProbe));
     }
 
