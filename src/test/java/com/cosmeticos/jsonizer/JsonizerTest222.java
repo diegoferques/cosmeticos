@@ -158,6 +158,7 @@ public class JsonizerTest222 {
 
         System.out.println(json);
     }
+
     @Test
     public void jsonizeBossEmployees() throws Exception {
         om.enable(SerializationFeature.INDENT_OUTPUT);
@@ -177,5 +178,23 @@ public class JsonizerTest222 {
         String json = om.writeValueAsString(boss);
 
         System.out.println(json);
+    }
+
+    @Test
+    public void justPrintJson()
+    {
+
+
+        System.out.println("{\n" +
+                        "  \"professional\": {\n" +
+                        "    \"idProfessional\": \"" + 1 + "\",\n" +
+                        "        \"priceRule\": [\n" +
+                        "          {\n" +
+                        "            \"name\": \"COMPRIMENTO ATÉ 30cm\",\n" +
+                        "            \"price\": 80.00\n" +
+                        "          }\n" +
+                        "          ]\n" +
+                        "  }\n" +
+                        "}");
     }
 }
