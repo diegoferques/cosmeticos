@@ -102,6 +102,8 @@ public class ExceptionService {
                 }
                 else
                 {
+                    e.setStatus(Exception.Status.FAILED_SENDING_MAIL);
+                    exceptionRepository.save(e);
                     log.error("Falha enviando alerta de stacktrace para {}. ExceptionId: {}", email, e.getId());
                 }
             }

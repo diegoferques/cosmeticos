@@ -70,42 +70,73 @@ public class CustomerService {
 
     public Customer update(CustomerRequestBody request) {
         Customer cr = request.getCustomer();
-        Customer customer = repository.findOne(cr.getIdCustomer());
+        Customer persistentCustomer = repository.findOne(cr.getIdCustomer());
 
         if(!StringUtils.isEmpty(cr.getBirthDate())) {
-            customer.setBirthDate(cr.getBirthDate());
+            persistentCustomer.setBirthDate(cr.getBirthDate());
         }
 
         if(!StringUtils.isEmpty(cr.getCellPhone())) {
-            customer.setCellPhone(cr.getCellPhone());
+            persistentCustomer.setCellPhone(cr.getCellPhone());
         }
 
         if(!StringUtils.isEmpty(cr.getCpf())) {
-            customer.setCpf(cr.getCpf());
+            persistentCustomer.setCpf(cr.getCpf());
         }
 
         if(!StringUtils.isEmpty(cr.getGenre())) {
-            customer.setGenre(cr.getGenre());
+            persistentCustomer.setGenre(cr.getGenre());
         }
 
         if(!StringUtils.isEmpty(cr.getNameCustomer())) {
-            customer.setNameCustomer(cr.getNameCustomer());
+            persistentCustomer.setNameCustomer(cr.getNameCustomer());
         }
 
         if(!StringUtils.isEmpty(cr.getStatus())) {
-            customer.setStatus(cr.getStatus());
+            persistentCustomer.setStatus(cr.getStatus());
         }
 
         if(!cr.getUser().getCreditCardCollection().isEmpty()) {
 
-            Collection<CreditCard> creditCards = cr.getUser().getCreditCardCollection();
+            Collection<CreditCard> requestCCs = cr.getUser().getCreditCardCollection();
+            Collection<CreditCard> persistentCCs = persistentCustomer.getUser().getCreditCardCollection();
 
-            for (CreditCard c : creditCards) {
-                customer.getUser().addCreditCard(c);
+            if(!requestCCs.isEmpty())
+            {
+                // So pode haver um cartao
+                CreditCard requestCc = requestCCs.stream().findFirst().get();
+
+                if(persistentCCs.isEmpty())
+                {
+                    persistentCustomer.getUser().addCreditCard(requestCc);
+                }
+                else{
+
+                    CreditCard persistentCc = persistentCCs.stream().findFirst().get();
+
+                    persistentCc.setToken(requestCc.getToken() == null ? persistentCc.getToken() : requestCc.getToken());
+                    persistentCc.setStatus(requestCc.getStatus() == null ? persistentCc.getStatus() : requestCc.getStatus());
+                    persistentCc.setVendor(requestCc.getVendor() == null ? persistentCc.getVendor() : requestCc.getVendor());
+                    persistentCc.setExpirationDate(requestCc.getExpirationDate() == null ? persistentCc.getExpirationDate() : requestCc.getExpirationDate());
+                    persistentCc.setSuffix(requestCc.getSuffix() == null ? persistentCc.getSuffix() : requestCc.getSuffix());
+                    persistentCc.setOwnerName(requestCc.getOwnerName() == null ? persistentCc.getOwnerName() : requestCc.getOwnerName());
+                    persistentCc.setSecurityCode(requestCc.getSecurityCode() == null ? persistentCc.getSecurityCode() : requestCc.getSecurityCode());
+                    persistentCc.setNumber(requestCc.getNumber() == null ? persistentCc.getNumber() : requestCc.getNumber());
+                }
+            }
+
+            for (CreditCard c : requestCCs) {
+                for (CreditCard persistentCc : persistentCCs) {
+                    if(c.getNumber().equalsIgnoreCase(persistentCc.getNumber()))
+                    {
+
+                    }
+                }
+                persistentCustomer.getUser().addCreditCard(c);
             }
         }
 
-        return repository.save(customer);
+        return repository.save(persistentCustomer);
     }
 
     public void delete() {

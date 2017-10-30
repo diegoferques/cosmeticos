@@ -127,7 +127,7 @@ public class User implements Serializable {
             ResponseJsonView.CustomerControllerGet.class
     })*/
     @JsonIgnore // O cartao nunca é retornado nos request ou recebidos. Recebemos o cartao atraves de Payment, no momento da compra da order.
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
 

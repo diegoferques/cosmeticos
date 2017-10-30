@@ -21,7 +21,7 @@ public class Exception implements Serializable {
     private Long id;
 
     public enum Status{
-        RESOLVED, UNRESOLVED, UNRESOLVED_BUT_NOTIFIED
+        RESOLVED, UNRESOLVED, FAILED_SENDING_MAIL, UNRESOLVED_BUT_NOTIFIED
     }
 
     //@Transient
