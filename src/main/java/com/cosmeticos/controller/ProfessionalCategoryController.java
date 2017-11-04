@@ -5,16 +5,17 @@ import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.service.ProfessionalCategoryService;
-import com.cosmeticos.service.VoteService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ import static org.springframework.http.ResponseEntity.*;
 @RestController
 public class ProfessionalCategoryController {
     @Autowired
-    private ProfessionalCategoryService category;
+    private ProfessionalCategoryService professionalCategoryService;
 
     @RequestMapping(path = "/professionalcategories", method = RequestMethod.POST)
     public HttpEntity<ProfessionalCategoryResponseBody> create(@Valid @RequestBody ProfessionalCategoryRequestBody request, BindingResult bindingResult) {
@@ -38,7 +39,7 @@ public class ProfessionalCategoryController {
                 log.error("Erros na requisicao: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-                ProfessionalCategory s = category.create(request);
+                ProfessionalCategory s = professionalCategoryService.create(request);
                 log.info("Service adicionado com sucesso:  [{}]", s);
 
                 ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
@@ -50,7 +51,7 @@ public class ProfessionalCategoryController {
 
 
             }
-        }catch(Exception e){
+        } catch (Exception e) {
 
             log.error("Falha no cadastro: {}", e.getMessage(), e);
             ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
@@ -65,7 +66,7 @@ public class ProfessionalCategoryController {
     public HttpEntity<ProfessionalCategoryResponseBody> findAll(@ModelAttribute ProfessionalCategory professionalCategory) {
 
         try {
-            List<ProfessionalCategory> entitylist = category.findAllBy(professionalCategory);
+            List<ProfessionalCategory> entitylist = professionalCategoryService.findAllBy(professionalCategory);
 
             ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setProfessionalCategoryList(entitylist);
@@ -87,7 +88,7 @@ public class ProfessionalCategoryController {
     public HttpEntity<ProfessionalCategoryResponseBody> findById(@PathVariable Long id) {
 
         try {
-            Optional<ProfessionalCategory> optional = category.find(id);
+            Optional<ProfessionalCategory> optional = professionalCategoryService.find(id);
 
             if (optional.isPresent()) {
 
@@ -118,10 +119,10 @@ public class ProfessionalCategoryController {
             @RequestParam("latitude") String latitude,
             @RequestParam("longitude") String longitude,
             @RequestParam("radius") String searchRadius
-            ) {
+    ) {
 
         try {
-            List<ProfessionalCategory> entitylist = category.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
+            List<ProfessionalCategory> entitylist = professionalCategoryService.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
 
             ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setProfessionalCategoryList(entitylist);
@@ -140,6 +141,27 @@ public class ProfessionalCategoryController {
             return ResponseEntity.status(500).body(responseBody);
         }
 
+    }
+
+    @RequestMapping(path = "/professionalcategories/{id}", method = RequestMethod.DELETE)
+    public HttpEntity<Void> delete(@Validated @PathParam("id") Long idProfessionalCategory) {
+
+        try {
+
+            if (idProfessionalCategory == null) {
+                log.error("id esta nulo");
+                return badRequest().build();
+            } else {
+                professionalCategoryService.delete(idProfessionalCategory);
+
+                log.info("{} ProfessionalServices successfully deleted.", idProfessionalCategory);
+
+                return ok().build();
+            }
+        } catch (Exception e) {
+            log.error("Failed to delete idProfessionalCategory: {}", idProfessionalCategory, e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
     private ProfessionalCategoryResponseBody buildErrorResponse(BindingResult bindingResult) {

@@ -207,7 +207,7 @@ public class CustomerController {
         CustomerResponseBody response = new CustomerResponseBody();
         response.setDescription("Ação não permitida: Atualize o status do Customer para desativado: " + errorCode);
 
-        log.warn("Ação não permitida para deletar o Customer: {}. Atualize o status do Customer para desativado. - {}", idCustomer, errorCode);
+        log.warn("Ação não permitida para delete o Customer: {}. Atualize o status do Customer para desativado. - {}", idCustomer, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 

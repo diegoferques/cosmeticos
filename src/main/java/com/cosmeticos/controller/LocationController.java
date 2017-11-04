@@ -148,7 +148,7 @@ public class LocationController {
         LocationResponseBody response = new LocationResponseBody();
         response.setDescription("Ação não permitida: Não deletamos registros: " + errorCode);
 
-        log.warn("Ação não permitida para deletar o LocationGoogle: {}. - {}", idLocation, errorCode);
+        log.warn("Ação não permitida para delete o LocationGoogle: {}. - {}", idLocation, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }

@@ -44,8 +44,8 @@ public class ProfessionalCategoryService {
         return Optional.ofNullable(repository.findOne(id));
     }
 
-    public void deletar(){
-        throw new UnsupportedOperationException("Excluir de acordo com o Status. ");
+    public void delete(Long id){
+        repository.delete(id);
     }
 
     public List<ProfessionalCategory> findAll() {

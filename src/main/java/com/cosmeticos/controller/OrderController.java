@@ -226,7 +226,7 @@ public class OrderController {
         OrderResponseBody response = new OrderResponseBody();
         response.setDescription("Ação não permitida: Order não pode ser deletado: " + errorCode);
 
-        log.warn("Ação não permitida para deletar Order: {}. - {}", idOrder, errorCode);
+        log.warn("Ação não permitida para delete Order: {}. - {}", idOrder, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 
