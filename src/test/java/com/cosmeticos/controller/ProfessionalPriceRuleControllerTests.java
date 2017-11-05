@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
@@ -342,19 +343,24 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
         Professional professional = exchange.getBody().getProfessionalList().get(0);
+        Long professionalCategoryId1 = professional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getProfessionalCategoryId();
 
         String jsonUpdate = "{\n" +
                 "  \"professional\": {\n" +
-                "    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
+                "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
                 "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId1+",\n" +
                 "        \"priceRuleList\": [\n" +
                 "          {\n" +
                 "            \"name\": \"COMPRIMENTO ATÉ 10cm\",\n" +
                 "            \"price\": 75.00\n" +
                 "          }\n" +
                 "          ],\n" +
-                "        \"professional\": null,\n" +
                 "        \"category\": {\n" +
                 "          \"name\": \"LUZES\",\n" +
                 "          \"idCategory\": 1\n" +
@@ -427,12 +433,18 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
 
         Professional professional2 = exchange2.getBody().getProfessionalList().get(0);
+        Long professionalCategoryId = professional2.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getProfessionalCategoryId();
 
         String jsonUpdate2 = "{\n" +
                 "  \"professional\": {\n" +
-                "    \"idProfessional\": \"" + professional2.getIdProfessional() + "\",\n" +
+                "    \"idProfessional\": " + professional2.getIdProfessional() + ",\n" +
                 "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId+",\n" +
                 "        \"priceRuleList\": [\n" +
                 "          {\n" +
                 "            \"name\": \"COMPRIMENTO ATÉ 10cm\",\n" +
