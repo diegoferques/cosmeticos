@@ -343,12 +343,8 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
         Professional professional = exchange.getBody().getProfessionalList().get(0);
-        Long professionalCategoryId1 = professional.getProfessionalCategoryCollection()
-                .stream()
-                .findFirst()
-                .get()
-                .getProfessionalCategoryId();
 
+        Long  professionalCategoryId1 = professional.getProfessionalCategoryCollection().stream().findFirst().get().getProfessionalCategoryId();
         String jsonUpdate = "{\n" +
                 "  \"professional\": {\n" +
                 "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
@@ -433,8 +429,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
 
         Professional professional2 = exchange2.getBody().getProfessionalList().get(0);
-        Long professionalCategoryId = professional2.getProfessionalCategoryCollection()
-                .stream()
+        Long  professionalCategoryId2 = professional.getProfessionalCategoryCollection().stream()
                 .findFirst()
                 .get()
                 .getProfessionalCategoryId();
@@ -444,18 +439,16 @@ public class ProfessionalPriceRuleControllerTests {
                 "    \"idProfessional\": " + professional2.getIdProfessional() + ",\n" +
                 "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
-                "        \"professionalCategoryId\": "+professionalCategoryId+",\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId2+",\n" +
                 "        \"priceRuleList\": [\n" +
                 "          {\n" +
                 "            \"name\": \"COMPRIMENTO ATÉ 10cm\",\n" +
                 "            \"price\": 75.00\n" +
                 "          }\n" +
                 "          ],\n" +
-                "        \"professional\": null,\n" +
-                "        \"category\": {\n" +
-                "          \"name\": \"LUZES\",\n" +
-                "          \"idCategory\": 1\n" +
-                "        }\n" +
+                "          \"category\": {\n" +
+                "            \"idCategory\": 1\n" +
+                "          }\n" +
                 "      }\n" +
                 "    ]\n" +
                 "  }\n" +

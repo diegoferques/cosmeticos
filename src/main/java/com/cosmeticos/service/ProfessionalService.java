@@ -191,10 +191,16 @@ public class ProfessionalService {
             {
                 persistentProfCategList.clear();
 
-                receivedProfessionalServices.stream().forEach(ps -> {
-                    ps.setProfessional(persistentProfessional);
+                receivedProfessionalServices.stream().forEach(receivedPs -> {
+                    receivedPs.setProfessional(persistentProfessional);
 
-                    persistentProfessional.getProfessionalCategoryCollection().add(ps);
+                    receivedPs.getPriceRuleList().forEach( priceRule ->
+                            {
+                                priceRule.setProfessionalCategory(receivedPs);
+                            }
+                    );
+
+                    persistentProfCategList.add(receivedPs);
                 });
             }
             else
