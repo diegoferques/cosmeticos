@@ -194,8 +194,7 @@ public class ProfessionalService {
                 receivedProfessionalServices.stream().forEach(receivedPs -> {
                     receivedPs.setProfessional(persistentProfessional);
 
-                    receivedPs.getPriceRuleList().forEach( priceRule ->
-                            {
+                    receivedPs.getPriceRuleList().forEach( priceRule -> {
                                 priceRule.setProfessionalCategory(receivedPs);
                             }
                     );

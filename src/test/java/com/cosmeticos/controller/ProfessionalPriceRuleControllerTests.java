@@ -102,15 +102,29 @@ public class ProfessionalPriceRuleControllerTests {
 
         Professional professional = exchange.getBody().getProfessionalList().get(0);
 
-        String jsonUpdate = "{\n" +
+        Long professionalCategoryId = professional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getProfessionalCategoryId();
+
+        String jsonUpdate =  "{\n" +
                 "  \"professional\": {\n" +
-                "    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
-                "        \"priceRule\": [\n" +
+                "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
+                "    \"professionalCategoryCollection\": [\n" +
+                "      {\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId+",\n" +
+                "        \"priceRuleList\": [\n" +
                 "          {\n" +
-                "            \"name\": \"COMPRIMENTO ATÉ 30cm\",\n" +
-                "            \"price\": 80.00\n" +
+                "            \"name\": \"COMPRIMENTO ATÉ 10cm\",\n" +
+                "            \"price\": 75.00\n" +
                 "          }\n" +
-                "          ]\n" +
+                "          ],\n" +
+                "          \"category\": {\n" +
+                "            \"idCategory\": 1\n" +
+                "          }\n" +
+                "      }\n" +
+                "    ]\n" +
                 "  }\n" +
                 "}";
 
@@ -118,6 +132,14 @@ public class ProfessionalPriceRuleControllerTests {
 
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+
+        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+
+        Assert.assertEquals(1, persistentProfessional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getPriceRuleList().size());
 
 
     }
@@ -174,13 +196,29 @@ public class ProfessionalPriceRuleControllerTests {
 
         Professional professional = exchange.getBody().getProfessionalList().get(0);
 
-        String jsonUpdate = "{\n" +
+        Long professionalCategoryId = professional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getProfessionalCategoryId();
+
+        String jsonUpdate =  "{\n" +
                 "  \"professional\": {\n" +
-                "    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
-                "        \"priceRule\": [{\n" +
-                "            \"name\": \"COMPRIMENTO ATÉ 60cm\",\n" +
-                "            \"price\": 200.00\n" +
-                "          }]\n" +
+                "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
+                "    \"professionalCategoryCollection\": [\n" +
+                "      {\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId+",\n" +
+                "        \"priceRuleList\": [\n" +
+                "          {\n" +
+                "            \"name\": \"COMPRIMENTO ATÉ 10cm\",\n" +
+                "            \"price\": 75.00\n" +
+                "          }\n" +
+                "          ],\n" +
+                "          \"category\": {\n" +
+                "            \"idCategory\": 1\n" +
+                "          }\n" +
+                "      }\n" +
+                "    ]\n" +
                 "  }\n" +
                 "}";
 
@@ -188,6 +226,14 @@ public class ProfessionalPriceRuleControllerTests {
 
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+
+        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+
+        Assert.assertEquals(1, persistentProfessional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getPriceRuleList().size());
 
 
     }
@@ -245,15 +291,29 @@ public class ProfessionalPriceRuleControllerTests {
 
         Professional professional = exchange.getBody().getProfessionalList().get(0);
 
-        String jsonUpdate = "{\n" +
+        Long professionalCategoryId = professional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getProfessionalCategoryId();
+
+        String jsonUpdate =  "{\n" +
                 "  \"professional\": {\n" +
-                "    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
-                "        \"priceRule\": [\n" +
+                "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
+                "    \"professionalCategoryCollection\": [\n" +
+                "      {\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId+",\n" +
+                "        \"priceRuleList\": [\n" +
                 "          {\n" +
-                "            \"name\": \"COMPRIMENTO ATÉ 60cm\",\n" +
-                "            \"price\": 200.00\n" +
+                "            \"name\": \"COMPRIMENTO ATÉ 10cm\",\n" +
+                "            \"price\": 75.00\n" +
                 "          }\n" +
-                "          ]\n" +
+                "          ],\n" +
+                "          \"category\": {\n" +
+                "            \"idCategory\": 1\n" +
+                "          }\n" +
+                "      }\n" +
+                "    ]\n" +
                 "  }\n" +
                 "}";
 
@@ -262,32 +322,46 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        String jsonUpdate2 = "{\n" +
+        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+
+        Assert.assertEquals(1, persistentProfessional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getPriceRuleList().size());
+
+        String jsonUpdate2 =  "{\n" +
                 "  \"professional\": {\n" +
-                "    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
-                "        \"priceRule\": [\n" +
+                "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
+                "    \"professionalCategoryCollection\": [\n" +
+                "      {\n" +
+                "        \"professionalCategoryId\": "+professionalCategoryId+",\n" +
+                "        \"priceRuleList\": [\n" +
                 "          {\n" +
-                "            \"name\": \"COMPRIMENTO ATÉ 40cm\",\n" +
-                "            \"price\": 150.00\n" +
+                "            \"name\": \"COMPRIMENTO ATÉ 50cm\",\n" +
+                "            \"price\": 175.00\n" +
                 "          }\n" +
-                "          ]\n" +
+                "          ],\n" +
+                "          \"category\": {\n" +
+                "            \"idCategory\": 1\n" +
+                "          }\n" +
+                "      }\n" +
+                "    ]\n" +
                 "  }\n" +
                 "}";
 
-        System.out.println(jsonUpdate2);
-
-
-        RequestEntity<String> entityUpdate2 =  RequestEntity
-                .put(new URI("/professionals"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonUpdate);
-
-        ResponseEntity<ProfessionalResponseBody> exchangeUpdate2 = restTemplate
-                .exchange(entityUpdate2, ProfessionalResponseBody.class);
+        ResponseEntity<ProfessionalResponseBody> exchangeUpdate2 = put(jsonUpdate2, restTemplate);
 
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
+
+        Professional persistentProfessional2 = professionalRepository.findOne(professional.getIdProfessional());
+
+        Assert.assertEquals(2, persistentProfessional2.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getPriceRuleList().size());
 
     }
 
@@ -344,7 +418,12 @@ public class ProfessionalPriceRuleControllerTests {
 
         Professional professional = exchange.getBody().getProfessionalList().get(0);
 
-        Long  professionalCategoryId1 = professional.getProfessionalCategoryCollection().stream().findFirst().get().getProfessionalCategoryId();
+        Long professionalCategoryId1 = professional.getProfessionalCategoryCollection()
+                .stream()
+                .findFirst()
+                .get()
+                .getProfessionalCategoryId();
+
         String jsonUpdate = "{\n" +
                 "  \"professional\": {\n" +
                 "    \"idProfessional\": " + professional.getIdProfessional() + ",\n" +
@@ -429,7 +508,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
 
         Professional professional2 = exchange2.getBody().getProfessionalList().get(0);
-        Long  professionalCategoryId2 = professional.getProfessionalCategoryCollection().stream()
+        Long professionalCategoryId2 = professional2.getProfessionalCategoryCollection().stream()
                 .findFirst()
                 .get()
                 .getProfessionalCategoryId();
