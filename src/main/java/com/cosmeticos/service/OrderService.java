@@ -872,6 +872,10 @@ public class OrderService {
                 email);
     }
 
+    public List<Order> findActiveByProfessionalEmail(String email) {
+        return orderRepository.findByProfessionalEmail(email);
+    }
+
     public class ValidationException extends Exception {
         public ValidationException(String s) {
             super(s);
