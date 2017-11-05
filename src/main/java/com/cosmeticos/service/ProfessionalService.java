@@ -52,7 +52,7 @@ public class ProfessionalService {
         addressService.updateGeocodeFromProfessionalCreate(newProfessional);
 
         configureHability(request.getProfessional(), newProfessional);
-        configureProfessionalServices(request.getProfessional(), newProfessional);
+        configureProfessionalCategory(request.getProfessional(), newProfessional);
 
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
@@ -130,7 +130,7 @@ public class ProfessionalService {
                 }
             }
             */
-            configureProfessionalServices(cr, persistentProfessional);
+            configureProfessionalCategory(cr, persistentProfessional);
             
             professionalRepository.save(persistentProfessional);
 
@@ -180,16 +180,34 @@ public class ProfessionalService {
         return professionalRepository.findAll(Example.of(professionalProbe));
     }
 
-    private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {
+    /**
+     * Importante: Se receivedProfessional.getProfessionalCategoryCollection == null nada sera alterado. Se for vazio, limparemos essa lista
+     * no banco tbm. Eh importante considerar que antes repassar o que chegou no request para newProfessional, newProfessional sofre um
+     * newProfessional.getProfessionalCategoryCollection().clear().
+     * @param receivedProfessional
+     * @param persistentProfessional
+     */
+    private void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
         Set<ProfessionalCategory> receivedProfessionalServices =
                 receivedProfessional.getProfessionalCategoryCollection();
 
         if (receivedProfessionalServices != null) {
-			receivedProfessionalServices.stream().forEach(ps -> {
-				ps.setProfessional(newProfessional);
+            Set<ProfessionalCategory> persistentProfCategList = persistentProfessional.getProfessionalCategoryCollection();
 
-				newProfessional.getProfessionalCategoryCollection().add(ps);
-			});
+            if(persistentProfCategList != null)
+            {
+                persistentProfCategList.clear();
+
+                receivedProfessionalServices.stream().forEach(ps -> {
+                    ps.setProfessional(persistentProfessional);
+
+                    persistentProfessional.getProfessionalCategoryCollection().add(ps);
+                });
+            }
+            else
+            {
+                persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalServices);
+            }
 		}
     }
 

@@ -6,6 +6,7 @@ import com.cosmeticos.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.Exception;
@@ -17,6 +18,7 @@ import java.util.HashSet;
 /**
  * Created by Lulu on 30/05/2017.
  */
+@Ignore
 public class JsonizerTest222 {
     ObjectMapper om = new ObjectMapper();
 

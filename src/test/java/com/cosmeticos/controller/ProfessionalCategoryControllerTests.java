@@ -9,7 +9,9 @@ import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
@@ -27,10 +29,15 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.System.nanoTime;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ProfessionalCategoryControllerTests {
+
+	@Rule
+	public TestName currentTest = new TestName();
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -43,6 +50,7 @@ public class ProfessionalCategoryControllerTests {
 
 	private Professional professional;
 
+	private String serviceName = "FOOBAR";
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -50,14 +58,12 @@ public class ProfessionalCategoryControllerTests {
 	@Before
 	public void setupTests() throws ParseException, URISyntaxException {
 
-		//if(professional == null) {
-		if(true) {
 			Category s1 = new Category();
-			s1.setName("FOOBAR");
+			s1.setName(currentTest.getMethodName());
 
 			serviceRepository.save(s1);
 
-			String email = "professionalServicesTest1@bol.com";
+			String email = "professional-" + currentTest.getMethodName() + "@bol.com";
 
 			String json = "{\n" +
 					"  \"professional\": {\n" +
@@ -103,9 +109,10 @@ public class ProfessionalCategoryControllerTests {
 			Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
 			professional = exchange.getBody().getProfessionalList().get(0);
-		}
+
 	}
 
+	@Transactional
 	@Test
 	public void delete() throws Exception {
 
@@ -141,7 +148,7 @@ public class ProfessionalCategoryControllerTests {
 
 		final ResponseEntity<ProfessionalCategoryResponseBody> getExchange = //
 				restTemplate.exchange( //
-						"/professionalcategories?category.name=FOOBAR",
+						"/professionalcategories?category.name="+currentTest.getMethodName(),
 						HttpMethod.GET, //
 						null,
 						ProfessionalCategoryResponseBody.class);

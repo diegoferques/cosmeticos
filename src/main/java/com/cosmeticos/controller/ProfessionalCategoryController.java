@@ -144,7 +144,7 @@ public class ProfessionalCategoryController {
     }
 
     @RequestMapping(path = "/professionalcategories/{id}", method = RequestMethod.DELETE)
-    public HttpEntity<Void> delete(@Validated @PathParam("id") Long idProfessionalCategory) {
+    public HttpEntity<Void> delete(@PathVariable("id") Long idProfessionalCategory) {
 
         try {
 

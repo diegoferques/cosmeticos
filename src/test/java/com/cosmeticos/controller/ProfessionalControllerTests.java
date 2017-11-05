@@ -269,6 +269,7 @@ public class ProfessionalControllerTests {
 		Professional c1 = new Professional();
 		c1.setIdProfessional(1L);
 		c1.setNameProfessional("Diego Fernandes Marques da Silva");
+		c1.setCnpj("1233211233211");
 
 		ProfessionalRequestBody cr = new ProfessionalRequestBody();
 		cr.setProfessional(c1);

@@ -210,9 +210,6 @@ public class CashOrderControllerTests {
         ResponseEntity<OrderResponseBody> exchangeUpdaterSemiClosed = restTemplate
                 .exchange(entityUpdateSemiClosed, OrderResponseBody.class);
 
-
-
-
         Assert.assertNotNull(exchangeUpdaterSemiClosed);
         Assert.assertNotNull(exchangeUpdaterSemiClosed.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdaterSemiClosed.getStatusCode());

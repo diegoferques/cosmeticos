@@ -184,7 +184,6 @@ public class User implements Serializable {
     })
     private String profileImageUrl;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<Vote> voteCollection = new HashSet<>();
