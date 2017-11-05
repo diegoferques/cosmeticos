@@ -36,7 +36,7 @@ public class User implements Serializable {
 
     public  enum Status {
 
-        ACTIVE, INACTIVE, GONE
+        ACTIVE, INACTIVE, GONE, PENDING_PAYMENT
 
     }
 
@@ -175,6 +175,14 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     @Cascade(CascadeType.ALL)
     private Set<Vote> voteCollection = new HashSet<>();
+
+    @JsonView({
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
+    })
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastStatusUpdate;
 
     public User() {
     }

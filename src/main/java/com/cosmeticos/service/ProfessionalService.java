@@ -180,17 +180,28 @@ public class ProfessionalService {
         return professionalRepository.findAll(Example.of(professionalProbe));
     }
 
-    private void configureProfessionalServices(Professional receivedProfessional, Professional newProfessional) {
+    private void configureProfessionalServices(Professional receivedProfessional, Professional persistentProfessional) {
         Set<ProfessionalCategory> receivedProfessionalServices =
                 receivedProfessional.getProfessionalCategoryCollection();
 
         if (receivedProfessionalServices != null) {
-			receivedProfessionalServices.stream().forEach(ps -> {
-				ps.setProfessional(newProfessional);
+            Set<ProfessionalCategory> persistentProfCategList = persistentProfessional.getProfessionalCategoryCollection();
 
-				newProfessional.getProfessionalCategoryCollection().add(ps);
-			});
-		}
+            if(persistentProfCategList != null)
+            {
+                persistentProfCategList.clear();
+
+                receivedProfessionalServices.stream().forEach(ps -> {
+                    ps.setProfessional(persistentProfessional);
+
+                    persistentProfessional.getProfessionalCategoryCollection().add(ps);
+                });
+            }
+            else
+            {
+                persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalServices);
+            }
+        }
     }
 
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {

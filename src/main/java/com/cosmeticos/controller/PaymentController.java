@@ -1,12 +1,13 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
+import com.cosmeticos.commons.ProfessionalRequestBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.commons.RoleResponseBody;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.ChargeRequest;
-import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.util.Optional;
 
@@ -147,6 +150,7 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
         }
     }
+
 
 
 }
