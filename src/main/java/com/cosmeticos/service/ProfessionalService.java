@@ -197,18 +197,22 @@ public class ProfessionalService {
             if(persistentProfCategList != null)
             {
                 persistentProfCategList.clear();
+                receivedProfessionalServices.stream().forEach(receivedPs -> {
+                    receivedPs.setProfessional(persistentProfessional);
 
-                receivedProfessionalServices.stream().forEach(ps -> {
-                    ps.setProfessional(persistentProfessional);
+                    receivedPs.getPriceRuleList().forEach( priceRule -> {
+                                priceRule.setProfessionalCategory(receivedPs);
+                            }
+                    );
 
-                    persistentProfessional.getProfessionalCategoryCollection().add(ps);
+                    persistentProfCategList.add(receivedPs);
                 });
             }
             else
             {
                 persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalServices);
             }
-		}
+        }
     }
 
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {
