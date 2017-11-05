@@ -237,6 +237,7 @@ public class Professional  implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+        this.user.setUserType("professional");
     }
 
     public User.PersonType getPersonType() {

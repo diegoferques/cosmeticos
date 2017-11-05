@@ -14,6 +14,7 @@ import com.cosmeticos.smtp.MailSenderService;
 import com.cosmeticos.validation.UserValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,15 +72,18 @@ public class UserService {
         if (optional.isPresent()) {
             User persistentUser = optional.get();
 
-            if (userFromRequest.getUsername() != null) {
-                persistentUser.setUsername(userFromRequest.getUsername());
-            }
+            // User name nao se altera
+           //if (userFromRequest.getUsername() != null) {
+           //    persistentUser.setUsername(userFromRequest.getUsername());
+           //}
             if (userFromRequest.getPassword() != null) {
                 persistentUser.setPassword(userFromRequest.getPassword());
             }
-            if (userFromRequest.getEmail() != null) {
-                persistentUser.setEmail(userFromRequest.getEmail());
-            }
+
+            // email nao se altera
+            //if (userFromRequest.getEmail() != null) {
+            //    persistentUser.setEmail(userFromRequest.getEmail());
+            //}
             if (userFromRequest.getSourceApp() != null) {
                 persistentUser.setSourceApp(userFromRequest.getSourceApp());
             }
@@ -128,6 +132,7 @@ public class UserService {
         return StreamSupport.stream(result.spliterator(), false)
                 .collect(Collectors.toList());
     }
+
 
     public Boolean verifyEmailExistsforCreate(String email) {
 
@@ -227,7 +232,7 @@ public class UserService {
     public void invalidateToken(User user) {
         user.setLostPassword(false);
         user.setLostPasswordToken(null);
-        repository.save(user);
+       update(user);
     }
 
     public User addCreditCard(User user, Payment payment){
@@ -245,5 +250,9 @@ public class UserService {
 
         return user;
 
+    }
+
+    public List<User> findAllBy(final User userProbe) {
+        return repository.findAll(Example.of(userProbe));
     }
 }

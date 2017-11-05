@@ -137,7 +137,7 @@ public class HabilityController {
         HabilityResponseBody response = new HabilityResponseBody();
         response.setDescription("Ação não permitida: Atualize o status do Hability para desativado: " + errorCode);
 
-        log.warn("Ação não permitida para deletar o Hability: {}. Atualize o status do Hability para desativado. - {}", idHability, errorCode);
+        log.warn("Ação não permitida para delete o Hability: {}. Atualize o status do Hability para desativado. - {}", idHability, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }

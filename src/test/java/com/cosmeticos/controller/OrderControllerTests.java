@@ -466,7 +466,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : 5\n" +
+                "    \"status\" : \"CLOSED\"\n" +
                 "  }\n" +
                 "}";
 
@@ -903,7 +903,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : 1\n" +
+                "    \"status\" : \"CANCELLED\"\n" +
                 "  }\n" +
                 "}";
 

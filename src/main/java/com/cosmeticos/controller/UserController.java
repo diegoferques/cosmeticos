@@ -165,20 +165,29 @@ public class UserController {
 
     }
 
+    @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
     @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public HttpEntity<UserResponseBody> findAll() {
+    public HttpEntity<UserResponseBody> findAllBy(@ModelAttribute User userAttr) {
 
         try {
-            List<User> entitylist = service.findAll();
+            List<User> entitylist = service.findAllBy(userAttr);
 
-            UserResponseBody responseBody = new UserResponseBody();
-            responseBody.setUserList(entitylist);
-            responseBody.setDescription("All Users retrieved.");
+            if(entitylist.isEmpty())
+            {
+                log.error("Nenhum registro encontrado para o User=[{}]", userAttr);
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("No Users could be found!");
+                return status(HttpStatus.NOT_FOUND).body(responseBody);
+            }
+            else {
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setUserList(entitylist);
+                responseBody.setDescription("All Users retrieved.");
 
-            log.info("{} Users successfully retrieved.", entitylist.size());
+                log.info("{} Users successfully retrieved.", entitylist.size());
 
-            return ok().body(responseBody);
-
+                return ok().body(responseBody);
+            }
         } catch (Exception e) {
             log.error("Falha no BUSCAR TODOS: {}", e.getMessage(), e);
             UserResponseBody responseBody = new UserResponseBody();

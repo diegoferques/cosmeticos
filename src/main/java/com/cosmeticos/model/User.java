@@ -115,6 +115,18 @@ public class User implements Serializable {
 
     private String goodByeReason;
 
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
+    private String userType;
+
     @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
 

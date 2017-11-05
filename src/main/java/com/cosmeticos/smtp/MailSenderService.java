@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
 
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Controller;
  */
 //https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
 @Slf4j
-@Controller
+@Component
 public class MailSenderService {
 
     @Autowired

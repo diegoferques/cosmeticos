@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
+import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -226,7 +227,7 @@ public class OrderController {
         OrderResponseBody response = new OrderResponseBody();
         response.setDescription("Ação não permitida: Order não pode ser deletado: " + errorCode);
 
-        log.warn("Ação não permitida para deletar Order: {}. - {}", idOrder, errorCode);
+        log.warn("Ação não permitida para delete Order: {}. - {}", idOrder, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 
@@ -269,14 +270,22 @@ public class OrderController {
         try {
             List<Order> entitylist = orderService.findActiveByCustomerEmail(email);
 
-            OrderResponseBody responseBody = new OrderResponseBody();
-            responseBody.setOrderList(entitylist);
-            responseBody.setDescription(entitylist.size() + " retrieved.");
+            if(entitylist.isEmpty())
+            {
+                log.error("Nenhuma order encontrada para o customer.user.email={}", email);
+                OrderResponseBody responseBody = new OrderResponseBody();
+                responseBody.setDescription("No Orders could be found!");
+                return status(HttpStatus.NOT_FOUND).body(responseBody);
+            }
+            else {
+                OrderResponseBody responseBody = new OrderResponseBody();
+                responseBody.setOrderList(entitylist);
+                responseBody.setDescription(entitylist.size() + " retrieved.");
 
-            log.info("{} Orders successfully retrieved.", entitylist.size());
+                log.info("{} Orders successfully retrieved.", entitylist.size());
 
-            return ok().body(responseBody);
-
+                return ok().body(responseBody);
+            }
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
 
@@ -288,7 +297,44 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
+
+    @JsonView(ResponseJsonView.OrderControllerFindBy.class)
+    @RequestMapping(path = "/orders/professional/", method = RequestMethod.GET)
+    public HttpEntity<OrderResponseBody> findActiveByProfessional(
+    		@RequestParam(name="email", required=true) String email
+    ) {
+
+        try {
+            List<Order> entitylist = orderService.findActiveByProfessionalEmail(email);
+
+            if(entitylist.isEmpty())
+            {
+                log.error("Nenhuma order encontrada para o profissional.user.email={}", email);
+                OrderResponseBody responseBody = new OrderResponseBody();
+                responseBody.setDescription("No Orders could be found!");
+                return status(HttpStatus.NOT_FOUND).body(responseBody);
+            }
+            else {
+                OrderResponseBody responseBody = new OrderResponseBody();
+                responseBody.setOrderList(entitylist);
+                responseBody.setDescription(entitylist.size() + " retrieved.");
+
+                log.info("{} Orders successfully retrieved.", entitylist.size());
+
+                return ok().body(responseBody);
+            }
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            OrderResponseBody response = new OrderResponseBody();
+            response.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro na exibição da Lista de Order: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     private OrderResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()

@@ -555,11 +555,14 @@ public class OrderService {
                 User receivedUser = receivedOrder.getIdCustomer().getUser();
 
                 if (receivedUser != null) {
-                    Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+                    Set<Vote> voteCollection = receivedUser.getVoteCollection();
+                    if (voteCollection!=null && !voteCollection.isEmpty()) {
+                        Vote receivedvote = voteCollection.stream().findFirst().get();
 
-                    if (receivedvote != null) {
-                        addVotesToUser(persistentUser, receivedvote);
-                        MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
+                        if (receivedvote != null) {
+                            addVotesToUser(persistentUser, receivedvote);
+                            MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
+                        }
                     }
                 }
             }
@@ -578,11 +581,14 @@ public class OrderService {
             // tm algo errado aki...  eu nomeio os objetos com receivedXXX pra saber o q veio do request e persistentXXX pra saber o q veio do banco
             // esse erro de lazy só faz sentido se o objeto veio do banco. Acho q em algum momento rolou confussao e  o receivedXX recebeu algo
             // persistente. Vo dar uma debugada reversa rsrsjah eh
-            Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
+            if (!receivedUser.getVoteCollection().isEmpty()) {
+                Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
 
-            addVotesToUser(persistentUser, receivedvote);
+                addVotesToUser(persistentUser, receivedvote);
+                
+                MDC.put("professionalVote", String.valueOf(receivedvote.getValue()));
+            }
 
-            MDC.put("professionalVote", String.valueOf(receivedvote.getValue()));
         }
     }
 
@@ -870,6 +876,10 @@ public class OrderService {
         return orderRepository.findByStatusNotInAndIdCustomer_user_email( //
                 Arrays.asList(CANCELLED, AUTO_CLOSED, CLOSED), //
                 email);
+    }
+
+    public List<Order> findActiveByProfessionalEmail(String email) {
+        return orderRepository.findByProfessionalEmail(email);
     }
 
     public class ValidationException extends Exception {

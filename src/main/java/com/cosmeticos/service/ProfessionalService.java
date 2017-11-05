@@ -52,7 +52,7 @@ public class ProfessionalService {
         addressService.updateGeocodeFromProfessionalCreate(newProfessional);
 
         configureHability(request.getProfessional(), newProfessional);
-        configureProfessionalServices(request.getProfessional(), newProfessional);
+        configureProfessionalCategory(request.getProfessional(), newProfessional);
 
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
@@ -130,7 +130,7 @@ public class ProfessionalService {
                 }
             }
             */
-            configureProfessionalServices(cr, persistentProfessional);
+            configureProfessionalCategory(cr, persistentProfessional);
             
             professionalRepository.save(persistentProfessional);
 
@@ -180,7 +180,14 @@ public class ProfessionalService {
         return professionalRepository.findAll(Example.of(professionalProbe));
     }
 
-    private void configureProfessionalServices(Professional receivedProfessional, Professional persistentProfessional) {
+    /**
+     * Importante: Se receivedProfessional.getProfessionalCategoryCollection == null nada sera alterado. Se for vazio, limparemos essa lista
+     * no banco tbm. Eh importante considerar que antes repassar o que chegou no request para newProfessional, newProfessional sofre um
+     * newProfessional.getProfessionalCategoryCollection().clear().
+     * @param receivedProfessional
+     * @param persistentProfessional
+     */
+    private void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
         Set<ProfessionalCategory> receivedProfessionalServices =
                 receivedProfessional.getProfessionalCategoryCollection();
 

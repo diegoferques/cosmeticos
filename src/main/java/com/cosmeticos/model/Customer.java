@@ -119,6 +119,8 @@ public class Customer implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+
+        this.user.setUserType("customer");
     }
 
     @JsonIgnore
@@ -136,6 +138,7 @@ public class Customer implements Serializable {
         else
             return User.PersonType.JURIDICA;
     }
+
 
     @Override
     public int hashCode() {

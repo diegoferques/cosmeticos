@@ -225,7 +225,7 @@ public class ProfessionalController {
         ProfessionalResponseBody response = new ProfessionalResponseBody();
         response.setDescription("Ação não permitida: Atualize o status do Professional para desativado: " + errorCode);
 
-        log.warn("Ação não permitida para deletar o Professional: {}. Atualize o status do Professional para desativado. - {}", idProfessional, errorCode);
+        log.warn("Ação não permitida para delete o Professional: {}. Atualize o status do Professional para desativado. - {}", idProfessional, errorCode);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 

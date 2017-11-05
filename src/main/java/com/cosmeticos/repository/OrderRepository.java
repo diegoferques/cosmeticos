@@ -88,6 +88,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "AND ?2 between o.scheduleId.scheduleStart and o.scheduleId.scheduleEnd")
     List<Order> findScheduledOrdersByProfessionalWithScheduleConflict(Long idProfessional, Date pretendedStart);
 
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalCategory ps " +
+            "WHERE ps.professional.user.email = ?1 " +
+            "AND  o.status in( 'SCHEDULED', 'INPROGRESS', 'ACCEPTED', 'OPEN')")
+    List<Order> findByProfessionalEmail(String email);
+
 
 
 }
