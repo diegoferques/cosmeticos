@@ -239,7 +239,7 @@ public class ProfessionalPriceRuleControllerTests {
     }
 
     @Test
-    public void testPutRuleForProfessional3() throws URISyntaxException {
+    public void testPutRuleForProfessionalWith2Rules() throws URISyntaxException {
 
         String email = "professionalServicesRNF58asdfg@email.com";
 

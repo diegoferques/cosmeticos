@@ -190,7 +190,6 @@ public class ProfessionalService {
             if(persistentProfCategList != null)
             {
                 persistentProfCategList.clear();
-
                 receivedProfessionalServices.stream().forEach(receivedPs -> {
                     receivedPs.setProfessional(persistentProfessional);
 
