@@ -2,10 +2,14 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.PriceRuleRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -20,10 +24,16 @@ public class ProfessionalService {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
+    private ProfessionalCategoryRepository professionalCategoryRepository;
+
+    @Autowired
     private HabilityService habilityService;
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private PriceRuleRepository priceRuleRepository;
 
     public Optional<Professional> find(Long idProfessional) {
         return Optional.ofNullable(professionalRepository.findOne(idProfessional));
@@ -184,29 +194,59 @@ public class ProfessionalService {
      * Importante: Se receivedProfessional.getProfessionalCategoryCollection == null nada sera alterado. Se for vazio, limparemos essa lista
      * no banco tbm. Eh importante considerar que antes repassar o que chegou no request para newProfessional, newProfessional sofre um
      * newProfessional.getProfessionalCategoryCollection().clear().
+     *
+     *
+     * Este metodo faz diversos deletes, por isso necessita de transação requeres new, pois caso hajam erros, todos os deletes sofrem rollback.
      * @param receivedProfessional
      * @param persistentProfessional
      */
-    private void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
-        Set<ProfessionalCategory> receivedProfessionalServices =
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
+        Set<ProfessionalCategory> receivedProfessionalCategories =
                 receivedProfessional.getProfessionalCategoryCollection();
 
-        if (receivedProfessionalServices != null) {
+        if (receivedProfessionalCategories != null) {
             Set<ProfessionalCategory> persistentProfCategList = persistentProfessional.getProfessionalCategoryCollection();
 
             if(persistentProfCategList != null)
             {
-                persistentProfCategList.clear();
+                // Removeremos do banco só os profCateg persistentes que não estão contidos nos profCateg recebidos no request.
+                // Mais do que persistentProfCategList.size() nao pode ter.
+                List<Long> professionalCategoryIdListToRemove = new ArrayList<>(persistentProfCategList.size());
 
-                receivedProfessionalServices.stream().forEach(ps -> {
-                    ps.setProfessional(persistentProfessional);
+                persistentProfCateg:
+                for (ProfessionalCategory persistentPS: persistentProfCategList) {
+                    for (ProfessionalCategory receivedPS : receivedProfessionalCategories) {
+                        if(receivedPS.getProfessionalCategoryId().equals(persistentPS.getProfessionalCategoryId()))
+                        {
+                            // Atualiza os preços nos categories que não serão removidos.
+                            Set<PriceRule> persistentPriceRuleList = persistentPS.getPriceRuleList();
+                            Set<PriceRule> receivedPriceRuleList = receivedPS.getPriceRuleList();
 
-                    persistentProfessional.getProfessionalCategoryCollection().add(ps);
-                });
+                            persistentPriceRule:
+                            for (PriceRule persistentPriceRule: persistentPriceRuleList) {
+                                for (PriceRule receivedPriceRule: receivedPriceRuleList) {
+                                    if(receivedPriceRule.getId().equals(persistentPriceRule.getId()))
+                                    {
+                                        // Corta pro for mais externo pois nao devemos remover este ProfCateg
+                                        continue persistentPriceRule;
+                                    }
+                                }
+                                // Remove price rule que consta no banco mas nao veio no request
+                                priceRuleRepository.delete(persistentPriceRule.getId());
+                            }
+
+                            // Corta pro for mais externo pois nao devemos remover este ProfCateg
+                            continue persistentProfCateg;
+                        }
+                    }
+                    // Remove professionalCategory que consta no banco mas nao veio no request
+                    professionalCategoryRepository.delete(persistentPS.getProfessionalCategoryId());
+                }
             }
             else
             {
-                persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalServices);
+                persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalCategories);
             }
 		}
     }
