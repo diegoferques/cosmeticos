@@ -38,7 +38,7 @@ public class PriceRule implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message="price name cannot be empty")
+    @NotEmpty(message="Price.name cannot be empty")
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,

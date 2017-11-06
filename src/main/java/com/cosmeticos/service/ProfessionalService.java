@@ -62,7 +62,20 @@ public class ProfessionalService {
         addressService.updateGeocodeFromProfessionalCreate(newProfessional);
 
         configureHability(request.getProfessional(), newProfessional);
-        configureProfessionalCategory(request.getProfessional(), newProfessional);
+
+        //configureProfessionalCategory(request.getProfessional(), newProfessional);
+        if(request.getProfessional().getProfessionalCategoryCollection() != null)
+        {
+            newProfessional.setProfessionalCategoryCollection(request.getProfessional().getProfessionalCategoryCollection());
+            newProfessional.getProfessionalCategoryCollection().forEach(pc -> {
+                pc.setProfessional(newProfessional);
+
+                // Relacionamento bidirecional
+                pc.getPriceRuleList().forEach(pr -> {
+                    pr.setProfessionalCategory(pc);
+                });
+            });
+        }
 
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
@@ -70,66 +83,66 @@ public class ProfessionalService {
 
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
-        Professional cr = request.getProfessional();
+        Professional receivedProfessional = request.getProfessional();
 
-        Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(cr.getIdProfessional()));
+        Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(receivedProfessional.getIdProfessional()));
 
         if(optional.isPresent()) {
 
             Professional persistentProfessional = optional.get();
 
-            if (!StringUtils.isEmpty(cr.getBirthDate())) {
-                persistentProfessional.setBirthDate(cr.getBirthDate());
+            if (!StringUtils.isEmpty(receivedProfessional.getBirthDate())) {
+                persistentProfessional.setBirthDate(receivedProfessional.getBirthDate());
             }
 
-            if (!StringUtils.isEmpty(cr.getCellPhone())) {
-                persistentProfessional.setCellPhone(cr.getCellPhone());
+            if (!StringUtils.isEmpty(receivedProfessional.getCellPhone())) {
+                persistentProfessional.setCellPhone(receivedProfessional.getCellPhone());
             }
 
-            if (!StringUtils.isEmpty(cr.getCnpj())) {
-                persistentProfessional.setCnpj(cr.getCnpj());
+            if (!StringUtils.isEmpty(receivedProfessional.getCnpj())) {
+                persistentProfessional.setCnpj(receivedProfessional.getCnpj());
             }
 
-            if (!StringUtils.isEmpty(cr.getGenre())) {
-                persistentProfessional.setGenre(cr.getGenre());
+            if (!StringUtils.isEmpty(receivedProfessional.getGenre())) {
+                persistentProfessional.setGenre(receivedProfessional.getGenre());
             }
 
-            if (!StringUtils.isEmpty(cr.getNameProfessional())) {
-                persistentProfessional.setNameProfessional(cr.getNameProfessional());
+            if (!StringUtils.isEmpty(receivedProfessional.getNameProfessional())) {
+                persistentProfessional.setNameProfessional(receivedProfessional.getNameProfessional());
             }
 
-            if (!StringUtils.isEmpty(cr.getStatus())) {
-                persistentProfessional.setStatus(cr.getStatus());
+            if (!StringUtils.isEmpty(receivedProfessional.getStatus())) {
+                persistentProfessional.setStatus(receivedProfessional.getStatus());
             }
 
-            if(!StringUtils.isEmpty(cr.getAttendance())){
-                persistentProfessional.setAttendance(cr.getAttendance());
+            if(!StringUtils.isEmpty(receivedProfessional.getAttendance())){
+                persistentProfessional.setAttendance(receivedProfessional.getAttendance());
             }
 
-            if(cr.getUser() != null){
+            if(receivedProfessional.getUser() != null){
                 User persistentUser = persistentProfessional.getUser();
 
-                Set<Vote> requestVotes = cr.getUser().getVoteCollection();
+                Set<Vote> requestVotes = receivedProfessional.getUser().getVoteCollection();
 
                 for (Vote v : requestVotes) {
                     persistentUser.addVote(v);
                 }
             }
 
-            if(cr.getEmployeesCollection() != null){
-                for(Professional professionalItem : cr.getEmployeesCollection()){
+            if(receivedProfessional.getEmployeesCollection() != null){
+                for(Professional professionalItem : receivedProfessional.getEmployeesCollection()){
                     Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
                     persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
 
-            if(cr.getBoss() != null){
-                persistentProfessional.setBoss(cr.getBoss());
+            if(receivedProfessional.getBoss() != null){
+                persistentProfessional.setBoss(receivedProfessional.getBoss());
             }
 
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
-            if (cr.getAddress() != null) {
-                addressService.updateGeocodeFromProfessionalUpdate(cr);
+            if (receivedProfessional.getAddress() != null) {
+                addressService.updateGeocodeFromProfessionalUpdate(receivedProfessional);
                 //addressService.updateGeocodeFromProfessional(professional);
             }
             /*
@@ -140,7 +153,9 @@ public class ProfessionalService {
                 }
             }
             */
-            configureProfessionalCategory(cr, persistentProfessional);
+
+
+            configureProfessionalCategory(receivedProfessional, persistentProfessional);
             
             professionalRepository.save(persistentProfessional);
 
@@ -205,47 +220,79 @@ public class ProfessionalService {
         Set<ProfessionalCategory> receivedProfessionalCategories =
                 receivedProfessional.getProfessionalCategoryCollection();
 
+        // Se nao veio nada no request, nao tenho o que alterar
         if (receivedProfessionalCategories != null) {
+
             Set<ProfessionalCategory> persistentProfCategList = persistentProfessional.getProfessionalCategoryCollection();
 
             if(persistentProfCategList != null)
             {
-                // Removeremos do banco só os profCateg persistentes que não estão contidos nos profCateg recebidos no request.
-                // Mais do que persistentProfCategList.size() nao pode ter.
-                List<Long> professionalCategoryIdListToRemove = new ArrayList<>(persistentProfCategList.size());
+                // Passando os valores recebidos no request pra uma variavel auxiliar. Ao final do foreach abaixo,
+                // esta lista deve ter a interceção das listas de professionalCategory perisstentes e do request
+                Set<ProfessionalCategory> profCategAux = new HashSet<>(receivedProfessionalCategories);
 
-                persistentProfCateg:
-                for (ProfessionalCategory persistentPS: persistentProfCategList) {
-                    for (ProfessionalCategory receivedPS : receivedProfessionalCategories) {
-                        if(receivedPS.getProfessionalCategoryId().equals(persistentPS.getProfessionalCategoryId()))
-                        {
-                            // Atualiza os preços nos categories que não serão removidos.
-                            Set<PriceRule> persistentPriceRuleList = persistentPS.getPriceRuleList();
-                            Set<PriceRule> receivedPriceRuleList = receivedPS.getPriceRuleList();
+                persistentProfCategList.forEach(persistentProfCateg -> {
+                    boolean doesNotExistInReceivedList = profCategAux.add(persistentProfCateg);
 
-                            persistentPriceRule:
-                            for (PriceRule persistentPriceRule: persistentPriceRuleList) {
-                                for (PriceRule receivedPriceRule: receivedPriceRuleList) {
-                                    if(receivedPriceRule.getId().equals(persistentPriceRule.getId()))
-                                    {
-                                        // Corta pro for mais externo pois nao devemos remover este ProfCateg
-                                        continue persistentPriceRule;
-                                    }
+                    // Se nao exite na lista recebida no request, rejeito esta persistentPriceRule.
+                    if(doesNotExistInReceivedList) {
+
+                        // Rejeitando priceRule inserida
+                        profCategAux.remove(persistentProfCateg);
+                        priceRuleRepository.delete(persistentProfCateg.getProfessionalCategoryId());
+                    }
+                });
+
+                profCategAux.forEach(receivedProfCateg -> {
+                    receivedProfCateg.setProfessional(persistentProfessional);
+                });
+                persistentProfessional.setProfessionalCategoryCollection(profCategAux);
+
+                profCategAux.forEach(pcAux -> {
+
+                    if(pcAux.getProfessionalCategoryId() != null) {
+
+                        ProfessionalCategory persistentPC  = professionalCategoryRepository.findOne(pcAux.getProfessionalCategoryId());
+
+                        // Atualiza os preços nos categories que não serão removidos.
+                        Set<PriceRule> priceRuleAuxList = new HashSet<>(pcAux.getPriceRuleList());
+
+                        Set<PriceRule> persistentRuleList = persistentPC.getPriceRuleList();
+
+                        if (persistentRuleList != null) {
+                            persistentRuleList.forEach(priceRule -> {
+                                boolean doesNotExistInReceivedList = priceRuleAuxList.add(priceRule);
+
+                                // Se nao exite na lista recebida no request, rejeito esta persistentPriceRule.
+                                if (doesNotExistInReceivedList) {
+
+                                    // Rejeitando priceRule inserida
+                                    priceRuleRepository.delete(priceRule.getId());
+                                    priceRuleAuxList.remove(priceRule);
                                 }
-                                // Remove price rule que consta no banco mas nao veio no request
-                                priceRuleRepository.delete(persistentPriceRule.getId());
-                            }
+                            });
 
-                            // Corta pro for mais externo pois nao devemos remover este ProfCateg
-                            continue persistentProfCateg;
+                            priceRuleAuxList.forEach(pr -> {
+                                pr.setProfessionalCategory(persistentPC);
+                            });
+                            persistentPC.setPriceRuleList(priceRuleAuxList);
+                        }
+                        else
+                        {
+
+                            priceRuleAuxList.forEach(pr -> {
+                                pr.setProfessionalCategory(persistentPC);
+                            });
+                            persistentPC.setPriceRuleList(priceRuleAuxList);
                         }
                     }
-                    // Remove professionalCategory que consta no banco mas nao veio no request
-                    professionalCategoryRepository.delete(persistentPS.getProfessionalCategoryId());
-                }
+                });
             }
             else
             {
+                receivedProfessionalCategories.forEach(pc -> {
+                    pc.setProfessional(persistentProfessional);
+                });
                 persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalCategories);
             }
 		}
