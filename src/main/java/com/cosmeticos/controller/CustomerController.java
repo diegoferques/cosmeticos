@@ -52,7 +52,7 @@ public class CustomerController {
 
                     CustomerResponseBody responseBody = new CustomerResponseBody();
                     responseBody.setDescription("E-mail já existente.");
-                    log.error("Nao e permitido atualizar usuario para um email pre-existentes.");
+                    log.error("E-mail ja existe.");
 
                     return badRequest().body(responseBody);
 

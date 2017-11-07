@@ -123,6 +123,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     private String userType;

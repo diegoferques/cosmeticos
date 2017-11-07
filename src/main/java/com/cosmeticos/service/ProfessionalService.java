@@ -2,10 +2,14 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.PriceRuleRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -20,10 +24,16 @@ public class ProfessionalService {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
+    private ProfessionalCategoryRepository professionalCategoryRepository;
+
+    @Autowired
     private HabilityService habilityService;
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private PriceRuleRepository priceRuleRepository;
 
     public Optional<Professional> find(Long idProfessional) {
         return Optional.ofNullable(professionalRepository.findOne(idProfessional));
@@ -52,7 +62,22 @@ public class ProfessionalService {
         addressService.updateGeocodeFromProfessionalCreate(newProfessional);
 
         configureHability(request.getProfessional(), newProfessional);
-        configureProfessionalCategory(request.getProfessional(), newProfessional);
+
+        //configureProfessionalCategory(request.getProfessional(), newProfessional);
+        if(request.getProfessional().getProfessionalCategoryCollection() != null)
+        {
+            newProfessional.setProfessionalCategoryCollection(request.getProfessional().getProfessionalCategoryCollection());
+            newProfessional.getProfessionalCategoryCollection().forEach(pc -> {
+                pc.setProfessional(newProfessional);
+
+                // Relacionamento bidirecional
+                if ( pc.getPriceRuleList() != null) {
+                    pc.getPriceRuleList().forEach(pr -> {
+                        pr.setProfessionalCategory(pc);
+                    });
+                }
+            });
+        }
 
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         return professionalRepository.save(newProfessional);
@@ -60,66 +85,66 @@ public class ProfessionalService {
 
 
     public Optional<Professional> update(ProfessionalRequestBody request) {
-        Professional cr = request.getProfessional();
+        Professional receivedProfessional = request.getProfessional();
 
-        Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(cr.getIdProfessional()));
+        Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(receivedProfessional.getIdProfessional()));
 
         if(optional.isPresent()) {
 
             Professional persistentProfessional = optional.get();
 
-            if (!StringUtils.isEmpty(cr.getBirthDate())) {
-                persistentProfessional.setBirthDate(cr.getBirthDate());
+            if (!StringUtils.isEmpty(receivedProfessional.getBirthDate())) {
+                persistentProfessional.setBirthDate(receivedProfessional.getBirthDate());
             }
 
-            if (!StringUtils.isEmpty(cr.getCellPhone())) {
-                persistentProfessional.setCellPhone(cr.getCellPhone());
+            if (!StringUtils.isEmpty(receivedProfessional.getCellPhone())) {
+                persistentProfessional.setCellPhone(receivedProfessional.getCellPhone());
             }
 
-            if (!StringUtils.isEmpty(cr.getCnpj())) {
-                persistentProfessional.setCnpj(cr.getCnpj());
+            if (!StringUtils.isEmpty(receivedProfessional.getCnpj())) {
+                persistentProfessional.setCnpj(receivedProfessional.getCnpj());
             }
 
-            if (!StringUtils.isEmpty(cr.getGenre())) {
-                persistentProfessional.setGenre(cr.getGenre());
+            if (!StringUtils.isEmpty(receivedProfessional.getGenre())) {
+                persistentProfessional.setGenre(receivedProfessional.getGenre());
             }
 
-            if (!StringUtils.isEmpty(cr.getNameProfessional())) {
-                persistentProfessional.setNameProfessional(cr.getNameProfessional());
+            if (!StringUtils.isEmpty(receivedProfessional.getNameProfessional())) {
+                persistentProfessional.setNameProfessional(receivedProfessional.getNameProfessional());
             }
 
-            if (!StringUtils.isEmpty(cr.getStatus())) {
-                persistentProfessional.setStatus(cr.getStatus());
+            if (!StringUtils.isEmpty(receivedProfessional.getStatus())) {
+                persistentProfessional.setStatus(receivedProfessional.getStatus());
             }
 
-            if(!StringUtils.isEmpty(cr.getAttendance())){
-                persistentProfessional.setAttendance(cr.getAttendance());
+            if(!StringUtils.isEmpty(receivedProfessional.getAttendance())){
+                persistentProfessional.setAttendance(receivedProfessional.getAttendance());
             }
 
-            if(cr.getUser() != null){
+            if(receivedProfessional.getUser() != null){
                 User persistentUser = persistentProfessional.getUser();
 
-                Set<Vote> requestVotes = cr.getUser().getVoteCollection();
+                Set<Vote> requestVotes = receivedProfessional.getUser().getVoteCollection();
 
                 for (Vote v : requestVotes) {
                     persistentUser.addVote(v);
                 }
             }
 
-            if(cr.getEmployeesCollection() != null){
-                for(Professional professionalItem : cr.getEmployeesCollection()){
+            if(receivedProfessional.getEmployeesCollection() != null){
+                for(Professional professionalItem : receivedProfessional.getEmployeesCollection()){
                     Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
                     persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
 
-            if(cr.getBoss() != null){
-                persistentProfessional.setBoss(cr.getBoss());
+            if(receivedProfessional.getBoss() != null){
+                persistentProfessional.setBoss(receivedProfessional.getBoss());
             }
 
             //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
-            if (cr.getAddress() != null) {
-                addressService.updateGeocodeFromProfessionalUpdate(cr);
+            if (receivedProfessional.getAddress() != null) {
+                addressService.updateGeocodeFromProfessionalUpdate(receivedProfessional);
                 //addressService.updateGeocodeFromProfessional(professional);
             }
             /*
@@ -130,7 +155,9 @@ public class ProfessionalService {
                 }
             }
             */
-            configureProfessionalCategory(cr, persistentProfessional);
+
+
+            configureProfessionalCategory(receivedProfessional, persistentProfessional);
             
             professionalRepository.save(persistentProfessional);
 
@@ -184,34 +211,31 @@ public class ProfessionalService {
      * Importante: Se receivedProfessional.getProfessionalCategoryCollection == null nada sera alterado. Se for vazio, limparemos essa lista
      * no banco tbm. Eh importante considerar que antes repassar o que chegou no request para newProfessional, newProfessional sofre um
      * newProfessional.getProfessionalCategoryCollection().clear().
+     *
+     *
+     * Este metodo faz diversos deletes, por isso necessita de transação requeres new, pois caso hajam erros, todos os deletes sofrem rollback.
+     *
+     * Se a lista de ProfessionalCategories ou priceRule vierem nulas ou vazias, nenhuma ação é tomada. Essas listas nao podem ser vazias.
      * @param receivedProfessional
      * @param persistentProfessional
      */
-    private void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
-        Set<ProfessionalCategory> receivedProfessionalServices =
-                receivedProfessional.getProfessionalCategoryCollection();
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
 
-        if (receivedProfessionalServices != null) {
-            Set<ProfessionalCategory> persistentProfCategList = persistentProfessional.getProfessionalCategoryCollection();
+        Set<ProfessionalCategory> receivedPcCollection = receivedProfessional.getProfessionalCategoryCollection();
 
-            if(persistentProfCategList != null)
-            {
-                persistentProfCategList.clear();
-                receivedProfessionalServices.stream().forEach(receivedPs -> {
-                    receivedPs.setProfessional(persistentProfessional);
-
-                    receivedPs.getPriceRuleList().forEach( priceRule -> {
-                                priceRule.setProfessionalCategory(receivedPs);
-                            }
-                    );
-
-                    persistentProfCategList.add(receivedPs);
-                });
-            }
-            else
-            {
-                persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalServices);
-            }
+        if(receivedPcCollection != null && !receivedPcCollection.isEmpty())
+        {
+            persistentProfessional.setProfessionalCategoryCollection(receivedPcCollection);
+            persistentProfessional.getProfessionalCategoryCollection().forEach(pc -> {
+                pc.setProfessional(persistentProfessional);
+                if(pc.getPriceRuleList() != null && !pc.getPriceRuleList().isEmpty()) {
+                    // Relacionamento bidirecional
+                    pc.getPriceRuleList().forEach(pr -> {
+                        pr.setProfessionalCategory(pc);
+                    });
+                }
+            });
         }
     }
 

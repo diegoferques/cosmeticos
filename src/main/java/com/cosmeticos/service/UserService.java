@@ -47,22 +47,21 @@ public class UserService {
     @Autowired
     private CreditCardRepository creditCardRepository;
 
-    public User create(UserRequestBody request){
+    public User create(UserRequestBody request) {
 
         return repository.save(request.getEntity());
     }
 
     /**
-     *
      * @param request
      * @return
      * @deprecated Devemos usar update(User).
      */
-    public Optional<User> update(UserRequestBody request){
+    public Optional<User> update(UserRequestBody request) {
         return update(request.getEntity());
     }
 
-    public Optional<User> update(User userFromRequest){
+    public Optional<User> update(User userFromRequest) {
 
         // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdLogin = userFromRequest.getIdLogin();
@@ -73,9 +72,9 @@ public class UserService {
             User persistentUser = optional.get();
 
             // User name nao se altera
-           //if (userFromRequest.getUsername() != null) {
-           //    persistentUser.setUsername(userFromRequest.getUsername());
-           //}
+            //if (userFromRequest.getUsername() != null) {
+            //    persistentUser.setUsername(userFromRequest.getUsername());
+            //}
             if (userFromRequest.getPassword() != null) {
                 persistentUser.setPassword(userFromRequest.getPassword());
             }
@@ -117,11 +116,11 @@ public class UserService {
         return optional;
     }
 
-    public Optional<User> find(Long id){
+    public Optional<User> find(Long id) {
         return Optional.ofNullable(repository.findOne(id));
     }
 
-    public void deletar(){
+    public void deletar() {
         throw new UnsupportedOperationException("Excluir de acordo com o Status. ");
     }
 
@@ -158,7 +157,7 @@ public class UserService {
         }
     }
 
-    public Optional<User> saveToken(UserRequestBody request){
+    public Optional<User> saveToken(UserRequestBody request) {
 
         Optional<User> userOptional = repository.findByEmail(request.getEntity().getEmail());
 
@@ -168,7 +167,7 @@ public class UserService {
 
             //RandomCode random =  new RandomCode(4);
             String code = randomCodeService.nextString();
-            
+
             persistentUser.setLostPasswordToken(code);
 
             repository.save(persistentUser);
@@ -191,14 +190,14 @@ public class UserService {
                     "Esqueci minha senha",
                     "Seu token pra recriar sua senha é: " + code);
 
-            if(sendEmail == true){
+            if (sendEmail == true) {
                 persistentUser.setLostPasswordToken(code);
                 persistentUser.setLostPassword(true);
 
                 update(persistentUser);
 
                 return persistentUser;
-            }else{
+            } else {
                 throw new UserValidationException(ResponseCode.USER_PASSWORD_RESET_EMAIL_FAIL, "Falha ao enviar email com token.");
             }
         } else {
@@ -218,12 +217,12 @@ public class UserService {
     public boolean validateToken(User persistentUser, User request) {
 
         //VERIFICAMOS SE O TOKEN DO USUARIO NO BANCO EH O MESMO QUE O INFORMADO
-        if(!persistentUser.getLostPasswordToken().equals(request.getLostPasswordToken())) {
+        if (!persistentUser.getLostPasswordToken().equals(request.getLostPasswordToken())) {
             return false;
 
-        } else if(persistentUser.getLostPassword() != true) {
+        } else if (persistentUser.getLostPassword() != true) {
             return false;
-        }else {
+        } else {
             return true;
         }
 
@@ -232,10 +231,10 @@ public class UserService {
     public void invalidateToken(User user) {
         user.setLostPassword(false);
         user.setLostPasswordToken(null);
-       update(user);
+        update(user);
     }
 
-    public User addCreditCard(User user, Payment payment){
+    public User addCreditCard(User user, Payment payment) {
 
         ChargeResponse<Object> result = charger.addCard(new ChargeRequest<>(payment));
 
@@ -253,6 +252,13 @@ public class UserService {
     }
 
     public List<User> findAllBy(final User userProbe) {
+
+        // Se nao colocar nulo, esses campos entram na clausula where e nao retorna exatamente o que foi pedido nas queries string
+        if (userProbe != null) {
+            userProbe.setLostPassword(null);
+            userProbe.setCreditCardCount(null);
+            userProbe.setEvaluation(null);
+        }
         return repository.findAll(Example.of(userProbe));
     }
 }
