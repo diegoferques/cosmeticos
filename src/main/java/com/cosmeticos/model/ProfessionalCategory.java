@@ -93,8 +93,8 @@ public class ProfessionalCategory implements Serializable {
 	}
 
 	public void addPriceRule(PriceRule pr1) {
-		priceRuleList.add(pr1);
 		pr1.setProfessionalCategory(this);
-	}
+        priceRuleList.add(pr1);
+    }
 
 }

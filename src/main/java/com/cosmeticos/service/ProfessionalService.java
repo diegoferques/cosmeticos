@@ -71,9 +71,11 @@ public class ProfessionalService {
                 pc.setProfessional(newProfessional);
 
                 // Relacionamento bidirecional
-                pc.getPriceRuleList().forEach(pr -> {
-                    pr.setProfessionalCategory(pc);
-                });
+                if ( pc.getPriceRuleList() != null) {
+                    pc.getPriceRuleList().forEach(pr -> {
+                        pr.setProfessionalCategory(pc);
+                    });
+                }
             });
         }
 
@@ -212,90 +214,29 @@ public class ProfessionalService {
      *
      *
      * Este metodo faz diversos deletes, por isso necessita de transação requeres new, pois caso hajam erros, todos os deletes sofrem rollback.
+     *
+     * Se a lista de ProfessionalCategories ou priceRule vierem nulas ou vazias, nenhuma ação é tomada. Essas listas nao podem ser vazias.
      * @param receivedProfessional
      * @param persistentProfessional
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
-        Set<ProfessionalCategory> receivedProfessionalCategories =
-                receivedProfessional.getProfessionalCategoryCollection();
 
-        // Se nao veio nada no request, nao tenho o que alterar
-        if (receivedProfessionalCategories != null) {
+        Set<ProfessionalCategory> receivedPcCollection = receivedProfessional.getProfessionalCategoryCollection();
 
-            Set<ProfessionalCategory> persistentProfCategList = persistentProfessional.getProfessionalCategoryCollection();
-
-            if(persistentProfCategList != null)
-            {
-                // Passando os valores recebidos no request pra uma variavel auxiliar. Ao final do foreach abaixo,
-                // esta lista deve ter a interceção das listas de professionalCategory perisstentes e do request
-                Set<ProfessionalCategory> profCategAux = new HashSet<>(receivedProfessionalCategories);
-
-                persistentProfCategList.forEach(persistentProfCateg -> {
-                    boolean doesNotExistInReceivedList = profCategAux.add(persistentProfCateg);
-
-                    // Se nao exite na lista recebida no request, rejeito esta persistentPriceRule.
-                    if(doesNotExistInReceivedList) {
-
-                        // Rejeitando priceRule inserida
-                        profCategAux.remove(persistentProfCateg);
-                        priceRuleRepository.delete(persistentProfCateg.getProfessionalCategoryId());
-                    }
-                });
-
-                profCategAux.forEach(receivedProfCateg -> {
-                    receivedProfCateg.setProfessional(persistentProfessional);
-                });
-                persistentProfessional.setProfessionalCategoryCollection(profCategAux);
-
-                profCategAux.forEach(pcAux -> {
-
-                    if(pcAux.getProfessionalCategoryId() != null) {
-
-                        ProfessionalCategory persistentPC  = professionalCategoryRepository.findOne(pcAux.getProfessionalCategoryId());
-
-                        // Atualiza os preços nos categories que não serão removidos.
-                        Set<PriceRule> priceRuleAuxList = new HashSet<>(pcAux.getPriceRuleList());
-
-                        Set<PriceRule> persistentRuleList = persistentPC.getPriceRuleList();
-
-                        if (persistentRuleList != null) {
-                            persistentRuleList.forEach(priceRule -> {
-                                boolean doesNotExistInReceivedList = priceRuleAuxList.add(priceRule);
-
-                                // Se nao exite na lista recebida no request, rejeito esta persistentPriceRule.
-                                if (doesNotExistInReceivedList) {
-
-                                    // Rejeitando priceRule inserida
-                                    priceRuleRepository.delete(priceRule.getId());
-                                    priceRuleAuxList.remove(priceRule);
-                                }
-                            });
-
-                            priceRuleAuxList.forEach(pr -> {
-                                pr.setProfessionalCategory(persistentPC);
-                            });
-                            persistentPC.setPriceRuleList(priceRuleAuxList);
-                        }
-                        else
-                        {
-
-                            priceRuleAuxList.forEach(pr -> {
-                                pr.setProfessionalCategory(persistentPC);
-                            });
-                            persistentPC.setPriceRuleList(priceRuleAuxList);
-                        }
-                    }
-                });
-            }
-            else
-            {
-                receivedProfessionalCategories.forEach(pc -> {
-                    pc.setProfessional(persistentProfessional);
-                });
-                persistentProfessional.setProfessionalCategoryCollection(receivedProfessionalCategories);
-            }
-		}
+        if(receivedPcCollection != null && !receivedPcCollection.isEmpty())
+        {
+            persistentProfessional.setProfessionalCategoryCollection(receivedPcCollection);
+            persistentProfessional.getProfessionalCategoryCollection().forEach(pc -> {
+                pc.setProfessional(persistentProfessional);
+                if(pc.getPriceRuleList() != null && !pc.getPriceRuleList().isEmpty()) {
+                    // Relacionamento bidirecional
+                    pc.getPriceRuleList().forEach(pr -> {
+                        pr.setProfessionalCategory(pc);
+                    });
+                }
+            });
+        }
     }
 
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {
