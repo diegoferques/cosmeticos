@@ -92,7 +92,7 @@ public class MockingProfessionalCategoryControllerTests {
                 "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
 
-
+                
                 "       \"professional\" : {\n" +
                 "        \"user\" : {\n" +
                 "            \"voteCollection\" : [\n" +

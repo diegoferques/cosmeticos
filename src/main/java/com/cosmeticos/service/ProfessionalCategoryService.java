@@ -1,23 +1,28 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.model.PriceRule;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
  * Created by Vinicius on 21/06/2017.
  */
-@org.springframework.stereotype.Service
+@Slf4j
+@Service
 public class ProfessionalCategoryService {
 
     @Autowired
@@ -70,40 +75,42 @@ public class ProfessionalCategoryService {
     //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
     public List<ProfessionalCategory> getNearby(ProfessionalCategory Service, String latitude, String longitude, String radius) {
 
-        List<ProfessionalCategory> professionalCategoryList = repository.findAll(Example.of(Service));
+
+        List<ProfessionalCategory> professionalCategoryList = repository.findByPriceRuleNotNull();
         List<ProfessionalCategory> professionalServices = new ArrayList<>();
 
         //ACHEI MELHOR PARSEAR SOMENTE UMA VEZ, POR ISSO CRIEI ESSA VARIAVEL
         Double distanciaLimite = Double.parseDouble(radius);
 
-        for (ProfessionalCategory psl: professionalCategoryList) {
+            for (ProfessionalCategory psl : professionalCategoryList) {
 
-            Professional professional = psl.getProfessional();
+                Professional professional = psl.getProfessional();
 
-            if (professional.getAddress() != null) {
+                if (professional.getAddress() != null) {
 
-                if (!professional.getAddress().getLatitude().isEmpty() &&
-                        !professional.getAddress().getLongitude().isEmpty()) {
+                    if (!professional.getAddress().getLatitude().isEmpty() &&
+                            !professional.getAddress().getLongitude().isEmpty()) {
 
-                    Double distancia = getDistancia(
-                            Double.parseDouble(latitude),
-                            Double.parseDouble(longitude),
-                            Double.parseDouble(professional.getAddress().getLatitude()),
-                            Double.parseDouble(professional.getAddress().getLongitude())
-                    );
+                        Double distancia = getDistancia(
+                                Double.parseDouble(latitude),
+                                Double.parseDouble(longitude),
+                                Double.parseDouble(professional.getAddress().getLatitude()),
+                                Double.parseDouble(professional.getAddress().getLongitude())
+                        );
 
-                    if (distancia <= distanciaLimite) {
-                        professional.setDistance(distancia.longValue());
-                        professionalServices.add(psl);
+                        if (distancia <= distanciaLimite) {
+                            professional.setDistance(distancia.longValue());
+                            professionalServices.add(psl);
+                        }
+
                     }
-
                 }
+
+                User persistentUser = professional.getUser();
+
+                persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
             }
 
-            User persistentUser = professional.getUser();
-
-            persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
-        }
 
         return professionalServices;
     }
