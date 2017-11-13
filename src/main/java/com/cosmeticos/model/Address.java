@@ -25,6 +25,7 @@ public class Address implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +33,13 @@ public class Address implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String address;
 
     @JsonView({
             ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String cep;
 
@@ -44,31 +47,37 @@ public class Address implements Serializable {
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String city;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String state;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String country;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String latitude;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String longitude;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
     })
     private String complement;
 

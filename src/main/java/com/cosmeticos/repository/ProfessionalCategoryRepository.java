@@ -18,10 +18,12 @@ public interface ProfessionalCategoryRepository extends JpaRepository<Profession
 
     @Query("SELECT ps FROM" +
             " ProfessionalCategory ps" +
-            " WHERE ps.professional.status = 'ACTIVE' " +
-            "AND ps.priceRuleList " +
-            "IS NOT EMPTY")
-    List<ProfessionalCategory> findByPriceRuleNotNull();
+            " WHERE " +
+            "ps.professional.status = 'ACTIVE' " +
+            "AND ps.category.name = ?1 " +
+            "AND ps.priceRuleList IS NOT EMPTY"
+    )
+    List<ProfessionalCategory> findByPriceRuleNotNullAndService(String categoryName);
 
     //ProfessionalCategory findByPriceRuleListId(Long id);
 

@@ -1,7 +1,6 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
 import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.model.*;
@@ -14,22 +13,19 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.ws.Response;
 import java.lang.Exception;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-
-import static java.lang.System.nanoTime;
 
 
 @RunWith(SpringRunner.class)
@@ -174,6 +170,7 @@ public class ProfessionalCategoryControllerTests {
 
 
 	}
+
 
 	public User createFakeUser() {
 		User u = new User();

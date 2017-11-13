@@ -1,7 +1,6 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
-import com.cosmeticos.model.PriceRule;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.model.User;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -73,10 +71,14 @@ public class ProfessionalCategoryService {
 
     //TODO - VERIFICAR SE TEM UMA FORMA MELHOR DE FAZER, ACHEI MUITO TRABALHOSO COMO ESTA ATUALMENTE
     //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
-    public List<ProfessionalCategory> getNearby(ProfessionalCategory Service, String latitude, String longitude, String radius) {
+    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, String latitude, String longitude, String radius) {
 
 
-        List<ProfessionalCategory> professionalCategoryList = repository.findByPriceRuleNotNull();
+        String serviceName = service.getCategory().getName();
+        List<ProfessionalCategory> professionalCategoryList = repository.findByPriceRuleNotNullAndService(
+                serviceName
+        );
+
         List<ProfessionalCategory> professionalServices = new ArrayList<>();
 
         //ACHEI MELHOR PARSEAR SOMENTE UMA VEZ, POR ISSO CRIEI ESSA VARIAVEL

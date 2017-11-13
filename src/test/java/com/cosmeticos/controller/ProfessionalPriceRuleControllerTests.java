@@ -150,37 +150,7 @@ public class ProfessionalPriceRuleControllerTests {
 
         String email = "testPutRuleForProfessional2@email.com";
 
-        String json = "{\n" +
-                "  \"professional\": {\n" +
-                "    \"address\": null,\n" +
-                "    \"birthDate\": 1120705200000,\n" +
-                "    \"cellPhone\": null,\n" +
-                "    \"dateRegister\": null,\n" +
-                "    \"genre\": null,\n" +
-                "    \"status\": null,\n" +
-                "    \"user\": {\n" +
-                "      \"email\": \""+ email +"\",\n" +
-                "      \"idLogin\": null,\n" +
-                "      \"password\": \"123\",\n" +
-                "      \"sourceApp\": null,\n" +
-                "         \"personType\":\"FISICA\",\n" +
-                "      \"username\": \""+ email +"\"\n" +
-                "    },\n" +
-                "    \"cnpj\": \"05404277726\",\n" +
-                "    \"idProfessional\": null,\n" +
-                "    \"location\": 506592589,\n" +
-                "    \"nameProfessional\": \"aaa\",\n" +
-                "    \"professionalCategoryCollection\": [\n" +
-                "      {\n" +
-                "        \"professional\": null,\n" +
-                "        \"category\": {\n" +
-                "          \"name\": \"LUZES\",\n" +
-                "          \"idCategory\": 1\n" +
-                "        }\n" +
-                "      }\n" +
-                "    ]\n" +
-                "  }\n" +
-                "}";
+        String json = getProfessionalJsonWithoutPriceRule(email, "LUZES");
 
         System.out.println(json);
 
@@ -765,37 +735,7 @@ public class ProfessionalPriceRuleControllerTests {
 
         String email = "testRuleIgualEntreProfessional@email.com";
 
-        String json = "{\n" +
-                "  \"professional\": {\n" +
-                "    \"address\": null,\n" +
-                "    \"birthDate\": 1120705200000,\n" +
-                "    \"cellPhone\": null,\n" +
-                "    \"dateRegister\": null,\n" +
-                "    \"genre\": null,\n" +
-                "    \"status\": null,\n" +
-                "    \"user\": {\n" +
-                "      \"email\": \""+ email +"\",\n" +
-                "      \"idLogin\": null,\n" +
-                "      \"password\": \"123\",\n" +
-                "      \"sourceApp\": null,\n" +
-                "         \"personType\":\"FISICA\",\n" +
-                "      \"username\": \""+ email +"\"\n" +
-                "    },\n" +
-                "    \"cnpj\": \"05404277726\",\n" +
-                "    \"idProfessional\": null,\n" +
-                "    \"location\": 506592589,\n" +
-                "    \"nameProfessional\": \"aaa\",\n" +
-                "    \"professionalCategoryCollection\": [\n" +
-                "      {\n" +
-                "        \"professional\": null,\n" +
-                "        \"category\": {\n" +
-                "          \"name\": \"LUZES\",\n" +
-                "          \"idCategory\": 1\n" +
-                "        }\n" +
-                "      }\n" +
-                "    ]\n" +
-                "  }\n" +
-                "}";
+        String json = getProfessionalJsonWithoutPriceRule(email, "LUZES");
 
         System.out.println(json);
 
@@ -856,37 +796,7 @@ public class ProfessionalPriceRuleControllerTests {
 
         String email2 = "professionalServicesRNF581234567@email.com";
 
-        String json2 = "{\n" +
-                "  \"professional\": {\n" +
-                "    \"address\": null,\n" +
-                "    \"birthDate\": 1120705200000,\n" +
-                "    \"cellPhone\": null,\n" +
-                "    \"dateRegister\": null,\n" +
-                "    \"genre\": null,\n" +
-                "    \"status\": null,\n" +
-                "    \"user\": {\n" +
-                "      \"email\": \""+ email2 +"\",\n" +
-                "      \"idLogin\": null,\n" +
-                "      \"password\": \"123\",\n" +
-                "      \"sourceApp\": null,\n" +
-                "         \"personType\":\"FISICA\",\n" +
-                "      \"username\": \""+ email2 +"\"\n" +
-                "    },\n" +
-                "    \"cnpj\": \"05404277726\",\n" +
-                "    \"idProfessional\": null,\n" +
-                "    \"location\": 506592589,\n" +
-                "    \"nameProfessional\": \"aaa\",\n" +
-                "    \"professionalCategoryCollection\": [\n" +
-                "      {\n" +
-                "        \"professional\": null,\n" +
-                "        \"category\": {\n" +
-                "          \"name\": \"LUZES\",\n" +
-                "          \"idCategory\": 1\n" +
-                "        }\n" +
-                "      }\n" +
-                "    ]\n" +
-                "  }\n" +
-                "}";
+        String json2 = getProfessionalJsonWithoutPriceRule(email2, "LUZES");
 
         System.out.println(json2);
 
@@ -941,6 +851,50 @@ public class ProfessionalPriceRuleControllerTests {
                 .get()
                 .getPriceRuleList().size());
     }
+
+    public static String getProfessionalJsonWithoutPriceRule(String email, String category) {
+        String json =
+                "{\n" +
+                        "  \"professional\": {\n" +
+                        "    \"address\": {\n" +
+                                // Rua da abolicao, 5, austin
+                        "        \"latitude\": \"-22.7245761\", " +
+                        "        \"longitude\": \"-43.51020159999999\"" +
+                        "    },\n" +
+                        "    \"birthDate\": 1120705200000,\n" +
+                        "    \"cellPhone\": null,\n" +
+                        "    \"dateRegister\": null,\n" +
+                        "    \"genre\": null,\n" +
+                        "    \"status\": null,\n" +
+                        "    \"user\": {\n" +
+                        "      \"email\": \""+ email +"\",\n" +
+                        "      \"idLogin\": null,\n" +
+                        "      \"password\": \"123\",\n" +
+                        "      \"sourceApp\": null,\n" +
+                        "         \"personType\":\"FISICA\",\n" +
+                        "      \"username\": \""+ email +"\"\n" +
+                        "    },\n" +
+                        "    \"cnpj\": \"05404277726\",\n" +
+                        "    \"idProfessional\": null,\n" +
+                        "    \"location\": 506592589,\n" +
+                        "    \"nameProfessional\": \"aaa\",\n" +
+                        "    \"professionalCategoryCollection\": [\n" +
+                        "      {\n" +
+                        "        \"professional\": null,\n" +
+                        "        \"category\": {\n" +
+                        "          \"name\": \""+category+"\",\n" +
+                        "          \"idCategory\": 1\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    ]\n" +
+                        "  }\n" +
+                        "}";
+
+        System.out.println(json);
+
+        return json;
+    }
+
 
     static ResponseEntity<ProfessionalResponseBody> put(String json, TestRestTemplate restTemplate) throws URISyntaxException {
         System.out.println(json);
