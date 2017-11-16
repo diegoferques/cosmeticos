@@ -53,6 +53,7 @@ public class ProfessionalService {
         newProfessional.setUser(request.getProfessional().getUser());
 		newProfessional.getUser().setProfessional(newProfessional);
         newProfessional.setAddress(request.getProfessional().getAddress());
+        newProfessional.setAttendance(request.getProfessional().getAttendance());
 
         professionalRepository.save(newProfessional);
 
