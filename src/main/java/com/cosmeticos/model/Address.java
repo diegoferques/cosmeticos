@@ -43,6 +43,10 @@ public class Address implements Serializable {
     })
     private String cep;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+    })
     private String neighborhood;
 
     @JsonView({
@@ -88,6 +92,11 @@ public class Address implements Serializable {
     @JsonIgnore
     @OneToOne
     private Professional professional;
+
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+    })
     private String number;
 
     @Override
