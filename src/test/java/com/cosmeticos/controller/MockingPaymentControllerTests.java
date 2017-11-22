@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.Exception;
@@ -350,8 +351,10 @@ public class MockingPaymentControllerTests {
 		return customer;
 	}
 
-	//IGNORADO, UTILIZAR A NOVA VERSAO LOGO NO PROXIMO TESTE: testCapturarTransacaoOK2
-	@Ignore
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = Application.PROFILE_TESTING_INTEGRATION_VALUE
+    )
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
@@ -385,7 +388,10 @@ public class MockingPaymentControllerTests {
         Assert.assertTrue(paymentStatus.isSuccess());
     }
 
-    @Ignore
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = Application.PROFILE_TESTING_INTEGRATION_VALUE
+    )
     @Test
     public void testCapturarTransacaoOK2() throws Exception {
 
@@ -610,8 +616,12 @@ public class MockingPaymentControllerTests {
 
         return exchange;
     }
-@Ignore
-//TODO: devemos separar testes do oneClick e MultiClick atraves do active profile.
+
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = Application.PROFILE_TESTING_INTEGRATION_VALUE
+    )
+    @Ignore
     @Test
     public void errorConflictSuperpay()throws URISyntaxException, ParseException, JsonProcessingException{
 

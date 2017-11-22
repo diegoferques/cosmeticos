@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
@@ -70,8 +71,10 @@ public class PaymentControllerTests {
         }
     }
 
-    //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
-    @Ignore
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = Application.PROFILE_TESTING_INTEGRATION_VALUE
+    )
     @Test
     public void testCampainhaOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
@@ -140,8 +143,10 @@ public class PaymentControllerTests {
         return exchange;
     }
 
-    //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
-    @Ignore
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = Application.PROFILE_TESTING_INTEGRATION_VALUE
+    )
     @Test
     public void testPaymentOk() throws URISyntaxException, ParseException, JsonProcessingException {
 
@@ -382,8 +387,10 @@ public class PaymentControllerTests {
 
     }
 
-    //IGNORADO POIS AQUI CHAMAMOS DIRETAMENTE A API DA SUPERPAY, TEMOS OUTRO TESTE MOCKADO
-    @Ignore
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = Application.PROFILE_TESTING_INTEGRATION_VALUE
+    )
     @Test
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 

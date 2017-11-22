@@ -143,6 +143,11 @@ public class ProfessionalCategoryController {
 
     }
 
+    /**
+     * Problemas com delete: https://stackoverflow.com/a/32745045/3810036
+     * @param idProfessionalCategory
+     * @return
+     */
     @RequestMapping(path = "/professionalcategories/{id}", method = RequestMethod.DELETE)
     public HttpEntity<Void> delete(@PathVariable("id") Long idProfessionalCategory) {
 

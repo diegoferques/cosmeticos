@@ -125,7 +125,7 @@ public class ProfessionalController {
 
 					if (emailFromRequest != null || emailInDatabase.equals(emailFromRequest)) {
 
-						optional = service.update(request);
+						optional = service.update(request.getProfessional());
 
 						Professional professional = optional.get();
 

@@ -794,7 +794,7 @@ public class ProfessionalPriceRuleControllerTests {
                 .getPriceRuleList().size());
 
 
-        String email2 = "professionalServicesRNF581234567@email.com";
+        String email2 = "testRuleIgualEntreProfessionalRNF58@email.com";
 
         String json2 = getProfessionalJsonWithoutPriceRule(email2, "LUZES");
 

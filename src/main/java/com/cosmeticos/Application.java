@@ -20,6 +20,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SpringBootApplication
 public class Application {
 
+	public static final String ACTIVE_PROFILE_KEY = "spring.profiles.active";
+	public static final String PROFILE_TESTING_INTEGRATION_VALUE = "integrationTest";
+
 	@Value("${paymnet.charger}")
 	private String chargerBeanName;
 

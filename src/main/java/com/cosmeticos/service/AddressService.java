@@ -50,10 +50,10 @@ public class AddressService {
             a.setLongitude("0");
         }
 
-        return addressRepository.save(a);
+        return a;
     }
 
-    public void updateGeocodeFromProfessionalCreate(Professional professional) {
+    public Address updateGeocodeFromProfessionalCreate(Professional professional) {
 
         Address address = professional.getAddress();
 
@@ -64,9 +64,9 @@ public class AddressService {
             address.setLongitude(geocode.getLng().toString());
             address.setProfessional(professional);
 
-            addressRepository.save(address);
-        }
 
+        }
+return address;
     }
 
     public void updateGeocodeFromProfessionalUpdate(Professional professionalRequest) {

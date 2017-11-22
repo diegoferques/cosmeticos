@@ -103,10 +103,12 @@ public class CategoryController {
 
     @JsonView(ResponseJsonView.CategoryGetAll.class)
     @RequestMapping(path = "/categories", method = RequestMethod.GET)
-    public HttpEntity<CategoryResponseBody> findAll() {
+    public HttpEntity<CategoryResponseBody> findAll(@ModelAttribute Category ma) {
 
         try {
-            List<Category> entitylist = category.findAll();
+            List<Category> entitylist = (ma == null) ?
+                    category.findAll() :
+                    category.findAll(ma); // Busca com filtro
 
             CategoryResponseBody responseBody = new CategoryResponseBody();
             responseBody.setCategoryList(entitylist);

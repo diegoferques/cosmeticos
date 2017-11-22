@@ -1,5 +1,6 @@
 package com.cosmeticos.payment;
 
+import com.cosmeticos.Application;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.superpay.ws.completo.CapturarTransacaoCompletaResponse;
 import com.cosmeticos.payment.superpay.ws.completo.ObjectFactory;
@@ -11,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -53,6 +55,10 @@ public class SuperpayCompletoClientIntegrationTest {
 
     }
 
+    @IfProfileValue(
+            name = Application.ACTIVE_PROFILE_KEY,
+            values = { Application.PROFILE_TESTING_INTEGRATION_VALUE }
+    )
     @Test
     public void testCapturar(){
 

@@ -55,7 +55,7 @@ public class ProfessionalService {
         newProfessional.setAddress(request.getProfessional().getAddress());
         newProfessional.setAttendance(request.getProfessional().getAttendance());
 
-        professionalRepository.save(newProfessional);
+        //professionalRepository.save(newProfessional);
 
         //AQUI SALVAMOS LATITUDE E LONGITUDE NO ADDRESS CRIADO ACIMA
         //Address address = newProfessional.getAddress();
@@ -81,12 +81,12 @@ public class ProfessionalService {
         }
 
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
+        // GArry: removi o primeiro save
         return professionalRepository.save(newProfessional);
     }
 
 
-    public Optional<Professional> update(ProfessionalRequestBody request) {
-        Professional receivedProfessional = request.getProfessional();
+    public Optional<Professional> update(Professional  receivedProfessional) {
 
         Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(receivedProfessional.getIdProfessional()));
 
@@ -225,7 +225,7 @@ public class ProfessionalService {
 
         Set<ProfessionalCategory> receivedPcCollection = receivedProfessional.getProfessionalCategoryCollection();
 
-        if(receivedPcCollection != null && !receivedPcCollection.isEmpty())
+        if(receivedPcCollection != null)
         {
             persistentProfessional.setProfessionalCategoryCollection(receivedPcCollection);
             persistentProfessional.getProfessionalCategoryCollection().forEach(pc -> {

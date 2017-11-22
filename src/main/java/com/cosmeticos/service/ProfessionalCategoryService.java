@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,9 @@ public class ProfessionalCategoryService {
 
     @Autowired
     private ProfessionalCategoryRepository repository;
+
+    @Autowired
+    private ProfessionalService professionalService;
 
     @Autowired
     private VoteService voteService;
@@ -48,7 +53,20 @@ public class ProfessionalCategoryService {
     }
 
     public void delete(Long id){
-        repository.delete(id);
+
+        // TODO: DELETE fazer endpoint professionals/id/professionalCategory/id ... gambi abaixo
+       ProfessionalCategory professionalCategory = repository.findOne(id);
+
+        Optional<Professional> optional = professionalService.find(professionalCategory.getProfessional().getIdProfessional());
+
+        Professional p = optional.get();
+
+        p.getProfessionalCategoryCollection().remove(professionalCategory);
+
+        professionalService.update(p);
+
+        //repository.delete(id);
+
     }
 
     public List<ProfessionalCategory> findAll() {

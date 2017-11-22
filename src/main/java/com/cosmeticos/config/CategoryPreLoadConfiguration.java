@@ -21,13 +21,16 @@ public class CategoryPreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data(){
 
+        /////////////////////////////////////////////////////
+        // CATEGORIA CABELEIREIRO ///////////////////////////
+        /////////////////////////////////////////////////////
         Category ownerCategory = new Category();
-        ownerCategory.setName("CABELEIREIRA");
+        ownerCategory.setName("CABELEIREIRO");
 //////////////////
-        Category s1 = new Category();
-        s1.setName("ESCOVA");
+        Category sub1 = new Category();
+        sub1.setName("ESCOVA");
 
-        ownerCategory.addChild(s1);
+        ownerCategory.addChild(sub1);
 //////////////////
         Category s2 = new Category();
         s2.setName("HIDRATAÇÃO");
@@ -37,15 +40,25 @@ public class CategoryPreLoadConfiguration {
         Category s3 = new Category();
         s3.setName("PENTEADO");
 
+        ownerCategory.addChild(s3);
+/////////////////
+
+
+        /////////////////////////////////////////////////////
+        // CATEGORIA ESTETICA ///////////////////////////////
+        /////////////////////////////////////////////////////
         Category s4 = new Category();
         s4.setName("DEPILAÇÃO");
 
          Category s5 = new Category();
         s5.setName("MASSAGEM");
 
+        Category categEstetica = new Category();
+        categEstetica.setName("ESTETICA");
+        categEstetica.addChild(s4);
+        categEstetica.addChild(s5);
+
         repository.saveAndFlush(ownerCategory);
-        repository.save(s3);
-        repository.save(s4);
-        repository.save(s5);
+        repository.saveAndFlush(categEstetica);
     }
 }

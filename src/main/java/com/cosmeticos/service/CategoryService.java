@@ -4,6 +4,7 @@ import com.cosmeticos.commons.CategoryRequestBody;
 import com.cosmeticos.model.Category;
 import com.cosmeticos.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,5 +62,9 @@ public class CategoryService {
 
         return StreamSupport.stream(result.spliterator(), false)
                 .collect(Collectors.toList());
+    }
+
+    public List<Category> findAll(Category ma) {
+        return repository.findAll(Example.of(ma));
     }
 }

@@ -57,7 +57,7 @@ public class ProfessionalCategoryControllerTests {
 			Category s1 = new Category();
 			s1.setName(currentTest.getMethodName());
 
-			serviceRepository.save(s1);
+			serviceRepository.saveAndFlush(s1);
 
 			String email = "professional-" + currentTest.getMethodName() + "@bol.com";
 
@@ -108,7 +108,6 @@ public class ProfessionalCategoryControllerTests {
 
 	}
 
-	@Transactional
 	@Test
 	public void delete() throws Exception {
 
@@ -127,7 +126,7 @@ public class ProfessionalCategoryControllerTests {
 
 		int professionalCateogrySizeAfter = pcListAfter.size();
 
-		Assert.assertTrue(professionalCateogrySizeAfter < professionalCateogrySizeBefore);
+		Assert.assertTrue("ProfessionalCategory nao foi deletado",professionalCateogrySizeAfter < professionalCateogrySizeBefore);
 
 	}
 
