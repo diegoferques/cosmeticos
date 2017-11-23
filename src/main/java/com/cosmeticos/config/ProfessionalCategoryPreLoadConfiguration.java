@@ -37,7 +37,7 @@ public class ProfessionalCategoryPreLoadConfiguration {
     public void insertInitialH2Data(){
 
         Professional p1 = professionalRepository.findOne(1L);        // Criamos o Usuario que nao existe no banco.
-        Category s1 = serviceRepository.findWithSpecialties(1L);
+        Category s1 = serviceRepository.findWithSpecialties(4L);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(p1, s1);
         ps1.addPriceRule( new PriceRule("Cabelo curto", 10000L));
@@ -76,7 +76,7 @@ public class ProfessionalCategoryPreLoadConfiguration {
 
         /////////////////////////////////////////////////////////
         Professional p5 = professionalRepository.findOne(5L);        // Criamos o Usuario que nao existe no banco.
-        Category s5 = serviceRepository.findWithSpecialties(5L);
+        Category s5 = serviceRepository.findWithSpecialties(6L);
 
         ProfessionalCategory ps5 = new ProfessionalCategory(p5, s5);
 
