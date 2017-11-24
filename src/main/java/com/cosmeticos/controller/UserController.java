@@ -86,7 +86,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.PUT)
-    public HttpEntity<UserResponseBody> update(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
+    public HttpEntity<UserResponseBody> update(@RequestBody UserRequestBody request, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors()) {
