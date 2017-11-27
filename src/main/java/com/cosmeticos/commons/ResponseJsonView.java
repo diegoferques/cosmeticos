@@ -22,6 +22,7 @@ public class ResponseJsonView {
     public interface OrderControllerCreate {}
     public interface OrderControllerUpdate {}
     public interface OrderControllerFindBy {}
+    public interface UserUpdate {}
     public interface ProfessionalFindAll {}
     public interface ProfessionalUpdate {}
     public interface ProfessionalCreate {}

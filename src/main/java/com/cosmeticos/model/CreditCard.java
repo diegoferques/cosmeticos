@@ -91,6 +91,11 @@ public class CreditCard implements Serializable {
     @Enumerated
     private Status status;
 
+    /*
+    @JsonView({
+            ResponseJsonView.UserUpdate.class
+    })
+    */
     @JoinColumn(name = "id_user")
     @ManyToOne(optional = false)
     private User user;

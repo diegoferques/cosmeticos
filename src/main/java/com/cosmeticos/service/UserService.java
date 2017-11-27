@@ -71,6 +71,42 @@ public class UserService {
         if (optional.isPresent()) {
             User persistentUser = optional.get();
 
+            //TODO - PARA ADICIONAR CARTÃO, DEVEMOS FAZER A VALIDAÇÃO NA ADMINISTRADORA DE CARTÃO, NEM QUE SEJA PASSANDO 1 REAL E DEPOIS CANCELANDO
+            //Verificamos se o request veio com CreditCardCollection
+            if(!userFromRequest.getCreditCardCollection().isEmpty()) {
+
+                for (CreditCard creditCard :
+                        userFromRequest.getCreditCardCollection()) {
+                    persistentUser.addCreditCard(creditCard);
+                }
+
+                //COMENTEI TUDO ABAIXO PARA USAR DA FORMA ACIMA
+                /*
+                //Verificamos se o persisentUser já tem um CreditCardCollection
+                if(!persistentUser.getCreditCardCollection().isEmpty()) {
+                    Set<CreditCard> creditCardCollection = persistentUser.getCreditCardCollection();
+
+                    //TODO - IMPLEMENTAR VALIDAÇÃO AO ADICIONAR UM CARTÃO JÁ EXISTENTE, CONTEMPLANDO A POSSIBILIDE EDIT DE CARTÃO
+                    //Adicionamos cada CreditCard do Request na Collection de persistentUser
+                    for (CreditCard creditCard :
+                            userFromRequest.getCreditCardCollection()) {
+                        creditCardCollection.add(creditCard);
+                    }
+
+                //Se não tiver, adicionamos um creditCardCollection ao persistentUser
+                } else {
+
+                    for (CreditCard creditCard :
+                            userFromRequest.getCreditCardCollection()) {
+                        creditCard.setUser(persistentUser);
+                    }
+
+                    persistentUser.setCreditCardCollection(
+                            userFromRequest.getCreditCardCollection());
+                }
+                */
+            }
+
             // User name nao se altera
             //if (userFromRequest.getUsername() != null) {
             //    persistentUser.setUsername(userFromRequest.getUsername());
