@@ -145,6 +145,7 @@ public class ProfessionalPreLoadConfiguration {
         address5.setLongitude("-43.528198");
 
         Professional s5 = new Professional();
+        s5.setStatus(Professional.Status.ACTIVE);
         s5.setNameProfessional("Habib");
         s5.setDateRegister(Timestamp.valueOf(now()));
 

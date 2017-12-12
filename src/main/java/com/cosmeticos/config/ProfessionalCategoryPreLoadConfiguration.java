@@ -64,23 +64,69 @@ public class ProfessionalCategoryPreLoadConfiguration {
         professionalCategoryRepository.save(ps3);
 
         /////////////////////////////////////////////////////////
-        Professional p4 = professionalRepository.findOne(4L);        // Criamos o Usuario que nao existe no banco.
-        Category s4 = serviceRepository.findWithSpecialties(4L);
-
-        ProfessionalCategory ps4 = new ProfessionalCategory(p4, s4);
-        ps4.addPriceRule(new PriceRule("Cabelo curto", 10000L));
-        ps4.addPriceRule(new PriceRule("Cabelo Medio", 15000L));
-        ps4.addPriceRule(new PriceRule("Cabelo Longo", 20000L));
-
-        professionalCategoryRepository.save(ps4);
+        //////////////// VINICIUS ///////////////////////////////
+        addProfessionalCategoryAndPriceRule(
+                4L,
+                4L,
+                new PriceRule("Cabelo curto", 10000L),
+                new PriceRule("Cabelo Medio", 15000L),
+                new PriceRule("Cabelo Longo", 20000L)
+        );
 
         /////////////////////////////////////////////////////////
-        Professional p5 = professionalRepository.findOne(5L);        // Criamos o Usuario que nao existe no banco.
-        Category s5 = serviceRepository.findWithSpecialties(6L);
+        ///////////////// HABIBI ////////////////////////////////
+        addProfessionalCategoryAndPriceRule(
+                5L,
+                6L,
+                new PriceRule("Shiatsu", 10000L),
+                new PriceRule("Cervical", 15000L),
+                new PriceRule("Relxante", 20000L)
+        );
 
-        ProfessionalCategory ps5 = new ProfessionalCategory(p5, s5);
+        /////////////////////////////////////////////////////////
+        ///////////////// KELLY /////////////////////////////////
+        addProfessionalCategoryAndPriceRule(
+                6L,
+                6L,
+                new PriceRule("Relxante", 20000L)
+        );
 
-        professionalCategoryRepository.save(ps5);
+        /////////////////////////////////////////////////////////
+        ///////////////// KDOBA /////////////////////////////////
+        addProfessionalCategoryAndPriceRule(
+                7L,
+                2L,
+                new PriceRule("Xampu A", 20000L),
+                new PriceRule("Xampu B", 50000L)
+        );
+
+        /////////////////////////////////////////////////////////
+        ///////////////// JOSE PAULINO //////////////////////////
+        addProfessionalCategoryAndPriceRule(
+                8L,
+                3L,
+                new PriceRule("Casamentos", 100000L),
+                new PriceRule("15 Anos", 150000L),
+                new PriceRule("Casual", 40000L)
+        );
+    }
+
+    private void addProfessionalCategoryAndPriceRule(
+            Long professionalId,
+            Long categoryId,
+            PriceRule... priceRules
+    )
+    {
+        Professional p = professionalRepository.findOne(professionalId);
+        Category s = serviceRepository.findWithSpecialties(categoryId);
+
+        ProfessionalCategory ps = new ProfessionalCategory(p, s);
+
+        for (PriceRule pr : priceRules) {
+            ps.addPriceRule(pr);
+        }
+
+        professionalCategoryRepository.save(ps);
     }
 
 }
