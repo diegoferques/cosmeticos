@@ -9,6 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -37,6 +38,7 @@ public class CreditCardService {
 
     /**
      * Usa a api Example do spring-data.
+     *
      * @param creditCardProbe
      * @return
      */
@@ -44,4 +46,20 @@ public class CreditCardService {
     public List<CreditCard> findAllBy(CreditCard creditCardProbe) {
         return this.repository.findAll(Example.of(creditCardProbe));
     }// repara que a query vai mudar.
+
+    public CreditCard create(CreditCard creditCard) {
+
+        Optional<User> persistentUserOptional = Optional.ofNullable(userRepository.findOne(creditCard.getUser().getIdLogin()));
+
+        if (persistentUserOptional.isPresent()) {
+            User persistentUser = persistentUserOptional.get();
+            if (!persistentUser.getCreditCardCollection().isEmpty()) {
+                throw new IllegalStateException("Usuario ja possui um cartao cadastrado.");
+            } else {
+                return this.repository.save(creditCard);
+            }
+        } else {
+            throw new IllegalStateException("Usuario nao informado na requisicao");
+        }
+    }
 }

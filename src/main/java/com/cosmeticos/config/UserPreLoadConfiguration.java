@@ -35,14 +35,14 @@ public class UserPreLoadConfiguration {
 
         Order o2 = orderRepository.findOne(2L);
 
-        CreditCard cc = new CreditCard();
+        CreditCard cc = CreditCard.builder().build();
         cc.setToken("4321");
         cc.setSuffix("1831");
         cc.setExpirationDate(LocalDate.of(2017, 12, 1).format(ofPattern("MM/yy")));
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
 
-        CreditCard ccNovo = new CreditCard();
+        CreditCard ccNovo = CreditCard.builder().build();
         ccNovo.setToken("7777");
         ccNovo.setExpirationDate(LocalDate.of(2018, 3, 1).format(ofPattern("MM/yy")));
         //ccNovo.setExpirationDate("03/2018");
@@ -64,7 +64,7 @@ public class UserPreLoadConfiguration {
         ccNovo.setUser(u1);
         //--------------------------//
 
-        CreditCard cc2 = new CreditCard();
+        CreditCard cc2 = CreditCard.builder().build();
         cc2.setToken("7772344377");
         cc2.setSuffix("3053");
         cc2.setExpirationDate(LocalDate.of(2019, 4, 1).format(ofPattern("MM/yy")));
@@ -72,7 +72,7 @@ public class UserPreLoadConfiguration {
         cc2.setVendor("Master");
         cc2.setStatus(CreditCard.Status.INACTIVE);
 
-        CreditCard cc3 = new CreditCard();
+        CreditCard cc3 =  CreditCard.builder().build();
         cc3.setToken("7772344377");
         cc3.setSuffix("3053");
         cc3.setExpirationDate(LocalDate.of(2019, 12, 1).format(ofPattern("MM/yy")));

@@ -136,7 +136,7 @@ public class UserControllerTest {
     public void inativarUmDosCartoesDeUsuarioCom2Cartoes() throws URISyntaxException {
 
         // Configurcao do usuario q vai ter o cartao alterado
-        CreditCard cc1 = new CreditCard();
+        CreditCard cc1 = CreditCard.builder().build();
         cc1.setToken("4321");
         cc1.setSuffix("67730934681683053");
         cc1.setSecurityCode("321");
@@ -145,7 +145,7 @@ public class UserControllerTest {
         cc1.setVendor("MasterCard");
         cc1.setStatus(CreditCard.Status.ACTIVE);
 
-        CreditCard cc2 = new CreditCard();
+        CreditCard cc2 = CreditCard.builder().build();
         cc2.setToken("1234");
         cc2.setSuffix("67730987357243053");
         cc2.setSecurityCode("123");

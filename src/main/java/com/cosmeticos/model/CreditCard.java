@@ -3,6 +3,8 @@ package com.cosmeticos.model;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,6 +17,8 @@ import java.util.Date;
  * Created by Vinicius on 23/06/2017.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@AllArgsConstructor
+@Builder
 @Data
 @Entity
 public class CreditCard implements Serializable {
@@ -25,6 +29,9 @@ public class CreditCard implements Serializable {
     }
 
     private static final long serialVersionUID = 1l;
+
+    public CreditCard() {
+    }
 
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class,

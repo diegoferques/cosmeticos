@@ -35,7 +35,7 @@ public class CustomerPreLoadConfiguration {
     public void insertInitialH2Data() throws ParseException {
         try {
 
-            CreditCard cc = new CreditCard();
+            CreditCard cc = CreditCard.builder().build();
             cc.setToken("4321");
             cc.setSuffix("1853");
             cc.setExpirationDate(LocalDate.of(2017, 12, 1).format(ofPattern("MM/yy")));

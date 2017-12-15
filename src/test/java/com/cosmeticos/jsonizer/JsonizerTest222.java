@@ -42,7 +42,7 @@ public class JsonizerTest222 {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
 
-        CreditCard cc = new CreditCard();
+        CreditCard cc = CreditCard.builder().build();
         cc.setToken("1234");
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);

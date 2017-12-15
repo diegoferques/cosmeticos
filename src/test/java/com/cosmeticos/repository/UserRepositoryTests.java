@@ -42,7 +42,7 @@ public class UserRepositoryTests {
     @Before
     public void setupTests() {
 
-        CreditCard cc = new CreditCard();
+        CreditCard cc = CreditCard.builder().build();
         cc.setToken("1234");
         cc.setVendor("MasterCard");
         cc.setStatus(CreditCard.Status.ACTIVE);
@@ -81,7 +81,7 @@ public class UserRepositoryTests {
     public void testInserirCartaoNovoEmUsuarioQueJaPossuiCartao() {
 
 
-        CreditCard newCC = new CreditCard();
+        CreditCard newCC = CreditCard.builder().build();
         newCC.setToken("4321");
         newCC.setVendor("Visa");
         newCC.setStatus(CreditCard.Status.ACTIVE);
@@ -124,7 +124,7 @@ public class UserRepositoryTests {
 
         u2 = userRepository.findOne(u2.getIdLogin());
 
-        CreditCard ccNovo = new CreditCard();
+        CreditCard ccNovo = CreditCard.builder().build();
         ccNovo.setToken("77777");
         ccNovo.setVendor("Visa");
         ccNovo.setStatus(CreditCard.Status.ACTIVE);
@@ -165,12 +165,12 @@ public class UserRepositoryTests {
     public void inativarUmDosCartoesDeUsuarioCom2Cartoes() throws URISyntaxException {
 
         // Configurcao do usuario q vai ter o cartao alterado
-        CreditCard cc1 = new CreditCard();
+        CreditCard cc1 = CreditCard.builder().build();
         cc1.setToken("4321");
         cc1.setVendor("MasterCard");
         cc1.setStatus(CreditCard.Status.ACTIVE);
 
-        CreditCard cc2 = new CreditCard();
+        CreditCard cc2 = CreditCard.builder().build();
         cc2.setToken("1234");
         cc2.setVendor("visa");
         cc2.setStatus(CreditCard.Status.ACTIVE);

@@ -1,6 +1,5 @@
 package com.cosmeticos.commons;
 
-import com.cosmeticos.model.Role;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -12,5 +11,5 @@ import javax.validation.Valid;
 public class RoleRequestBody {
 
     @Valid
-    private Role entity;
+    private com.cosmeticos.model.Role entity;
 }

@@ -246,8 +246,6 @@ public class UserController {
 
     //TODO - CHAMEI ESTE ENDPOINT SEM PASSAR A SENHA E DEU ERRO 500
     //TODO - CHAMEI ESTE ENDPOINT SEM PASSANDO A SENHA E DEU ERRO 500, MAS ALTEROU A SENHA E NAO FINALIZOU COM SUCESSO
-    //TODO - FALTA TERMINAR A CONFIGURACAO DO SMTP E TESTAR COM USUARIO E SENHA
-    //TODO - FALTA CONFIGURAR EMAIL, SENHA SMTP E ETC DO SERVIDOR
     //TODO - FALTA CRIAR TESTES E VALIDAR
     //REFERENCIA: https://www.quickprogrammingtips.com/spring-boot/how-to-send-email-from-spring-boot-applications.html
     @RequestMapping(path = "/users/password_reset", method = RequestMethod.PUT)
