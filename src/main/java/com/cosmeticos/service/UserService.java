@@ -1,10 +1,9 @@
 package com.cosmeticos.service;
 
+import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.UserRequestBody;
-import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Payment;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
@@ -30,6 +29,12 @@ public class UserService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private CustomerService customerService;
+
+    @Autowired
+    private ProfessionalService professionalService;
 
     @Autowired
     private VoteService voteService;
@@ -94,6 +99,9 @@ public class UserService {
             }
             if (userFromRequest.getStatus() != null) {
                 persistentUser.setStatus(userFromRequest.getStatus());
+                if(userFromRequest.getStatus() == User.Status.INACTIVE) {
+                    this.inactiveUserType(userFromRequest);
+                }
             }
             if (userFromRequest.getGoodByeReason() != null) {
                 persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
@@ -114,6 +122,35 @@ public class UserService {
         }
 
         return optional;
+    }
+
+    private void inactiveUserType(User user) {
+
+        if(user.getUserType() == User.UserType.customer.toString()) {
+
+            Customer customer = new Customer();
+            customer.setIdCustomer(
+                    user.getCustomer()
+                            .getIdCustomer()
+            );
+            customer.setStatus(Customer.Status.INACTIVE.ordinal());
+
+            CustomerRequestBody cr = new CustomerRequestBody();
+            cr.setCustomer(customer);
+
+            customerService.update(cr);
+
+        } else {
+
+            Professional professional = new Professional();
+            professional.setIdProfessional(
+                    user.getProfessional()
+                            .getIdProfessional()
+            );
+            professional.setStatus(Professional.Status.INACTIVE);
+
+            professionalService.update(professional);
+        }
     }
 
     public Optional<User> find(Long id) {

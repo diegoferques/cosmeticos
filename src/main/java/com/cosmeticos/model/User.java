@@ -34,7 +34,7 @@ public class User implements Serializable {
         v.setUser(this);
     }
 
-    public  enum Status {
+    public enum Status {
 
         ACTIVE, INACTIVE, GONE, PENDING_PAYMENT
 
@@ -43,6 +43,12 @@ public class User implements Serializable {
     public enum PersonType{
 
         FISICA, JURIDICA
+
+    }
+
+    public enum UserType{
+
+        customer, professional
 
     }
 
