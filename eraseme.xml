@@ -1,66 +1,182 @@
-[
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-    <soap:Body>
-        <ns2:pagamentoOneClickV2Response xmlns:ns2="http://pagamentos.webservices.superpay.ernet.com.br/">
-            <return>
-                <autorizacao>0</autorizacao>
-                <codigoEstabelecimento>1501698887865</codigoEstabelecimento>
-                <codigoFormaPagamento>171</codigoFormaPagamento>
-                <codigoTransacaoOperadora>126</codigoTransacaoOperadora>
-                <dataAprovacaoOperadora>2017-09-30 17:13:48</dataAprovacaoOperadora>
-                <mensagemVenda>Credit Card Expiration Date is invalid</mensagemVenda>
-                <numeroComprovanteVenda/>
-                <numeroTransacao>15493685021211</numeroTransacao>
-                <parcelas>1</parcelas>
-                <statusTransacao>9</statusTransacao>
-                <taxaEmbarque>0</taxaEmbarque>
-                <urlPagamento>
-                    https://homologacao.superpay.com.br/checkout/PagamentoCielo/PagamentoCielo.do?cod=1506802428225a0950c54-a671-4e09-aecd-6b4ff30d0cb1
-                </urlPagamento>
-                <valor>15000</valor>
-                <valorDesconto>0</valorDesconto>
-            </return>
-        </ns2:pagamentoOneClickV2Response>
-    </soap:Body>
-</soap:Envelope>] for request [<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Header/>
-<SOAP-ENV:Body>
-    <ns3:pagamentoOneClickV2 xmlns:ns3="http://pagamentos.webservices.superpay.ernet.com.br/">
-        <transacao>
-            <codigoEstabelecimento>1501698887865</codigoEstabelecimento>
-            <dadosUsuarioTransacao>
-                <bairroEnderecoComprador>Austin</bairroEnderecoComprador>
-                <cepEnderecoComprador>268723-897</cepEnderecoComprador>
-                <cidadeEnderecoComprador>RJO</cidadeEnderecoComprador>
-                <codigoTipoTelefoneAdicionalComprador>0</codigoTipoTelefoneAdicionalComprador>
-                <codigoTipoTelefoneAdicionalEntrega>0</codigoTipoTelefoneAdicionalEntrega>
-                <codigoTipoTelefoneComprador>0</codigoTipoTelefoneComprador>
-                <codigoTipoTelefoneEntrega>0</codigoTipoTelefoneEntrega>
-                <estadoEnderecoComprador>RJ</estadoEnderecoComprador>
-                <nomeComprador>João da Silva</nomeComprador>
-                <numeroEnderecoComprador>66</numeroEnderecoComprador>
-                <paisComprador>BRA</paisComprador>
-                <sexoComprador>M</sexoComprador>
-                <telefoneAdicionalComprador>(21) 98877-6655</telefoneAdicionalComprador>
-                <tipoCliente>1</tipoCliente>
-            </dadosUsuarioTransacao>
-            <idioma>0</idioma>
-            <itensDoPedido>
-                <nomeCategoria>CABELEIREIRA</nomeCategoria>
-                <nomeProduto>CABELEIREIRA</nomeProduto>
-                <quantidadeProduto>0</quantidadeProduto>
-                <valorUnitarioProduto>15000</valorUnitarioProduto>
-            </itensDoPedido>
-            <numeroTransacao>15493685021211</numeroTransacao>
-            <parcelas>0</parcelas>
-            <taxaEmbarque>0</taxaEmbarque>
-            <token>15068024250432f3732bd-69d8-48f0-a778-762099a28525</token>
-            <urlCampainha>http://ngrok/campainha/superpay</urlCampainha>
-            <valor>15000</valor>
-            <valorDesconto>0</valorDesconto>
-        </transacao>
-        <usuario>superpay</usuario>
-        <senha>superpay</senha>
-    </ns3:pagamentoOneClickV2>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>]
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Header>
+        <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <wsse:UsernameToken>
+                <wsse:Username>BeMobi</wsse:Username>
+                <wsse:Password>Qkv+rLBCfXzI0c5dnC3iLKFOViU=</wsse:Password>
+                <wsse:Nonce>F74ADD1BC62DF88F0DE0F535D980D712</wsse:Nonce>
+                <wsu:Created
+                        xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                    2017-12-15T14:36:32Z
+                </wsu:Created>
+            </wsse:UsernameToken>
+        </wsse:Security>
+        <tns:NotifySOAPHeader xmlns:tns="http://www.huawei.com.cn/schema/common/v2_1">
+            <tns:AppId>0016052000010222</tns:AppId>
+            <tns:TransId>504021505361712150836327891002</tns:TransId>
+        </tns:NotifySOAPHeader>
+    </soapenv:Header>
+    <soapenv:Body>
+        <ns1:syncOrderRelationship xmlns:ns1="http://www.csapi.org/schema/parlayx/syncsubscription/v1_0/local">
+            <ns1:userID>
+                <ID>51976329493</ID>
+                <type>0</type>
+            </ns1:userID>
+            <ns1:spID>PA00001605</ns1:spID>
+            <ns1:productID>MDSP2000011153</ns1:productID>
+            <ns1:serviceID>0016052000010222</ns1:serviceID>
+            <ns1:updateType>1</ns1:updateType>
+            <ns1:creatTime>20171215143632</ns1:creatTime>
+            <ns1:effectiveTime>20171213163458</ns1:effectiveTime>
+            <ns1:expireTime>20370101000000</ns1:expireTime>
+            <ns1:rentResult>1</ns1:rentResult>
+            <ns1:extensionInfo>
+                <NamedParameters>
+                    <key>orderKey</key>
+                    <value>999000000725765848</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>fee</key>
+                    <value>3.7300</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>channelID</key>
+                    <value>99</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>payType</key>
+                    <value>1</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>operatorID</key>
+                    <value>5101</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>accessCode</key>
+                    <value>512701</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>chargeMode</key>
+                    <value>19</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>MDSPSUBEXPMODE</key>
+                    <value>1</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>objectType</key>
+                    <value>1</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>cycleEndTime</key>
+                    <value>20171222050000</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>durationOfGracePeriod</key>
+                    <value>77</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>serviceAvailability</key>
+                    <value>1</value>
+                </NamedParameters>
+                <NamedParameters>
+                    <key>TraceUniqueID</key>
+                    <value>000000404361712151436321150004</value>
+                </NamedParameters>
+            </ns1:extensionInfo>
+        </ns1:syncOrderRelationship>
+    </soapenv:Body>
+</soapenv:Envelope>
+
+
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<soapenv:Header>
+    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+        <wsse:UsernameToken>
+            <wsse:Username>BeMobi</wsse:Username>
+            <wsse:Password>nmueNcgoM4J+1RNEPyd9wof3G1Y=</wsse:Password>
+            <wsse:Nonce>7C2021EC4A65DF22404CE45A0CB4AC51</wsse:Nonce>
+            <wsu:Created xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                2017-12-15T15:33:15Z
+            </wsu:Created>
+        </wsse:UsernameToken>
+    </wsse:Security>
+    <tns:NotifySOAPHeader xmlns:tns="http://www.huawei.com.cn/schema/common/v2_1">
+        <tns:AppId>0016052000010222</tns:AppId>
+        <tns:TransId>504021505341712150933156432002</tns:TransId>
+    </tns:NotifySOAPHeader>
+</soapenv:Header>
+<soapenv:Body>
+    <ns1:syncOrderRelationship xmlns:ns1="http://www.csapi.org/schema/parlayx/syncsubscription/v1_0/local">
+        <ns1:userID>
+            <ID>51982070730</ID>
+            <type>0</type>
+        </ns1:userID>
+        <ns1:spID>PA00001605</ns1:spID>
+        <ns1:productID>MDSP2000011153</ns1:productID>
+        <ns1:serviceID>0016052000010222</ns1:serviceID>
+        <ns1:updateType>1</ns1:updateType>
+        <ns1:creatTime>20171215153315</ns1:creatTime>
+        <ns1:effectiveTime>20170929233617</ns1:effectiveTime>
+        <ns1:expireTime>20370101000000</ns1:expireTime>
+        <ns1:rentResult>1</ns1:rentResult>
+        <ns1:extensionInfo>
+            <NamedParameters>
+                <key>orderKey</key>
+                <value>999000000660950990</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>fee</key>
+                <value>3.7300</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>channelID</key>
+                <value>7</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>payType</key>
+                <value>0</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>operatorID</key>
+                <value>5101</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>accessCode</key>
+                <value>512701</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>chargeMode</key>
+                <value>19</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>MDSPSUBEXPMODE</key>
+                <value>1</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>objectType</key>
+                <value>1</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>cycleEndTime</key>
+                <value>20171222050000</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>durationOfGracePeriod</key>
+                <value>77</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>serviceAvailability</key>
+                <value>1</value>
+            </NamedParameters>
+            <NamedParameters>
+                <key>TraceUniqueID</key>
+                <value>000000404401712151533154245004</value>
+            </NamedParameters>
+        </ns1:extensionInfo>
+    </ns1:syncOrderRelationship>
+</soapenv:Body>
+</soapenv:Envelope>

@@ -121,16 +121,7 @@ public class CustomerControllerTests {
 				"   }\n" +
 				"}";
 
-		System.out.println(content);
-
-		RequestEntity<String> entity =  RequestEntity
-				.put(new URI("/customers"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(content);
-
-		ResponseEntity<CustomerResponseBody> exchange = restTemplate
-				.exchange(entity, CustomerResponseBody.class);
+		ResponseEntity<CustomerResponseBody> exchange = putCustomer(content);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -278,6 +269,16 @@ public class CustomerControllerTests {
 				"   }\n" +
 				"}";
 
+		ResponseEntity<CustomerResponseBody> exchange = putCustomer(json);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
+		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
+
+
+	}
+
+	public static ResponseEntity<CustomerResponseBody> putCustomer(final TestRestTemplate restTemplate, String json) throws URISyntaxException {
 		System.out.println(json);
 
 		RequestEntity<String> entity =  RequestEntity
@@ -286,15 +287,19 @@ public class CustomerControllerTests {
 				.accept(MediaType.APPLICATION_JSON)
 				.body(json);
 
-		ResponseEntity<CustomerResponseBody> exchange = restTemplate
+		return restTemplate
 				.exchange(entity, CustomerResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
-		Assert.assertEquals("E-mail já existente.", exchange.getBody().getDescription());
-
-
 	}
+
+	public static ResponseEntity<CustomerResponseBody> getCustomer(final TestRestTemplate restTemplate, String query) throws URISyntaxException {
+
+		return restTemplate.exchange( //
+						"/customers" + (query != null && !query.isEmpty() ? "?" + query : ""), //
+						HttpMethod.GET, //
+						null,
+						CustomerResponseBody.class);
+	}
+
 
 	static User createFakeLogin(Customer c) {
 		User u = new User();

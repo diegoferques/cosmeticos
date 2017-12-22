@@ -108,7 +108,10 @@ public class CreditCardController {
 
     }
 
-        private CreditCardResponseBody buildErrorResponse(BindingResult bindingResult) {
+
+
+
+    private CreditCardResponseBody buildErrorResponse(BindingResult bindingResult) {
             List<String> errors = bindingResult.getFieldErrors()
                     .stream()
                     .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())

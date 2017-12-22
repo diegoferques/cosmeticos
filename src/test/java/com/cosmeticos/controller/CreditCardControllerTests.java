@@ -4,9 +4,11 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardRequestBody;
 import com.cosmeticos.commons.CreditCardResponseBody;
 import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CreditCardRepository;
+import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,6 +50,9 @@ public class CreditCardControllerTests {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Before
     public void setupTests() throws ParseException{
@@ -141,7 +146,7 @@ public class CreditCardControllerTests {
         }
 
     @Test
-    public void testeCadastrarCartaoParaUser() throws ParseException, URISyntaxException, JsonProcessingException {
+    public void testeCadastrarCartaoParaProfessionalUser() throws ParseException, URISyntaxException, JsonProcessingException {
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
 
@@ -175,7 +180,86 @@ public class CreditCardControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
 
+        professional = professionalRepository.findOne(professional.getIdProfessional());
 
+        Assert.assertTrue("Nao veio cartao de credito", professional.getUser().getCreditCardCount() > 0);
+
+    }
+
+    @Test
+    public void testeCadastrarCartaoParaCustomerUser$assertViaRepository() throws ParseException, URISyntaxException, JsonProcessingException {
+
+        Customer customer = CustomerControllerTests.createFakeCustomer();
+
+        customerRepository.save(customer);
+
+        User user = customer.getUser();
+
+        String json = buildCreditCardJson(user);
+
+        ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
+
+        User afterPostUser = userRepository.findOne(user.getIdLogin());
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
+
+        customer = customerRepository.findOne(customer.getIdCustomer());
+
+        Assert.assertTrue("Nao veio cartao de credito para o customer", customer.getUser().getCreditCardCount() > 0);
+
+    }
+
+    @Test
+    public void testeCadastrarCartaoParaCustomerUser$assertViaRestCall() throws ParseException, URISyntaxException, JsonProcessingException {
+
+        Customer customer = CustomerControllerTests.createFakeCustomer();
+
+        customerRepository.save(customer);
+
+        User user = customer.getUser();
+
+        Assert.assertEquals("Customer ja nasce com 1 cartao de credito", Integer.valueOf(0), user.getCreditCardCount());
+
+        String json = buildCreditCardJson(user);
+
+        ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
+
+       // Customer retrievedCustomer = getCustomer()
+
+
+        User afterPostUser = userRepository.findOne(user.getIdLogin());
+        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
+
+        customer = customerRepository.findOne(customer.getIdCustomer());
+
+        Assert.assertTrue("Nao veio cartao de credito para o customer", customer.getUser().getCreditCardCount() > 0);
+
+    }
+
+    String buildCreditCardJson(User sourceUser) throws JsonProcessingException {
+
+        // Mandando user so com o id preenchido.
+        User user = new User();
+        user.setIdLogin(sourceUser.getIdLogin());
+
+        CreditCard cc = CreditCard.builder()
+                .expirationDate(now().getMonth().toString() + "/" + now().plusYears(3).getYear())
+                .lastUsage(Timestamp.valueOf(LocalDateTime.now()))
+                .number("0000000000000001")
+                .oneClick(true)
+                .ownerName("testeCadastrarCartaoParaCustomerUser")
+                .securityCode("123")
+                .status(CreditCard.Status.ACTIVE)
+                .suffix("0001")
+                .vendor("VISA")
+                .user(user)
+                .build();
+
+        CreditCardRequestBody body = new CreditCardRequestBody();
+        body.setEntity(cc);
+
+        return Utility.toJson(body);
     }
 
     private ResponseEntity<?> postEntity(String url, String body, Class<?> responseClass) throws URISyntaxException {
