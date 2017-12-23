@@ -136,6 +136,7 @@ public class CustomerPreLoadConfiguration {
         u.setSourceApp("google+");
         u.setUsername(username);
         u.setPersonType(personType);
+        u.setStatus(User.Status.ACTIVE);
         //u.getCustomerCollection().add(c);
         //userRepository.save(u);
         return u;

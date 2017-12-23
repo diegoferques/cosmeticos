@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.sun.xml.internal.bind.v2.TODO;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -24,7 +25,7 @@ import java.util.Set;
  *
  * @author magarrett.dias
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)// usar NON_EMPTY o jackson considera 0 (credicardCount) como vazio e nao exibe o atributo no json
 @Data
 @Entity
 public class User implements Serializable {
@@ -32,6 +33,14 @@ public class User implements Serializable {
     public void addVote(Vote v) {
         voteCollection.add(v);
         v.setUser(this);
+    }
+
+    /**
+     * Os tipo sao referentes as classes que tem User. {@link Customer} e {@link Professional}.
+     * Manter um enum aqui nesta classe eh mais conveniente.
+     */
+    public enum Type {
+        professional, customer
     }
 
     public  enum Status {
@@ -126,7 +135,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-    private String userType;
+    private User.Type userType;
 
     @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
@@ -172,7 +181,7 @@ public class User implements Serializable {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-    //@Transient  TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
+    @Transient //TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
     private Integer creditCardCount = 0;
 
     @JsonView({
