@@ -109,7 +109,7 @@ public class UserController {
 
             } else {
 
-                Optional<User> userOptional = service.update(request);
+                Optional<User> userOptional = service.update(request.getEntity());
 
                 if (userOptional.isPresent()) {
                     User updatedUser = userOptional.get();

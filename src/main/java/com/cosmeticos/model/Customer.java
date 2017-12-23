@@ -95,13 +95,16 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegister;
 
+    /**
+     * @deprecated Prefira {@link User.Status}
+     */
     @JsonView({
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
     private Integer status;
 
-    @JsonManagedReference(value="user-customer")
+   // @JsonManagedReference(value="user-customer")
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,
@@ -120,7 +123,7 @@ public class Customer implements Serializable {
     public void setUser(User user) {
         this.user = user;
 
-        this.user.setUserType("customer");
+        this.user.setUserType(User.Type.customer);
     }
 
     @JsonIgnore
@@ -164,5 +167,5 @@ public class Customer implements Serializable {
     public String toString() {
         return "Customer[ idCustomer=" + idCustomer + ", email="+user.getEmail()+" ]";
     }
-    
+
 }
