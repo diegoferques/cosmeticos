@@ -121,7 +121,7 @@ public class CustomerControllerTests {
 				"   }\n" +
 				"}";
 
-		ResponseEntity<CustomerResponseBody> exchange = putCustomer(content);
+		ResponseEntity<CustomerResponseBody> exchange = putCustomer(restTemplate, content);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -269,7 +269,7 @@ public class CustomerControllerTests {
 				"   }\n" +
 				"}";
 
-		ResponseEntity<CustomerResponseBody> exchange = putCustomer(json);
+		ResponseEntity<CustomerResponseBody> exchange = putCustomer(restTemplate, json);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, exchange.getStatusCode());
@@ -294,7 +294,7 @@ public class CustomerControllerTests {
 	public static ResponseEntity<CustomerResponseBody> getCustomer(final TestRestTemplate restTemplate, String query) throws URISyntaxException {
 
 		return restTemplate.exchange( //
-						"/customers" + (query != null && !query.isEmpty() ? "?" + query : ""), //
+						"/customers/" + (query != null && !query.isEmpty() ? "?" + query : ""), //
 						HttpMethod.GET, //
 						null,
 						CustomerResponseBody.class);
@@ -309,7 +309,7 @@ public class CustomerControllerTests {
 		u.setSourceApp("google+");
 		u.setUsername(String.valueOf(System.nanoTime()) );
 		u.setPersonType(User.PersonType.JURIDICA);
-		//u.getCustomerCollection().add(c);
+		u.setStatus(User.Status.ACTIVE);
 		return u;
 	}
 

@@ -246,7 +246,6 @@ public class UserService {
         // Se nao colocar nulo, esses campos entram na clausula where e nao retorna exatamente o que foi pedido nas queries string
         if (userProbe != null) {
             userProbe.setLostPassword(null);
-            userProbe.setCreditCardCount(null);
             userProbe.setEvaluation(null);
             userProbe.setUserType(null);
             userProbe.setStatus(User.Status.ACTIVE);

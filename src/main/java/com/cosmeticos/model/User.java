@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.sun.xml.internal.bind.v2.TODO;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -177,12 +176,12 @@ public class User implements Serializable {
     //@Transient
     private Float evaluation = .0f;
 
-    @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
-    })
-    @Transient //TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
-    private Integer creditCardCount = 0;
+   //@JsonView({
+   //        ResponseJsonView.CustomerControllerUpdate.class,
+   //        ResponseJsonView.CustomerControllerGet.class
+   //})
+   //@Transient //TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
+   //private Integer creditCardCount = 0;
 
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
@@ -221,6 +220,10 @@ public class User implements Serializable {
        this.getCreditCardCollection().add(cc);
    }
 
+   @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+   })
     public Integer getCreditCardCount() {
         return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
     }

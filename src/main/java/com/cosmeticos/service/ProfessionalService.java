@@ -201,7 +201,6 @@ public class ProfessionalService {
         // Se esses 3 atributos forem passados vai bugar pq chegando aqui os anularemos.
         if ( professionalProbe.getUser() != null ) {
             professionalProbe.getUser().setLostPassword(null);
-            professionalProbe.getUser().setCreditCardCount(null);
             professionalProbe.getUser().setEvaluation(null);
         }
 

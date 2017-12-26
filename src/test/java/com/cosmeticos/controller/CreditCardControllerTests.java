@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardRequestBody;
 import com.cosmeticos.commons.CreditCardResponseBody;
+import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
@@ -273,6 +274,15 @@ public class CreditCardControllerTests {
                 .exchange(entity, responseClass);
 
         return exchange;
+    }
+
+    public static ResponseEntity<CreditCardResponseBody> getCreditcard(final TestRestTemplate restTemplate, String query) throws URISyntaxException {
+
+        return restTemplate.exchange( //
+                "/creditCard" + (query != null && !query.isEmpty() ? "?" + query : ""), //
+                HttpMethod.GET, //
+                null,
+                CreditCardResponseBody.class);
     }
 
 
