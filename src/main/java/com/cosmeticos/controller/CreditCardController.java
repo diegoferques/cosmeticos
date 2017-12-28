@@ -2,7 +2,6 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CreditCardRequestBody;
 import com.cosmeticos.commons.CreditCardResponseBody;
-import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.service.CreditCardService;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -108,14 +106,15 @@ public class CreditCardController {
 
     }
 
-        private CreditCardResponseBody buildErrorResponse(BindingResult bindingResult) {
-            List<String> errors = bindingResult.getFieldErrors()
-                    .stream()
-                    .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
-                    .collect(Collectors.toList());
+    private CreditCardResponseBody buildErrorResponse(BindingResult bindingResult) {
+        List<String> errors = bindingResult.getFieldErrors()
+                .stream()
+                .map(fieldError -> bindingResult.getFieldError(fieldError.getField()).getDefaultMessage())
+                .collect(Collectors.toList());
 
-            CreditCardResponseBody responseBody = new CreditCardResponseBody();
-            responseBody.setDescription(errors.toString());
-            return responseBody;
-        }
+        CreditCardResponseBody responseBody = new CreditCardResponseBody();
+        responseBody.setDescription(errors.toString());
+        return responseBody;
+    }
+
 }
