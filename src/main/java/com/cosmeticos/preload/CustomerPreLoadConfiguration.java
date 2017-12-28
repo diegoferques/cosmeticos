@@ -1,4 +1,4 @@
-package com.cosmeticos.config;
+package com.cosmeticos.preload;
 
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.CreditCard;

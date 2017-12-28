@@ -1,4 +1,4 @@
-package com.cosmeticos.config;
+package com.cosmeticos.preload;
 
 import com.cosmeticos.model.Schedule;
 import com.cosmeticos.repository.ScheduleRepository;
