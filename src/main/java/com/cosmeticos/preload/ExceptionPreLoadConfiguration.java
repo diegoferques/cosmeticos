@@ -14,8 +14,6 @@ import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.Calendar;
 
-import static java.time.LocalDateTime.now;
-
 @Slf4j
 @Component
 @Profile("default")
