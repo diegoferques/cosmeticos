@@ -55,6 +55,27 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="HTTP_WIRE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Append>true</Append>
+        <File>${LOG_PATH:-./log}/httpwire.log</File>
+
+        <!-- root-logger esta configurado pra logar infos neste aquivo, mas este filter so permitira errors -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH:-./log}/older/httpwire.log.%d{yyyy-MM-dd}
+            </fileNamePattern>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+    </appender>
+
 
     <!-- Loga todos os INFO das classes abaixo do pacote com.cosmeticos -->
     <logger name="com.cosmeticos.smtp.MailSenderService" level="OFF" />
@@ -69,6 +90,11 @@
     <logger name="org.springframework.ws.client.MessageTracing">
         <level value="TRACE" />
         <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter">
+        <level value="DEBUG" />
+        <appender-ref ref="HTTP_WIRE" />
     </logger>
 
     <!-- Estabelece o nivel de Log pra TODAS as classes do sistema incluindo as classes de framework. -->

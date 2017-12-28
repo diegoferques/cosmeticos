@@ -1,9 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderResponseBody;
-import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.commons.*;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.SuperpayCompletoClient;
@@ -12,6 +10,7 @@ import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.OneClickPaymentService;
 import com.cosmeticos.service.RandomCode;
+import lombok.Data;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.Exception;
@@ -33,8 +29,7 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.time.LocalDateTime.now;
 
@@ -50,14 +45,10 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
     private TestRestTemplate testRestTemplate;
 
     @MockBean
-    private OneClickPaymentService oneClickPaymentService;
-
-    @MockBean
     private SuperpayOneClickClient oneClickClient;
 
     @MockBean
     private SuperpayCompletoClient completoClient;
-
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -74,7 +65,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
     @Autowired
     private CreditCardRepository creditcardRepository;
 
-    @Autowired
+    @MockBean
     private OneClickPaymentService charger;
 
     private Customer c1;
@@ -213,16 +204,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                 "  }\n" +
                 "}";
 
-        System.out.println(json);
-
-        RequestEntity<String> entity =  RequestEntity
-                .post(new URI("/orders"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(json);
-
-        ResponseEntity<OrderResponseBody> exchange = testRestTemplate
-                .exchange(entity, OrderResponseBody.class);
+        ResponseEntity<OrderResponseBody> exchange = postOrder(json);
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -241,6 +223,35 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                 "tokenFake",
                 ccOptional.get().getToken());
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////// Validando que outros endpoints afetados pela inclusao do cartao se comportem corretamente ////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // GET customers/ retorne creditCardCount > 0
+        ResponseEntity<MyCustomerResponseBody> customerResponseEntity =
+                getCustomer(testRestTemplate, "user.email=" + c1.getUser().getEmail());
+        Assert.assertEquals(HttpStatus.OK, customerResponseEntity.getStatusCode());
+        Assert.assertTrue("CreditCardCount nao esta correto",
+                customerResponseEntity.getBody()
+                .getCustomerList()
+                .get(0)
+                .getUser()
+                .getCreditCardCount() > 0
+        );
+
+        // GET creditCard/ retorne o cartao inserido
+        ResponseEntity<CreditCardResponseBody> creditCardResponseResponse =
+                CreditCardControllerTests.getCreditcard(testRestTemplate, "user.email=" + c1.getUser().getEmail());
+        Assert.assertEquals(HttpStatus.OK, creditCardResponseResponse.getStatusCode());
+        Assert.assertTrue("Cartao do usuario nao foi inserido",
+                !creditCardResponseResponse.getBody()
+                .getCreditCardList()
+                .isEmpty()
+        );
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////// Validando os demais passos de compra  /////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         Long orderId = order.getIdOrder();
 
         updateToAccepted(orderId);
@@ -251,6 +262,19 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
         updateToReady2chargee(orderId);
 
+    }
+
+    ResponseEntity<OrderResponseBody> postOrder(String json) throws URISyntaxException {
+        System.out.println(json);
+
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        return testRestTemplate
+                .exchange(entity, OrderResponseBody.class);
     }
 
     private void updateToReady2chargee(Long orderId) throws URISyntaxException {
@@ -395,4 +419,54 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
     }
 
+    public static ResponseEntity<MyCustomerResponseBody> getCustomer(final TestRestTemplate restTemplate, String query) throws URISyntaxException {
+
+        return restTemplate.exchange( //
+                "/customers/" + (query != null && !query.isEmpty() ? "?" + query : ""), //
+                HttpMethod.GET, //
+                null,
+                MyCustomerResponseBody.class);
+    }
+
+    /**
+     * Como a aplicacao User tem sua versao de user para adaptar-se ao json,
+     * criamos esta classe para representar o json da classe {@link User} e viabilizar
+     * alguns testes cujo o uso de {@link User} atrapalha mais que ajuda devido às
+     * logicas que existem em alguns seus getters e imcompatilibilidade de anotacoes de
+     * hibernate que impactam no marshalling e unmarshalling dos jsons que o Jackson faz.
+     */
+    @Data
+    private static class MyCustomerResponseBody
+    {
+        private List<MyCustomer> customerList;
+    }
+
+    @Data
+    private static class MyCustomer
+    {
+        private MyUser user;
+    }
+
+    @Data
+    private static class MyUser
+    {
+        private Long idLogin;
+        private String username;
+        private String password;
+        private Boolean lostPassword = false;
+        private String lostPasswordToken;
+        private Date lostPasswordValidThru;
+        private String email;
+        private String sourceApp;
+        private User.Status status;
+        private String goodByeReason;
+        private User.Type userType;
+        private Set<Role> roleCollection;
+        private User.PersonType personType;
+        private Float evaluation = .0f;
+        private Integer creditCardCount = 0;
+        private String profileImageUrl;
+        private Set<Vote> voteCollection = new HashSet<>();
+        private Date lastStatusUpdate;
+    }
 }

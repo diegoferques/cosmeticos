@@ -120,6 +120,7 @@ public class Professional  implements Serializable {
 
     /**
      * O app trata como ordinal. A conversao para Ordinal fica a cardo de {@link Status}
+     * @deprecated Prefira {@link User.Status}
      */
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
@@ -237,7 +238,7 @@ public class Professional  implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
-        this.user.setUserType("professional");
+        this.user.setUserType(User.Type.professional);
     }
 
     public User.PersonType getPersonType() {
