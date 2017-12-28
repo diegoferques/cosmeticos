@@ -7,7 +7,6 @@ import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.service.UserService;
-import com.cosmeticos.smtp.MailSenderService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

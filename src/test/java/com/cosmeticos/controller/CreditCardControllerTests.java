@@ -3,7 +3,6 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardRequestBody;
 import com.cosmeticos.commons.CreditCardResponseBody;
-import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;

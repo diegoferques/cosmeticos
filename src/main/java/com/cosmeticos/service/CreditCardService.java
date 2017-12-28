@@ -53,7 +53,13 @@ public class CreditCardService {
 
         if (persistentUserOptional.isPresent()) {
             User persistentUser = persistentUserOptional.get();
-            if (!persistentUser.getCreditCardCollection().isEmpty()) {
+
+            Optional<CreditCard> activeCard = persistentUser.getCreditCardCollection()
+                    .stream()
+                    .filter(c -> CreditCard.Status.ACTIVE.equals(c.getStatus()))
+                    .findFirst();
+
+            if (activeCard.isPresent()) {
                 throw new IllegalStateException("Usuario ja possui um cartao cadastrado.");
             } else {
                 return this.repository.save(creditCard);
@@ -62,4 +68,54 @@ public class CreditCardService {
             throw new IllegalStateException("Usuario nao informado na requisicao");
         }
     }
+
+    public CreditCard update(CreditCard creditCardFromRequest) {
+
+        Optional<CreditCard> persistentCreditCardOptional = Optional.ofNullable(repository.findOne(creditCardFromRequest.getIdCreditCard()));
+
+        if (persistentCreditCardOptional.isPresent()) {
+
+            CreditCard persistentCreditCard = persistentCreditCardOptional.get();
+
+            if(creditCardFromRequest.getStatus() == CreditCard.Status.INACTIVE) {
+                persistentCreditCard.setStatus(CreditCard.Status.INACTIVE);
+
+            } else {
+
+                if(creditCardFromRequest.getStatus() != persistentCreditCard.getStatus()) {
+                    persistentCreditCard.setStatus(creditCardFromRequest.getStatus());
+                }
+
+                if(creditCardFromRequest.getExpirationDate() != persistentCreditCard.getExpirationDate()) {
+                    persistentCreditCard.setExpirationDate(creditCardFromRequest.getExpirationDate());
+                }
+
+                if(creditCardFromRequest.getOwnerName() != persistentCreditCard.getOwnerName()) {
+                    persistentCreditCard.setOwnerName(creditCardFromRequest.getOwnerName());
+                }
+
+                if(creditCardFromRequest.getSecurityCode() != persistentCreditCard.getSecurityCode()) {
+                    persistentCreditCard.setSecurityCode(creditCardFromRequest.getSecurityCode());
+                }
+
+                if(creditCardFromRequest.getVendor() != persistentCreditCard.getVendor()) {
+                    persistentCreditCard.setVendor(creditCardFromRequest.getVendor());
+                }
+
+                if(creditCardFromRequest.getNumber() != persistentCreditCard.getNumber()) {
+                    persistentCreditCard.setNumber(creditCardFromRequest.getNumber());
+                }
+
+                if(creditCardFromRequest.getOneClick() != persistentCreditCard.getOneClick()) {
+                    persistentCreditCard.setOneClick(creditCardFromRequest.getOneClick());
+                }
+            }
+
+            return this.repository.save(persistentCreditCard);
+
+        } else {
+            throw new IllegalStateException("O Cartão de crédito não foi localizado");
+        }
+    }
+
 }
