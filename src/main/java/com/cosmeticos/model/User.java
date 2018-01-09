@@ -118,6 +118,9 @@ public class User implements Serializable {
 
     private String sourceApp;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class
+    })
     @Enumerated
     private Status status;
 
