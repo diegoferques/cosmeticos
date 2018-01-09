@@ -80,6 +80,8 @@ public class ProfessionalService {
             });
         }
 
+        newProfessional.getUser().setStatus(User.Status.ACTIVE);
+
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         // GArry: removi o primeiro save
         return professionalRepository.save(newProfessional);

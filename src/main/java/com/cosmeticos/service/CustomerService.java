@@ -65,6 +65,7 @@ public class CustomerService {
 
         c.getUser().setCustomer(c);
         c.getUser().setPersonType(c.getPersonType());
+        c.getUser().setStatus(User.Status.ACTIVE);
 
         return repository.save(c);
     }
