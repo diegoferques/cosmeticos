@@ -2,6 +2,7 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.PriceRuleRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -25,6 +26,9 @@ public class ProfessionalService {
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private HabilityService habilityService;
@@ -158,6 +162,66 @@ public class ProfessionalService {
                 }
             }
             */
+
+            if(receivedProfessional.getProfessionalCategoryCollection() != null) {
+
+                //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
+                if(!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
+
+                    Set<ProfessionalCategory> professionalCategoryCollectionTemp = new HashSet<>();
+
+                    //verificamos se cada um dos ProfessionalCategory enviados ja existe em persistentProfessional
+                    for (ProfessionalCategory professionalCategoryRequest :
+                            receivedProfessional.getProfessionalCategoryCollection()) {
+
+                        Boolean isPresent = false;
+
+                        for (ProfessionalCategory professionalCategoryPersistent :
+                                persistentProfessional.getProfessionalCategoryCollection()) {
+
+                            if(professionalCategoryPersistent.getCategory().getIdCategory() ==
+                                    professionalCategoryRequest.getCategory().getIdCategory()) {
+                                isPresent = true;
+                                break;
+                            }
+                        }
+
+                        if (isPresent == false) {
+                            professionalCategoryCollectionTemp.add(professionalCategoryRequest);
+                        }
+                    }
+
+                    //Agora verificamos alguma category existe no persistente mas nao existe no request e deletaremos
+                    for (ProfessionalCategory professionalCategoryPersistent :
+                            persistentProfessional.getProfessionalCategoryCollection()) {
+
+                        Boolean isPresent = false;
+
+                        for (ProfessionalCategory professionalCategoryRequest :
+                                receivedProfessional.getProfessionalCategoryCollection()) {
+
+                            if(professionalCategoryPersistent.getCategory().getIdCategory() ==
+                                    professionalCategoryRequest.getCategory().getIdCategory()) {
+                                isPresent = true;
+                                break;
+                            }
+                        }
+
+                        if (isPresent == false) {
+                            professionalCategoryRepository.delete(
+                                    professionalCategoryPersistent.getProfessionalCategoryId()
+                            );
+                            persistentProfessional.getProfessionalCategoryCollection()
+                                    .remove(professionalCategoryPersistent);
+                        }
+                    }
+
+                    //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
+                    receivedProfessional.getProfessionalCategoryCollection().clear();
+                    receivedProfessional.setProfessionalCategoryCollection(professionalCategoryCollectionTemp);
+                }
+
+            }
 
 
             configureProfessionalCategory(receivedProfessional, persistentProfessional);
