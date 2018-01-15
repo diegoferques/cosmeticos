@@ -33,6 +33,7 @@ public class Category implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CategoryGetAll.class,
+            ResponseJsonView.ProfessionalUpdate.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +46,7 @@ public class Category implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.CategoryGetAll.class,
+            ResponseJsonView.ProfessionalUpdate.class
     })
     @NotEmpty(message = "category cannot be empty")
     @Column(unique = true)

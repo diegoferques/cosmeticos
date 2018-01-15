@@ -2,13 +2,13 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.*;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Hability;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.AddressRepository;
+import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +47,9 @@ public class ProfessionalControllerTests {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	private Professional returnOfCreateOK = null;
 
@@ -538,6 +541,7 @@ public class ProfessionalControllerTests {
 				"\t\"professional\":\n" +
 				"\t{\n" +
 				"\t\t\"address\":null,\n" +
+
 				"\t\t\"birthDate\":350535600000,\n" +
 				"\t\t\"cellPhone\":null,\"dateRegister\":null,\n" +
 				"\t\t\"status\":null,\n" +
@@ -1499,6 +1503,127 @@ public class ProfessionalControllerTests {
 
     }
 
+	@Test
+	public void testAddNewCategory() throws URISyntaxException, JsonProcessingException {
+		/****** setting up  ***************/
+		Professional professional = ProfessionalControllerTests.createFakeProfessional();
+		professionalRepository.save(professional);
+
+		ProfessionalCategory professionalCategory1 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint1",
+				"testAddNewCategoryByProfessionalCategoryEndpoint1-pr1",
+				5000L
+		);
+		ProfessionalCategory professionalCategory2 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint2",
+				"testAddNewCategoryByProfessionalCategoryEndpoint2-pr1",
+				7000L
+		);
+
+		professional.addProfessionalCategory(professionalCategory1);
+		professional.addProfessionalCategory(professionalCategory2);
+
+		professionalRepository.save(professional);
+
+		/************ testing ******************************/
+
+		Category c3 = new Category();
+		c3.setName("testAddNewCategoryByProfessionalCategoryEndpoint3");
+		categoryRepository.save(c3);
+
+		String json = new ObjectMapper().writeValueAsString(c3);
+
+		RequestEntity<String> entity2 =  RequestEntity
+				.post(new URI("/professionals/"+ professional.getIdProfessional() + "/addCategory"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange2 = restTemplate
+				.exchange(entity2, ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
+		Assert.assertEquals(3, exchange2.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getProfessionalCategoryCollection()
+				.size()
+		);
+	}
+
+	@Test
+	public void testRemoveCategory() throws URISyntaxException, JsonProcessingException {
+		/****** setting up  ***************/
+		Professional professional = ProfessionalControllerTests.createFakeProfessional();
+		professionalRepository.save(professional);
+
+		ProfessionalCategory professionalCategory1 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint1",
+				"testAddNewCategoryByProfessionalCategoryEndpoint1-pr1",
+				5000L
+		);
+		ProfessionalCategory professionalCategory2 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint2",
+				"testAddNewCategoryByProfessionalCategoryEndpoint2-pr1",
+				7000L
+		);
+		ProfessionalCategory professionalCategory3 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint3",
+				"testAddNewCategoryByProfessionalCategoryEndpoint3-pr1",
+				10000L
+		);
+
+		professional.addProfessionalCategory(professionalCategory1);
+		professional.addProfessionalCategory(professionalCategory2);
+		professional.addProfessionalCategory(professionalCategory3);
+
+		professionalRepository.save(professional);
+
+		/************ testing ******************************/
+
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": \"" + professional.getIdProfessional() + "\",\n" +
+				"    \"professionalCategoryCollection\": [\n" +
+				"      {\n" +
+				"        \"professional\": null,\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": 1\n" +
+				"        }\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		RequestEntity<String> entity2 =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange2 = restTemplate
+				.exchange(entity2, ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
+		Assert.assertEquals(1, exchange2.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getProfessionalCategoryCollection()
+				.size()
+		);
+		Assert.assertEquals(Long.valueOf(1), exchange2.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getProfessionalCategoryCollection()
+				.stream()
+				.findFirst()
+				.get()
+				.getCategory()
+				.getIdCategory()
+		);
+	}
+
 	public String getProfessionalCreatedFake(Professional professional){
 
 		String json = "{\n" +
@@ -1535,4 +1660,24 @@ public class ProfessionalControllerTests {
 		return json;
 	}
 
+	public ProfessionalCategory buildProfessionalCategory(
+			String categoryName,
+			String priceRuleName,
+			Long priceRulePrice
+	) {
+
+		Category service = new Category();
+		service.setName(categoryName);
+		service = categoryRepository.save(service);
+
+		PriceRule priceRule = new PriceRule();
+		priceRule.setName(priceRuleName);
+		priceRule.setPrice(priceRulePrice);
+
+		ProfessionalCategory ps1 = new ProfessionalCategory();
+		ps1.setCategory(service);
+		ps1.addPriceRule(priceRule);
+
+		return ps1;
+	}
 }
