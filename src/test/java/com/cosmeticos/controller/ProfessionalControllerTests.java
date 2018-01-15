@@ -1612,6 +1612,7 @@ public class ProfessionalControllerTests {
 				.getProfessionalCategoryCollection()
 				.size()
 		);
+
 		Assert.assertEquals(Long.valueOf(1), exchange2.getBody()
 				.getProfessionalList()
 				.get(0)
