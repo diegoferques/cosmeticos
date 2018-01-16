@@ -289,7 +289,7 @@ public class ProfessionalService {
     public void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
 
         Set<ProfessionalCategory> receivedPcCollection = receivedProfessional.getProfessionalCategoryCollection();
-
+        // Se vier vazio eh pq o cliente optou por remover as categorias.
         if(receivedPcCollection != null)
         {
             persistentProfessional.setProfessionalCategoryCollection(receivedPcCollection);
@@ -345,6 +345,18 @@ public class ProfessionalService {
 
         professionalRepository.save(boss);
         professionalRepository.save(employee);
+    }
+
+    public Professional addCategory(Professional persistentProfessional, Category category) {
+
+        ProfessionalCategory professionalCategory = new ProfessionalCategory(persistentProfessional, category);
+
+        persistentProfessional.addProfessionalCategory(professionalCategory);
+
+        professionalRepository.save(persistentProfessional);
+
+        return persistentProfessional;
+
     }
 }
 

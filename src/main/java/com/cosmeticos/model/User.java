@@ -54,6 +54,12 @@ public class User implements Serializable {
 
     }
 
+    public enum UserType{
+
+        customer, professional
+
+    }
+
     private static final long serialVersionUID = 1L;
 
     @JsonView({

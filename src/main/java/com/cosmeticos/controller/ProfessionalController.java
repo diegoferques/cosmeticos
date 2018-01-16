@@ -3,6 +3,7 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
+import com.cosmeticos.model.Category;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.model.User;
@@ -267,6 +268,65 @@ public class ProfessionalController {
             log.error("Erro na exibição da Lista de Professional: {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @JsonView(ResponseJsonView.ProfessionalFindAll.class)
+    @RequestMapping(path = "/professionals/{professionalId}/addCategory", method = RequestMethod.POST)
+    public HttpEntity<ProfessionalResponseBody> addCategory(
+            @Valid @RequestBody Category request,
+            @PathVariable Long professionalId,
+            BindingResult bindingResult
+    ) {
+        try {
+            if (bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            } else {
+
+                Optional<Professional> professionalOptional = service.find(professionalId);
+
+                if(professionalOptional.isPresent()) {
+
+                    Professional professional = service.addCategory(professionalOptional.get(), request);
+
+                    ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
+                    responseBody.setDescription("sucess");
+
+                    log.info("Category [{}] adicionado com sucesso ao Professional [{}]",
+                            request.getIdCategory(),
+                            professional
+                    );
+
+                    return ok(responseBody);
+                }
+                else
+                {
+                    ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+                    responseBody.setDescription("Professional Id invalido: " + professionalId);
+                    return badRequest().body(responseBody);
+                }
+            }
+
+        } catch (ConstraintViolationException e) {
+            /**
+             * Alguns dados de requisicao invalidos podem nao ser processados no request devido ao nivel de aninhamento
+             * dos objetos. Entretanto, esses erros de validacao podem ser pegos em outras partes do codigo e acabam lancando
+             * ConstraintViolationException. Por isso mantemos este catch.
+             */
+            log.error("Erro no insert: {}", e.getMessage(), e.getConstraintViolations());
+
+            return badRequest().body(buildErrorResponse(e));
+
+        } catch (Exception e) {
+            String errorCode = String.valueOf(System.nanoTime());
+
+            ProfessionalResponseBody b = new ProfessionalResponseBody();
+            b.setDescription("Erro interno: " + errorCode);
+
+            log.error("Erro no insert: {} - {}", errorCode, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(b);
         }
     }
 
