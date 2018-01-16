@@ -116,7 +116,7 @@ public class UserService {
 
     private void inactiveUserType(User user) {
 
-        if(user.getUserType() == User.UserType.customer.toString()) {
+        if(User.UserType.customer.equals(user.getUserType())) {
 
             Customer customer = new Customer();
             customer.setIdCustomer(

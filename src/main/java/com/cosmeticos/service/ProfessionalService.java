@@ -191,6 +191,8 @@ public class ProfessionalService {
                         }
                     }
 
+                    ArrayList<ProfessionalCategory> professionalCategoriesToErase = new ArrayList<>();
+                    
                     //Agora verificamos alguma category existe no persistente mas nao existe no request e deletaremos
                     for (ProfessionalCategory professionalCategoryPersistent :
                             persistentProfessional.getProfessionalCategoryCollection()) {
@@ -208,12 +210,19 @@ public class ProfessionalService {
                         }
 
                         if (isPresent == false) {
-                            professionalCategoryRepository.delete(
-                                    professionalCategoryPersistent.getProfessionalCategoryId()
-                            );
-                            persistentProfessional.getProfessionalCategoryCollection()
-                                    .remove(professionalCategoryPersistent);
+                            professionalCategoriesToErase.add(professionalCategoryPersistent);
                         }
+                    }
+                    
+                    // Removendo fora do FOR pra evitar ConcurrentModificationException
+                    for (ProfessionalCategory pcToRemove :
+                            professionalCategoriesToErase) {
+
+                        professionalCategoryRepository.delete(
+                                pcToRemove.getProfessionalCategoryId()
+                        );
+                        persistentProfessional.getProfessionalCategoryCollection()
+                                .remove(pcToRemove);
                     }
 
                     //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
