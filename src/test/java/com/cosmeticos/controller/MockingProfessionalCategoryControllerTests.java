@@ -63,7 +63,6 @@ public class MockingProfessionalCategoryControllerTests {
         ).thenReturn(sourceLocation);
 
         CreateProfessionalThatWontReturn createProfessionalThatWontReturn = new CreateProfessionalThatWontReturn().invoke(s1, emailNaoLista);
-        CreateProfessionalThatWillReturn professionalThatWillReturn = new CreateProfessionalThatWillReturn().invoke(s1, emailLista);
 
         ResponseEntity<ProfessionalResponseBody> exchange = createProfessionalThatWontReturn.exchange;
 

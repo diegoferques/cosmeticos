@@ -31,6 +31,7 @@ public class ProfessionalCategory implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalUpdate.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +45,7 @@ public class ProfessionalCategory implements Serializable {
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalUpdate.class
     })
     @JoinColumn(name = "id_category", referencedColumnName = "idCategory")
     @ManyToOne(optional=false)
@@ -67,6 +69,7 @@ public class ProfessionalCategory implements Serializable {
     @JsonView({
     	ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
+        ResponseJsonView.ProfessionalUpdate.class
     })
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory", orphanRemoval = true)
     private Set<PriceRule> priceRuleList = new HashSet<>();

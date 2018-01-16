@@ -1,14 +1,14 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.MulticlickPaymentService;
+import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
@@ -1878,4 +1878,5 @@ public class OrderControllerTests {
         return new ChargeResponse(retornoTransacao);
 
     }
+
 }
