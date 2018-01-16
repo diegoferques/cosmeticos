@@ -80,6 +80,8 @@ public class ProfessionalService {
             });
         }
 
+        newProfessional.getUser().setStatus(User.Status.ACTIVE);
+
         //SALVAMOS 2 VEZES PROFESSIONAL? EH ISSO MESMO?
         // GArry: removi o primeiro save
         return professionalRepository.save(newProfessional);
@@ -201,7 +203,6 @@ public class ProfessionalService {
         // Se esses 3 atributos forem passados vai bugar pq chegando aqui os anularemos.
         if ( professionalProbe.getUser() != null ) {
             professionalProbe.getUser().setLostPassword(null);
-            professionalProbe.getUser().setCreditCardCount(null);
             professionalProbe.getUser().setEvaluation(null);
         }
 

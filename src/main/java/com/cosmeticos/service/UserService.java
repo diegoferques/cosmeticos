@@ -57,18 +57,8 @@ public class UserService {
         return repository.save(request.getEntity());
     }
 
-    /**
-     * @param request
-     * @return
-     * @deprecated Devemos usar update(User).
-     */
-    public Optional<User> update(UserRequestBody request) {
-        return update(request.getEntity());
-    }
-
     public Optional<User> update(User userFromRequest) {
 
-        // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdLogin = userFromRequest.getIdLogin();
 
         Optional<User> optional = Optional.ofNullable(repository.findOne(requestedIdLogin));
@@ -293,8 +283,9 @@ public class UserService {
         // Se nao colocar nulo, esses campos entram na clausula where e nao retorna exatamente o que foi pedido nas queries string
         if (userProbe != null) {
             userProbe.setLostPassword(null);
-            userProbe.setCreditCardCount(null);
             userProbe.setEvaluation(null);
+            userProbe.setUserType(null);
+            userProbe.setStatus(User.Status.ACTIVE);
         }
         return repository.findAll(Example.of(userProbe));
     }

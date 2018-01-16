@@ -108,28 +108,6 @@ public class ProfessionalCategoryControllerTests {
 
 	}
 
-	@Test
-	public void delete() throws Exception {
-
-		Set<ProfessionalCategory> pcListBefore = professional.getProfessionalCategoryCollection();
-
-		int professionalCateogrySizeBefore = pcListBefore.size();
-
-		ProfessionalCategory pc = pcListBefore.stream().findFirst().get();
-
-		restTemplate.delete("/professionalcategories/" + pc.getProfessionalCategoryId());
-
-
-		professional = professionalRepository.findOne(professional.getIdProfessional());
-
-		Set<ProfessionalCategory> pcListAfter = professional.getProfessionalCategoryCollection();
-
-		int professionalCateogrySizeAfter = pcListAfter.size();
-
-		Assert.assertTrue("ProfessionalCategory nao foi deletado",professionalCateogrySizeAfter < professionalCateogrySizeBefore);
-
-	}
-
 	/**
 	 * Depende dos inserts feitos no ServicePreLoadConfiguration e ProfessionalCategoryPreLoadConfiguration.
 	 * Ignore este teste se o profile de execucao usado nao for o default.

@@ -24,7 +24,7 @@ import java.util.Set;
  *
  * @author magarrett.dias
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)// usar NON_EMPTY o jackson considera 0 (credicardCount) como vazio e nao exibe o atributo no json
 @Data
 @Entity
 public class User implements Serializable {
@@ -34,7 +34,15 @@ public class User implements Serializable {
         v.setUser(this);
     }
 
-    public enum Status {
+    /**
+     * Os tipo sao referentes as classes que tem User. {@link Customer} e {@link Professional}.
+     * Manter um enum aqui nesta classe eh mais conveniente.
+     */
+    public enum Type {
+        professional, customer
+    }
+
+    public  enum Status {
 
         ACTIVE, INACTIVE, GONE, PENDING_PAYMENT
 
@@ -116,6 +124,9 @@ public class User implements Serializable {
 
     private String sourceApp;
 
+    @JsonView({
+            ResponseJsonView.ProfessionalFindAll.class
+    })
     @Enumerated
     private Status status;
 
@@ -132,7 +143,7 @@ public class User implements Serializable {
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-    private String userType;
+    private User.Type userType;
 
     @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
@@ -174,12 +185,12 @@ public class User implements Serializable {
     //@Transient
     private Float evaluation = .0f;
 
-    @JsonView({
-            ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
-    })
-    //@Transient  TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
-    private Integer creditCardCount = 0;
+   //@JsonView({
+   //        ResponseJsonView.CustomerControllerUpdate.class,
+   //        ResponseJsonView.CustomerControllerGet.class
+   //})
+   //@Transient //TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
+   //private Integer creditCardCount = 0;
 
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
@@ -218,6 +229,10 @@ public class User implements Serializable {
        this.getCreditCardCollection().add(cc);
    }
 
+   @JsonView({
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+   })
     public Integer getCreditCardCount() {
         return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
     }

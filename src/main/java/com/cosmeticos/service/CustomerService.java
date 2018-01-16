@@ -38,7 +38,8 @@ public class CustomerService {
             User u = probe.getUser();
             u.setEvaluation(null);
             u.setLostPassword(null);
-            u.setCreditCardCount(null);
+            u.setUserType(null);
+            u.setStatus(User.Status.ACTIVE);
         }
         return repository.findAll(Example.of(probe));
     }
@@ -64,6 +65,7 @@ public class CustomerService {
 
         c.getUser().setCustomer(c);
         c.getUser().setPersonType(c.getPersonType());
+        c.getUser().setStatus(User.Status.ACTIVE);
 
         return repository.save(c);
     }

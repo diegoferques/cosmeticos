@@ -1,4 +1,4 @@
-package com.cosmeticos.config;
+package com.cosmeticos.preload;
 
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.CreditCard;
@@ -136,6 +136,7 @@ public class CustomerPreLoadConfiguration {
         u.setSourceApp("google+");
         u.setUsername(username);
         u.setPersonType(personType);
+        u.setStatus(User.Status.ACTIVE);
         //u.getCustomerCollection().add(c);
         //userRepository.save(u);
         return u;

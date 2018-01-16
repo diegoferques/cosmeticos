@@ -1,4 +1,4 @@
-package com.cosmeticos.config;
+package com.cosmeticos.preload;
 
 
 import com.cosmeticos.model.Exception;
@@ -13,8 +13,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.Calendar;
-
-import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Component

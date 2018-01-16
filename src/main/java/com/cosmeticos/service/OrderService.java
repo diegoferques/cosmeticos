@@ -152,7 +152,7 @@ public class OrderService {
 
             if(
                     // Condicoes de quando o cliente cadastra cartao oneclick
-                    ( optionalReceivedCc.isPresent() && optionalReceivedCc.get().isOneClick() )
+                    ( optionalReceivedCc.isPresent() && Boolean.valueOf( String.valueOf(optionalReceivedCc.get().isOneClick()) ) )
 
                     // Condicao pra quando o cliente compra com oneclick a partir da segunda vez (sem enviar cc no request)
                     || userHasOneClickCard(persistentUser) )

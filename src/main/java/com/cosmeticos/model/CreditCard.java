@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -82,11 +83,13 @@ public class CreditCard implements Serializable {
     })
     private String vendor;
 
+    @Setter
     @JsonView({
             ResponseJsonView.CreditCardFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
-    private boolean oneClick;
+    private Boolean oneClick;
+
     // TODO: Incluir @Transient do jpa assim q  o problema  entre o jackson e as a notacoes jpq terminarem.
     private String securityCode;
 
@@ -124,6 +127,10 @@ public class CreditCard implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
     private Collection<Order> orders = new ArrayList<>();
+
+    public Boolean isOneClick() {
+        return oneClick;
+    }
 
     /*@ManyToOne
     private Professional professional;
