@@ -3,12 +3,10 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.*;
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.AddressRepository;
-import com.cosmeticos.repository.CategoryRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.repository.UserRepository;
+import com.cosmeticos.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -27,6 +26,7 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +41,9 @@ public class ProfessionalControllerTests {
 
 	@Autowired
 	private ProfessionalRepository professionalRepository;
+
+	@Autowired
+	private ProfessionalCategoryRepository professionalCategoryRepository;
 
 	@Autowired
 	private AddressRepository addressRepository;
@@ -1335,109 +1338,109 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals(HttpStatus.OK, exchangeUpdateRule.getStatusCode());
 	}
 
-        @Test
-        public void test2employees() throws URISyntaxException {
+	@Test
+	public void test2employees() throws URISyntaxException {
 
-            Professional professionalBoss = createFakeProfessional();
-            professionalBoss.setNameProfessional("BossName");
-			professionalRepository.save(professionalBoss);
+		Professional professionalBoss = createFakeProfessional();
+		professionalBoss.setNameProfessional("BossName");
+		professionalRepository.save(professionalBoss);
 
-			Professional professionalEmployees1 = createFakeProfessional();
-			professionalBoss.setNameProfessional("EmployeesName1");
-			professionalRepository.save(professionalEmployees1);
+		Professional professionalEmployees1 = createFakeProfessional();
+		professionalBoss.setNameProfessional("EmployeesName1");
+		professionalRepository.save(professionalEmployees1);
 
-            Professional professionalEmployees2 = createFakeProfessional();
-			professionalBoss.setNameProfessional("EmployeesName2");
-			professionalRepository.save(professionalEmployees2);
+		Professional professionalEmployees2 = createFakeProfessional();
+		professionalBoss.setNameProfessional("EmployeesName2");
+		professionalRepository.save(professionalEmployees2);
 
-			String jsonUpdate = "{\n" +
-                    "  \"professional\": {\n" +
-                    "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
-                    "        \"employeesCollection\": [\n" +
-                    "          {\n" +
-                    "            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
-                    "          },\n" +
-                    "          {\n" +
-                    "            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
-                    "          }\n" +
-                    "          ]\n" +
-                    "  }\n" +
-                    "}";
+		String jsonUpdate = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
+				"        \"employeesCollection\": [\n" +
+				"          {\n" +
+				"            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
+				"          },\n" +
+				"          {\n" +
+				"            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
+				"          }\n" +
+				"          ]\n" +
+				"  }\n" +
+				"}";
 
-			ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
-            Assert.assertNotNull(exchangeUpdate);
-            Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-            Assert.assertEquals(2, exchangeUpdate
-                    .getBody()
-                    .getProfessionalList()
-                    .get(0)
-                    .getEmployeesCollection()
-                    .size());
+		Assert.assertNotNull(exchangeUpdate);
+		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+		Assert.assertEquals(2, exchangeUpdate
+				.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getEmployeesCollection()
+				.size());
 
-        }
+	}
 
-        @Test
-        public void testAdd2employeesAndThenRemoveOneOfThem() throws URISyntaxException {
+	@Test
+	public void testAdd2employeesAndThenRemoveOneOfThem() throws URISyntaxException {
 
-            Professional professionalBoss = createFakeProfessional();
-            professionalBoss.setNameProfessional("BossName");
-			professionalRepository.save(professionalBoss);
+		Professional professionalBoss = createFakeProfessional();
+		professionalBoss.setNameProfessional("BossName");
+		professionalRepository.save(professionalBoss);
 
-			Professional professionalEmployees1 = createFakeProfessional();
-			professionalBoss.setNameProfessional("EmployeesName1");
-			professionalRepository.save(professionalEmployees1);
+		Professional professionalEmployees1 = createFakeProfessional();
+		professionalBoss.setNameProfessional("EmployeesName1");
+		professionalRepository.save(professionalEmployees1);
 
-            Professional professionalEmployees2 = createFakeProfessional();
-			professionalBoss.setNameProfessional("EmployeesName2");
-			professionalRepository.save(professionalEmployees2);
+		Professional professionalEmployees2 = createFakeProfessional();
+		professionalBoss.setNameProfessional("EmployeesName2");
+		professionalRepository.save(professionalEmployees2);
 
-			String jsonUpdate = "{\n" +
-                    "  \"professional\": {\n" +
-                    "    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
-                    "        \"employeesCollection\": [\n" +
-                    "          {\n" +
-                    "            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
-                    "          },\n" +
-                    "          {\n" +
-                    "            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
-                    "          }\n" +
-                    "          ]\n" +
-                    "  }\n" +
-                    "}";
+		String jsonUpdate = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": \"" + professionalBoss.getIdProfessional() + "\",\n" +
+				"        \"employeesCollection\": [\n" +
+				"          {\n" +
+				"            \"idProfessional\": "+professionalEmployees1.getIdProfessional()+"\n" +
+				"          },\n" +
+				"          {\n" +
+				"            \"idProfessional\": "+professionalEmployees2.getIdProfessional()+"\n" +
+				"          }\n" +
+				"          ]\n" +
+				"  }\n" +
+				"}";
 
-			ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
+		ResponseEntity<ProfessionalResponseBody> exchangeUpdate = put(jsonUpdate, restTemplate);
 
-            Assert.assertNotNull(exchangeUpdate);
-            Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-            Assert.assertEquals(2, exchangeUpdate
-                    .getBody()
-                    .getProfessionalList()
-                    .get(0)
-                    .getEmployeesCollection()
-                    .size());
+		Assert.assertNotNull(exchangeUpdate);
+		Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
+		Assert.assertEquals(2, exchangeUpdate
+				.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getEmployeesCollection()
+				.size());
 
-            String url = MessageFormat.format(
-            		"/professionals/{0}/employees/{1}",
-					professionalBoss.getIdProfessional(),
-					professionalEmployees1.getIdProfessional());
+		String url = MessageFormat.format(
+				"/professionals/{0}/employees/{1}",
+				professionalBoss.getIdProfessional(),
+				professionalEmployees1.getIdProfessional());
 
-			RequestEntity<Void> entity =  RequestEntity
-					.delete(new URI(url))
-					.accept(MediaType.APPLICATION_JSON)
-					.build();
+		RequestEntity<Void> entity =  RequestEntity
+				.delete(new URI(url))
+				.accept(MediaType.APPLICATION_JSON)
+				.build();
 
-			ResponseEntity<Void> deleteResponse = restTemplate.exchange(entity, Void.class);
+		ResponseEntity<Void> deleteResponse = restTemplate.exchange(entity, Void.class);
 
-			Assert.assertNotNull(deleteResponse);
-			Assert.assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+		Assert.assertNotNull(deleteResponse);
+		Assert.assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
 
-			Professional persistentBoss = professionalRepository.findOne(professionalBoss.getIdProfessional());
+		Professional persistentBoss = professionalRepository.findOne(professionalBoss.getIdProfessional());
 
-			Assert.assertEquals(1, persistentBoss
-					.getEmployeesCollection()
-					.size());
-        }
+		Assert.assertEquals(1, persistentBoss
+				.getEmployeesCollection()
+				.size());
+	}
 
     @Test
     public void testAddEmployees() throws ParseException, URISyntaxException {
@@ -1503,8 +1506,141 @@ public class ProfessionalControllerTests {
 
     }
 
+    //@Transactional // Para indicar ao hibernate que no save de Professional, deve retornar os ids dos professionalCategories.
 	@Test
-	public void testAddNewCategory() throws URISyntaxException, JsonProcessingException {
+	public void testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut() throws URISyntaxException, JsonProcessingException {
+		/****** setting up  ***************/
+		Professional professional = ProfessionalControllerTests.createFakeProfessional();
+		professionalRepository.save(professional);
+
+		ProfessionalCategory professionalCategory1 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint1",
+				"testAddNewCategoryByProfessionalCategoryEndpoint1-pr1",
+				5000L
+		);
+		ProfessionalCategory professionalCategory2 = buildProfessionalCategory(
+				"testAddNewCategoryByProfessionalCategoryEndpoint2",
+				"testAddNewCategoryByProfessionalCategoryEndpoint2-pr1",
+				7000L
+		);
+
+		professional.addProfessionalCategory(professionalCategory1);
+		professional.addProfessionalCategory(professionalCategory2);
+
+		professionalCategoryRepository.saveAndFlush(professionalCategory1);
+		professionalCategoryRepository.saveAndFlush(professionalCategory2);
+
+		/************ testing ******************************/
+
+		Category c3 = new Category();
+		c3.setName("testAddNewCategoryByProfessionalCategoryEndpoint3");
+		categoryRepository.save(c3);
+
+		String json = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": "+professional.getIdProfessional()+",\n" +
+				"    \"professionalCategoryCollection\": [\n" +
+
+				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory1.getProfessionalCategoryId() + "\n"+
+		        "      },\n" +
+
+
+				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory2.getProfessionalCategoryId() + "\n"+
+		        "      },\n" +
+
+				"      {\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+c3.getIdCategory()+"\n" +
+				"        }\n" +
+				"      }\n" +
+
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		System.out.println(json);
+
+		RequestEntity<String> entity2 =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json);
+
+		ResponseEntity<ProfessionalResponseBody> exchange2 = restTemplate
+				.exchange(entity2, ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
+		Assert.assertEquals(3, exchange2.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getProfessionalCategoryCollection()
+				.size()
+		);
+
+
+		//// Testando cenario de duplicata de categorias ///////////////////
+		Category c4 = new Category();
+		c4.setName("testAddNewCategoryByProfessionalCategoryEndpoint4");
+		categoryRepository.save(c4);
+
+		String json2 = "{\n" +
+				"  \"professional\": {\n" +
+				"    \"idProfessional\": "+professional.getIdProfessional()+",\n" +
+				"    \"professionalCategoryCollection\": [\n" +
+
+				"      {\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+professionalCategory1.getCategory().getIdCategory()+"\n" +
+				"        }\n" +
+				"      },\n" +
+
+
+				"      {\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+professionalCategory2.getCategory().getIdCategory()+"\n" +
+				"        }\n" +
+				"      },\n" +
+
+
+				"      {\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+c3.getIdCategory()+"\n" +
+				"        }\n" +
+				"      },\n" +
+
+				"      {\n" +
+				"        \"category\": {\n" +
+				"          \"idCategory\": "+c4.getIdCategory()+"\n" +
+				"        }\n" +
+				"      }\n" +
+
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+
+		RequestEntity<String> entity3 =  RequestEntity
+				.put(new URI("/professionals"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(json2);
+
+		ResponseEntity<ProfessionalResponseBody> exchange3 = restTemplate
+				.exchange(entity3, ProfessionalResponseBody.class);
+
+		Assert.assertEquals(HttpStatus.OK, exchange3.getStatusCode());
+		Assert.assertEquals(4, exchange3.getBody()
+				.getProfessionalList()
+				.get(0)
+				.getProfessionalCategoryCollection()
+				.size()
+		);
+	}
+
+	@Test
+	public void testAddNewCategoryOnNewEndpoint() throws URISyntaxException, JsonProcessingException {
 		/****** setting up  ***************/
 		Professional professional = ProfessionalControllerTests.createFakeProfessional();
 		professionalRepository.save(professional);
