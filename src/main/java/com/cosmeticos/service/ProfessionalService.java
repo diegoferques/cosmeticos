@@ -55,7 +55,7 @@ public class ProfessionalService {
         newProfessional.setStatus(Professional.Status.ACTIVE);
         newProfessional.setDateRegister(Calendar.getInstance().getTime());
         newProfessional.setUser(request.getProfessional().getUser());
-		newProfessional.getUser().setProfessional(newProfessional);
+        newProfessional.getUser().setProfessional(newProfessional);
         newProfessional.setAddress(request.getProfessional().getAddress());
         newProfessional.setAttendance(request.getProfessional().getAttendance());
 
@@ -69,14 +69,13 @@ public class ProfessionalService {
         configureHability(request.getProfessional(), newProfessional);
 
         //configureProfessionalCategory(request.getProfessional(), newProfessional);
-        if(request.getProfessional().getProfessionalCategoryCollection() != null)
-        {
+        if (request.getProfessional().getProfessionalCategoryCollection() != null) {
             newProfessional.setProfessionalCategoryCollection(request.getProfessional().getProfessionalCategoryCollection());
             newProfessional.getProfessionalCategoryCollection().forEach(pc -> {
                 pc.setProfessional(newProfessional);
 
                 // Relacionamento bidirecional
-                if ( pc.getPriceRuleList() != null) {
+                if (pc.getPriceRuleList() != null) {
                     pc.getPriceRuleList().forEach(pr -> {
                         pr.setProfessionalCategory(pc);
                     });
@@ -92,11 +91,11 @@ public class ProfessionalService {
     }
 
 
-    public Optional<Professional> update(Professional  receivedProfessional) {
+    public Optional<Professional> update(Professional receivedProfessional) {
 
         Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(receivedProfessional.getIdProfessional()));
 
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
 
             Professional persistentProfessional = optional.get();
 
@@ -124,11 +123,11 @@ public class ProfessionalService {
                 persistentProfessional.setStatus(receivedProfessional.getStatus());
             }
 
-            if(!StringUtils.isEmpty(receivedProfessional.getAttendance())){
+            if (!StringUtils.isEmpty(receivedProfessional.getAttendance())) {
                 persistentProfessional.setAttendance(receivedProfessional.getAttendance());
             }
 
-            if(receivedProfessional.getUser() != null){
+            if (receivedProfessional.getUser() != null) {
                 User persistentUser = persistentProfessional.getUser();
 
                 Set<Vote> requestVotes = receivedProfessional.getUser().getVoteCollection();
@@ -138,14 +137,14 @@ public class ProfessionalService {
                 }
             }
 
-            if(receivedProfessional.getEmployeesCollection() != null){
-                for(Professional professionalItem : receivedProfessional.getEmployeesCollection()){
+            if (receivedProfessional.getEmployeesCollection() != null) {
+                for (Professional professionalItem : receivedProfessional.getEmployeesCollection()) {
                     Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
                     persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
 
-            if(receivedProfessional.getBoss() != null){
+            if (receivedProfessional.getBoss() != null) {
                 persistentProfessional.setBoss(receivedProfessional.getBoss());
             }
 
@@ -163,83 +162,83 @@ public class ProfessionalService {
             }
             */
 
-        //    if(receivedProfessional.getProfessionalCategoryCollection() != null) {
-//
-        //        //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
-        //        if(!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
-//
-        //            Set<ProfessionalCategory> professionalCategoryCollectionTemp = new HashSet<>();
-//
-        //            //verificamos se cada um dos ProfessionalCategory enviados ja existe em persistentProfessional
-        //            for (ProfessionalCategory professionalCategoryRequest :
-        //                    receivedProfessional.getProfessionalCategoryCollection()) {
-//
-        //                Boolean isPresent = false;
-//
-        //                for (ProfessionalCategory professionalCategoryPersistent :
-        //                        persistentProfessional.getProfessionalCategoryCollection()) {
-//
-        //                    if(professionalCategoryPersistent.getCategory().getIdCategory() ==
-        //                            professionalCategoryRequest.getCategory().getIdCategory()) {
-        //                        isPresent = true;
-        //                        break;
-        //                    }
-        //                }
-//
-        //                if (isPresent == false) {
-        //                    professionalCategoryCollectionTemp.add(professionalCategoryRequest);
-        //                }
-        //            }
-//
-        //            ArrayList<ProfessionalCategory> professionalCategoriesToErase = new ArrayList<>();
-        //
-        //            //Agora verificamos alguma category existe no persistente mas nao existe no request e deletaremos
-        //            for (ProfessionalCategory professionalCategoryPersistent :
-        //                    persistentProfessional.getProfessionalCategoryCollection()) {
-//
-        //                Boolean isPresent = false;
-//
-        //                for (ProfessionalCategory professionalCategoryRequest :
-        //                        receivedProfessional.getProfessionalCategoryCollection()) {
-//
-        //                    if(professionalCategoryPersistent.getCategory().getIdCategory() ==
-        //                            professionalCategoryRequest.getCategory().getIdCategory()) {
-        //                        isPresent = true;
-        //                        break;
-        //                    }
-        //                }
-//
-        //                if (isPresent == false) {
-        //                    professionalCategoriesToErase.add(professionalCategoryPersistent);
-        //                }
-        //            }
-        //
-        //            // Removendo fora do FOR pra evitar ConcurrentModificationException
-        //            for (ProfessionalCategory pcToRemove :
-        //                    professionalCategoriesToErase) {
-//
-        //                professionalCategoryRepository.delete(
-        //                        pcToRemove.getProfessionalCategoryId()
-        //                );
-        //                persistentProfessional.getProfessionalCategoryCollection()
-        //                        .remove(pcToRemove);
-        //            }
-//
-        //            //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
-        //            receivedProfessional.getProfessionalCategoryCollection().clear();
-        //            receivedProfessional.setProfessionalCategoryCollection(professionalCategoryCollectionTemp);
-        //        }
-//
-        //    }
+                if(receivedProfessional.getProfessionalCategoryCollection() != null) {
+
+                    //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
+                    if(!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
+
+                        Set<ProfessionalCategory> professionalCategoryCollectionTemp = new HashSet<>();
+
+                        //verificamos se cada um dos ProfessionalCategory enviados ja existe em persistentProfessional
+                        for (ProfessionalCategory professionalCategoryRequest :
+                                receivedProfessional.getProfessionalCategoryCollection()) {
+
+                            Boolean isPresent = false;
+
+                            for (ProfessionalCategory professionalCategoryPersistent :
+                                    persistentProfessional.getProfessionalCategoryCollection()) {
+
+                                if(professionalCategoryPersistent.getCategory().getIdCategory() ==
+                                        professionalCategoryRequest.getCategory().getIdCategory()) {
+                                    isPresent = true;
+                                    break;
+                                }
+                            }
+
+                            if (isPresent == false) {
+                                professionalCategoryCollectionTemp.add(professionalCategoryRequest);
+                            }
+                        }
+
+                        ArrayList<ProfessionalCategory> professionalCategoriesToErase = new ArrayList<>();
+
+                        //Agora verificamos alguma category existe no persistente mas nao existe no request e deletaremos
+                        for (ProfessionalCategory professionalCategoryPersistent :
+                                persistentProfessional.getProfessionalCategoryCollection()) {
+
+                            Boolean isPresent = false;
+
+                            for (ProfessionalCategory professionalCategoryRequest :
+                                    receivedProfessional.getProfessionalCategoryCollection()) {
+
+                                if(professionalCategoryPersistent.getCategory().getIdCategory() ==
+                                        professionalCategoryRequest.getCategory().getIdCategory()) {
+                                    isPresent = true;
+                                    break;
+                                }
+                            }
+
+                            if (isPresent == false) {
+                                professionalCategoriesToErase.add(professionalCategoryPersistent);
+                            }
+                        }
+
+                        // Removendo fora do FOR pra evitar ConcurrentModificationException
+                        for (ProfessionalCategory pcToRemove :
+                                professionalCategoriesToErase) {
+
+                            pcToRemove.setStatus(ProfessionalCategory.Status.DELETED);
+                            professionalCategoryRepository.save(
+                                    pcToRemove
+                            );
+
+                            persistentProfessional.getProfessionalCategoryCollection()
+                                    .remove(pcToRemove);
+                        }
+
+                        //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
+                        for (ProfessionalCategory pc :
+                                professionalCategoryCollectionTemp) {
+                            persistentProfessional.addProfessionalCategory(pc);
+                        }
+                    }
+                }
 
 
-            configureProfessionalCategory(receivedProfessional, persistentProfessional);
-            
             professionalRepository.save(persistentProfessional);
 
             return Optional.of(persistentProfessional);
-        }
-        else{
+        } else {
             return optional;
         }
     }
@@ -253,28 +252,28 @@ public class ProfessionalService {
         return professionalRepository.findTop10ByOrderByDateRegisterDesc();
     }
 
-	/**
-	 * Recebe uma instancia nova transiente de Professional e inclui os atributos preenchidos em uma clausula WHERE.
-	 Por exemplo: 
-	 
-	 (1)
-	 Professional p = new Professional();
-	 p.setNameProfessional("Joao");
-	 Vai gerar: SELECT * FROM Professional WHERE nameProfessional = 'Joao'
-	 
-	 
-	 (2)
-	 Professional p = new Professional();
-	 p.setNameProfessional("Joao");
-	 p.setCnpj("123456");
-	 Vai gerar: SELECT * FROM Professional WHERE nameProfessional = 'Joao' and cnpj = '123456'
-	 
-	 Fonte: http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#query-by-example
-	 */
+    /**
+     * Recebe uma instancia nova transiente de Professional e inclui os atributos preenchidos em uma clausula WHERE.
+     * Por exemplo:
+     * <p>
+     * (1)
+     * Professional p = new Professional();
+     * p.setNameProfessional("Joao");
+     * Vai gerar: SELECT * FROM Professional WHERE nameProfessional = 'Joao'
+     * <p>
+     * <p>
+     * (2)
+     * Professional p = new Professional();
+     * p.setNameProfessional("Joao");
+     * p.setCnpj("123456");
+     * Vai gerar: SELECT * FROM Professional WHERE nameProfessional = 'Joao' and cnpj = '123456'
+     * <p>
+     * Fonte: http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#query-by-example
+     */
     public List<Professional> findAllBy(Professional professionalProbe) {
 
         // Se esses 3 atributos forem passados vai bugar pq chegando aqui os anularemos.
-        if ( professionalProbe.getUser() != null ) {
+        if (professionalProbe.getUser() != null) {
             professionalProbe.getUser().setLostPassword(null);
             professionalProbe.getUser().setEvaluation(null);
         }
@@ -286,11 +285,12 @@ public class ProfessionalService {
      * Importante: Se receivedProfessional.getProfessionalCategoryCollection == null nada sera alterado. Se for vazio, limparemos essa lista
      * no banco tbm. Eh importante considerar que antes repassar o que chegou no request para newProfessional, newProfessional sofre um
      * newProfessional.getProfessionalCategoryCollection().clear().
-     *
-     *
+     * <p>
+     * <p>
      * Este metodo faz diversos deletes, por isso necessita de transação requeres new, pois caso hajam erros, todos os deletes sofrem rollback.
-     *
+     * <p>
      * Se a lista de ProfessionalCategories ou priceRule vierem nulas ou vazias, nenhuma ação é tomada. Essas listas nao podem ser vazias.
+     *
      * @param receivedProfessional
      * @param persistentProfessional
      */
@@ -299,8 +299,13 @@ public class ProfessionalService {
 
         Set<ProfessionalCategory> receivedPcCollection = receivedProfessional.getProfessionalCategoryCollection();
         // Se vier vazio eh pq o cliente optou por remover as categorias.
-        if(receivedPcCollection != null)
-        {
+        if (receivedPcCollection != null) {
+            // Apagando categorias anteriormente associadas pois chegaram novas (ou nenhuma)
+            receivedPcCollection.forEach(pc -> {
+                professionalCategoryRepository.delete(pc.getProfessionalCategoryId());
+            });
+
+
             persistentProfessional.setProfessionalCategoryCollection(receivedPcCollection);
             persistentProfessional.getProfessionalCategoryCollection().forEach(pc -> {
 
@@ -309,19 +314,18 @@ public class ProfessionalService {
                 /*
                 So consideramos o ID, ignorando o que veio nos outros atributos no request.
                  */
-                if(pc.getProfessionalCategoryId() != null)
-                {
+                if (pc.getProfessionalCategoryId() != null) {
                     ProfessionalCategory persistentProfessionalCategory = professionalCategoryRepository.findOne(pc.getProfessionalCategoryId());
                     category = persistentProfessionalCategory.getCategory();
-                }
-                else
-                {
+                } else {
                     category = pc.getCategory();
                 }
 
                 pc.setProfessional(persistentProfessional);
                 pc.setCategory(category);
-                if(pc.getPriceRuleList() != null && !pc.getPriceRuleList().isEmpty()) {
+                category.getProfessionalCategoryCollection().add(pc);
+
+                if (pc.getPriceRuleList() != null && !pc.getPriceRuleList().isEmpty()) {
                     // Relacionamento bidirecional
                     pc.getPriceRuleList().forEach(pr -> {
                         pr.setProfessionalCategory(pc);
@@ -334,17 +338,14 @@ public class ProfessionalService {
     private void configureHability(Professional receivedProfessional, Professional newProfessional) {
         Collection<Hability> habilityList = receivedProfessional.getHabilityCollection();
 
-        if(habilityList != null)
-        {
+        if (habilityList != null) {
             for (Hability h : receivedProfessional.getHabilityCollection()) {
 
                 Optional<Hability> optional = Optional.ofNullable(habilityService.findByName(h.getName()));
 
-                if(optional.isPresent()) {
+                if (optional.isPresent()) {
                     newProfessional.getHabilityCollection().add(optional.get());
-                }
-                else
-                {
+                } else {
                     Hability newHability = new Hability();
                     newHability.setName(h.getName());
                     Hability persistentHability = habilityService.create(newHability);

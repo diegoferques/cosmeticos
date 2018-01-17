@@ -178,6 +178,7 @@ public class Professional  implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
     })
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
+    @Where(clause = "status != 'DELETED'")
     private Set<ProfessionalCategory> professionalCategoryCollection = new HashSet<>();
 
     @JsonView({

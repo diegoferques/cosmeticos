@@ -8,6 +8,7 @@ import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,6 +25,10 @@ import java.util.Set;
 public class ProfessionalCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    public enum Status {
+        ACTIVE, DELETED
+    }
+
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,
@@ -35,8 +40,10 @@ public class ProfessionalCategory implements Serializable {
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="myseq")
     private Long professionalCategoryId;
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
 
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
