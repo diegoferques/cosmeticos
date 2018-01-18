@@ -89,7 +89,10 @@ public class UserService {
             }
             if (userFromRequest.getStatus() != null) {
                 persistentUser.setStatus(userFromRequest.getStatus());
-                if(userFromRequest.getStatus() == User.Status.INACTIVE) {
+
+                // Remove a conta do usuario
+                // TODO: criar endpoint especifico pra signout
+                if(User.Status.INACTIVE.equals(userFromRequest.getStatus())) {
                     this.inactiveUserType(userFromRequest);
                 }
             }
@@ -116,29 +119,15 @@ public class UserService {
 
     private void inactiveUserType(User user) {
 
+        User persistentUser = repository.findOne(user.getIdLogin());
+
         if(User.UserType.customer.equals(user.getUserType())) {
-
-            Customer customer = new Customer();
-            customer.setIdCustomer(
-                    user.getCustomer()
-                            .getIdCustomer()
-            );
+            Customer customer = persistentUser.getCustomer();
             customer.setStatus(Customer.Status.INACTIVE.ordinal());
-
-            CustomerRequestBody cr = new CustomerRequestBody();
-            cr.setCustomer(customer);
-
-            customerService.update(cr);
-
+            customerService.update(customer);
         } else {
-
-            Professional professional = new Professional();
-            professional.setIdProfessional(
-                    user.getProfessional()
-                            .getIdProfessional()
-            );
+            Professional professional = persistentUser.getProfessional();
             professional.setStatus(Professional.Status.INACTIVE);
-
             professionalService.update(professional);
         }
     }
@@ -172,15 +161,22 @@ public class UserService {
 
     public Boolean verifyEmailExistsforUpdate(User receivedUser) {
 
-        User persistentUser = repository.findOne(receivedUser.getIdLogin());
+        Optional<User> persistentUserOpt = Optional.ofNullable(
+                repository.findOne(receivedUser.getIdLogin())
+        );
 
+        if(persistentUserOpt.isPresent()) {
+            User persistentUser = persistentUserOpt.get();
+            if (receivedUser.getEmail() != null && !receivedUser.getEmail().isEmpty()) {
+                Boolean emailExists = persistentUser.getEmail().equals(receivedUser.getEmail());
 
-        if (receivedUser.getEmail() != null && !receivedUser.getEmail().isEmpty()) {
-            Boolean emailExists = persistentUser.getEmail().equals(receivedUser.getEmail());
-
-            return !emailExists;
-        } else {
-            return false;
+                return !emailExists;
+            } else {
+                return false;
+            }
+        }
+        else{
+            throw new IllegalArgumentException(receivedUser.getIdLogin() +" nao eh um id de usuario valido!");
         }
     }
 

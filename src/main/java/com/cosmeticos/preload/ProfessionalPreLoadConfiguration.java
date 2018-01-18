@@ -47,6 +47,7 @@ public class ProfessionalPreLoadConfiguration {
         cw1.getCustomers().add(c2);
 
         User user1 = new User("garry", "123qwe", "garry@bol");
+        user1.setStatus(User.Status.ACTIVE);
         user1.addVote(new Vote(3));
         user1.addVote(new Vote(5));
         user1.addVote(new Vote(2));

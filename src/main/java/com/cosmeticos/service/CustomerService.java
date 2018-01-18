@@ -70,37 +70,46 @@ public class CustomerService {
         return repository.save(c);
     }
 
+    /**
+     * @deprecated  Prefira {@link CustomerService#update(Customer)}
+     * @param request
+     * @return
+     */
     public Customer update(CustomerRequestBody request) {
-        Customer cr = request.getCustomer();
-        Customer persistentCustomer = repository.findOne(cr.getIdCustomer());
+        return update(request.getCustomer());
+    }
 
-        if(!StringUtils.isEmpty(cr.getBirthDate())) {
-            persistentCustomer.setBirthDate(cr.getBirthDate());
+
+    public Customer update(Customer receivedCustomer) {
+        Customer persistentCustomer = repository.findOne(receivedCustomer.getIdCustomer());
+
+        if(!StringUtils.isEmpty(receivedCustomer.getBirthDate())) {
+            persistentCustomer.setBirthDate(receivedCustomer.getBirthDate());
         }
 
-        if(!StringUtils.isEmpty(cr.getCellPhone())) {
-            persistentCustomer.setCellPhone(cr.getCellPhone());
+        if(!StringUtils.isEmpty(receivedCustomer.getCellPhone())) {
+            persistentCustomer.setCellPhone(receivedCustomer.getCellPhone());
         }
 
-        if(!StringUtils.isEmpty(cr.getCpf())) {
-            persistentCustomer.setCpf(cr.getCpf());
+        if(!StringUtils.isEmpty(receivedCustomer.getCpf())) {
+            persistentCustomer.setCpf(receivedCustomer.getCpf());
         }
 
-        if(!StringUtils.isEmpty(cr.getGenre())) {
-            persistentCustomer.setGenre(cr.getGenre());
+        if(!StringUtils.isEmpty(receivedCustomer.getGenre())) {
+            persistentCustomer.setGenre(receivedCustomer.getGenre());
         }
 
-        if(!StringUtils.isEmpty(cr.getNameCustomer())) {
-            persistentCustomer.setNameCustomer(cr.getNameCustomer());
+        if(!StringUtils.isEmpty(receivedCustomer.getNameCustomer())) {
+            persistentCustomer.setNameCustomer(receivedCustomer.getNameCustomer());
         }
 
-        if(!StringUtils.isEmpty(cr.getStatus())) {
-            persistentCustomer.setStatus(cr.getStatus());
+        if(!StringUtils.isEmpty(receivedCustomer.getStatus())) {
+            persistentCustomer.setStatus(receivedCustomer.getStatus());
         }
 
-        if(!cr.getUser().getCreditCardCollection().isEmpty()) {
+        if(!receivedCustomer.getUser().getCreditCardCollection().isEmpty()) {
 
-            Collection<CreditCard> requestCCs = cr.getUser().getCreditCardCollection();
+            Collection<CreditCard> requestCCs = receivedCustomer.getUser().getCreditCardCollection();
             Collection<CreditCard> persistentCCs = persistentCustomer.getUser().getCreditCardCollection();
 
             if(!requestCCs.isEmpty())
