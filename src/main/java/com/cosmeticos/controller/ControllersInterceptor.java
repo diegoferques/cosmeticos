@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ResponseFacade;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,7 +45,11 @@ public class ControllersInterceptor extends HandlerInterceptorAdapter {
 	 * @param modelAndView
 	 */
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-		log.debug("{}.{}", getClass().getSimpleName(), "postHandle");
+
+		if(log.isDebugEnabled())
+		{
+			log.debug("{}.{} . RESPONSE DATA: {}", getClass().getSimpleName(), "postHandle", "");
+		}
 		MDC.clear();
 	}
 }
