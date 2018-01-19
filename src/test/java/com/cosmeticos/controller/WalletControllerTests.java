@@ -29,11 +29,6 @@ public class WalletControllerTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-
-	@Autowired
-	private WalletRepository walletRepository;
-
-
 	@Autowired
 	private ProfessionalRepository professionalRepository;
 

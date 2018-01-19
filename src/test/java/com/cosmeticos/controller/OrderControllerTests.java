@@ -411,7 +411,34 @@ public class OrderControllerTests {
         Assert.assertTrue(wallet != null && !wallet.getCustomers().isEmpty());
         Assert.assertEquals(1, wallet.getCustomers().size());
 
+
+        ///// Realizando 3a compra. Nada deve ser adicionado na wallet //////////
+
+        json =
+                OrderJsonHelper.buildJsonCreateScheduledOrder(c1, ps1, priceRule, Payment.Type.CASH,
+                        Timestamp.valueOf(now().plusHours(6)).getTime()
+                );
+
+
+        RequestEntity<String> entityPost3 = RequestEntity
+                .post(new URI("/orders"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        testRestTemplate.exchange(entityPost3, OrderResponseBody.class);
+
+        wallet = walletRepository.findByProfessional_idProfessional(professional.getIdProfessional());//
+
+        /*
+         Deve permanecer um so customer. Ha um bug que estava tentando reinserir o customer na
+         wallet e isso estava estourando ConstraintViolation.
+          */
+        Assert.assertTrue(wallet != null && !wallet.getCustomers().isEmpty());
+        Assert.assertEquals(1, wallet.getCustomers().size());
     }
+
+
     @Test
     public void updateStatusWithJson() throws URISyntaxException {
 

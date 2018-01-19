@@ -56,6 +56,9 @@ public class OrderService {
     private ProfessionalRepository professionalRepository;
 
     @Autowired
+    private WalletService walletService;
+
+    @Autowired
     private PenaltyService penaltyService;
 
     @Autowired
@@ -336,16 +339,16 @@ public class OrderService {
     /**
      * Adiciona o cliente na carteira do profissional se as condicoes forem satisfeitas.
      *
-     * @param professional
+     * @param persistentProfessional
      * @param customer
      */
-    private void addInWallet(Professional professional, Customer customer) {
-        Optional<Wallet> optionalWallet = ofNullable(professional.getWallet());
+    private void addInWallet(Professional persistentProfessional, Customer customer) {
+        Optional<Wallet> optionalWallet = walletService.findByProfessionalId(persistentProfessional.getIdProfessional());
         Optional<Customer> customerInWallet = Optional.empty();
 
         // Verificando se pelo menos existe a wallet.
         if (optionalWallet.isPresent()) {
-            customerInWallet = professional.getWallet().getCustomers()
+            customerInWallet = optionalWallet.get().getCustomers()
                     .stream()
                     .filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
                     .findAny();
@@ -359,19 +362,19 @@ public class OrderService {
 
             for (int i = 0; i < savedOrders.size(); i++) {
                 Order o = savedOrders.get(i);
-                if (o.getProfessionalCategory().getProfessional().getIdProfessional() == professional
+                if (o.getProfessionalCategory().getProfessional().getIdProfessional() == persistentProfessional
                         .getIdProfessional()) {
                     totalOrders++;
                 }
             }
 
             if (totalOrders >= 2) {
-                if (professional.getWallet() == null) {
-                    professional.setWallet(new Wallet());
-                    professional.getWallet().setProfessional(professional);
+                if (persistentProfessional.getWallet() == null) {
+                    persistentProfessional.setWallet(new Wallet());
+                    persistentProfessional.getWallet().setProfessional(persistentProfessional);
                 }
-                professional.getWallet().getCustomers().add(customer);
-                professionalRepository.save(professional);
+                persistentProfessional.getWallet().getCustomers().add(customer);
+                professionalRepository.save(persistentProfessional);
             }
         }
     }

@@ -46,23 +46,20 @@ public class OrderController {
             } else {
 
 
-
                 MDC.put("idCustomer", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
                 MDC.put("customerUserStatus", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
 
                 orderService.validateCreate(request.getOrder());
 
-                    Order order = orderService.create(request);
+                Order order = orderService.create(request);
 
-                    MDC.put("newStatus", String.valueOf(order.getStatus()));
+                MDC.put("newStatus", String.valueOf(order.getStatus()));
 
+                log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
+                //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
+                //"{status atual: "+order.getHttpStatus()+"}]");
 
-
-                    log.info("Order adicionado com sucesso: ");//[{idProfessional: "+order.getProfessionalCategory().getProfessional().getIdProfessional()+"}, " +
-                            //" {idCustomer: "+order.getIdCustomer().getIdCustomer()+"}, " +
-                            //"{status atual: "+order.getHttpStatus()+"}]");
-
-                    //return ok().build();
+                //return ok().build();
                 return ok(new OrderResponseBody(order));
 
             }
@@ -77,7 +74,7 @@ public class OrderController {
             return badRequest().body(orderResponseBody);
         } catch (OrderValidationException e) {
 
-        	String auditError = String.valueOf(System.nanoTime());
+            String auditError = String.valueOf(System.nanoTime());
             String msg = MessageFormat.format("Falha da validacao da requisicao! responseCode: {0}, message: {1}", auditError, e.getMessage());
 
             OrderResponseBody orderResponseBody = new OrderResponseBody();
@@ -122,9 +119,7 @@ public class OrderController {
 
                 if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
-                }
-                else
-                {
+                } else {
                     // Pedidos de cancelamento devem ser acatados, nao devemos por obstaculos no desejo do usuario de cancelar. Nao no backend.
                     orderService.validateUpdate(request.getOrder());
                 }
@@ -264,20 +259,18 @@ public class OrderController {
     @JsonView(ResponseJsonView.OrderControllerFindBy.class)
     @RequestMapping(path = "/orders/customer/", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findActiveByCustomer(
-    		@RequestParam(name="email", required=true) String email
+            @RequestParam(name = "email", required = true) String email
     ) {
 
         try {
             List<Order> entitylist = orderService.findActiveByCustomerEmail(email);
 
-            if(entitylist.isEmpty())
-            {
+            if (entitylist.isEmpty()) {
                 log.error("Nenhuma order encontrada para o customer.user.email={}", email);
                 OrderResponseBody responseBody = new OrderResponseBody();
                 responseBody.setDescription("No Orders could be found!");
                 return status(HttpStatus.NOT_FOUND).body(responseBody);
-            }
-            else {
+            } else {
                 OrderResponseBody responseBody = new OrderResponseBody();
                 responseBody.setOrderList(entitylist);
                 responseBody.setDescription(entitylist.size() + " retrieved.");
@@ -301,20 +294,18 @@ public class OrderController {
     @JsonView(ResponseJsonView.OrderControllerFindBy.class)
     @RequestMapping(path = "/orders/professional/", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findActiveByProfessional(
-    		@RequestParam(name="email", required=true) String email
+            @RequestParam(name = "email", required = true) String email
     ) {
 
         try {
             List<Order> entitylist = orderService.findActiveByProfessionalEmail(email);
 
-            if(entitylist.isEmpty())
-            {
+            if (entitylist.isEmpty()) {
                 log.error("Nenhuma order encontrada para o profissional.user.email={}", email);
                 OrderResponseBody responseBody = new OrderResponseBody();
                 responseBody.setDescription("No Orders could be found!");
                 return status(HttpStatus.NOT_FOUND).body(responseBody);
-            }
-            else {
+            } else {
                 OrderResponseBody responseBody = new OrderResponseBody();
                 responseBody.setOrderList(entitylist);
                 responseBody.setDescription(entitylist.size() + " retrieved.");

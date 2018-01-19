@@ -7,6 +7,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Vinicius on 21/06/2017.
@@ -25,5 +26,10 @@ public class WalletService {
     public List<Wallet> findAllBy(Wallet walletProbe) {
 
         return this.repository.findAll(Example.of(walletProbe));
+    }
+
+    public Optional<Wallet> findByProfessionalId(Long idProfessional)
+    {
+        return Optional.ofNullable(repository.findByProfessional_idProfessional(idProfessional));
     }
 }
