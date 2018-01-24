@@ -58,11 +58,16 @@ public class ProfessionalPreLoadConfiguration {
         Address address1 = new Address();
         address1.setLatitude("-22.7245761");
         address1.setLongitude("-43.51020159999999");
+        address1.setAddress("Rua da Abolicao");
+        address1.setNumber("5");
+        address1.setNeighborhood("Marileira/Austin");
+        address1.setCity("Nova Iguaçu");
+        address1.setState("RJ");
 
 
         Professional p1 = new Professional();
         p1.setNameProfessional("Garry");
-        p1.setAttendance(Type.HOME_CARE);
+        p1.setAttendance(Type.FULL);
         p1.setAddress(address1);
         p1.setDateRegister(Timestamp.valueOf(now()));
         p1.setBirthDate(Timestamp.valueOf(now().minusYears(37)));
@@ -82,6 +87,7 @@ public class ProfessionalPreLoadConfiguration {
 
         ////////////////////////////////////////
         User user2 = new User("Diego", "123qwe", "Diego@bol");
+        user2.setStatus(User.Status.ACTIVE);
 
         Address address2 = new Address();
         address2.setLatitude("-22.750996");
@@ -120,6 +126,7 @@ public class ProfessionalPreLoadConfiguration {
         address3.setProfessional(s3);
 
         s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
+        user3.setStatus(User.Status.ACTIVE);
         user3.setProfessional(s3);
         user3.setPersonType(User.PersonType.JURIDICA);
 
@@ -137,6 +144,7 @@ public class ProfessionalPreLoadConfiguration {
         address4.setProfessional(s4);
 
         s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
+        user4.setStatus(User.Status.ACTIVE);
         user4.setProfessional(s4);
         user4.setPersonType(User.PersonType.FISICA);
 
@@ -149,12 +157,14 @@ public class ProfessionalPreLoadConfiguration {
         Professional s5 = new Professional();
         s5.setStatus(Professional.Status.ACTIVE);
         s5.setNameProfessional("Habib");
+        s5.setAttendance(Type.HOME_CARE);
         s5.setDateRegister(Timestamp.valueOf(now()));
 
         s5.setAddress(address5);
         address5.setProfessional(s5);
 
-        s5.setUser(user5 = new User("Habib", "123qwe", "Habib@bol"));
+        s5.setUser(user5 = new User("Habib@bol", "123qwe", "Habib@bol"));
+        user5.setStatus(User.Status.ACTIVE);
         user5.setProfessional(s5);
         user5.setPersonType(User.PersonType.JURIDICA);
 

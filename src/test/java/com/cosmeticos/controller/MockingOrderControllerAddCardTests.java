@@ -128,6 +128,7 @@ public class MockingOrderControllerAddCardTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : "+ Timestamp.valueOf(LocalDateTime.now()).getTime()+",\n" +
                 "    \"status\" : 0,\n" +
+                "    \"attendanceType\" : \"ON_SITE\",\n" +
 
                 "    \"professionalCategory\" : {\n" +
                 "      \"professionalCategoryId\": " +ps1.getProfessionalCategoryId()+ "\n" +

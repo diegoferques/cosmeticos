@@ -204,6 +204,7 @@ public class OrderService {
         order.setLastUpdate(order.getDate());
         order.setStatus(Order.Status.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
         order.setProfessionalCategory(persistentProfessionalCategory);
+        order.setAttendanceType(receivedOrder.getAttendanceType());
         order.setExpireTime(new Date(order.getDate().getTime() +
 
                 // 6 horas de validade
@@ -441,6 +442,11 @@ public class OrderService {
 
         if (!isEmpty(receivedOrder.getIdLocation())) {
             persistentOrder.setIdLocation(receivedOrder.getIdLocation());
+        }
+
+        if(receivedOrder.getAttendanceType() != null)
+        {
+            persistentOrder.setAttendanceType(receivedOrder.getAttendanceType());
         }
 
         if (receivedOrder.getScheduleId() != null) {

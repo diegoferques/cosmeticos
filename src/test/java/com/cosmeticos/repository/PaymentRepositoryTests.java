@@ -88,6 +88,7 @@ public class PaymentRepositoryTests {
 		o.addPayment(p);
 		o.setStatus(Order.Status.OPEN);
 		o.setIdCustomer(customer);
+		o.setAttendanceType(Order.AttendanceType.HOME_CARE);
 
 		orderRepository.save(o);
 

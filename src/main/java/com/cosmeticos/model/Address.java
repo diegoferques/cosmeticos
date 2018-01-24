@@ -26,6 +26,8 @@ public class Address implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,54 +36,72 @@ public class Address implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String address;
 
     @JsonView({
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String cep;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String neighborhood;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String city;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String state;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String country;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String latitude;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String longitude;
 
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String complement;
 
@@ -96,6 +116,8 @@ public class Address implements Serializable {
     @JsonView({
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class
     })
     private String number;
 

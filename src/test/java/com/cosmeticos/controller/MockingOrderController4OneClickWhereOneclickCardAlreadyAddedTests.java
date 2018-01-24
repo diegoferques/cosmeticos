@@ -192,6 +192,7 @@ public class MockingOrderController4OneClickWhereOneclickCardAlreadyAddedTests {
                 "  \"order\" : {\n" +
                 "    \"date\" : "+ Timestamp.valueOf(LocalDateTime.now()).getTime()+",\n" +
                 "    \"status\" : 0,\n" +
+                "    \"attendanceType\": \"ON_SITE\"," +
 
                 "    \"professionalCategory\" : {\n" +
                 "      \"professionalCategoryId\": " +ps1.getProfessionalCategoryId()+ "\n" +

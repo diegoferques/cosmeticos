@@ -159,7 +159,8 @@ public class Payment implements Serializable {
 	public Payment() {
 	}
 
-	public Payment(Type cash) {
+	public Payment(Type type) {
+		this.type = type;
 	}
 
 	public String getExternalTransactionId() {

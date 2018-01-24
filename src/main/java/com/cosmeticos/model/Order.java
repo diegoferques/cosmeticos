@@ -32,6 +32,10 @@ public class Order implements Serializable {
     	CASH, CREDITCARD
 	}
 
+	public enum AttendanceType {
+		HOME_CARE, ON_SITE
+	}
+
 	private static final long serialVersionUID = 1L;
 
     @JsonView({
@@ -50,6 +54,15 @@ public class Order implements Serializable {
     })
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;
+
+	@JsonView({
+			ResponseJsonView.OrderControllerCreate.class,
+			ResponseJsonView.OrderControllerUpdate.class,
+			ResponseJsonView.OrderControllerFindBy.class,
+	})
+	@Basic(optional = false)
+	@Enumerated(EnumType.STRING)
+	private AttendanceType attendanceType;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,

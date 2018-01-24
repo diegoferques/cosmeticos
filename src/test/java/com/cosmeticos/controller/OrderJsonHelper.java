@@ -48,6 +48,7 @@ class OrderJsonHelper {
                 "  \"order\" : {\n" +
                 "    \"date\" : " + Timestamp.valueOf(LocalDateTime.now()).getTime() + ",\n" +
                 "    \"status\" : 0,\n" +
+                "    \"attendanceType\": \"ON_SITE\"," +
 
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleStart\" : \""+ scheduleStart +"\"\n" +
@@ -138,6 +139,7 @@ class OrderJsonHelper {
                 "  \"order\" : {\n" +
                 "    \"date\" : " + Timestamp.valueOf(LocalDateTime.now()).getTime() + ",\n" +
                 "    \"status\" : 0,\n" +
+                "    \"attendanceType\": \"ON_SITE\"," +
 
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleStart\" : \"" + scheduleStart + "\"\n" +
@@ -197,6 +199,7 @@ class OrderJsonHelper {
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : " + idOrder + ",\n" +
                 "    \"status\" : " + orderStatus.ordinal() + ",\n" +
+                "    \"attendanceType\": \"ON_SITE\"," +
 
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\": " + scheduleId + ",\n" +
