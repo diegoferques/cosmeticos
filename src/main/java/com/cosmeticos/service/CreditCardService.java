@@ -44,8 +44,10 @@ public class CreditCardService {
      */
 
     public List<CreditCard> findAllBy(CreditCard creditCardProbe) {
+        creditCardProbe.getUser().setEvaluation(null);
+        creditCardProbe.getUser().setLostPassword(null);
         return this.repository.findAll(Example.of(creditCardProbe));
-    }// repara que a query vai mudar.
+    }
 
     public CreditCard create(CreditCard creditCard) {
 
@@ -83,6 +85,11 @@ public class CreditCardService {
             } else {
 
                 if(creditCardFromRequest.getStatus() != persistentCreditCard.getStatus()) {
+                    CreditCard.Status ccStatus = creditCardFromRequest.getStatus();
+                    if(CreditCard.Status.INACTIVE.equals(ccStatus))
+                    {
+                        // Devemos mudar o status de Orders associadas a este cartao.
+                    }
                     persistentCreditCard.setStatus(creditCardFromRequest.getStatus());
                 }
 

@@ -44,6 +44,8 @@ public class CreditCardController {
             CreditCardResponseBody responseBody = new CreditCardResponseBody();
 
             if (entitylist.isEmpty()) {
+                log.warn("CreditCard nao encontrado para {}.", ccAtributeAUX.getUser().getEmail());
+
                 return status(HttpStatus.NOT_FOUND).body(responseBody);
             } else {
                 //CreditCardResponseBody responseBody = new CreditCardResponseBody();
