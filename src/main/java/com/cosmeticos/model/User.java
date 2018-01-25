@@ -231,7 +231,8 @@ public class User implements Serializable {
 
    @JsonView({
             ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.ProfessionalFindAll.class,
    })
     public Integer getCreditCardCount() {
         return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
