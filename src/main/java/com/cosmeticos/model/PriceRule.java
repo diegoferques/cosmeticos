@@ -53,10 +53,9 @@ public class PriceRule implements Serializable {
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
-        ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class
     })
-    @NotNull
     private Long price;
 
     @JoinColumn(name = "professionalCategory_Id", referencedColumnName = "professionalCategoryId")
