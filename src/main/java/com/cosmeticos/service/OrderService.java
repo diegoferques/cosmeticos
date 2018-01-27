@@ -941,10 +941,11 @@ public class OrderService {
             MDC.put("idProfessional: ", String.valueOf(professional.getIdProfessional()));
             MDC.put("professionalUserStatus: ", String.valueOf(professional.getUser().getStatus()));
 
-            // Passando zero pq eh create
+            validateIfThereAreOrderToSameProfessionalAndSameService(receivedOrder, professionalCategory);
             validateIfThereAreRunningOrders(receivedOrder, professional);
         }
     }
+
 
     /**
      * @param receivedOrder TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a
@@ -979,8 +980,33 @@ public class OrderService {
             //validateBusyScheduled1(receivedOrder);
         }
         validateIfThereAreRunningOrders(receivedOrder, professional);
+        validateIfThereAreOrderToSameProfessionalAndSameService(receivedOrder, professionalCategory);
 
+    }
 
+    private void validateIfThereAreOrderToSameProfessionalAndSameService(Order receivedOrder, ProfessionalCategory professionalCategory) {
+
+        if (Order.Status.OPEN.equals(receivedOrder.getStatus()) ||
+                Order.Status.ACCEPTED.equals(receivedOrder.getStatus()) ||
+                Order.Status.INPROGRESS.equals(receivedOrder.getStatus())) {
+
+            Long idOrder = receivedOrder.getIdOrder() == null ? 0L : receivedOrder.getIdOrder();
+
+            // Profissional ja possui order em andamento?...
+            List<Order> orderList = orderRepository.findOpenedDuplicatedOrders(
+                    professionalCategory.getProfessional().getIdProfessional(),
+                    receivedOrder.getIdCustomer().getIdCustomer(),
+                    idOrder,
+                    professionalCategory.getCategory().getIdCategory()
+            );
+
+            if (!orderList.isEmpty()) {
+                // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
+                throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER,
+                        "Voce ja possui pedido de "+professionalCategory.getCategory().getName()
+                                +" aberto para o profissional "+professionalCategory.getProfessional().getNameProfessional());
+            }
+        }
     }
 
     private void validateIfThereAreRunningOrders(Order receivedOrder, Professional professional) {
@@ -999,7 +1025,7 @@ public class OrderService {
                 if (!orderList.isEmpty()) {
                     // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
                     throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER,
-                            "profissional ja esta com outra order em andamento.");
+                            "Profissional esta ocupado com outro serviço em andamento.");
                 }
             }
 

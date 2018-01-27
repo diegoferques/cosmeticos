@@ -26,6 +26,30 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatusOrStatusAndProfessionalCategory_Professional_idProfessional(
             Order.Status s1, Order.Status s2, Long idProfessional);
 
+    /**
+     * PEga Orders abertas por um cliente a um mesmo profissional em um mesmo servico.
+     * @param idProfessional
+     * @param iCustomer
+     * @param idOrder
+     * @param idCategory
+     * @return
+     */
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalCategory ps " +
+            "join fetch o.idCustomer cm " +
+            "join fetch ps.professional p " +
+            "join fetch ps.category cg " +
+            "WHERE p.idProfessional = ?1 " +
+            "AND cm.idCustomer = ?2 " +
+            "AND o.idOrder != ?3 " +
+            "AND cg.idCategory = ?4 " +
+            "AND  o.status in('OPEN', 'INPROGRESS', 'ACCEPTED' )")
+    List<Order> findOpenedDuplicatedOrders(
+            Long idProfessional, Long iCustomer, Long idOrder, Long idCategory
+    );
+
     @Query(value = "" +
             "SELECT o " +
             "FROM Order o " +
@@ -36,7 +60,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "AND  o.status in( 'INPROGRESS', 'ACCEPTED' )")
     List<Order> findRunningOrdersByProfessional(
             Long idProfessional, Long idOrder);
-    
+
     /*
     @Query(value = "SELECT * FROM " +
             "Order o " +

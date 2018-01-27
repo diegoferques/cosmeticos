@@ -8,7 +8,12 @@ import java.util.Optional;
  */
 public enum SuperpayFormaPagamento {
 
-    VISA(170), MASTERCARD(171);
+    VISA(170), MASTERCARD(171),
+
+    /**
+     * Nao temos o codigo ALELO do superpay
+     */
+    ALELO(0);
 
     private Integer codigoFormaPagamento;
 
