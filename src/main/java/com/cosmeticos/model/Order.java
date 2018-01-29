@@ -196,7 +196,7 @@ public class Order implements Serializable {
 
 	@Override
 	public String toString() {
-		return "javaapplication2.entity.Order[ idOrder=" + idOrder + " ]";
+		return "javaapplication2.entity.Order[ idOrder=" + String.valueOf(idOrder) + " ]";
 	}
 
 

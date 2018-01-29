@@ -6,6 +6,7 @@ import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.PriceRuleRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.*;
 /**
  * Created by matto on 27/05/2017.
  */
+@Slf4j
 @Service
 public class ProfessionalService {
 
@@ -164,7 +166,6 @@ public class ProfessionalService {
 
             configureProfessionalCategory(receivedProfessional, persistentProfessional);
 
-
             professionalRepository.save(persistentProfessional);
 
             return Optional.of(persistentProfessional);
@@ -227,7 +228,11 @@ public class ProfessionalService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
 
-        if(receivedProfessional.getProfessionalCategoryCollection() != null) {
+        if(receivedProfessional.getProfessionalCategoryCollection().isEmpty()) {
+            log.debug("Ignorando atualizacao de categorias do Professional[{}] pois a lista de categorias nao " +
+                    "pode estar vazia.", receivedProfessional.getIdProfessional());
+        }
+        else{
 
             //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
             if(!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
@@ -292,8 +297,27 @@ public class ProfessionalService {
                 }
 
                 //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
-                for (ProfessionalCategory pc :
-                        professionalCategoryCollectionTemp) {
+                for (ProfessionalCategory pc : professionalCategoryCollectionTemp) {
+
+                    // Fazendo o bidirecional com a lista de PriceRules
+                    for (PriceRule pr : pc.getPriceRuleList()) {
+                        pr.setProfessionalCategory(pc);
+                    }
+
+                    persistentProfessional.addProfessionalCategory(pc);
+                    professionalCategoryRepository.save(pc);
+                }
+            }
+            else
+            {
+                // Tratando caso onde profissional NAO possui categorias.
+                for (ProfessionalCategory pc : receivedProfessional.getProfessionalCategoryCollection()) {
+
+                    // Fazendo o bidirecional com a lista de PriceRules
+                    for (PriceRule pr : pc.getPriceRuleList()) {
+                        pr.setProfessionalCategory(pc);
+                    }
+
                     persistentProfessional.addProfessionalCategory(pc);
                 }
             }

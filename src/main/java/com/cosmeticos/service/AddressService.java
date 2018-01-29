@@ -85,6 +85,7 @@ return address;
             address.setCity(addressRequest.getCity());
             address.setState(addressRequest.getState());
             address.setCountry(addressRequest.getCountry());
+            address.setComplement(addressRequest.getComplement());
 
             LocationGoogle geocode = locationService.getGeoCode(address);
 

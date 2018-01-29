@@ -181,7 +181,7 @@ public class Professional  implements Serializable {
     })
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "professional")
     @Where(clause = "status != 'DELETED'")
-    private Set<ProfessionalCategory> professionalCategoryCollection = new HashSet<>();
+    private Set<ProfessionalCategory> professionalCategoryCollection;
 
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
@@ -223,6 +223,12 @@ public class Professional  implements Serializable {
     @Transient
     private float evaluation;
     */
+
+    public Set<ProfessionalCategory> getProfessionalCategoryCollection() {
+        if(professionalCategoryCollection == null)
+            professionalCategoryCollection = new HashSet<>();
+        return professionalCategoryCollection;
+    }
 
     public void addEmployees(Professional employees) {
         getEmployeesCollection().add(employees);

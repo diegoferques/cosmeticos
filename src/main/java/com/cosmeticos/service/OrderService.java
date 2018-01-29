@@ -991,21 +991,26 @@ public class OrderService {
                 Order.Status.INPROGRESS.equals(receivedOrder.getStatus())) {
 
             Long idOrder = receivedOrder.getIdOrder() == null ? 0L : receivedOrder.getIdOrder();
+            List<Order> orderList = null;
 
-            // Profissional ja possui order em andamento?...
-            List<Order> orderList = orderRepository.findOpenedDuplicatedOrders(
-                    professionalCategory.getProfessional().getIdProfessional(),
-                    receivedOrder.getIdCustomer().getIdCustomer(),
-                    idOrder,
-                    professionalCategory.getCategory().getIdCategory()
-            );
+            // Se nao veio customer, ignoramos a etapa de validar orders duplicadas.
+            if (receivedOrder.getIdCustomer() != null) {
+                // Profissional ja possui order em andamento?...
+                orderList = orderRepository.findOpenedDuplicatedOrders(
+                        professionalCategory.getProfessional().getIdProfessional(),
+                        receivedOrder.getIdCustomer().getIdCustomer(),
+                        idOrder,
+                        professionalCategory.getCategory().getIdCategory()
+                );
 
-            if (!orderList.isEmpty()) {
-                // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
-                throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER,
-                        "Voce ja possui pedido de "+professionalCategory.getCategory().getName()
-                                +" aberto para o profissional "+professionalCategory.getProfessional().getNameProfessional());
+                if (!orderList.isEmpty()) {
+                    // Lanca excecao quando detectamos que o profissional ja esta com outra order em andamento.
+                    throw new OrderValidationException(ResponseCode.DUPLICATE_RUNNING_ORDER,
+                            "Voce ja possui pedido de "+professionalCategory.getCategory().getName()
+                                    +" aberto para o profissional "+professionalCategory.getProfessional().getNameProfessional());
+                }
             }
+
         }
     }
 
