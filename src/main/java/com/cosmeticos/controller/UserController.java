@@ -164,6 +164,11 @@ public class UserController {
 
     }
 
+    /**
+     * Usado para o login por enquanto.
+     * @param userAttr
+     * @return
+     */
     @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
     @RequestMapping(path = "/users", method = RequestMethod.GET)
     public HttpEntity<UserResponseBody> findAllBy(@ModelAttribute User userAttr) {

@@ -14,6 +14,7 @@ import com.cosmeticos.validation.UserValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -283,6 +284,10 @@ public class UserService {
             userProbe.setUserType(null);
             userProbe.setStatus(User.Status.ACTIVE);
         }
-        return repository.findAll(Example.of(userProbe));
+
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreCase("email");
+
+        return repository.findAll(Example.of(userProbe, matcher));
     }
 }
