@@ -20,9 +20,6 @@ public class VoteService {
     @Autowired
     private VoteRepository voteRepository;
 
-    @Autowired
-    private OrderRepository orderRepository;
-
     public void create(Vote vote) {
         voteRepository.save(vote);
     }

@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.lang.Exception;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1058,6 +1059,21 @@ public class OrderService {
                 if (o.getScheduleId() != null) {
                     Date existingOrderStart = o.getScheduleId().getScheduleStart();
                     Date existingOrderEnd = o.getScheduleId().getScheduleEnd();
+
+                    /*
+                     Se nao ha hora de finalizacao do pedido configurado, consideramos que o pedido sera finalizado em
+                     15 minutos. 15 minutos pois o maior fluxo de clientes eh de clientes homens, que sao atendidos em media em
+                     20 minutos. Colocando 15 minutos de atendimento, garantimos que o proximo cliente chegue ao salao
+                     minutos antes do profissional finalizar o cliente anterior.
+                      */
+                    if(existingOrderEnd == null)
+                    {
+                        LocalDateTime existingOrderStartLDT = Timestamp.from(existingOrderStart.toInstant())
+                                .toLocalDateTime()
+                                .plusMinutes(15);
+
+                        existingOrderEnd = Timestamp.valueOf(existingOrderStartLDT);
+                    }
 
                     if (existingOrderStart.before(newOrderScheduleStart) &&
                             existingOrderEnd.after(newOrderScheduleStart)) {

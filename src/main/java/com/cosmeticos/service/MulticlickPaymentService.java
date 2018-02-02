@@ -11,7 +11,6 @@ import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
-import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,7 +51,7 @@ public class MulticlickPaymentService implements Charger {
     private String senha;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderService orderService;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -72,7 +71,7 @@ public class MulticlickPaymentService implements Charger {
     private ChargeResponse<Object> sendRequest(Order orderCreated) {
 
         try {
-            Order order = orderRepository.findOne(orderCreated.getIdOrder());
+            Order order = orderService.find(orderCreated.getIdOrder()).get();
 
             TransacaoRequest request = createRequest(order);
 
