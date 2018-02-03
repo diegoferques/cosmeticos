@@ -57,11 +57,12 @@ public class OrderPreLoadConfiguration {
         service.setName("PEDICURE");
         serviceRepository.save(service);
 
-        PriceRule pr1 = new PriceRule("Cabelo curto", 10000L);
-        PriceRule pr7 = new PriceRule("pr7preload", 1000);
-        PriceRule pr8 = new PriceRule("pr8preload", 10000);
-        PriceRule pr9 = new PriceRule("pr9preload", 100000);
-        PriceRule pr10 = new PriceRule("pr10preload", 1000000);
+        PriceRule pr1 = new PriceRule("Francesinha", 10000L);
+        PriceRule pr7 = new PriceRule("Unha Postiça", 1000);
+        PriceRule pr8 = new PriceRule("Unhas Decoradas", 10000);
+        PriceRule pr9 = new PriceRule("Apenas Mão", 100000);
+        PriceRule pr10 = new PriceRule("Apenas Pé", 1000000);
+        PriceRule pr11 = new PriceRule("Pé e Mão", 1000000);
 
         ProfessionalCategory ps1 = new ProfessionalCategory(p1, service);
         ps1.addPriceRule(pr1);
@@ -69,6 +70,7 @@ public class OrderPreLoadConfiguration {
         ps1.addPriceRule(pr8);
         ps1.addPriceRule(pr9);
         ps1.addPriceRule(pr10);
+        ps1.addPriceRule(pr11);
 
         //Atualizando associando o Profeissional ao Servico
         professionalCategoryRepository.save(ps1);
@@ -86,7 +88,7 @@ public class OrderPreLoadConfiguration {
         Order o1 = new Order();
         o1.setStatus(Order.Status.OPEN);
         o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o1.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o1.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(20)));
         o1.setAttendanceType(Order.AttendanceType.HOME_CARE);
         o1.setIdCustomer(c1);
         o1.addPayment(payment1);
@@ -107,7 +109,7 @@ public class OrderPreLoadConfiguration {
         Order o2 = new Order();
         o2.setStatus(Order.Status.OPEN);
         o2.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o2.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o2.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusHours(2)));
         o2.setAttendanceType(Order.AttendanceType.HOME_CARE);
         o2.setIdCustomer(c1);
         o2.addPayment(payment2);
@@ -124,7 +126,7 @@ public class OrderPreLoadConfiguration {
         Order o3 = new Order();
         o3.setStatus(Order.Status.OPEN);
         o3.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o3.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(10)));
         o3.setIdCustomer(c1);
         o3.setAttendanceType(Order.AttendanceType.HOME_CARE);
         o3.addPayment(payment3);
@@ -141,7 +143,7 @@ public class OrderPreLoadConfiguration {
         Order o4 = new Order();
         o4.setStatus(Order.Status.OPEN);
         o4.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o4.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o4.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(90)));
         o4.setIdCustomer(c1);
         o4.setAttendanceType(Order.AttendanceType.HOME_CARE);
         o4.addPayment(payment4);
@@ -160,7 +162,7 @@ public class OrderPreLoadConfiguration {
         Order o5 = new Order();
         o5.setStatus(Order.Status.OPEN);
         o5.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o5.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o5.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(19)));
         o5.setIdCustomer(c1);
         o5.setAttendanceType(Order.AttendanceType.HOME_CARE);
         //o5.setIdLocation();
@@ -183,7 +185,7 @@ public class OrderPreLoadConfiguration {
         Order o6 = new Order();
         o6.setStatus(Order.Status.OPEN);
         o6.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o6.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o6.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setIdCustomer(c1);
         o6.addPayment(payment6);
         o6.setAttendanceType(Order.AttendanceType.HOME_CARE);
@@ -203,7 +205,7 @@ public class OrderPreLoadConfiguration {
         Order o7 = new Order();
         o7.setStatus(Order.Status.OPEN);
         o7.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o7.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o7.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setIdCustomer(c1);
         o7.addPayment(p7);
         o7.setAttendanceType(Order.AttendanceType.HOME_CARE);
@@ -222,7 +224,7 @@ public class OrderPreLoadConfiguration {
         Order o8 = new Order();
         o8.setStatus(Order.Status.INPROGRESS);
         o8.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o8.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o8.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setIdCustomer(c1);
         o8.setAttendanceType(Order.AttendanceType.HOME_CARE);
         o8.addPayment(p8);
@@ -246,7 +248,7 @@ public class OrderPreLoadConfiguration {
         Order o9 = new Order();
         o9.setStatus(Order.Status.SCHEDULED);
         o9.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o9.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o9.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setIdCustomer(c1);
         o9.addPayment(p9);
         o9.setProfessionalCategory(ps1);
@@ -268,7 +270,7 @@ public class OrderPreLoadConfiguration {
         Order o10 = new Order();
         o10.setStatus(Order.Status.SCHEDULED);
         o10.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        o10.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o10.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setAttendanceType(Order.AttendanceType.HOME_CARE);
         o10.setIdCustomer(c1);
         o10.addPayment(p10);

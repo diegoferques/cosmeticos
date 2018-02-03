@@ -85,7 +85,7 @@ public class OrderServiceTest {
         o3 = new Order();
         o3.setStatus(Order.Status.OPEN);
         o3.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
-        o3.setLastUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
+        o3.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
         o3.setAttendanceType(Order.AttendanceType.HOME_CARE);
         //o3.setIdLocation();
@@ -104,7 +104,7 @@ public class OrderServiceTest {
         ldt1.minusDays(3);
         o4 = new Order();
         o4.setDate(Timestamp.valueOf(ldt1));
-        o4.setLastUpdate(Timestamp.valueOf(ldt1.minusDays(3)));
+        o4.setLastStatusUpdate(Timestamp.valueOf(ldt1.minusDays(3)));
         o4.setIdCustomer(c1);
         o4.setAttendanceType(Order.AttendanceType.HOME_CARE);
         //o4.setIdLocation();
@@ -126,7 +126,7 @@ public class OrderServiceTest {
         o5 = new Order();
         o5.setDate(Timestamp.valueOf(ldt2));
         o5.setIdCustomer(c1);
-        o5.setLastUpdate(Timestamp.valueOf(ldt2.minusDays(8)));
+        o5.setLastStatusUpdate(Timestamp.valueOf(ldt2.minusDays(8)));
         //o5.setIdLocation();
         o5.setProfessionalCategory(ps1);
         o5.setAttendanceType(Order.AttendanceType.HOME_CARE);

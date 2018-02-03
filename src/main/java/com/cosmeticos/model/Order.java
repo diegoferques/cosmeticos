@@ -117,8 +117,13 @@ public class Order implements Serializable {
 	@ManyToOne(optional = false)
 	private Customer idCustomer;
 
+	@JsonView({
+			ResponseJsonView.OrderControllerCreate.class,
+			ResponseJsonView.OrderControllerFindBy.class,
+			ResponseJsonView.OrderControllerUpdate.class,
+	})
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date lastUpdate;
+	private Date lastStatusUpdate;
 
     @JsonView({
             ResponseJsonView.OrderControllerFindBy.class
@@ -171,6 +176,10 @@ public class Order implements Serializable {
 	public void addPayment(Payment payment) {
 		this.paymentCollection.add(payment);
 		payment.setOrder(this);
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	@Override

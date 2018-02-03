@@ -202,7 +202,7 @@ public class OrderService {
         order.setIdLocation(receivedOrder.getIdLocation());
         order.setIdCustomer(persistentCustomer);
         order.setDate(Calendar.getInstance().getTime());
-        order.setLastUpdate(order.getDate());
+        order.setLastStatusUpdate(order.getDate());
         order.setStatus(Order.Status.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
         order.setProfessionalCategory(persistentProfessionalCategory);
         order.setAttendanceType(receivedOrder.getAttendanceType());
@@ -424,7 +424,19 @@ public class OrderService {
         }
         //AQUI SETAMOS O STATUS VINDO DO REQUEST
         if (!isEmpty(receivedOrder.getStatus())) {
-            persistentOrder.setStatus(receivedOrder.getStatus());
+		    if(!isEmpty(persistentOrder.getStatus()))
+            {
+                if(!receivedOrder.getStatus().equals(persistentOrder.getStatus()))
+                {
+                    // Houve mudança de status, logo atualizo lastStatusUpdate.
+                    persistentOrder.setStatus(receivedOrder.getStatus());
+                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
+                }
+            }
+            else
+            {
+                persistentOrder.setStatus(receivedOrder.getStatus());
+            }
         }
 
         /* Removendo isso pq senao estou permitindo que uma Order mude de customer, o que nao eh permitido.
@@ -535,12 +547,14 @@ public class OrderService {
                     //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
                     //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA SEMI_CLOSED
                     persistentOrder.setStatus(Order.Status.CLOSED);
+                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
 
                     orderRepository.save(persistentOrder);
                 }
                 else
                 {
                     persistentOrder.setStatus(Order.Status.FAILED_ON_PAYMENT);
+                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
                 }
 
                 //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
@@ -906,12 +920,13 @@ public class OrderService {
         int count = onlyOrsersFinishedByProfessionals.size();
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
-            LocalDate lastUpdateLocalDate = o.getLastUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate lastUpdateLocalDate = o.getLastStatusUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
             LocalDate limitDate = LocalDate.now().minusDays(5);
 
             if (lastUpdateLocalDate.isBefore(limitDate)) {
                 o.setStatus(Order.Status.AUTO_CLOSED);
+                o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
             }
         }
@@ -1122,11 +1137,12 @@ public class OrderService {
         LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
-            LocalDateTime orderCreationDate = o.getLastUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime orderCreationDate = o.getLastStatusUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
 
             if (orderCreationDate.isBefore(tenMinutesAgo)) {
                 o.setStatus(Order.Status.EXPIRED);
+                o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
                 count++;
             }

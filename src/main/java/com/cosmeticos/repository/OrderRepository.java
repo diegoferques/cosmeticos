@@ -116,8 +116,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "SELECT o " +
             "FROM Order o " +
             "join fetch o.professionalCategory ps " +
-            "WHERE ps.professional.user.email = ?1 " +
-            "AND  o.status in( 'SCHEDULED', 'INPROGRESS', 'ACCEPTED', 'OPEN')")
+            "WHERE ps.professional.user.email = ?1 "
+
+            // Vamos retornar tudo pro app e deixar o app decidir como exibira os pedidos.
+            //+ "AND  o.status in( 'SCHEDULED', 'INPROGRESS', 'ACCEPTED', 'OPEN')"
+    )
     List<Order> findByProfessionalEmail(String email);
 
 

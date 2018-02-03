@@ -54,7 +54,7 @@ public class OrderStatusHandler {
 		
 		if(valid)
 		{
-			order.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
+			order.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
 			return candidateState;
 		} else {
 			String msg = String.format("Nao eh permitido mudar do status %s para o status %s.", 
