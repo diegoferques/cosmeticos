@@ -32,4 +32,7 @@ public class ResponseJsonView {
 
     public interface UserAddImage {
     }
+
+    public interface ImageGetAll {
+    }
 }

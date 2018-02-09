@@ -5,8 +5,10 @@ import com.cosmeticos.model.User;
 import com.cosmeticos.repository.ImageRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,5 +47,9 @@ public class ImageService {
         {
             throw new IllegalArgumentException(id + " nao possui User");
         }
+    }
+
+    public List<Image> findAll(Image image) {
+        return imageRepository.findAll(Example.of(image));
     }
 }
