@@ -4,11 +4,13 @@ import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Image;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -342,6 +344,41 @@ public class UserController {
             responseBody.setDescription("Houve um erro ao processar a sua solicitação, tente novamente mais tarde!");
 
             log.error("Falha na validação do token: {}", e.getMessage(), e);
+
+            return ResponseEntity.status(500).body(responseBody);
+        }
+
+    }
+
+    @JsonView(ResponseJsonView.UserAddImage.class)
+    @RequestMapping(path = "/users/{idUser}/images", method = RequestMethod.POST)
+    public HttpEntity<UserResponseBody> addImage(
+            @Valid @RequestBody Image request,
+            @PathVariable("idUser") Long idUser,
+            BindingResult bindingResult
+    ) {
+
+        try {
+            MDC.put("idUser", String.valueOf(idUser));
+
+            if (bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().body(buildErrorResponse(bindingResult));
+            } else {
+                User u = service.addImage(idUser, request);
+                log.info("Imagem [{}] Adicionada adicionado com sucesso ao user [{}]",
+                        request.getCloudUrl(), u.getEmail());
+
+                UserResponseBody responseBody = new UserResponseBody(u);
+                responseBody.setDescription("Success");
+
+                return ok().body(responseBody);
+            }
+        } catch (Exception e) {
+
+            log.error("Falha no cadastro: {}", e.getMessage(), e);
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription(e.getMessage());
 
             return ResponseEntity.status(500).body(responseBody);
         }

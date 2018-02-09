@@ -1,6 +1,5 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.model.*;
@@ -45,6 +44,9 @@ public class UserService {
 
     @Autowired
     private RandomCode randomCodeService;
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     @Qualifier("charger")
@@ -289,5 +291,13 @@ public class UserService {
                 .withIgnoreCase("email");
 
         return repository.findAll(Example.of(userProbe, matcher));
+    }
+
+    public User addImage(Long idUser, Image image) {
+        User user = repository.findOne(idUser);
+
+        user.addImage(image);
+
+        return repository.save(user);
     }
 }
