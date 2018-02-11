@@ -142,6 +142,7 @@ return address;
         address.setCity(addressViacep.getLocalidade());
         address.setState(addressViacep.getUf());
         address.setComplement(addressViacep.getComplemento());
+        address.setCep(addressViacep.getCep());
 
         return Optional.ofNullable(address);
 
