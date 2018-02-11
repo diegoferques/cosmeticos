@@ -3,12 +3,16 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Address;
+import com.cosmeticos.model.AddressViacep;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -26,6 +30,9 @@ public class AddressService {
 
     @Autowired
     private ProfessionalRepository professionalRepository;
+
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
 
     public Address createFromCustomer(CustomerRequestBody request) {
         Address a = new Address();
@@ -112,6 +119,33 @@ return address;
         //a.getCustomerCollection().add(customer);
         addressRepository.save(a);
         return a;
+    }
+
+    public Optional<Address> findCepByWebService(String cep) {
+
+        RestTemplate restTemplate = restTemplateBuilder.build();
+
+        String urlViaCepSuffix = "https://viacep.com.br/ws/";
+        String urlViaCepPrefix = "/json/";
+        String urlViaCep = urlViaCepSuffix + cep + urlViaCepPrefix;
+
+
+        ResponseEntity<AddressViacep> sourceResponse =
+                restTemplate.getForEntity(urlViaCep, AddressViacep.class);
+
+        AddressViacep addressViacep = sourceResponse.getBody();
+
+        Address address = new Address();
+
+        address.setAddress(addressViacep.getLogradouro());
+        address.setNeighborhood(addressViacep.getBairro());
+        address.setCity(addressViacep.getLocalidade());
+        address.setState(addressViacep.getUf());
+        address.setComplement(addressViacep.getComplemento());
+        address.setCep(addressViacep.getCep());
+
+        return Optional.ofNullable(address);
+
     }
 
 }
