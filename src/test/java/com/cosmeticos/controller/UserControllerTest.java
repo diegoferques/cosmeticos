@@ -143,13 +143,13 @@ public class UserControllerTest {
         userRepository.save(user);
 
         Image image1 = new Image();
-        image1.setCloudUrl("http://s3/bucket/email/image.jpg");
+        image1.setCloudUrlPath("http://s3/bucket/email/image.jpg");
         image1.setLocalUrl("/sdcard/gallery/image1.jpg");
         Image image2 = new Image();
-        image2.setCloudUrl("http://s3/bucket/email/image.jpg");
+        image2.setCloudUrlPath("http://s3/bucket/email/image.jpg");
         image2.setLocalUrl("/sdcard/gallery/image2.jpg");
         Image image3 = new Image();
-        image3.setCloudUrl("http://s3/bucket/email/image.jpg");
+        image3.setCloudUrlPath("http://s3/bucket/email/image.jpg");
         image3.setLocalUrl("/sdcard/gallery/image3.jpg");
 
         String json1 = new ObjectMapper().writeValueAsString(image1);
@@ -186,13 +186,13 @@ public class UserControllerTest {
         userRepository.save(user);
 
         Image image1 = new Image();
-        image1.setCloudUrl("http://s3/bucket/email/image.jpg");
+        image1.setCloudUrlPath("http://s3/bucket/email/image.jpg");
         image1.setLocalUrl("/sdcard/gallery/image1.jpg");
         Image image2 = new Image();
-        image2.setCloudUrl("http://s3/bucket/email/image.jpg");
+        image2.setCloudUrlPath("http://s3/bucket/email/image.jpg");
         image2.setLocalUrl("/sdcard/gallery/image2.jpg");
         Image image3 = new Image();
-        image3.setCloudUrl("http://s3/bucket/email/image.jpg");
+        image3.setCloudUrlPath("http://s3/bucket/email/image.jpg");
         image3.setLocalUrl("/sdcard/gallery/image3.jpg");
 
         String json1 = new ObjectMapper().writeValueAsString(image1);

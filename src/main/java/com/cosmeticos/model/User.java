@@ -172,6 +172,7 @@ public class User implements Serializable {
     @JsonView({
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.UserAddImage.class,
     })

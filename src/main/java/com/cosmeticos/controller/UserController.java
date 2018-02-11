@@ -367,7 +367,7 @@ public class UserController {
             } else {
                 User u = service.addImage(idUser, request);
                 log.info("Imagem [{}] Adicionada adicionado com sucesso ao user [{}]",
-                        request.getCloudUrl(), u.getEmail());
+                        request.getCloudUrlPath(), u.getEmail());
 
                 UserResponseBody responseBody = new UserResponseBody(u);
                 responseBody.setDescription("Success");

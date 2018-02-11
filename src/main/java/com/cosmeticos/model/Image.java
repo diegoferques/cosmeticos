@@ -32,6 +32,7 @@ public class Image implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.UserAddImage.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,14 +43,16 @@ public class Image implements Serializable {
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.UserAddImage.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
-    private String cloudUrl;
+    private String cloudUrlPath;
 
     @JsonView({
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.UserAddImage.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
     })
     /**
      * @deprecated Verificar ao longo da vida do sistema se precisamos disso.

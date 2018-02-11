@@ -95,7 +95,7 @@ public class UserService {
 
                 // Remove a conta do usuario
                 // TODO: criar endpoint especifico pra signout
-                if(User.Status.INACTIVE.equals(userFromRequest.getStatus())) {
+                if (User.Status.INACTIVE.equals(userFromRequest.getStatus())) {
                     this.inactiveUserType(userFromRequest);
                 }
             }
@@ -124,7 +124,7 @@ public class UserService {
 
         User persistentUser = repository.findOne(user.getIdLogin());
 
-        if(User.UserType.customer.equals(user.getUserType())) {
+        if (User.UserType.customer.equals(user.getUserType())) {
             Customer customer = persistentUser.getCustomer();
             customer.setStatus(Customer.Status.INACTIVE.ordinal());
             customerService.update(customer);
@@ -168,7 +168,7 @@ public class UserService {
                 repository.findOne(receivedUser.getIdLogin())
         );
 
-        if(persistentUserOpt.isPresent()) {
+        if (persistentUserOpt.isPresent()) {
             User persistentUser = persistentUserOpt.get();
             if (receivedUser.getEmail() != null && !receivedUser.getEmail().isEmpty()) {
                 Boolean emailExists = persistentUser.getEmail().equals(receivedUser.getEmail());
@@ -177,9 +177,8 @@ public class UserService {
             } else {
                 return false;
             }
-        }
-        else{
-            throw new IllegalArgumentException(receivedUser.getIdLogin() +" nao eh um id de usuario valido!");
+        } else {
+            throw new IllegalArgumentException(receivedUser.getIdLogin() + " nao eh um id de usuario valido!");
         }
     }
 
@@ -296,6 +295,11 @@ public class UserService {
     public User addImage(Long idUser, Image image) {
         User user = repository.findOne(idUser);
 
+        String s3host = "https://s3-sa-east-1.amazonaws.com";
+
+        if (!image.getCloudUrlPath().startsWith(s3host)) {
+            image.setCloudUrlPath(s3host + image.getCloudUrlPath());
+        }
         user.addImage(image);
 
         return repository.save(user);

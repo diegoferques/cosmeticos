@@ -15,13 +15,15 @@ public class UserResponseBody {
 
     @JsonView(
             {
-                    ResponseJsonView.ProfessionalCategoryFindAll.class
+                    ResponseJsonView.ProfessionalCategoryFindAll.class,
+                    ResponseJsonView.UserAddImage.class,
             })
     private String description;
 
     @JsonView(
             {
-                    ResponseJsonView.ProfessionalCategoryFindAll.class
+                    ResponseJsonView.ProfessionalCategoryFindAll.class,
+                    ResponseJsonView.UserAddImage.class,
             })
     private List<User> userList = new ArrayList<>(10);
 
