@@ -29,4 +29,10 @@ public class ResponseJsonView {
 	public interface ScheduleByProfessionalInRunningOrders {}
     public interface CustomerControllerUpdate {}
     public interface CustomerControllerGet {}
+
+    public interface UserAddImage {
+    }
+
+    public interface ImageGetAll {
+    }
 }

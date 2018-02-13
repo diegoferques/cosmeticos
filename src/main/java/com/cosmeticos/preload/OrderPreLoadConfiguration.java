@@ -49,7 +49,8 @@ public class OrderPreLoadConfiguration {
         //User u1 = userRepository.findOne(1L);
         //Address a1 = addressRepository.findOne(1L);
         Customer c1 = customerRepository.findOne(1L);
-        Professional p1 = professionalRepository.findOne(1L);
+        Professional p1 = professionalRepository.findOne(1L);// Garry@bol
+        Professional p3 = professionalRepository.findOne(3L);// Diego@bol
         //Schedule s1 = scheduleRepository.findOne(1L);
         //Schedule s2 = scheduleRepository.findOne(2L);
 
@@ -281,6 +282,43 @@ public class OrderPreLoadConfiguration {
         s10.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(4)));//4h de servico
         o10.setScheduleId(s10);
         orderRepository.save(o10);
+
+
+
+
+
+
+
+        // Profissional Diego
+
+        PriceRule pr12 = new PriceRule("Apenas Mão", 100000);
+        PriceRule pr13 = new PriceRule("Apenas Pé", 1000000);
+        PriceRule pr14 = new PriceRule("Pé e Mão", 1000000);
+
+        ProfessionalCategory ps3 = new ProfessionalCategory(p3, service);
+        ps3.addPriceRule(pr12);
+        ps3.addPriceRule(pr13);
+        ps3.addPriceRule(pr14);
+
+        professionalCategoryRepository.save(ps3);
+
+        Payment p11 = new Payment(Payment.Type.CASH);
+        pr12.addPayment(p11);
+
+        Order o11 = new Order();
+        o11.setStatus(Order.Status.SCHEDULED);
+        o11.setDate(Timestamp.valueOf(LocalDateTime.now()));
+        o11.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
+        o11.setAttendanceType(Order.AttendanceType.HOME_CARE);
+        o11.setIdCustomer(c1);
+        o11.addPayment(p11);
+        o11.setProfessionalCategory(ps3);
+
+        Schedule s11 = new Schedule();
+        s11.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusDays(2)));
+        s11.setScheduleStart(Timestamp.valueOf(LocalDateTime.now().plusHours(4)));//4h de servico
+        o11.setScheduleId(s11);
+        orderRepository.save(o11);
 
     }
 }

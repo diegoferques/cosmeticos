@@ -902,8 +902,21 @@ public class OrderService {
                 email);
     }
 
+    /**
+     * Retorna pedidos do profissional e de seus empregados.
+     * @param email
+     * @return
+     */
     public List<Order> findActiveByProfessionalEmail(String email) {
-        return orderRepository.findByProfessionalEmail(email);
+        List<Order> fullList = new ArrayList<>();
+
+        List<Order> bossOrdersList = orderRepository.findByProfessionalEmail(email);
+        List<Order> employeesOrdersList = orderRepository.findChildrenOrdersByOwnerProfessional(email);
+
+        fullList.addAll(bossOrdersList);
+        fullList.addAll(employeesOrdersList);
+
+        return fullList;
     }
 
     public class ValidationException extends Exception {

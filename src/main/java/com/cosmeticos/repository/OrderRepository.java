@@ -124,5 +124,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByProfessionalEmail(String email);
 
 
-
+    /**
+     * Obtem as orders dos funcionarios de um profissional a partir de seu email.
+     * @param ownerEmail
+     * @return
+     */
+    @Query(value = "" +
+            "SELECT o " +
+            "FROM Order o " +
+            "join fetch o.professionalCategory ps " +
+            "WHERE ps.professional.boss.user.email = ?1 "
+    )
+    List<Order> findChildrenOrdersByOwnerProfessional(String ownerEmail);
 }

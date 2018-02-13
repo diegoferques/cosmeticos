@@ -35,6 +35,11 @@ public class User implements Serializable {
         v.setUser(this);
     }
 
+    public void addImage(Image image) {
+        imageCollection.add(image);
+        image.setUser(this);
+    }
+
     /**
      * Os tipo sao referentes as classes que tem User. {@link Customer} e {@link Professional}.
      * Manter um enum aqui nesta classe eh mais conveniente.
@@ -162,6 +167,18 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
     private Set<CreditCard> creditCardCollection = new HashSet<>();
+
+
+    @JsonView({
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.UserAddImage.class,
+    })
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
+    private Set<Image> imageCollection = new HashSet<>();
 
     @JsonBackReference(value="user-customer")
     @OneToOne(mappedBy = "user")

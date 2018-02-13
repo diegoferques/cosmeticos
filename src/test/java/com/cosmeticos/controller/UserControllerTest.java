@@ -3,9 +3,12 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Image;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -128,6 +131,127 @@ public class UserControllerTest {
         Assert.assertNotNull(rsp.getBody());
         Assert.assertEquals(HttpStatus.BAD_REQUEST, rsp.getStatusCode());
 
+    }
+
+    @Test
+    public void postImageTest() throws URISyntaxException, JsonProcessingException {
+
+        User user= new User();
+        user.setEmail("postImageTest@bol.com");
+        user.setPersonType(User.PersonType.FISICA);
+
+        userRepository.save(user);
+
+        Image image1 = new Image();
+        image1.setCloudUrlPath("http://s3/bucket/email/image.jpg");
+        image1.setLocalUrl("/sdcard/gallery/image1.jpg");
+        Image image2 = new Image();
+        image2.setCloudUrlPath("http://s3/bucket/email/image.jpg");
+        image2.setLocalUrl("/sdcard/gallery/image2.jpg");
+        Image image3 = new Image();
+        image3.setCloudUrlPath("http://s3/bucket/email/image.jpg");
+        image3.setLocalUrl("/sdcard/gallery/image3.jpg");
+
+        String json1 = new ObjectMapper().writeValueAsString(image1);
+        String json2 = new ObjectMapper().writeValueAsString(image2);
+        String json3 = new ObjectMapper().writeValueAsString(image3);
+
+        String url = "/users/" +user.getIdLogin() + "/images";
+
+        ResponseEntity<String> rsp1 = post(json1, url);
+        ResponseEntity<String> rsp2 = post(json2, url);
+        ResponseEntity<String> rsp3 = post(json3, url);
+
+        Assert.assertEquals(HttpStatus.OK, rsp1.getStatusCode());
+        Assert.assertEquals(HttpStatus.OK, rsp2.getStatusCode());
+        Assert.assertEquals(HttpStatus.OK, rsp3.getStatusCode());
+
+        user = userRepository.findOne(user.getIdLogin());
+
+        Assert.assertEquals(
+                "Nao foram inseridas as 3 imagens",
+                3,
+                user.getImageCollection().size()
+        );
+
+    }
+
+    @Test
+    public void deleteImageTest() throws URISyntaxException, JsonProcessingException {
+
+        User user= new User();
+        user.setEmail("postImageTest@bol.com");
+        user.setPersonType(User.PersonType.FISICA);
+
+        userRepository.save(user);
+
+        Image image1 = new Image();
+        image1.setCloudUrlPath("http://s3/bucket/email/image.jpg");
+        image1.setLocalUrl("/sdcard/gallery/image1.jpg");
+        Image image2 = new Image();
+        image2.setCloudUrlPath("http://s3/bucket/email/image.jpg");
+        image2.setLocalUrl("/sdcard/gallery/image2.jpg");
+        Image image3 = new Image();
+        image3.setCloudUrlPath("http://s3/bucket/email/image.jpg");
+        image3.setLocalUrl("/sdcard/gallery/image3.jpg");
+
+        String json1 = new ObjectMapper().writeValueAsString(image1);
+        String json2 = new ObjectMapper().writeValueAsString(image2);
+        String json3 = new ObjectMapper().writeValueAsString(image3);
+
+        String url = "/users/" +user.getIdLogin() + "/images";
+
+        ResponseEntity<String> rsp1 = post(json1, url);
+        ResponseEntity<String> rsp2 = post(json2, url);
+        ResponseEntity<String> rsp3 = post(json3, url);
+
+        Assert.assertEquals(HttpStatus.OK, rsp1.getStatusCode());
+        Assert.assertEquals(HttpStatus.OK, rsp2.getStatusCode());
+        Assert.assertEquals(HttpStatus.OK, rsp3.getStatusCode());
+
+        user = userRepository.findOne(user.getIdLogin());
+
+        Assert.assertEquals(
+                "Nao foram inseridas as 3 imagens",
+                3,
+                user.getImageCollection().size()
+        );
+
+        ResponseEntity<String> rsp4 = delete(
+                "/images/" + user.getImageCollection()
+                    .stream()
+                        .findFirst().get().getId()
+        );
+
+        user = userRepository.findOne(user.getIdLogin());
+
+        Assert.assertEquals(
+                "Nao foi removida a imagem.",
+                2,
+                user.getImageCollection().size()
+        );
+
+    }
+
+    ResponseEntity<String> post(String json, String url) throws URISyntaxException {
+        RequestEntity<String> entity =  RequestEntity
+                .post(new URI(url))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(json);
+
+        return restTemplate
+                .exchange(entity, String.class);
+    }
+
+
+    ResponseEntity<String> delete(String url) throws URISyntaxException {
+        RequestEntity<Void> entity =  RequestEntity
+                .delete(new URI(url))
+                .accept(MediaType.APPLICATION_JSON)
+                .build();
+
+        return restTemplate.exchange(entity, String.class);
     }
 
     @Ignore // Nos inserimos o cara mas no controller o cara nao retorna nem no findAll.

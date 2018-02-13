@@ -46,7 +46,7 @@ public class ProfessionalPreLoadConfiguration {
         cw1.getCustomers().add(c1);
         cw1.getCustomers().add(c2);
 
-        User user1 = new User("garry", "123qwe", "garry@bol");
+        User user1 = new User("garry", "123qwe", "garry@bol.com");
         user1.setStatus(User.Status.ACTIVE);
         user1.addVote(new Vote(3));
         user1.addVote(new Vote(5));
@@ -86,7 +86,7 @@ public class ProfessionalPreLoadConfiguration {
 
 
         ////////////////////////////////////////
-        User user2 = new User("Diego", "123qwe", "Diego@bol");
+        User user2 = new User("Diego", "123qwe", "Diego@bol.com");
         user2.setStatus(User.Status.ACTIVE);
 
         Address address2 = new Address();
@@ -125,7 +125,7 @@ public class ProfessionalPreLoadConfiguration {
         s3.setAddress(address3);
         address3.setProfessional(s3);
 
-        s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol"));
+        s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol.com"));
         user3.setStatus(User.Status.ACTIVE);
         user3.setProfessional(s3);
         user3.setPersonType(User.PersonType.JURIDICA);
@@ -143,7 +143,7 @@ public class ProfessionalPreLoadConfiguration {
         s4.setAddress(address4);
         address4.setProfessional(s4);
 
-        s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol"));
+        s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol.com"));
         user4.setStatus(User.Status.ACTIVE);
         user4.setProfessional(s4);
         user4.setPersonType(User.PersonType.FISICA);
@@ -163,7 +163,7 @@ public class ProfessionalPreLoadConfiguration {
         s5.setAddress(address5);
         address5.setProfessional(s5);
 
-        s5.setUser(user5 = new User("Habib@bol", "123qwe", "Habib@bol"));
+        s5.setUser(user5 = new User("Habib@bol", "123qwe", "Habib@bol.com"));
         user5.setStatus(User.Status.ACTIVE);
         user5.setProfessional(s5);
         user5.setPersonType(User.PersonType.JURIDICA);
@@ -178,7 +178,7 @@ public class ProfessionalPreLoadConfiguration {
         //Alterar ProfessionalPreLoadConfiguration, de modo a incluir + 2 profissionais
         //com endereços e Locations fictícios.
 
-        User user6 = new User("kelly", "123abc", "joana@bol");
+        User user6 = new User("kelly", "123abc", "joana@bol.com");
 
         Address address6 = new Address();
         address6.setAddress("Travessa Tuviassuiara, 32");
