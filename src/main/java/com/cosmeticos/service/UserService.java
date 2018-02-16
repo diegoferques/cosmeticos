@@ -73,9 +73,9 @@ public class UserService {
             //if (userFromRequest.getUsername() != null) {
             //    persistentUser.setUsername(userFromRequest.getUsername());
             //}
-            if (userFromRequest.getPassword() != null) {
-                persistentUser.setPassword(userFromRequest.getPassword());
-            }
+           //if (userFromRequest.getPassword() != null) {
+           //    persistentUser.setPassword(userFromRequest.getPassword());
+           //}
 
             // email nao se altera
             //if (userFromRequest.getEmail() != null) {
@@ -110,6 +110,13 @@ public class UserService {
             }
             if (userFromRequest.getLostPasswordToken() != null) {
                 persistentUser.setLostPasswordToken(userFromRequest.getLostPasswordToken());
+            }
+
+            if (userFromRequest.getProfileImageUrl() != null) {
+                persistentUser.setProfileImageUrl(
+                        "https://s3-sa-east-1.amazonaws.com" +
+                        userFromRequest.getProfileImageUrl()
+                );
             }
 
             persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
@@ -295,6 +302,7 @@ public class UserService {
     public User addImage(Long idUser, Image image) {
         User user = repository.findOne(idUser);
 
+        // TODO: transformar em property
         String s3host = "https://s3-sa-east-1.amazonaws.com";
 
         if (!image.getCloudUrlPath().startsWith(s3host)) {

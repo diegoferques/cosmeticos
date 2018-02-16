@@ -2,10 +2,7 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.CategoryRepository;
-import com.cosmeticos.repository.PriceRuleRepository;
-import com.cosmeticos.repository.ProfessionalCategoryRepository;
-import com.cosmeticos.repository.ProfessionalRepository;
+import com.cosmeticos.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -31,6 +28,9 @@ public class ProfessionalService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private HabilityService habilityService;
@@ -137,6 +137,11 @@ public class ProfessionalService {
                 for (Vote v : requestVotes) {
                     persistentUser.addVote(v);
                 }
+
+                // Como user pode chegar sem o id, convenientemente configuramos o id.
+                User receivedUser = receivedProfessional.getUser();
+                receivedUser.setIdLogin(persistentUser.getIdLogin());
+                userService.update(receivedUser);
             }
 
             if (receivedProfessional.getEmployeesCollection() != null) {
@@ -228,76 +233,43 @@ public class ProfessionalService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void configureProfessionalCategory(Professional receivedProfessional, Professional persistentProfessional) {
 
-        if(receivedProfessional.getProfessionalCategoryCollection().isEmpty()) {
+        if (receivedProfessional.getProfessionalCategoryCollection().isEmpty()) {
             log.debug("Ignorando atualizacao de categorias do Professional[{}] pois a lista de categorias nao " +
                     "pode estar vazia.", receivedProfessional.getIdProfessional());
-        }
-        else{
+        } else {
 
             //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
-            if(!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
+            if (!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
 
-                Set<ProfessionalCategory> professionalCategoryCollectionTemp = new HashSet<>();
+                Set<ProfessionalCategory> transientProfessionalCategories = new HashSet<>();
+                Set<ProfessionalCategory> receivedIdentifiedProfessionalCategories = new HashSet<>();
 
-                //verificamos se cada um dos ProfessionalCategory enviados ja existe em persistentProfessional
+                // Coletando ProfessionalCategories que ainda nao existem em persistentProfessional
                 for (ProfessionalCategory professionalCategoryRequest :
                         receivedProfessional.getProfessionalCategoryCollection()) {
-
-                    Boolean isPresent = false;
-
-                    for (ProfessionalCategory professionalCategoryPersistent :
-                            persistentProfessional.getProfessionalCategoryCollection()) {
-
-                        if(professionalCategoryPersistent.getCategory().getIdCategory() ==
-                                professionalCategoryRequest.getCategory().getIdCategory()) {
-                            isPresent = true;
-                            break;
-                        }
+                    if (professionalCategoryRequest.getProfessionalCategoryId() == null) {
+                        transientProfessionalCategories.add(professionalCategoryRequest);
                     }
-
-                    if (isPresent == false) {
-                        professionalCategoryCollectionTemp.add(professionalCategoryRequest);
+                    else
+                    {
+                        receivedIdentifiedProfessionalCategories.add(professionalCategoryRequest);
                     }
                 }
 
-                ArrayList<ProfessionalCategory> professionalCategoriesToErase = new ArrayList<>();
+                removeProfessionalCategoriesNotPresentInRequest(receivedProfessional, persistentProfessional);
 
-                //Agora verificamos alguma category existe no persistente mas nao existe no request e deletaremos
-                for (ProfessionalCategory professionalCategoryPersistent :
-                        persistentProfessional.getProfessionalCategoryCollection()) {
 
-                    Boolean isPresent = false;
+                for (ProfessionalCategory receivedIdentifiedPC : receivedIdentifiedProfessionalCategories) {
+                    Optional<ProfessionalCategory> foundPersistentPC = persistentProfessional.getProfessionalCategoryCollection()
+                            .stream().filter(persistent -> persistent.equals(receivedIdentifiedPC))
+                            .findFirst();
 
-                    for (ProfessionalCategory professionalCategoryRequest :
-                            receivedProfessional.getProfessionalCategoryCollection()) {
-
-                        if(professionalCategoryPersistent.getCategory().getIdCategory() ==
-                                professionalCategoryRequest.getCategory().getIdCategory()) {
-                            isPresent = true;
-                            break;
-                        }
-                    }
-
-                    if (isPresent == false) {
-                        professionalCategoriesToErase.add(professionalCategoryPersistent);
-                    }
-                }
-
-                // Removendo fora do FOR pra evitar ConcurrentModificationException
-                for (ProfessionalCategory pcToRemove :
-                        professionalCategoriesToErase) {
-
-                    pcToRemove.setStatus(ProfessionalCategory.Status.DELETED);
-                    professionalCategoryRepository.save(
-                            pcToRemove
-                    );
-
-                    persistentProfessional.getProfessionalCategoryCollection()
-                            .remove(pcToRemove);
+                    // Agora Conferimos se as price rules do que ja esta no banco bate com o que foi recebido.
+                    adjustPriceRules(receivedIdentifiedPC, foundPersistentPC.get());
                 }
 
                 //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
-                for (ProfessionalCategory pc : professionalCategoryCollectionTemp) {
+                for (ProfessionalCategory pc : transientProfessionalCategories) {
 
                     // Fazendo o bidirecional com a lista de PriceRules
                     for (PriceRule pr : pc.getPriceRuleList()) {
@@ -307,9 +279,8 @@ public class ProfessionalService {
                     persistentProfessional.addProfessionalCategory(pc);
                     professionalCategoryRepository.save(pc);
                 }
-            }
-            else
-            {
+
+            } else {
                 // Tratando caso onde profissional NAO possui categorias.
                 for (ProfessionalCategory pc : receivedProfessional.getProfessionalCategoryCollection()) {
 
@@ -320,6 +291,94 @@ public class ProfessionalService {
 
                     persistentProfessional.addProfessionalCategory(pc);
                 }
+            }
+        }
+    }
+
+    void removeProfessionalCategoriesNotPresentInRequest(Professional receivedProfessional, Professional persistentProfessional) {
+        ArrayList<ProfessionalCategory> professionalCategoriesToErase = new ArrayList<>();
+
+        //Agora verificamos alguma category existe no persistente mas nao existe no request e deletaremos
+        for (ProfessionalCategory professionalCategoryPersistent :
+                persistentProfessional.getProfessionalCategoryCollection()) {
+
+            Set<ProfessionalCategory> receivedProfessionalCategories = receivedProfessional.getProfessionalCategoryCollection();
+
+            final Long persistentIdCategory = professionalCategoryPersistent.getCategory().getIdCategory();
+
+            Optional<ProfessionalCategory> foundInRequest = receivedProfessionalCategories.stream()
+                    .filter(received -> received.getCategory().getIdCategory() == persistentIdCategory)
+                    .findFirst();
+
+            if (!foundInRequest.isPresent()) {
+                professionalCategoriesToErase.add(professionalCategoryPersistent);
+            }
+        }
+
+        // Removendo fora do FOR pra evitar ConcurrentModificationException
+        for (ProfessionalCategory pcToRemove :
+                professionalCategoriesToErase) {
+
+            pcToRemove.setStatus(ProfessionalCategory.Status.DELETED);
+            professionalCategoryRepository.save(
+                    pcToRemove
+            );
+
+            persistentProfessional.getProfessionalCategoryCollection()
+                    .remove(pcToRemove);
+        }
+    }
+
+    private void adjustPriceRules(ProfessionalCategory receivedPC, ProfessionalCategory persistentPC) {
+
+        //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
+        if (!persistentPC.getPriceRuleList().isEmpty()) {
+
+            Set<PriceRule> transientPriceRules = new HashSet<>();
+            Set<PriceRule> receivedIdentifiedPriceRules = new HashSet<>();
+            Set<PriceRule> persistentPRToEraseList = new HashSet<>();
+
+            // Coletando ProfessionalCategories que ainda nao existem em persistentProfessional
+            for (PriceRule priceRuleRequest : receivedPC.getPriceRuleList()) {
+                if (priceRuleRequest.getId() == null) {
+                    transientPriceRules.add(priceRuleRequest);
+                }
+                else
+                {
+                    receivedIdentifiedPriceRules.add(priceRuleRequest);
+                }
+            }
+
+            for (PriceRule persistentPR : persistentPC.getPriceRuleList()) {
+                Optional<PriceRule> found = receivedIdentifiedPriceRules.stream()
+                        .filter(rpr -> rpr.equals(persistentPR))
+                        .findFirst();
+
+                if(!found.isPresent())
+                {
+                    persistentPRToEraseList.add(persistentPR);
+                }
+            }
+
+            persistentPRToEraseList.forEach(persistentPRToErase -> {
+                        persistentPC.getPriceRuleList().removeIf(
+                                persistent -> persistentPRToErase.equals(persistent)
+                        );
+                    }
+            );
+
+            professionalCategoryRepository.save(persistentPC);
+
+            //Agora limpamos a lista de professionalCategoryCollection e setamos a nova somente com os INSERTS
+            for (PriceRule pr : transientPriceRules) {
+
+                persistentPC.addPriceRule(pr);
+                priceRuleRepository.save(pr);
+            }
+        } else {
+            // Tratando caso onde profissional NAO possui categorias.
+            for (PriceRule pr : persistentPC.getPriceRuleList()) {
+                persistentPC.addPriceRule(pr);
             }
         }
     }

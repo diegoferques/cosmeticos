@@ -76,6 +76,7 @@ public class ProfessionalCategory implements Serializable {
     @JsonView({
     	ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
+        ResponseJsonView.ProfessionalFindAll.class,
         ResponseJsonView.ProfessionalUpdate.class
     })
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory", orphanRemoval = true)
@@ -105,6 +106,27 @@ public class ProfessionalCategory implements Serializable {
 	public void addPriceRule(PriceRule pr1) {
 		pr1.setProfessionalCategory(this);
         priceRuleList.add(pr1);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (professionalCategoryId != null ? professionalCategoryId.hashCode() : category != null ? category.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof ProfessionalCategory)) {
+            return false;
+        }
+        ProfessionalCategory other = (ProfessionalCategory) object;
+        if ((this.professionalCategoryId == null && other.professionalCategoryId != null)
+                || (this.professionalCategoryId != null && !this.professionalCategoryId.equals(other.professionalCategoryId))) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -33,6 +33,7 @@ public class PriceRule implements Serializable {
                     ResponseJsonView.OrderControllerUpdate.class,
                     ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
+                    ResponseJsonView.ProfessionalFindAll.class,
                     ResponseJsonView.ProfessionalUpdate.class
     })
     @Id
@@ -45,6 +46,7 @@ public class PriceRule implements Serializable {
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
         ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class
     })
     private String name;
@@ -54,6 +56,7 @@ public class PriceRule implements Serializable {
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.OrderControllerFindBy.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class
     })
     private Long price;

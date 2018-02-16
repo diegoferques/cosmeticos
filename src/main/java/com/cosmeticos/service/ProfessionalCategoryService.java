@@ -89,7 +89,7 @@ public class ProfessionalCategoryService {
 
     //TODO - VERIFICAR SE TEM UMA FORMA MELHOR DE FAZER, ACHEI MUITO TRABALHOSO COMO ESTA ATUALMENTE
     //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
-    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, String latitude, String longitude, String radius) {
+    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, String receivedLatitude, String receivedLongitude, String radius) {
 
 
         String serviceName = service.getCategory().getName();
@@ -112,8 +112,8 @@ public class ProfessionalCategoryService {
                             !professional.getAddress().getLongitude().isEmpty()) {
 
                         Double distancia = getDistancia(
-                                Double.parseDouble(latitude),
-                                Double.parseDouble(longitude),
+                                Double.parseDouble(receivedLatitude),
+                                Double.parseDouble(receivedLongitude),
                                 Double.parseDouble(professional.getAddress().getLatitude()),
                                 Double.parseDouble(professional.getAddress().getLongitude())
                         );
