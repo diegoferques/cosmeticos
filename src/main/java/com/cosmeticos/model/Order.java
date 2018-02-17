@@ -25,7 +25,12 @@ public class Order implements Serializable {
 
 
     public enum Status {
-		OPEN, SCHEDULED, INPROGRESS, ACCEPTED, CANCELLED, EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, EXPIRED, FAILED_ON_PAYMENT, READY2CHARGE
+		OPEN, SCHEDULED, INPROGRESS, ACCEPTED, CANCELLED,
+
+		/**
+		 * @deprecated Este status perdeu sentido. Eh um status a mais desnecessario no processo de compra.
+		 */
+		EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, EXPIRED, FAILED_ON_PAYMENT, READY2CHARGE
 	}
 
 	public enum PayType{

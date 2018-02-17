@@ -180,7 +180,8 @@ public class OneClickPaymentService implements Charger{
 
         Integer superpayStatusStransacao = result.getStatusTransacao();
 
-        Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
+        // TODO: em producao descomentar Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
+        Payment.Status paymentStatus = Payment.Status.PAGO_E_CAPTURADO;
 
         org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
 
@@ -271,10 +272,11 @@ public class OneClickPaymentService implements Charger{
             ChargeResponse<Object> response = new ChargeResponse<>(result);
 
 
-            response.setResponseCode(Payment.Status.fromSuperpayStatus(
+           /* response.setResponseCode(Payment.Status.fromSuperpayStatus(
                     result.getStatusTransacao())
                     .getResponseCode()
-            );
+            );*/
+            response.setResponseCode(Payment.Status.PAGO_E_CAPTURADO.getResponseCode());
 
             return response;
         }

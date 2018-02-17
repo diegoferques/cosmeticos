@@ -279,7 +279,6 @@ public class ProfessionalService {
                     persistentProfessional.addProfessionalCategory(pc);
                     professionalCategoryRepository.save(pc);
                 }
-
             } else {
                 // Tratando caso onde profissional NAO possui categorias.
                 for (ProfessionalCategory pc : receivedProfessional.getProfessionalCategoryCollection()) {

@@ -491,7 +491,7 @@ public class OrderService {
         applyVote(receivedOrder, persistentOrder);
 
         // TODO: remover isso de antes de chamar o superpay
-        orderRepository.save(persistentOrder);
+        //orderRepository.save(persistentOrder);
 
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
         // Utilizamos a order persistente pois ela possui TODOS os atributos setados
@@ -560,6 +560,12 @@ public class OrderService {
                 //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
                 orderRepository.save(persistentOrder);
             }
+        }
+        else
+        {
+
+            // TODO: remover isso de antes de chamar o superpay
+            orderRepository.save(persistentOrder);
         }
 
         return persistentOrder;
@@ -898,7 +904,7 @@ public class OrderService {
 
     public List<Order> findActiveByCustomerEmail(String email) {
         return orderRepository.findByStatusNotInAndIdCustomer_user_email( //
-                Arrays.asList(CANCELLED, AUTO_CLOSED, CLOSED), //
+                Arrays.asList(EXECUTED), // Usando um status que nunca vai pra banco.
                 email);
     }
 

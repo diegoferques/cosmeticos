@@ -30,6 +30,7 @@ public class WalletController {
     public HttpEntity<WalletResponseBody> findAll(@ModelAttribute Wallet wallet) {
 
         try {
+            // TODO: nao usar o example para endpoints que vao em objetos mundo profundos pra montar a query, senao a gestao dos campos auto preenchidos fica infernal
             List<Wallet> entityList = service.findAllBy(wallet);
 
             if(entityList.isEmpty())

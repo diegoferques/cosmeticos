@@ -25,6 +25,9 @@ public class WalletService {
      */
     public List<Wallet> findAllBy(Wallet walletProbe) {
 
+        walletProbe.getProfessional().getUser().setLostPassword(null);
+        walletProbe.getProfessional().getUser().setUserType(null);
+        walletProbe.getProfessional().getUser().setEvaluation(null);
         return this.repository.findAll(Example.of(walletProbe));
     }
 
