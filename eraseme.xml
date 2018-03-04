@@ -1,33 +1,50 @@
-Received response [
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-    <soap:Body>
-        <soap:Fault>
-            <faultcode>soap:Server</faultcode>
-            <faultstring>Pedido 4 nao corresponde a uma transacao unica</faultstring>
-            <detail>
-                <ns1:WebServicesException xmlns:ns1="http://pagamentos.webservices.superpay.ernet.com.br/"/>
-            </detail>
-        </soap:Fault>
-    </soap:Body>
-</soap:Envelope>] for request [<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Header/>
+Received response
+
+<?xml version="1.0" encoding="utf-8" ?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <ns1:subscibeProductResponse xmlns:ns1="http://www.csapi.org/schema/parlayx/subscribeproduct/v1_0/local">
+            <ns1:resultCode>7201</ns1:resultCode>
+        </ns1:subscibeProductResponse>
+    </soapenv:Body>
+</soapenv:Envelope>
+
+        for request
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Header>
+    <wsse:Security xmlns:tns="http://www.huawei.com.cn/schema/common/v2_1"
+                   xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                   xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+        <wsse:UsernameToken>
+            <wsse:Username>PA00001586</wsse:Username>
+            <wsse:Password>dqIbEiOlGx+GjN6UqENR5P520B0=</wsse:Password>
+            <wsse:Nonce>Y2Y5NDM5ZmQtM2RjZS00MjJmLWIzYjEtOGQzZWRjYmE0ZjE5</wsse:Nonce>
+            <wsu:Created>2018-02-19T01:34:55Z</wsu:Created>
+        </wsse:UsernameToken>
+    </wsse:Security>
+    <tns:RequestSOAPHeader xmlns:tns="http://www.huawei.com.cn/schema/common/v2_1"
+                           xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                           xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+        <tns:AppId>AMXAPPSCLUBEMX</tns:AppId>
+        <tns:TransId>2018021901345567721</tns:TransId>
+        <tns:OA>tel:525530751761</tns:OA>
+    </tns:RequestSOAPHeader>
+</SOAP-ENV:Header>
 <SOAP-ENV:Body>
-    <ns3:capturarTransacaoCompleta xmlns:ns3="http://pagamentos.webservices.superpay.ernet.com.br/">
-        <transacao>
-            <codigoEstabelecimento>1501698887865</codigoEstabelecimento>
-            <codigoFormaPagamento>170</codigoFormaPagamento>
-            <IP>192.168.1.14</IP>
-            <idioma>0</idioma>
-            <nomeTitularCartaoCredito>teste</nomeTitularCartaoCredito>
-            <numeroTransacao>4</numeroTransacao>
-            <parcelas>1</parcelas>
-            <taxaEmbarque>0</taxaEmbarque>
-            <urlCampainha>http://ngrok/campainha/superpay</urlCampainha>
-            <valor>20000</valor>
-            <valorDesconto>0</valorDesconto>
-        </transacao>
-        <usuario>superpay</usuario>
-        <senha>superpay</senha>
-    </ns3:capturarTransacaoCompleta>
+    <loc:subscibeProduct xmlns:loc="http://www.csapi.org/schema/parlayx/subscribeproduct/v1_0/local"
+                         xmlns:ns3="http://www.csapi.org/schema/parlayx/subscribeproduct/v1_0"
+                         xmlns:ns5="http://www.csapi.org/schema/parlayx/common/v2_1">
+        <loc:version>5.0</loc:version>
+        <loc:userID>
+            <ID>525530751761</ID>
+            <type>0</type>
+        </loc:userID>
+        <loc:subInfo>
+            <productID>MDSP2000010546</productID>
+        </loc:subInfo>
+        <loc:channelID>7</loc:channelID>
+    </loc:subscibeProduct>
 </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>]
+</SOAP-ENV:Envelope>

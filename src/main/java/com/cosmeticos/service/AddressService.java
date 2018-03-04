@@ -125,26 +125,38 @@ return address;
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
-        String urlViaCepSuffix = "https://viacep.com.br/ws/";
-        String urlViaCepPrefix = "/json/";
-        String urlViaCep = urlViaCepSuffix + cep + urlViaCepPrefix;
-
+        String urlViaCepPrefix= "https://viacep.com.br/ws/";
+        String urlViaCepSuffix  = "/json/";
+        String urlViaCep = urlViaCepPrefix + cep + urlViaCepSuffix;
 
         ResponseEntity<AddressViacep> sourceResponse =
                 restTemplate.getForEntity(urlViaCep, AddressViacep.class);
 
         AddressViacep addressViacep = sourceResponse.getBody();
 
-        Address address = new Address();
+        if(wasFound(addressViacep)) {
+            Address address = new Address();
 
-        address.setAddress(addressViacep.getLogradouro());
-        address.setNeighborhood(addressViacep.getBairro());
-        address.setCity(addressViacep.getLocalidade());
-        address.setState(addressViacep.getUf());
-        address.setComplement(addressViacep.getComplemento());
-        address.setCep(addressViacep.getCep());
+            address.setAddress(addressViacep.getLogradouro());
+            address.setNeighborhood(addressViacep.getBairro());
+            address.setCity(addressViacep.getLocalidade());
+            address.setState(addressViacep.getUf());
+            address.setComplement(addressViacep.getComplemento());
+            address.setCep(addressViacep.getCep());
 
-        return Optional.ofNullable(address);
+            return Optional.ofNullable(address);
+        }
+        else
+        {
+            return Optional.empty();
+        }
+
+    }
+
+    private boolean wasFound(AddressViacep addressViacep) {
+
+        return addressViacep.getCep() != null
+                || addressViacep.getLogradouro() != null;
 
     }
 

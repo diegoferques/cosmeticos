@@ -27,7 +27,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +39,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String address;
 
@@ -45,7 +49,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalUpdate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String cep;
 
@@ -53,7 +59,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String neighborhood;
 
@@ -61,7 +69,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String city;
 
@@ -69,7 +79,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String state;
 
@@ -77,7 +89,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String country;
 
@@ -85,7 +99,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String latitude;
 
@@ -93,7 +109,9 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String longitude;
 
@@ -101,9 +119,21 @@ public class Address implements Serializable {
             ResponseJsonView.ProfessionalCreate.class,
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
     })
     private String complement;
+
+    @JsonView({
+            ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
+    private String number;
 
     @JsonIgnore
     @OneToOne
@@ -113,13 +143,6 @@ public class Address implements Serializable {
     @OneToOne
     private Professional professional;
 
-    @JsonView({
-            ResponseJsonView.ProfessionalCreate.class,
-            ResponseJsonView.ProfessionalFindAll.class,
-            ResponseJsonView.ProfessionalCategoryFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class
-    })
-    private String number;
 
     @Override
     public int hashCode() {

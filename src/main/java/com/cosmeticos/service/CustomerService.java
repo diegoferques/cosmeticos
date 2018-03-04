@@ -1,6 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.CustomerRequestBody;
+import com.cosmeticos.model.Address;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
@@ -105,6 +106,30 @@ public class CustomerService {
 
         if(!StringUtils.isEmpty(receivedCustomer.getStatus())) {
             persistentCustomer.setStatus(receivedCustomer.getStatus());
+        }
+
+        if(receivedCustomer.getAddress() != null) {
+            Address persistentAddress = persistentCustomer.getAddress();
+            if(persistentAddress == null) {
+                persistentCustomer.setAddress(receivedCustomer.getAddress());
+            }
+            else
+            {
+                Address receivedAddress = receivedCustomer.getAddress();
+
+                persistentAddress.setCep(receivedAddress.getCep());
+                persistentAddress.setAddress(receivedAddress.getAddress());
+                persistentAddress.setNumber(receivedAddress.getNumber());
+                persistentAddress.setComplement(receivedAddress.getComplement());
+                persistentAddress.setNeighborhood(receivedAddress.getNeighborhood());
+                persistentAddress.setCity(receivedAddress.getCity());
+                persistentAddress.setState(receivedAddress.getState());
+                persistentAddress.setCountry(receivedAddress.getCountry());
+                persistentAddress.setLatitude(receivedAddress.getLatitude());
+                persistentAddress.setLongitude(receivedAddress.getLongitude());
+            }
+
+            persistentCustomer.getAddress().setCustomer(persistentCustomer);
         }
 
         if(!receivedCustomer.getUser().getCreditCardCollection().isEmpty()) {

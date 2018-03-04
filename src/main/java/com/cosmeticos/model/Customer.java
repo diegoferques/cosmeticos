@@ -115,6 +115,14 @@ public class Customer implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class
+    })
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idCustomer")
     private Address address;
