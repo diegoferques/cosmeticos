@@ -1,5 +1,6 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.commons.Balance;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
@@ -216,7 +217,6 @@ public class ProfessionalController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
     @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.DELETE)
     public HttpEntity<ProfessionalResponseBody> delete(@PathVariable String idProfessional) {
 

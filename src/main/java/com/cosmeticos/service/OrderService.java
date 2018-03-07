@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 import static com.cosmeticos.model.Order.Status.*;
+import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 import static java.util.Optional.ofNullable;
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -80,6 +81,9 @@ public class OrderService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private BalanceItemService balanceItemService;
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -401,24 +405,6 @@ public class OrderService {
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
-        //TODO - SE ORDER NO BANCO FOR READY2CHARGE E PAGAMENTO EM DINHEIRO, ENTAO MUDAMOS O STATUS PARA O SOLICITADO???
-        //NAO ESTOU ENTENDENDO ISSO!!!
-        //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
-        // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
-        // Garry: Ta estranho mesmo.. vamos apagar esta instrucao
-        if (Order.Status.READY2CHARGE == persistentOrder.getStatus()) {
-
-            Payment payment = persistentOrder.getPaymentCollection()
-                    .stream()
-                    .findFirst()
-                    .get();
-
-            if (Payment.Type.CASH.equals(payment.getType())) {
-                persistentOrder.setStatus(Order.Status.CLOSED);
-            }
-        }
-
-
         if (!isEmpty(receivedOrder.getDate())) {
             persistentOrder.setDate(receivedOrder.getDate());
         }
@@ -523,6 +509,8 @@ public class OrderService {
             }
         }
 
+        boolean mustPersistOrder = false;
+
 		//TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
 		//HTTPSTATUS DEFINIDO PARA CADA STATUS DE PAGAMENTO DA SUPERPAY
 		//CARD: https://trello.com/c/fyPMjNJI/113-adequar-status-do-pagamento-do-superpay-aos-nossos-status-da-order
@@ -549,7 +537,6 @@ public class OrderService {
                     persistentOrder.setStatus(Order.Status.CLOSED);
                     persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
 
-                    orderRepository.save(persistentOrder);
                 }
                 else
                 {
@@ -557,15 +544,34 @@ public class OrderService {
                     persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
                 }
 
-                //SALVAMOS NOVAMENTE PARA ATUALIZAR O STATUS DE READY2CHARGE PARA ALGUM QUE IDENTIFIQUE QUE FOI PAGO
-                orderRepository.save(persistentOrder);
+                mustPersistOrder = true;
+            }
+            else if (Payment.Type.CASH.equals(payment.getType())) {
+
+                //TODO - SE ORDER NO BANCO FOR READY2CHARGE E PAGAMENTO EM DINHEIRO, ENTAO MUDAMOS O STATUS PARA O SOLICITADO???
+                //NAO ESTOU ENTENDENDO ISSO!!!
+                //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
+                // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
+                // Garry: Ta estranho mesmo.. vamos apagar esta instrucao
+                persistentOrder.setStatus(Order.Status.CLOSED);
+
+                 mustPersistOrder = true;
             }
         }
         else
         {
 
-            // TODO: remover isso de antes de chamar o superpay
-            orderRepository.save(persistentOrder);
+            mustPersistOrder = true;
+        }
+
+        if(mustPersistOrder)
+        {
+            if(persistentOrder.getStatus() == Order.Status.CLOSED
+                    || persistentOrder.getStatus() == Order.Status.AUTO_CLOSED) {
+
+                orderRepository.save(persistentOrder);
+                balanceItemService.create(creditFromOrder(persistentOrder));
+            }
         }
 
         return persistentOrder;
@@ -947,6 +953,8 @@ public class OrderService {
                 o.setStatus(Order.Status.AUTO_CLOSED);
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
+
+                balanceItemService.create(creditFromOrder(o));
             }
         }
         log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
