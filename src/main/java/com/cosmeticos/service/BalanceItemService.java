@@ -71,4 +71,11 @@ public class BalanceItemService {
     public List<BalanceItem> findByProfessional(String email) {
         return repository.findByEmail(email);
     }
+
+    public Long sum(List<BalanceItem> balanceItems) {
+
+        Long total = balanceItems.stream().mapToLong(i -> i.getValue()).sum();
+
+        return total;
+    }
 }

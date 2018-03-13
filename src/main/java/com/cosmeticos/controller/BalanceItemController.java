@@ -53,6 +53,7 @@ public class BalanceItemController {
 
                     Balance balance = new Balance();
                     balance.setBalanceItemList(balanceItems);
+                    balance.setAvailableBalance(balanceItemService.sum(balanceItems));
 
                     //return ok().body(response);
                     return ok(balance);

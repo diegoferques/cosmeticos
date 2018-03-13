@@ -10,6 +10,7 @@ public class Balance {
 
     private String message;
 
-    private List<BalanceItem> balanceItemList;
+    private Long availableBalance;
 
+    private List<BalanceItem> balanceItemList;
 }

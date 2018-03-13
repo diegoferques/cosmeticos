@@ -233,8 +233,8 @@ public class ProfessionalController {
 
     }
 
-    @RequestMapping(path = "/professionals/{idProfessional}/balance", method = RequestMethod.POST)
-    public HttpEntity<Void> createBalanceRequest(@PathVariable Long idProfessional) {
+    @RequestMapping(path = "/professionals/{idProfessional}/withdrawal", method = RequestMethod.POST)
+    public HttpEntity<Void> createWithdrawal(@PathVariable Long idProfessional) {
 
         try {
 
