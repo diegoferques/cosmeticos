@@ -243,7 +243,8 @@ public class OrderService {
                 .findFirst()
                 .get();
 
-            return persistentUserCreditCard.isOneClick();
+            Boolean oneclick = persistentUserCreditCard.isOneClick();
+            return oneclick == null ? true : oneclick;
         }
     }
 
@@ -566,10 +567,10 @@ public class OrderService {
 
         if(mustPersistOrder)
         {
-            if(persistentOrder.getStatus() == Order.Status.CLOSED
-                    || persistentOrder.getStatus() == Order.Status.AUTO_CLOSED) {
+            orderRepository.save(persistentOrder);
 
-                orderRepository.save(persistentOrder);
+            if(CLOSED.equals(persistentOrder.getStatus())
+                    || AUTO_CLOSED.equals(persistentOrder.getStatus())) {
                 balanceItemService.create(creditFromOrder(persistentOrder));
             }
         }
@@ -938,7 +939,7 @@ public class OrderService {
     }
 
     @Scheduled(cron = "${order.unfinished.cron}")
-    public void updateStatus() {
+    public void scheduledUpdateStatus() {
 
         List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.SEMI_CLOSED);
 

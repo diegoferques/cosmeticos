@@ -217,6 +217,7 @@ public class ProfessionalController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
     @RequestMapping(path = "/professionals/{idProfessional}", method = RequestMethod.DELETE)
     public HttpEntity<ProfessionalResponseBody> delete(@PathVariable String idProfessional) {
 
@@ -230,6 +231,23 @@ public class ProfessionalController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 
+    }
+
+    @RequestMapping(path = "/professionals/{idProfessional}/balance", method = RequestMethod.POST)
+    public HttpEntity<Void> createBalanceRequest(@PathVariable Long idProfessional) {
+
+        try {
+
+            service.createRescueRequest(idProfessional);
+
+            log.info("Pedido de resgate concluído: idProfessional: {}", idProfessional);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            log.error("Erro na criação de pedido de resgate: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**

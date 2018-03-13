@@ -41,6 +41,7 @@ public class CustomerPreLoadConfiguration {
             cc.setExpirationDate(LocalDate.of(2017, 12, 1).format(ofPattern("MM/yy")));
             cc.setVendor("MasterCard");
             cc.setStatus(CreditCard.Status.ACTIVE);
+            cc.setOneClick(true);
 
             Customer c1 = new Customer();
             c1.setBirthDate(Timestamp.valueOf(LocalDateTime.MAX.of(1980, 01, 20, 0, 0, 0)));
@@ -53,7 +54,7 @@ public class CustomerPreLoadConfiguration {
             c1.setStatus(Customer.Status.ACTIVE.ordinal());
             c1.setAddress(this.createFakeAddress());
             c1.setUser(this.createFakeLogin("josilva","josilva@bol.com", User.PersonType.JURIDICA));
-            //c1.getUser().addCreditCard(cc);
+            c1.getUser().addCreditCard(cc);
 
             Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
             Customer c2 = new Customer();

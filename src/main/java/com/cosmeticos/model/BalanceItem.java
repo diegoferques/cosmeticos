@@ -10,10 +10,10 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 public class BalanceItem {
-    public enum Type { CREDIT, DEBIT;}
+    public enum Type { CREDIT, WITHDRALL;}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

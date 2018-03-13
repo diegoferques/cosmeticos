@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 public class Balance {
 
+    private String message;
+
     private List<BalanceItem> balanceItemList;
 
 }

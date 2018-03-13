@@ -41,7 +41,7 @@ public class BalanceItemService {
     }
 
     public static BalanceItem debitFromOrder(Order order) {
-        return fromOrder(order, BalanceItem.Type.DEBIT);
+        return fromOrder(order, BalanceItem.Type.WITHDRALL);
     }
 
     private static BalanceItem fromOrder(Order order, BalanceItem.Type type) {
@@ -68,4 +68,7 @@ public class BalanceItemService {
         return item;
     }
 
+    public List<BalanceItem> findByProfessional(String email) {
+        return repository.findByEmail(email);
+    }
 }

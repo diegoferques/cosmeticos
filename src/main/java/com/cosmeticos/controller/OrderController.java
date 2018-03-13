@@ -183,7 +183,7 @@ public class OrderController {
 
     }
 
-    @JsonView(ResponseJsonView.OrderControllerUpdate.class)
+    @JsonView(ResponseJsonView.OrderControllerFindBy.class)
     @RequestMapping(path = "/orders/{idOrder}", method = RequestMethod.GET)
     public HttpEntity<OrderResponseBody> findById(@PathVariable String idOrder) {
 

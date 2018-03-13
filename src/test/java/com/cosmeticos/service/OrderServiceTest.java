@@ -140,7 +140,7 @@ public class OrderServiceTest {
     @Test
     public void testUpdateStatus(){
 
-        orderService.updateStatus();
+        orderService.scheduledUpdateStatus();
         o3 = orderRepository.findOne(o3.getIdOrder());
         o4 = orderRepository.findOne(o4.getIdOrder());
         o5 = orderRepository.findOne(o5.getIdOrder());

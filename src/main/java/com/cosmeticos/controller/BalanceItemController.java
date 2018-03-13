@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -31,25 +33,33 @@ public class BalanceItemController {
 
         try {
 
-            List<BalanceItem> balanceItems = balanceItemService.listBy(balanceItem);
-
-            if (!balanceItems.isEmpty()) {
-
-                if(log.isDebugEnabled())
-                {
-                    log.debug(balanceItems.toString());
-                }
-
-                log.info("Busca de saldo com exito: [{}]", balanceItem.getEmail());
-
+            if (StringUtils.isEmpty(balanceItem.getEmail())) {
+                log.error("Email deve ser informado");
                 Balance balance = new Balance();
-                balance.setBalanceItemList(balanceItems);
+                balance.setMessage("E-mail deve ser informado para listagem de saldo.");
+                return badRequest().body(balance);
+            }
+            else{
+                List<BalanceItem> balanceItems = balanceItemService.listBy(balanceItem);
 
-                //return ok().body(response);
-                return ok(balance);
-            } else {
-                log.error("Nenhum registro de saldo encontrado para: {}",  balanceItem.getEmail());
-                return notFound().build();
+                if (!balanceItems.isEmpty()) {
+
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug(balanceItems.toString());
+                    }
+
+                    log.info("Busca de saldo com exito: [{}]", balanceItem.getEmail());
+
+                    Balance balance = new Balance();
+                    balance.setBalanceItemList(balanceItems);
+
+                    //return ok().body(response);
+                    return ok(balance);
+                } else {
+                    log.error("Nenhum registro de saldo encontrado para: {}",  balanceItem.getEmail());
+                    return notFound().build();
+                }
             }
 
         } catch (Exception e) {

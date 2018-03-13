@@ -3,15 +3,20 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
+
+import static java.time.LocalDateTime.now;
 
 /**
  * Created by matto on 27/05/2017.
@@ -19,6 +24,9 @@ import java.util.*;
 @Slf4j
 @Service
 public class ProfessionalService {
+
+    @Autowired
+    private MailSenderService emailService;
 
     @Autowired
     private ProfessionalRepository professionalRepository;
@@ -40,6 +48,18 @@ public class ProfessionalService {
 
     @Autowired
     private PriceRuleRepository priceRuleRepository;
+
+    @Autowired
+    private BalanceItemService balanceItemService;
+
+    @Value("${exception.unresolved.destination.email}")
+    private String corpEmail;
+
+    @Value("${balance.rescue.request.mail.subject}")
+    private String rescueRequestMailSubject;
+
+    @Value("${balance.rescue.request.mail.body}")
+    private String rescueRequestMailBody;
 
     public Optional<Professional> find(Long idProfessional) {
         return Optional.ofNullable(professionalRepository.findOne(idProfessional));
@@ -432,5 +452,41 @@ public class ProfessionalService {
         return persistentProfessional;
 
     }
+
+    public void createRescueRequest(Long idProfessional) {
+
+        Professional professional = professionalRepository.findOne(idProfessional);
+
+        String email = professional.getUser().getEmail();
+
+        List<BalanceItem> balanceItens = balanceItemService.findByProfessional(email);
+
+        Long balance = balanceItens.stream().mapToLong(i -> i.getValue()).sum();
+
+        BalanceItem item = new BalanceItem();
+        item.setDate(Timestamp.valueOf(now()));
+        item.setType(BalanceItem.Type.WITHDRALL);
+        item.setEmail(email);
+        item.setDescription("Resgate de saldo");
+        item.setValue(balance < 0 ? balance : -balance);
+
+        balanceItemService.create(item);
+
+        log.info("Pedido de RESGATE de R$ {} solicitado pelo usuario {}", balance, email);
+
+        String mailBody = String.format(
+                rescueRequestMailBody,
+                formatPrice(balance),
+                email,
+                professional.getIdProfessional()
+        );
+
+        emailService.sendEmail(corpEmail, rescueRequestMailSubject, mailBody);
+    }
+
+    private String formatPrice(Long value) {
+        return String.format("R$ %.2f", ((float)value) / 100);
+    }
+
 }
 
