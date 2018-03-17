@@ -55,7 +55,6 @@ public class BalanceItemController {
                     balance.setBalanceItemList(balanceItems);
                     balance.setAvailableBalance(balanceItemService.sum(balanceItems));
 
-                    //return ok().body(response);
                     return ok(balance);
                 } else {
                     log.error("Nenhum registro de saldo encontrado para: {}",  balanceItem.getEmail());

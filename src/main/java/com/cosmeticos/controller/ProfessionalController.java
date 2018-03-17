@@ -12,6 +12,7 @@ import com.cosmeticos.service.ProfessionalService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -247,6 +248,9 @@ public class ProfessionalController {
             log.error("Erro na criação de pedido de resgate: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        finally {
+            MDC.clear();
         }
     }
 

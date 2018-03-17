@@ -5,6 +5,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -472,7 +473,8 @@ public class ProfessionalService {
 
         balanceItemService.create(item);
 
-        log.info("Pedido de RESGATE de R$ {} solicitado pelo usuario {}", balance, email);
+        MDC.put("withdrawalRequested", String.valueOf(balance));
+        MDC.put("professionalEmail", email);
 
         String mailBody = String.format(
                 rescueRequestMailBody,
