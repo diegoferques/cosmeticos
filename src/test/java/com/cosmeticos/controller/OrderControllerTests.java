@@ -1626,7 +1626,9 @@ public class OrderControllerTests {
         Order orderUpdateProfessionalVote =  orderRepository.findOne(createdOrder.getIdOrder());
 
         //Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
-        Assert.assertEquals(Order.Status.READY2CHARGE, orderUpdateProfessionalVote.getStatus());
+
+        // Se mandamos readytocharge, devemos esperar CLOSED.
+        Assert.assertEquals(Order.Status.CLOSED, orderUpdateProfessionalVote.getStatus());
 
         User professionalUser = orderUpdateProfessionalVote.getProfessionalCategory()
                 .getProfessional().getUser();

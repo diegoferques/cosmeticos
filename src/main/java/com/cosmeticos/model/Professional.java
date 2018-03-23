@@ -174,6 +174,10 @@ public class Professional  implements Serializable {
     @JoinColumn(name = "idProfessional")
     private Wallet wallet;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "professional")
+    @JoinColumn(name = "idProfessional")
+    private BankAccount bankAccount;
+
     @JsonView({
             ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.ProfessionalUpdate.class,

@@ -1,12 +1,13 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.*;
+import com.cosmeticos.commons.ProfessionalRequestBody;
+import com.cosmeticos.commons.ProfessionalResponseBody;
+import com.cosmeticos.commons.ScheduleResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -27,7 +27,6 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -110,7 +109,7 @@ public class ProfessionalControllerTests {
 				"  }\n" +
 				"}";
 
-		
+
 		RequestEntity<String> entity =  RequestEntity
 				.post(new URI("/professionals"))
 				.contentType(MediaType.APPLICATION_JSON)
@@ -119,11 +118,33 @@ public class ProfessionalControllerTests {
 
 		ResponseEntity<ProfessionalResponseBody> exchange = restTemplate
 				.exchange(entity, ProfessionalResponseBody.class);
-				
+
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
 		returnOfCreateOK = exchange.getBody().getProfessionalList().get(0);
+	}
+
+	@Test
+	public void testUpdateOK() throws IOException {
+
+		Professional c1 = new Professional();
+		c1.setIdProfessional(1L);
+		c1.setNameProfessional("Diego Fernandes Marques da Silva");
+		c1.setCnpj("1233211233211");
+
+		ProfessionalRequestBody cr = new ProfessionalRequestBody();
+		cr.setProfessional(c1);
+
+		final ResponseEntity<ScheduleResponseBody> exchange = //
+				restTemplate.exchange( //
+						"/professionals", //
+						HttpMethod.PUT, //
+						new HttpEntity(cr), // Body
+						ScheduleResponseBody.class);
+
+		Assert.assertNotNull(exchange);
+		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 	}
 
 	@Test
@@ -269,29 +290,6 @@ public class ProfessionalControllerTests {
 		Assert.assertEquals(HttpStatus.NOT_FOUND, exchange.getStatusCode());
 
 	}
-
-	@Test
-	public void testUpdateOK() throws IOException {
-
-		Professional c1 = new Professional();
-		c1.setIdProfessional(1L);
-		c1.setNameProfessional("Diego Fernandes Marques da Silva");
-		c1.setCnpj("1233211233211");
-
-		ProfessionalRequestBody cr = new ProfessionalRequestBody();
-		cr.setProfessional(c1);
-
-		final ResponseEntity<ScheduleResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/professionals", //
-						HttpMethod.PUT, //
-						new HttpEntity(cr), // Body
-						ScheduleResponseBody.class);
-
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-	}
-
 	@Test
 	public void testDeleteForbiden() throws ParseException {
 

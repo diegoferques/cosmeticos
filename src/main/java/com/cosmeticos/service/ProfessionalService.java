@@ -2,7 +2,9 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.model.*;
-import com.cosmeticos.repository.*;
+import com.cosmeticos.repository.PriceRuleRepository;
+import com.cosmeticos.repository.ProfessionalCategoryRepository;
+import com.cosmeticos.repository.ProfessionalRepository;
 import com.cosmeticos.smtp.MailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -34,9 +36,6 @@ public class ProfessionalService {
 
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     @Autowired
     private UserService userService;
@@ -490,5 +489,21 @@ public class ProfessionalService {
         return String.format("R$ %.2f", ((float)value) / 100);
     }
 
+    public void createBankAccount(Long idProfessional, BankAccount request) {
+
+        Professional persistentProfessional = professionalRepository.findOne(idProfessional);
+
+        if(persistentProfessional == null)
+        {
+            throw new IllegalArgumentException("Profissional com id: "+idProfessional+" nao encontrao.");
+        }
+
+        persistentProfessional.setBankAccount(request);
+        request.setProfessional(persistentProfessional);
+
+        professionalRepository.save(persistentProfessional);
+
+        MDC.put("bankAccountId", String.valueOf(persistentProfessional.getBankAccount().getId()));
+    }
 }
 

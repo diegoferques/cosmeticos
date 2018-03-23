@@ -1,13 +1,9 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.Balance;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.cosmeticos.model.Category;
-import com.cosmeticos.model.Professional;
-import com.cosmeticos.model.ProfessionalCategory;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.service.ProfessionalService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -22,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import java.lang.Exception;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -57,11 +54,11 @@ public class ProfessionalController {
             } else {
 
                 String userEmail = "";
-                if(request.getProfessional().getUser() != null) {
+                if (request.getProfessional().getUser() != null) {
                     userEmail = request.getProfessional().getUser().getEmail();
                 }
 
-                if(userService.verifyEmailExistsforCreate(userEmail)) {
+                if (userService.verifyEmailExistsforCreate(userEmail)) {
 
                     ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
                     responseBody.setDescription("E-mail já existente.");
@@ -115,33 +112,33 @@ public class ProfessionalController {
                 log.error("Entidade a ser alterada esta nula.");
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-            	
-            	Optional<Professional> optional = service.find(request.getProfessional().getIdProfessional());
 
-				if (optional.isPresent()) {
+                Optional<Professional> optional = service.find(request.getProfessional().getIdProfessional());
 
-					Professional persistentProfessional = optional.get();
-					User user =  request.getProfessional().getUser();
+                if (optional.isPresent()) {
 
-					String emailInDatabase = persistentProfessional.getUser().getEmail();
-					String emailFromRequest = user == null ? emailInDatabase : user.getEmail();
+                    Professional persistentProfessional = optional.get();
+                    User user = request.getProfessional().getUser();
 
-					if (emailFromRequest != null || emailInDatabase.equals(emailFromRequest)) {
+                    String emailInDatabase = persistentProfessional.getUser().getEmail();
+                    String emailFromRequest = user == null ? emailInDatabase : user.getEmail();
 
-						optional = service.update(request.getProfessional());
+                    if (emailFromRequest != null || emailInDatabase.equals(emailFromRequest)) {
 
-						Professional professional = optional.get();
+                        optional = service.update(request.getProfessional());
 
-						ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
-						log.info("Professional atualizado com sucesso: id[{}]", professional.getIdProfessional());
-						return ok(responseBody);
-					} else {
-						ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
-						responseBody.setDescription("E-mail já existente.");
-						log.error("Nao e permitido atualizar profissional para um email já existente.");
+                        Professional professional = optional.get();
 
-						return badRequest().body(responseBody);
-					}
+                        ProfessionalResponseBody responseBody = new ProfessionalResponseBody(professional);
+                        log.info("Professional atualizado com sucesso: id[{}]", professional.getIdProfessional());
+                        return ok(responseBody);
+                    } else {
+                        ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+                        responseBody.setDescription("E-mail já existente.");
+                        log.error("Nao e permitido atualizar profissional para um email já existente.");
+
+                        return badRequest().body(responseBody);
+                    }
 
                 } else {
                     log.info("Professional inexistente:  [{}]",
@@ -170,9 +167,9 @@ public class ProfessionalController {
 
         try {
 
-            	service.deleteEmployee(bossId, employeeId);
+            service.deleteEmployee(bossId, employeeId);
 
-            	return ok().build();
+            return ok().build();
 
         } catch (Exception e) {
             String errorCode = String.valueOf(System.nanoTime());
@@ -248,14 +245,98 @@ public class ProfessionalController {
             log.error("Erro na criação de pedido de resgate: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
     }
 
+    @RequestMapping(path = "/professionals/{idProfessional}/bankAccount", method = RequestMethod.POST)
+    public HttpEntity<Void> createBankAccount(@PathVariable Long idProfessional,
+                                              @Valid @RequestBody BankAccount bankAccountRequested,
+                                              BindingResult bindingResult) {
+
+        try {
+
+            if (bindingResult.hasErrors()) {
+                log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
+                return badRequest().header(
+                            "badRequestDetails",
+                            buildErrorResponse(bindingResult).getDescription()
+                        )
+                        .build();
+            } else if (bankAccountRequested == null || idProfessional == null) {
+                log.error("Dados nulos: bankAccount: {}, professionalId: {}", String.valueOf(bankAccountRequested), String.valueOf(idProfessional));
+                return badRequest().build();
+            } else {
+
+                Optional<Professional> optional = service.find(idProfessional);
+
+                if (optional.isPresent()) {
+
+                    if (optional.get().getBankAccount() != null) {
+                        log.error("Bad request: profissional ja cadastrou conta bancaria: idProfessional: {}", idProfessional);
+                        return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .header("badRequestDetail", "BANK_ACCOUNT_ALREADY_CREATED")
+                                .build();
+                    } else {
+                        service.createBankAccount(idProfessional, bankAccountRequested);
+
+                        log.info("Criação de conta bancária para transferencia dos resgates concluído: idProfessional: {}", idProfessional);
+
+                        return ResponseEntity.status(HttpStatus.OK).build();
+                    }
+                } else {
+                    log.error("Professional inexistente:  professionalId[{}]", idProfessional);
+                    return ResponseEntity.notFound().build();
+                }
+            }
+        } catch (Exception e) {
+            log.error("Erro na criação de conta bancária: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    @RequestMapping(path = "/professionals/{idProfessional}/bankAccount", method = RequestMethod.GET)
+    public HttpEntity<BankAccount> findBankAccount(@PathVariable Long idProfessional) {
+
+        try {
+            Optional<Professional> optional = service.find(idProfessional);
+
+            if (optional.isPresent()) {
+
+                BankAccount bankAccount = optional.get().getBankAccount();
+                if (bankAccount != null) {
+
+                    log.info("Conta retornada com sucesso: idProfessional: {}", idProfessional);
+
+                    // Desnecessario retornar profissional e evita stackoverflow
+                    bankAccount.setProfessional(null);
+
+                    return ResponseEntity.status(HttpStatus.OK).body(bankAccount);
+
+                }
+                else
+                {
+                    log.info("Professional nao possui conta bancaria cadastrada:  professionalId[{}]", idProfessional);
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                }
+            }
+            else {
+                log.error("Professional inexistente:  professionalId[{}]", idProfessional);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            log.error("Erro na criação de conta bancária: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     /**
-     *
      * @param professionalProbe Usado pelo Spring para fazer o bind das queries string nos
      *                          atributos da classe.
      * @return
@@ -308,7 +389,7 @@ public class ProfessionalController {
 
                 Optional<Professional> professionalOptional = service.find(professionalId);
 
-                if(professionalOptional.isPresent()) {
+                if (professionalOptional.isPresent()) {
 
                     Professional professional = service.addCategory(professionalOptional.get(), request);
 
@@ -321,9 +402,7 @@ public class ProfessionalController {
                     );
 
                     return ok(responseBody);
-                }
-                else
-                {
+                } else {
                     ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
                     responseBody.setDescription("Professional Id invalido: " + professionalId);
                     return badRequest().body(responseBody);
@@ -355,6 +434,7 @@ public class ProfessionalController {
     /**
      * Verifica se o Service recebido no request possui ID. Isso indica que o cliente primeiro listou os services
      * e depois usou o Service desejado para o cadastro do Professional, que eh o fluxo correto.
+     *
      * @param request
      * @return
      */

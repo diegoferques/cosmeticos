@@ -93,6 +93,7 @@ public class ProfessionalCategoryService {
 
 
         String serviceName = service.getCategory().getName();
+
         List<ProfessionalCategory> professionalCategoryList = repository.findByPriceRuleNotNullAndService(
                 serviceName
         );

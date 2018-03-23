@@ -42,7 +42,12 @@ public class MockingProfessionalCategoryControllerTests {
     @Autowired
     private CategoryRepository serviceRepository;
 
-    //@Ignore
+    /**
+     * Cria dois profissionais, um que nao retornara na lista de resposta do nearby e um que vai retornar.
+     * Se o usuario que nao deveria retornar estiver no response, o teste falha.
+     * @throws ParseException
+     * @throws URISyntaxException
+     */
     @Test
     public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 
@@ -62,16 +67,26 @@ public class MockingProfessionalCategoryControllerTests {
                 locationService.getGeoCode(Mockito.any())
         ).thenReturn(sourceLocation);
 
+        // Criando os profissionais
         CreateProfessionalThatWontReturn createProfessionalThatWontReturn = new CreateProfessionalThatWontReturn().invoke(s1, emailNaoLista);
+        CreateProfessionalThatWillReturn createProfessionalThatWillReturn = new CreateProfessionalThatWillReturn().invoke(s1, emailLista);
 
-        ResponseEntity<ProfessionalResponseBody> exchange = createProfessionalThatWontReturn.exchange;
+        ResponseEntity<ProfessionalResponseBody> exchangeWontReturn = createProfessionalThatWontReturn.exchange;
+        ResponseEntity<ProfessionalResponseBody> exchangeWillReturn = createProfessionalThatWillReturn.exchange;
 
-        Professional professional = exchange.getBody().getProfessionalList().get(0);
+        Professional professionalThatWontReturn = exchangeWontReturn.getBody().getProfessionalList().get(0);
+        Professional professionalThatWillReturn = exchangeWillReturn.getBody().getProfessionalList().get(0);
 
-        Assert.assertNotNull(professional);
-        Assert.assertNotNull(professional.getAddress());
-        Assert.assertNotNull(professional.getAddress().getLatitude());
-        Assert.assertNotNull(professional.getAddress().getLongitude());
+        //Validando se os profissionais foram criados corretamente
+        Assert.assertNotNull(professionalThatWontReturn);
+        Assert.assertNotNull(professionalThatWontReturn.getAddress());
+        Assert.assertNotNull(professionalThatWontReturn.getAddress().getLatitude());
+        Assert.assertNotNull(professionalThatWontReturn.getAddress().getLongitude());
+
+        Assert.assertNotNull(professionalThatWillReturn);
+        Assert.assertNotNull(professionalThatWillReturn.getAddress());
+        Assert.assertNotNull(professionalThatWillReturn.getAddress().getLatitude());
+        Assert.assertNotNull(professionalThatWillReturn.getAddress().getLongitude());
 
         final ResponseEntity<ProfessionalCategoryResponseBody> getExchange = //
                 restTemplate.exchange( //

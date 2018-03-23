@@ -258,8 +258,8 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
 
         Order orderUpdateReady2Charger =  orderRepository.findOne(orderUpdateSemiClosed.getIdOrder());
 
-        //Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
-        Assert.assertEquals(Order.Status.READY2CHARGE, orderUpdateReady2Charger.getStatus());
+        // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
+        Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
 
         User professionalUser = orderUpdateReady2Charger.getProfessionalCategory()
                 .getProfessional().getUser();
