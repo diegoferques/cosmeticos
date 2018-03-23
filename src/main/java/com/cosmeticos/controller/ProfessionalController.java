@@ -241,6 +241,11 @@ public class ProfessionalController {
             log.info("Pedido de resgate concluído: idProfessional: {}", idProfessional);
 
             return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        catch(IllegalStateException e){
+            log.error("Erro na criação de pedido de resgate pq o profissional nao possui conta bancaria: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             log.error("Erro na criação de pedido de resgate: idProfessional: {], message: {}", idProfessional, e.getMessage(), e);
 

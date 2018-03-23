@@ -457,32 +457,46 @@ public class ProfessionalService {
 
         Professional professional = professionalRepository.findOne(idProfessional);
 
-        String email = professional.getUser().getEmail();
+        if(professional.getBankAccount() != null) {
+            String email = professional.getUser().getEmail();
 
-        List<BalanceItem> balanceItens = balanceItemService.findByProfessional(email);
+            List<BalanceItem> balanceItens = balanceItemService.findByProfessional(email);
 
-        Long balance = balanceItens.stream().mapToLong(i -> i.getValue()).sum();
+            Long balance = balanceItens.stream().mapToLong(i -> i.getValue()).sum();
 
-        BalanceItem item = new BalanceItem();
-        item.setDate(Timestamp.valueOf(now()));
-        item.setType(BalanceItem.Type.WITHDRALL);
-        item.setEmail(email);
-        item.setDescription("Resgate de saldo");
-        item.setValue(balance < 0 ? balance : -balance);
+            BalanceItem item = new BalanceItem();
+            item.setDate(Timestamp.valueOf(now()));
+            item.setType(BalanceItem.Type.WITHDRALL);
+            item.setEmail(email);
+            item.setDescription("Resgate de saldo");
+            item.setValue(balance < 0 ? balance : -balance);
 
-        balanceItemService.create(item);
+            balanceItemService.create(item);
 
-        MDC.put("withdrawalRequested", String.valueOf(balance));
-        MDC.put("professionalEmail", email);
+            MDC.put("withdrawalRequested", String.valueOf(balance));
+            MDC.put("professionalEmail", email);
 
-        String mailBody = String.format(
-                rescueRequestMailBody,
-                formatPrice(balance),
-                email,
-                professional.getIdProfessional()
-        );
+            BankAccount bankAccount = professional.getBankAccount();
 
-        emailService.sendEmail(corpEmail, rescueRequestMailSubject, mailBody);
+            String mailBody = String.format(
+                    rescueRequestMailBody,
+                    formatPrice(balance),
+                    email,
+                    professional.getIdProfessional(),
+                    bankAccount.getFinancialInstitute(),
+                    bankAccount.getAgency(),
+                    bankAccount.getAccountNumber(),
+                    bankAccount.getType().toString(),
+                    bankAccount.getOwnerName(),
+                    bankAccount.getOwnerCPF()
+            );
+
+            emailService.sendEmail(corpEmail, rescueRequestMailSubject, mailBody);
+        }
+        else
+        {
+            throw new IllegalStateException("Ainda nao ha conta bancaria cadastrada para realizar o resgate.");
+        }
     }
 
     private String formatPrice(Long value) {
