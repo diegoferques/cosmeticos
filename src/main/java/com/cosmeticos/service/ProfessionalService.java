@@ -396,7 +396,7 @@ public class ProfessionalService {
             }
         } else {
             // Tratando caso onde profissional NAO possui categorias.
-            for (PriceRule pr : persistentPC.getPriceRuleList()) {
+            for (PriceRule pr : receivedPC.getPriceRuleList()) {
                 persistentPC.addPriceRule(pr);
             }
         }

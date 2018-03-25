@@ -6,6 +6,7 @@ import com.cosmeticos.model.BalanceItem;
 import com.cosmeticos.service.BalanceItemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,14 +39,12 @@ public class BalanceItemController {
                 Balance balance = new Balance();
                 balance.setMessage("E-mail deve ser informado para listagem de saldo.");
                 return badRequest().body(balance);
-            }
-            else{
+            } else {
                 List<BalanceItem> balanceItems = balanceItemService.listBy(balanceItem);
 
                 if (!balanceItems.isEmpty()) {
 
-                    if(log.isDebugEnabled())
-                    {
+                    if (log.isDebugEnabled()) {
                         log.debug(balanceItems.toString());
                     }
 
@@ -57,7 +56,7 @@ public class BalanceItemController {
 
                     return ok(balance);
                 } else {
-                    log.error("Nenhum registro de saldo encontrado para: {}",  balanceItem.getEmail());
+                    log.error("Nenhum registro de saldo encontrado para: {}", balanceItem.getEmail());
                     return notFound().build();
                 }
             }
@@ -68,10 +67,22 @@ public class BalanceItemController {
             ProfessionalResponseBody response = new ProfessionalResponseBody();
             response.setDescription("Erro interno: " + errorCode);
 
-            log.error("Erro na listagem de saldo do Professional: "+balanceItem.getEmail()+" {} - {}", errorCode, e.getMessage(), e);
+            log.error("Erro na listagem de saldo do Professional: " + balanceItem.getEmail() + " {} - {}", errorCode, e.getMessage(), e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Balance());
         }
+    }
+
+    @Profile("default")
+    @RequestMapping(path = "/balanceItens/all", method = RequestMethod.GET)
+    public HttpEntity<Balance> findAll() {
+
+        List<BalanceItem> balanceItems = balanceItemService.listAll();
+
+        Balance balance = new Balance();
+        balance.setBalanceItemList(balanceItems);
+
+        return ok(balance);
     }
 
 }
