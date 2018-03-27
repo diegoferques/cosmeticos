@@ -180,7 +180,7 @@ public class UserControllerTest {
     public void deleteImageTest() throws URISyntaxException, JsonProcessingException {
 
         User user= new User();
-        user.setEmail("postImageTest@bol.com");
+        user.setEmail("deleteImageTest@bol.com");
         user.setPersonType(User.PersonType.FISICA);
 
         userRepository.save(user);

@@ -78,7 +78,6 @@ public class ProfessionalPriceRuleControllerTests {
                 "    \"nameProfessional\": \"aaa\",\n" +
                 "    \"professionalCategoryCollection\": [\n" +
                 "      {\n" +
-                "        \"professional\": null,\n" +
                 "        \"category\": {\n" +
                 "          \"name\": \"PINTURA\",\n" +
                 "          \"idCategory\": 2\n" +
@@ -122,6 +121,8 @@ public class ProfessionalPriceRuleControllerTests {
                 "            \"price\": 75.00\n" +
                 "          }\n" +
                 "          ],\n" +
+
+                // A ideia é que a categoria de id 2 seja apagada e a de de id 1 permaneça registrada.
                 "          \"category\": {\n" +
                 "            \"idCategory\": 1\n" +
                 "          }\n" +

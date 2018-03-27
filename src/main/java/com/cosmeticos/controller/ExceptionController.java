@@ -121,8 +121,4 @@ public class ExceptionController {
         responseBody.setDescription(errors.toString());
         return responseBody;
     }
-
-
-
-
 }

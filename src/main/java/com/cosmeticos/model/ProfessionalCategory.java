@@ -79,7 +79,7 @@ public class ProfessionalCategory implements Serializable {
         ResponseJsonView.ProfessionalFindAll.class,
         ResponseJsonView.ProfessionalUpdate.class
     })
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionalCategory", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<PriceRule> priceRuleList = new HashSet<>();
 
 

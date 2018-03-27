@@ -258,26 +258,23 @@ public class ProfessionalService {
                     "pode estar vazia.", receivedProfessional.getIdProfessional());
         } else {
 
+            Set<ProfessionalCategory> transientProfessionalCategories = new HashSet<>();
+            Set<ProfessionalCategory> receivedIdentifiedProfessionalCategories = new HashSet<>();
+
+            // Coletando ProfessionalCategories que ainda nao existem em persistentProfessional
+            for (ProfessionalCategory professionalCategoryRequest :
+                    receivedProfessional.getProfessionalCategoryCollection()) {
+                if (professionalCategoryRequest.getProfessionalCategoryId() == null) {
+                    transientProfessionalCategories.add(professionalCategoryRequest);
+                } else {
+                    receivedIdentifiedProfessionalCategories.add(professionalCategoryRequest);
+                }
+            }
+
+            removeProfessionalCategoriesNotPresentInRequest(receivedProfessional, persistentProfessional);
+
             //Se professionalCategoryCollection estiver vazio, sera um INSERT NOVO, entao nao temos problema
             if (!persistentProfessional.getProfessionalCategoryCollection().isEmpty()) {
-
-                Set<ProfessionalCategory> transientProfessionalCategories = new HashSet<>();
-                Set<ProfessionalCategory> receivedIdentifiedProfessionalCategories = new HashSet<>();
-
-                // Coletando ProfessionalCategories que ainda nao existem em persistentProfessional
-                for (ProfessionalCategory professionalCategoryRequest :
-                        receivedProfessional.getProfessionalCategoryCollection()) {
-                    if (professionalCategoryRequest.getProfessionalCategoryId() == null) {
-                        transientProfessionalCategories.add(professionalCategoryRequest);
-                    }
-                    else
-                    {
-                        receivedIdentifiedProfessionalCategories.add(professionalCategoryRequest);
-                    }
-                }
-
-                removeProfessionalCategoriesNotPresentInRequest(receivedProfessional, persistentProfessional);
-
 
                 for (ProfessionalCategory receivedIdentifiedPC : receivedIdentifiedProfessionalCategories) {
                     Optional<ProfessionalCategory> foundPersistentPC = persistentProfessional.getProfessionalCategoryCollection()
@@ -361,9 +358,7 @@ public class ProfessionalService {
             for (PriceRule priceRuleRequest : receivedPC.getPriceRuleList()) {
                 if (priceRuleRequest.getId() == null) {
                     transientPriceRules.add(priceRuleRequest);
-                }
-                else
-                {
+                } else {
                     receivedIdentifiedPriceRules.add(priceRuleRequest);
                 }
             }
@@ -373,8 +368,7 @@ public class ProfessionalService {
                         .filter(rpr -> rpr.equals(persistentPR))
                         .findFirst();
 
-                if(!found.isPresent())
-                {
+                if (!found.isPresent()) {
                     persistentPRToEraseList.add(persistentPR);
                 }
             }
@@ -457,7 +451,7 @@ public class ProfessionalService {
 
         Professional professional = professionalRepository.findOne(idProfessional);
 
-        if(professional.getBankAccount() != null) {
+        if (professional.getBankAccount() != null) {
             String email = professional.getUser().getEmail();
 
             List<BalanceItem> balanceItens = balanceItemService.findByProfessional(email);
@@ -492,24 +486,21 @@ public class ProfessionalService {
             );
 
             emailService.sendEmail(corpEmail, rescueRequestMailSubject, mailBody);
-        }
-        else
-        {
+        } else {
             throw new IllegalStateException("Ainda nao ha conta bancaria cadastrada para realizar o resgate.");
         }
     }
 
     private String formatPrice(Long value) {
-        return String.format("R$ %.2f", ((float)value) / 100);
+        return String.format("R$ %.2f", ((float) value) / 100);
     }
 
     public void createBankAccount(Long idProfessional, BankAccount request) {
 
         Professional persistentProfessional = professionalRepository.findOne(idProfessional);
 
-        if(persistentProfessional == null)
-        {
-            throw new IllegalArgumentException("Profissional com id: "+idProfessional+" nao encontrao.");
+        if (persistentProfessional == null) {
+            throw new IllegalArgumentException("Profissional com id: " + idProfessional + " nao encontrao.");
         }
 
         persistentProfessional.setBankAccount(request);

@@ -200,8 +200,6 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
                 "\n}\n" +
                 "}";
 
-// todo: FAZER O PUT
-
         RequestEntity<String> entityUpdateSemiClosed =  RequestEntity
                 .put(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -259,7 +257,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Order orderUpdateReady2Charger =  orderRepository.findOne(orderUpdateSemiClosed.getIdOrder());
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
-        Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());
 
         User professionalUser = orderUpdateReady2Charger.getProfessionalCategory()
                 .getProfessional().getUser();

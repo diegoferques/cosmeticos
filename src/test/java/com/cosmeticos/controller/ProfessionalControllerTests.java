@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @RunWith(SpringRunner.class)
@@ -1512,13 +1513,13 @@ public class ProfessionalControllerTests {
 		professionalRepository.save(professional);
 
 		ProfessionalCategory professionalCategory1 = buildProfessionalCategory(
-				"testAddNewCategoryByProfessionalCategoryEndpoint1",
-				"testAddNewCategoryByProfessionalCategoryEndpoint1-pr1",
+				"testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut1",
+				"testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut1-pr1",
 				5000L
 		);
 		ProfessionalCategory professionalCategory2 = buildProfessionalCategory(
-				"testAddNewCategoryByProfessionalCategoryEndpoint2",
-				"testAddNewCategoryByProfessionalCategoryEndpoint2-pr1",
+				"testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut2",
+				"testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut2-pr1",
 				7000L
 		);
 
@@ -1531,7 +1532,7 @@ public class ProfessionalControllerTests {
 		/************ testing ******************************/
 
 		Category c3 = new Category();
-		c3.setName("testAddNewCategoryByProfessionalCategoryEndpoint3");
+		c3.setName("testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut3");
 		categoryRepository.save(c3);
 
 		String json = "{\n" +
@@ -1539,20 +1540,16 @@ public class ProfessionalControllerTests {
 				"    \"idProfessional\": "+professional.getIdProfessional()+",\n" +
 				"    \"professionalCategoryCollection\": [\n" +
 
-				//"      {\n" +
-				//"        \"professionalCategoryId\": " + professionalCategory1.getProfessionalCategoryId() + "\n"+
-		        //"      },\n" +
 				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory1.getProfessionalCategoryId() + ",\n"+
 				"        \"category\": {\n" +
 				"          \"idCategory\": "+professionalCategory1.getCategory().getIdCategory()+"\n" +
 				"        }\n" +
 				"      },\n" +
 
 
-				//"      {\n" +
-				//"        \"professionalCategoryId\": " + professionalCategory2.getProfessionalCategoryId() + "\n"+
-		        //"      },\n" +
 				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory2.getProfessionalCategoryId() + ",\n"+
 				"        \"category\": {\n" +
 				"          \"idCategory\": "+professionalCategory2.getCategory().getIdCategory()+"\n" +
 				"        }\n" +
@@ -1579,18 +1576,25 @@ public class ProfessionalControllerTests {
 		ResponseEntity<ProfessionalResponseBody> exchange2 = restTemplate
 				.exchange(entity2, ProfessionalResponseBody.class);
 
-		Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
-		Assert.assertEquals(3, exchange2.getBody()
+		Set<ProfessionalCategory> pcAfterThirdCategoryInclusion = exchange2.getBody()
 				.getProfessionalList()
 				.get(0)
-				.getProfessionalCategoryCollection()
-				.size()
+				.getProfessionalCategoryCollection();
+
+		Assert.assertEquals(HttpStatus.OK, exchange2.getStatusCode());
+		Assert.assertEquals(3, pcAfterThirdCategoryInclusion.size()
 		);
 
+		// A professionalCategory da variavel c3 nao está disponível neste codigo, portanto buscamos por ele pra usar o
+		// professionalCategoryId no proximo request que faremos.
+		ProfessionalCategory professionalCategory3 = pcAfterThirdCategoryInclusion.stream()
+				.filter(pc -> pc.getCategory().getIdCategory().equals(c3.getIdCategory()))
+				.findFirst()
+				.get();
 
 		//// Testando cenario de duplicata de categorias ///////////////////
 		Category c4 = new Category();
-		c4.setName("testAddNewCategoryByProfessionalCategoryEndpoint4");
+		c4.setName("testAddThirdCategoryAndThenAFourthCategoryOnOldEndpointPut4");
 		categoryRepository.save(c4);
 
 		String json2 = "{\n" +
@@ -1599,6 +1603,7 @@ public class ProfessionalControllerTests {
 				"    \"professionalCategoryCollection\": [\n" +
 
 				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory1.getProfessionalCategoryId() + ",\n"+
 				"        \"category\": {\n" +
 				"          \"idCategory\": "+professionalCategory1.getCategory().getIdCategory()+"\n" +
 				"        }\n" +
@@ -1606,6 +1611,7 @@ public class ProfessionalControllerTests {
 
 
 				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory2.getProfessionalCategoryId() + ",\n"+
 				"        \"category\": {\n" +
 				"          \"idCategory\": "+professionalCategory2.getCategory().getIdCategory()+"\n" +
 				"        }\n" +
@@ -1613,6 +1619,7 @@ public class ProfessionalControllerTests {
 
 
 				"      {\n" +
+				"        \"professionalCategoryId\": " + professionalCategory3.getProfessionalCategoryId() + ",\n"+
 				"        \"category\": {\n" +
 				"          \"idCategory\": "+c3.getIdCategory()+"\n" +
 				"        }\n" +
@@ -1712,18 +1719,18 @@ public class ProfessionalControllerTests {
 		professionalRepository.save(professional);
 
 		ProfessionalCategory professionalCategory1 = buildProfessionalCategory(
-				"testAddNewCategoryByProfessionalCategoryEndpoint1",
-				"testAddNewCategoryByProfessionalCategoryEndpoint1-pr1",
+				"testRemoveCategory1",
+				"testRemoveCategory1-pr1",
 				5000L
 		);
 		ProfessionalCategory professionalCategory2 = buildProfessionalCategory(
-				"testAddNewCategoryByProfessionalCategoryEndpoint2",
-				"testAddNewCategoryByProfessionalCategoryEndpoint2-pr1",
+				"testRemoveCategory2",
+				"testRemoveCategory2-pr1",
 				7000L
 		);
 		ProfessionalCategory professionalCategory3 = buildProfessionalCategory(
-				"testAddNewCategoryByProfessionalCategoryEndpoint3",
-				"testAddNewCategoryByProfessionalCategoryEndpoint3-pr1",
+				"testRemoveCategory3",
+				"testRemoveCategory3-pr1",
 				10000L
 		);
 
