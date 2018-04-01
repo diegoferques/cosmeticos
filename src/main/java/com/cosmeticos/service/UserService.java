@@ -90,15 +90,20 @@ public class UserService {
             if (userFromRequest.getCreditCardCollection() != null) {
                 persistentUser.setCreditCardCollection(userFromRequest.getCreditCardCollection());
             }
+            //
+
             if (userFromRequest.getStatus() != null) {
                 persistentUser.setStatus(userFromRequest.getStatus());
 
+                /*
                 // Remove a conta do usuario
                 // TODO: criar endpoint especifico pra signout
                 if (User.Status.INACTIVE.equals(userFromRequest.getStatus())) {
                     this.inactiveUserType(userFromRequest);
                 }
+                */
             }
+
             if (userFromRequest.getGoodByeReason() != null) {
                 persistentUser.setGoodByeReason(userFromRequest.getGoodByeReason());
             }
@@ -126,7 +131,7 @@ public class UserService {
 
         return optional;
     }
-
+    /*esse método estava causando o bug na hora de atualizar status pra inactive.
     private void inactiveUserType(User user) {
 
         User persistentUser = repository.findOne(user.getIdLogin());
@@ -141,7 +146,7 @@ public class UserService {
             professionalService.update(professional);
         }
     }
-
+    */
     public Optional<User> find(Long id) {
         return Optional.ofNullable(repository.findOne(id));
     }
