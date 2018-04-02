@@ -233,6 +233,8 @@ public class User implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastStatusUpdate;
 
+    private String firebaseInstanceId;
+
     public User() {
     }
 
