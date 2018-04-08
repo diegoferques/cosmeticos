@@ -1,5 +1,6 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.Application;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.commons.UserResponseBody;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -173,9 +175,13 @@ public class UserController {
      */
     @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
     @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public HttpEntity<UserResponseBody> findAllBy(@ModelAttribute User userAttr) {
+    public HttpEntity<UserResponseBody> findAllBy(
+            @ModelAttribute User userAttr,
+            @RequestHeader(value=Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
+    ) {
 
         try {
+
             List<User> entitylist = service.findAllBy(userAttr);
 
             if(entitylist.isEmpty())
@@ -186,6 +192,15 @@ public class UserController {
                 return status(HttpStatus.NOT_FOUND).body(responseBody);
             }
             else {
+
+                // Atualizamos o firebase token
+                if(!StringUtils.isEmpty(firebaseUserToken))
+                {
+                    User user = entitylist.get(0);
+                    user.setFirebaseInstanceId(firebaseUserToken);
+                    service.update(user);
+                }
+
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setUserList(entitylist);
                 responseBody.setDescription("All Users retrieved.");

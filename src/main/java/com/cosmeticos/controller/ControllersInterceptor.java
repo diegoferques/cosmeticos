@@ -1,14 +1,19 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.Application;
+import com.cosmeticos.model.User;
+import com.cosmeticos.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.ResponseFacade;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 /**
  * Responsavel por circundar as execucoes de todos os endpoints REST de todos os Controllers da aplicacao.
@@ -16,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 @Slf4j
 public class ControllersInterceptor extends HandlerInterceptorAdapter {
+
+	@Autowired
+	private UserRepository userRepository;
 
 	/**
 	 * Quando um cliente chama um endpoint, este metodo eh executado antes do metodo do Controller anotado com @RequestMapping
@@ -32,6 +40,10 @@ public class ControllersInterceptor extends HandlerInterceptorAdapter {
 
 		// TODO: Vinicius, catar dentro do parametro request o path da url que foi chamada (soh o que vem depois do localhost:8080
 		MDC.put("urlPath", request.getRequestURL().toString());
+
+		applyPrincipalEmail(request);
+
+		//applyFirebaseUserToken(request); MUITO CUSTOSO
 
 		return super.preHandle(request, response, handler);
 	}
@@ -52,4 +64,17 @@ public class ControllersInterceptor extends HandlerInterceptorAdapter {
 		}
 		MDC.clear();
 	}
+
+
+	private void applyPrincipalEmail(HttpServletRequest request) {
+		Object principalEmailObject = request.getHeader(Application.PRINCIPAL_EMAIL_HEADER_KEY);
+		String principalEmailHeaderValue = String.valueOf(principalEmailObject);
+		MDC.put(Application.PRINCIPAL_EMAIL_HEADER_KEY, principalEmailHeaderValue);
+
+		if(principalEmailObject != null) {
+			HttpSession session = request.getSession();
+			session.setAttribute(Application.PRINCIPAL_EMAIL_HEADER_KEY, principalEmailHeaderValue);
+		}
+	}
+
 }

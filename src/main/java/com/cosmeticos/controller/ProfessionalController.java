@@ -1,5 +1,6 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.Application;
 import com.cosmeticos.commons.ProfessionalRequestBody;
 import com.cosmeticos.commons.ProfessionalResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -348,7 +350,10 @@ public class ProfessionalController {
      */
     @JsonView(ResponseJsonView.ProfessionalFindAll.class)
     @RequestMapping(path = "/professionals", method = RequestMethod.GET)
-    public HttpEntity<ProfessionalResponseBody> findAll(@ModelAttribute Professional professionalProbe) {
+    public HttpEntity<ProfessionalResponseBody> findAll(
+            @ModelAttribute Professional professionalProbe,
+            @RequestHeader(value = Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
+    ) {
 
         try {
             List<Professional> entitylist = service.findAllBy(professionalProbe);
@@ -358,6 +363,15 @@ public class ProfessionalController {
             responseBody.setDescription("TOP 10 successfully retrieved.");
 
             if (!entitylist.isEmpty()) {
+
+                // Atualizamos o firebase token
+                if(!StringUtils.isEmpty(firebaseUserToken))
+                {
+                    Professional professional = entitylist.get(0);
+                    professional.getUser().setFirebaseInstanceId(firebaseUserToken);
+                    service.update(professional);
+                }
+
                 log.info("{} Professionals successfully retrieved.", entitylist.size());
 
                 return ok().body(responseBody);

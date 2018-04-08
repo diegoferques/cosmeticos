@@ -132,7 +132,6 @@ public class OrderController {
                 MDC.put("idProfessional", String.valueOf(order.getProfessionalCategory().getProfessional().getIdProfessional()));
                 MDC.put("professionalUserStatus", String.valueOf(order.getProfessionalCategory().getProfessional().getStatus()));
                 MDC.put("idOrder", String.valueOf(order.getIdOrder()));
-                MDC.put("newStatus", String.valueOf(order.getStatus()));
 
                 log.info("Order atualizado com sucesso.");
 

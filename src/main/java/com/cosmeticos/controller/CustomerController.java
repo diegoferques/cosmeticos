@@ -1,5 +1,6 @@
 package com.cosmeticos.controller;
 
+import com.cosmeticos.Application;
 import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -166,15 +168,26 @@ public class CustomerController {
 
     @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/", method = RequestMethod.GET)
-    public HttpEntity<CustomerResponseBody> findById(@ModelAttribute Customer customer) {
+    public HttpEntity<CustomerResponseBody> findById(
+            @ModelAttribute Customer customerRequest,
+            @RequestHeader(value=Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
+    ) {
 
         try {
 
-            List<Customer> customers = service.findBy(customer);
+            List<Customer> customers = service.findBy(customerRequest);
 
             if (!customers.isEmpty()) {
 
-                log.info(customers.size() + " encontrados: [{}]", customer);
+                // Atualizamos o firebase token
+                if(!StringUtils.isEmpty(firebaseUserToken))
+                {
+                    Customer customer = customers.get(0);
+                    customer.getUser().setFirebaseInstanceId(firebaseUserToken);
+                    service.update(customer);
+                }
+
+                log.info(customers.size() + " encontrados: [{}]", customerRequest);
                 CustomerResponseBody response = new CustomerResponseBody();
                 response.setCustomerList(customers);
 
@@ -182,7 +195,7 @@ public class CustomerController {
                 
                 return ok(response);
             } else {
-                log.error("Nenhum registro encontrado para customer: {}", customer);
+                log.error("Nenhum registro encontrado para customer: {}", customerRequest);
                 return notFound().build();
             }
 

@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Scheduled;
+import sun.plugin.com.event.COMEventHandler;
 
+import javax.servlet.http.HttpSession;
 import java.lang.Exception;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -84,6 +86,12 @@ public class OrderService {
 
     @Autowired
     private BalanceItemService balanceItemService;
+
+    @Autowired
+    private FirebasePushNotifierService firebasePushNotifierService;
+
+    @Autowired
+    private HttpSession httpSession;
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -217,6 +225,8 @@ public class OrderService {
         // Buscando se o customer que chegou no request esta na wallet
 
         addInWallet(persistentProfessionalCategory.getProfessional(), persistentCustomer);
+
+        firebasePushNotifierService.push(newOrder);
 
         return newOrder;
     }
@@ -371,7 +381,9 @@ public class OrderService {
         Order receivedOrder = request.getOrder();// Po, ta pegando o q veio do request.. ate agora . nada anormal...
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
-        MDC.put("previousOrderStatus", String.valueOf(persistentOrder.getStatus()));
+        Order.Status previousOrderStatus = persistentOrder.getStatus();
+
+        MDC.put("previousOrderStatus", String.valueOf(previousOrderStatus));
 
         //ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
         if (persistentOrder.getStatus() == receivedOrder.getStatus()) {
@@ -540,6 +552,14 @@ public class OrderService {
                 balanceItemService.create(creditFromOrder(persistentOrder));
             }
         }
+
+        if(!previousOrderStatus.equals(persistentOrder.getStatus()))
+        {
+            // TODO: Mandar pruma fila, ser assincrono.
+            firebasePushNotifierService.push(persistentOrder);
+        }
+
+        MDC.put("newOrderStatus", String.valueOf(persistentOrder.getStatus()));
 
         return persistentOrder;
     }

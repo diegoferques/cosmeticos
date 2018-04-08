@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -115,6 +116,9 @@ public class UserService {
             }
             if (userFromRequest.getLostPasswordToken() != null) {
                 persistentUser.setLostPasswordToken(userFromRequest.getLostPasswordToken());
+            }
+            if(!StringUtils.isEmpty(userFromRequest.getFirebaseInstanceId())){
+                persistentUser.setFirebaseInstanceId(userFromRequest.getFirebaseInstanceId());
             }
 
             if (userFromRequest.getProfileImageUrl() != null) {

@@ -23,8 +23,10 @@ public class Application {
 
 	public static final String ACTIVE_PROFILE_KEY = "spring.profiles.active";
 	public static final String PROFILE_TESTING_INTEGRATION_VALUE = "integrationTest";
+	public static final String PRINCIPAL_EMAIL_HEADER_KEY = "principal.email";
+	public static final String FIREBASE_USER_TOKEN_HEADER_KEY = "firebaseUserToken";
 
-	@Value("${paymnet.charger}")
+    @Value("${paymnet.charger}")
 	private String chargerBeanName;
 
 	public static void main(String[] args) {
