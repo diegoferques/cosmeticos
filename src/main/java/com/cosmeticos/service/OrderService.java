@@ -1143,13 +1143,13 @@ public class OrderService {
         int count = 0;
 
         // TODO: colocar esses minutos no properties
-        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
+        LocalDateTime oneHourAfter = LocalDateTime.now().plusHours(1);
 
         for (Order o : onlyOrsersFinishedByProfessionals) {
             LocalDateTime orderCreationDate = o.getLastStatusUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
 
-            if (orderCreationDate.isBefore(tenMinutesAgo)) {
+            if (orderCreationDate.isAfter(oneHourAfter)) {
                 o.setStatus(Order.Status.EXPIRED);
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
