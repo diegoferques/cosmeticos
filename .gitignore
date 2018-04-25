@@ -33,3 +33,5 @@ src/main/java/com/cosmeticos/payment/superpay/ws/*
 
 eraseme.xml
 eraseme.json
+
+*.pem
