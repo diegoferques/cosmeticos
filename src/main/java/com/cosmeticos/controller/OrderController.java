@@ -3,8 +3,8 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.Order;
+import com.cosmeticos.model.OrderProperty;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.*;
@@ -115,13 +117,19 @@ public class OrderController {
                 return badRequest().body(buildErrorResponse(bindingResult));
 
             } else {
-
+                Map<String, String> receivedProperty = request.getProperties();
 
                 if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
                 } else {
                     // Pedidos de cancelamento devem ser acatados, nao devemos por obstaculos no desejo do usuario de cancelar. Nao no backend.
                     orderService.validateUpdate(request.getOrder());
+                }
+
+                for(Map.Entry<String, String> property : receivedProperty.entrySet()){
+                    Set<OrderProperty> order1 = request.getOrder().getOrderPropertyCollection();
+                    order1.add((OrderProperty) property);
+
                 }
 
                 Order order = orderService.update(request);

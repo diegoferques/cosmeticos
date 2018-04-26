@@ -4,6 +4,8 @@ import com.cosmeticos.model.Order;
 import com.cosmeticos.model.PriceRule;
 import lombok.Data;
 
+import java.util.Map;
+
 /**
  * Created by matto on 22/06/2017.
  */
@@ -11,4 +13,6 @@ import lombok.Data;
 public class OrderRequestBody {
 
     private Order order;
+
+    private Map<String, String> properties;
 }
