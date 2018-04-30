@@ -86,9 +86,10 @@
         <appender-ref ref="CONSOLE" />
     </logger>
 
-    <!-- Loga os xml de request/response feito por soap pelo sping-ws -->
-    <logger name="org.springframework.ws.client.MessageTracing">
-        <level value="TRACE" />
+    <!-- Loga o request http do PegasusClient na integra. -->
+    <logger name="com.cosmeticos.cielo.CieloTransactionClient" additivity="false">
+        <level value="DEBUG" />
+        <appender-ref ref="HTTP_WIRE" />
         <appender-ref ref="CONSOLE" />
     </logger>
 
