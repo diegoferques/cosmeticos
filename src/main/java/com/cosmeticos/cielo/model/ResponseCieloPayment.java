@@ -9,59 +9,59 @@ import java.util.List;
 @Data
 public class ResponseCieloPayment {
 
-    public Integer serviceTaxAmount;
-    public Integer installments;
-    public String interest;
-    public Boolean capture;
-    public Boolean authenticate;
-    public CieloCreditCard creditCard;
+    private Integer serviceTaxAmount;
+    private Integer installments;
+    private String interest;
+    private Boolean capture;
+    private Boolean authenticate;
+    private CieloCreditCard creditCard;
 
     /**
      * Número da autorização, identico ao NSU. 	Texto 	6 	Texto alfanumérico
      */
-    public String proofOfSale;
+    private String proofOfSale;
 
     /**
      * Id da transação na adquirente. 	Texto 	20 	Texto alfanumérico
      */
-    public String tid;
+    private String tid;
 
     /**
      * Código de autorização. 	Texto 	6 	Texto alfanumérico
      */
-    public String authorizationCode;
+    private String authorizationCode;
 
     /**
      * Texto que será impresso na fatura bancaria do portador - Disponivel apenas para VISA/MASTER - nao permite caracteres especiais 	Texto 	13 	Texto alfanumérico
      */
-    public String softDescriptor;
+    private String softDescriptor;
 
     /**
      * Campo Identificador do Pedido. 	Guid 	36 	xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
      */
-    public String paymentId;
-    public String type;
-    public Integer amount;
-    public Integer capturedAmount;
-    public String country;
-    public List<Object> extraDataCollection = null;
+    private String paymentId;
+    private String type;
+    private Integer amount;
+    private Integer capturedAmount;
+    private String country;
+    private List<Object> extraDataCollection = null;
 
     /**
      * Status da Transação. 	Byte 	— 	2
      */
     @JsonProperty("Status")
-    public Integer status;
+    private Integer status;
 
     /**
      * Código de retorno da Adquirência. 	Texto 	32 	Texto alfanumérico
      */
-    public String returnCode;
+    private String returnCode;
 
     /**
      *  	Mensagem de retorno da Adquirência. 	Texto 	512 	Texto alfanumérico
      */
-    public String returnMessage;
-    public List<ResponseLink> links = null;
+    private String returnMessage;
+    private List<ResponseLink> links = null;
 
     public ResponseCieloPayment() {
     }
