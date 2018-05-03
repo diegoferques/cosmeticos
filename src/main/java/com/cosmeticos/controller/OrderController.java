@@ -126,10 +126,15 @@ public class OrderController {
                     orderService.validateUpdate(request.getOrder());
                 }
 
-                for(Map.Entry<String, String> property : receivedProperty.entrySet()){
-                    Set<OrderProperty> order1 = request.getOrder().getOrderPropertyCollection();
-                    order1.add((OrderProperty) property);
+                for(Map.Entry<String, String> entry : receivedProperty.entrySet()){
 
+                    OrderProperty property = new OrderProperty();
+                    property.setName(entry.getKey());
+                    property.setValue(entry.getValue());
+
+                    Set<OrderProperty> order1 = request.getOrder().getOrderPropertyCollection();
+
+                    order1.add(new OrderProperty());
                 }
 
                 Order order = orderService.update(request);
