@@ -15,13 +15,11 @@ import org.springframework.util.StopWatch;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import static com.cosmeticos.model.Order.Status.OPEN;
 import static org.springframework.http.HttpMethod.POST;

@@ -1,9 +1,8 @@
-package com.cosmeticos.cielo.model;
+package com.cosmeticos.payment.cielo.model;
 
 
 
 
-import com.cosmeticos.cielo.model.CieloCreditCard;
 import lombok.Builder;
 import lombok.Data;
 
@@ -30,6 +29,7 @@ public class RequestCieloPayment {
      * Texto 	Opcional 	Pais na qual o pagamento será feito.
      */
     public String country;
+
     public Integer serviceTaxAmount;
 
     /**

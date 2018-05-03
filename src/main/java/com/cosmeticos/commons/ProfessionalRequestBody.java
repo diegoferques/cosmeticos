@@ -1,7 +1,6 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Professional;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.validation.Valid;

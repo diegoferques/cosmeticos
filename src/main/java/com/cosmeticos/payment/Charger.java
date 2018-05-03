@@ -1,7 +1,6 @@
 package com.cosmeticos.payment;
 
 import com.cosmeticos.model.Payment;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 
 public interface Charger {
 

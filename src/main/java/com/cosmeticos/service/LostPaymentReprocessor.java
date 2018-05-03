@@ -1,21 +1,16 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
-import com.cosmeticos.payment.superpay.ws.completo.CapturaTransacao;
-import com.cosmeticos.payment.superpay.ws.completo.CapturaTransacaoResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import com.cosmeticos.payment.Charger;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
-import java.util.Optional;
 
 
 /**

@@ -1,9 +1,8 @@
 
-package com.cosmeticos.cielo.model;
+package com.cosmeticos.payment.cielo.model;
 
 
 import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.Payment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 

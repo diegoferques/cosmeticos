@@ -1,6 +1,5 @@
 package com.cosmeticos.repository;
 
-import com.cosmeticos.model.Address;
 import com.cosmeticos.model.BankAccount;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.cosmeticos.payment;
+package com.cosmeticos.payment.superpay;
 
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
@@ -15,7 +15,6 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.soap.SOAPFaultException;
-import java.lang.Exception;
 import java.net.UnknownHostException;
 
 @Component

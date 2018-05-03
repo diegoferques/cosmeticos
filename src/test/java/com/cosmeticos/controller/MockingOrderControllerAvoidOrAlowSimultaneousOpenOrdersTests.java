@@ -5,14 +5,14 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.SuperpayCompletoClient;
-import com.cosmeticos.payment.SuperpayOneClickClient;
+import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
+import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.service.OneClickPaymentService;
+import com.cosmeticos.service.SuperpayOneClickPaymentService;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,7 +68,7 @@ public class MockingOrderControllerAvoidOrAlowSimultaneousOpenOrdersTests {
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @MockBean
-    private OneClickPaymentService charger;
+    private SuperpayOneClickPaymentService charger;
 
     @Before
     public void setup() throws ParseException {

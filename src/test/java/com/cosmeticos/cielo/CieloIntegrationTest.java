@@ -1,6 +1,7 @@
 package com.cosmeticos.cielo;
 
-import com.cosmeticos.cielo.model.*;
+import com.cosmeticos.payment.cielo.CieloTransactionClient;
+import com.cosmeticos.payment.cielo.model.*;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;

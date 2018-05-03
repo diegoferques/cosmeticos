@@ -1,5 +1,5 @@
 
-package com.cosmeticos.cielo.model;
+package com.cosmeticos.payment.cielo.model;
 
 
 public class ResponseLink {

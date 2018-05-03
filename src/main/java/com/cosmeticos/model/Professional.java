@@ -5,13 +5,14 @@
 package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;

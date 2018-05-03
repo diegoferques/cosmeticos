@@ -1,7 +1,6 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -13,7 +12,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Optional;
 
 /**
  * Responsavel por circundar as execucoes de todos os endpoints REST de todos os Controllers da aplicacao.

@@ -96,13 +96,11 @@ public class OrderService {
         return Optional.of(orderRepository.findOne(idOrder));
     }
 
-    public Order create(OrderRequestBody orderRequest) throws OrderValidationException {
+    public Order create(Order receivedOrder) throws OrderValidationException {
 
         /********************************************************/
         /*****   PREPARACAO DOS PRINCIPAIS OBJETOS **************/
         /********************************************************/
-
-        Order receivedOrder = orderRequest.getOrder();
 
         Collection<Payment> paymentCollection = receivedOrder.getPaymentCollection();
 
@@ -135,12 +133,6 @@ public class OrderService {
                     ResponseCode.INVALID_PROFESSIONAL_CATEGORY,
                     "ProfessionalCategoryId invalido: " + receivedProfessionalCategoryId);
 
-        }
-
-        if (paymentCollection.isEmpty()) {
-            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
-        } else {
-            validatedPayment = paymentCollection.stream().findFirst().get();
         }
 
         Payment receivedPayment = validatedPayment;
@@ -230,154 +222,8 @@ public class OrderService {
         return newOrder;
     }
 
-    private boolean userHasOneClickCard(User persistentUser) {
+    public Order update(Order receivedOrder) throws Exception {
 
-        Set<CreditCard> cards = persistentUser.getCreditCardCollection();
-
-        if (cards.isEmpty()) {
-            return false;
-        } else {
-            CreditCard persistentUserCreditCard = cards.stream()
-                    .findFirst()
-                    .get();
-
-            Boolean oneclick = persistentUserCreditCard.isOneClick();
-            return oneclick == null ? true : oneclick;
-        }
-    }
-
-
-    /**
-     * Nao pode ter chegado cartao de credito no request (order.payment.cc == null) e o usuario precisa ter cartao com
-     * token preenchido no banco.
-     *
-     * @param persistentUser
-     * @param optionalReceivedCc
-     * @return
-     */
-    private boolean shouldPayWithOneClick(User persistentUser, Optional<CreditCard> optionalReceivedCc) {
-
-        Set<CreditCard> userCards = persistentUser.getCreditCardCollection();
-        if (userCards.isEmpty()) {
-            return false;
-        } else {
-            CreditCard existentCc = userCards.stream().findFirst().get();
-
-            if (existentCc.isOneClick()) {
-                Optional<String> token = ofNullable(existentCc.getToken());
-
-                if (!token.isPresent()) {
-                    throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION,
-                            "Usuario possui configuracao para OneClick mas seu token esta vazio!");
-                }
-            }
-            return existentCc.isOneClick();
-        }
-    }
-
-    private boolean shouldSaveForOneClick(User persistentUser, Optional<CreditCard> optionalReceivedCc) {
-
-        return optionalReceivedCc.isPresent() // Deve ter chegado no request um CC
-                && optionalReceivedCc.get().isOneClick() // O CC que chegou no request deve estar marcado pra oneclick
-                && persistentUser.getCreditCardCollection().isEmpty(); // O usuario nao deve possuir cartao pre cadastrado.
-    }
-
-    /**
-     * Apensar de ser uma collection, so trabalharemos com 1 Payment inicialmente, o qual este metodo estara retornando.
-     *
-     * @param receivedPayment
-     * @return Persistent Payment
-     */
-    private void validateAndApplyPaymentPriceRule(Payment receivedPayment) {
-
-
-        PriceRule chosenPriceRule = receivedPayment.getPriceRule();
-
-        if (chosenPriceRule == null) {
-            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
-        } else {
-            chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
-
-            /**
-             * Buscamos o pricerule no banco pq o q chega no request é so o ID.
-             */
-            chosenPriceRule.addPayment(receivedPayment);
-
-            MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
-
-        }
-    }
-
-    /**
-     * Valida o cartao de credito para que quando a cron rode no dia de cobrar, ja estara garantido que o cliente possui
-     * cartao registrado.
-     *
-     * @param persistentUser
-     * @param receivedPayment
-     */
-    private void validateAndApplyOneclickCreditcard(User persistentUser, Payment receivedPayment) {
-        if (Payment.Type.CC.equals(receivedPayment.getType())) {
-            Collection<CreditCard> persistentCreditCards = persistentUser.getCreditCardCollection();
-
-            if (persistentCreditCards.isEmpty()) {
-                throw new OrderValidationException(
-                        ResponseCode.INVALID_PAYMENT_TYPE,
-                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
-                                persistentUser.toString()
-                );
-            } else {
-                Optional<CreditCard> cc = persistentCreditCards.stream().findFirst();
-
-                receivedPayment.setCreditCard(cc.get());
-            }
-        }
-    }
-
-    /**
-     * Adiciona o cliente na carteira do profissional se as condicoes forem satisfeitas.
-     *
-     * @param persistentProfessional
-     * @param customer
-     */
-    private void addInWallet(Professional persistentProfessional, Customer customer) {
-        Optional<Wallet> optionalWallet = walletService.findByProfessionalId(persistentProfessional.getIdProfessional());
-        Optional<Customer> customerInWallet = Optional.empty();
-
-        // Verificando se pelo menos existe a wallet.
-        if (optionalWallet.isPresent()) {
-            customerInWallet = optionalWallet.get().getCustomers()
-                    .stream()
-                    .filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
-                    .findAny();
-        }
-
-        // Se nao existe wallet ou se o cliente nao esta na wallet, entao aplicamos a logica de adicionar na wallet.
-        if (!optionalWallet.isPresent() || !customerInWallet.isPresent()) {
-            List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
-
-            int totalOrders = 0;
-
-            for (int i = 0; i < savedOrders.size(); i++) {
-                Order o = savedOrders.get(i);
-                if (o.getProfessionalCategory().getProfessional().getIdProfessional() == persistentProfessional
-                        .getIdProfessional()) {
-                    totalOrders++;
-                }
-            }
-
-            if (totalOrders >= 2) {
-                if (persistentProfessional.getWallet() == null) {
-                    persistentProfessional.setWallet(new Wallet());
-                    persistentProfessional.getWallet().setProfessional(persistentProfessional);
-                }
-                persistentProfessional.getWallet().getCustomers().add(customer);
-                professionalRepository.save(persistentProfessional);
-            }
-        }
-    }
-
-    public Order update(OrderRequestBody request) throws Exception {
-        Order receivedOrder = request.getOrder();// Po, ta pegando o q veio do request.. ate agora . nada anormal...
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
         Order.Status previousOrderStatus = persistentOrder.getStatus();
@@ -435,7 +281,7 @@ public class OrderService {
             persistentOrder.setAttendanceType(receivedOrder.getAttendanceType());
         }
 
-        if (receivedOrder.getScheduleId() != null) {
+        if (receivedOrder.isScheduled()) {
 
             Schedule receivedSchedule = receivedOrder.getScheduleId();
             Schedule persistentSchedule = persistentOrder.getScheduleId();
@@ -561,6 +407,123 @@ public class OrderService {
         MDC.put("newOrderStatus", String.valueOf(persistentOrder.getStatus()));
 
         return persistentOrder;
+    }
+
+    private boolean userHasOneClickCard(User persistentUser) {
+
+        Set<CreditCard> cards = persistentUser.getCreditCardCollection();
+
+        if (cards.isEmpty()) {
+            return false;
+        } else {
+            CreditCard persistentUserCreditCard = cards.stream()
+                    .findFirst()
+                    .get();
+
+            Boolean oneclick = persistentUserCreditCard.isOneClick();
+            return oneclick == null ? true : oneclick;
+        }
+    }
+
+    private boolean shouldSaveForOneClick(User persistentUser, Optional<CreditCard> optionalReceivedCc) {
+
+        return optionalReceivedCc.isPresent() // Deve ter chegado no request um CC
+                && optionalReceivedCc.get().isOneClick() // O CC que chegou no request deve estar marcado pra oneclick
+                && persistentUser.getCreditCardCollection().isEmpty(); // O usuario nao deve possuir cartao pre cadastrado.
+    }
+
+    /**
+     * Apensar de ser uma collection, so trabalharemos com 1 Payment inicialmente, o qual este metodo estara retornando.
+     *
+     * @param receivedPayment
+     * @return Persistent Payment
+     */
+    private void validateAndApplyPaymentPriceRule(Payment receivedPayment) {
+
+
+        PriceRule chosenPriceRule = receivedPayment.getPriceRule();
+
+        if (chosenPriceRule == null) {
+            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
+        } else {
+            chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
+
+            /**
+             * Buscamos o pricerule no banco pq o q chega no request é so o ID.
+             */
+            chosenPriceRule.addPayment(receivedPayment);
+
+            MDC.put("price: ", String.valueOf(chosenPriceRule.getPrice()));
+
+        }
+    }
+
+    /**
+     * Valida o cartao de credito para que quando a cron rode no dia de cobrar, ja estara garantido que o cliente possui
+     * cartao registrado.
+     *
+     * @param persistentUser
+     * @param receivedPayment
+     */
+    private void validateAndApplyOneclickCreditcard(User persistentUser, Payment receivedPayment) {
+        if (Payment.Type.CC.equals(receivedPayment.getType())) {
+            Collection<CreditCard> persistentCreditCards = persistentUser.getCreditCardCollection();
+
+            if (persistentCreditCards.isEmpty()) {
+                throw new OrderValidationException(
+                        ResponseCode.INVALID_PAYMENT_TYPE,
+                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
+                                persistentUser.toString()
+                );
+            } else {
+                Optional<CreditCard> cc = persistentCreditCards.stream().findFirst();
+
+                receivedPayment.setCreditCard(cc.get());
+            }
+        }
+    }
+
+    /**
+     * Adiciona o cliente na carteira do profissional se as condicoes forem satisfeitas.
+     *
+     * @param persistentProfessional
+     * @param customer
+     */
+    private void addInWallet(Professional persistentProfessional, Customer customer) {
+        Optional<Wallet> optionalWallet = walletService.findByProfessionalId(persistentProfessional.getIdProfessional());
+        Optional<Customer> customerInWallet = Optional.empty();
+
+        // Verificando se pelo menos existe a wallet.
+        if (optionalWallet.isPresent()) {
+            customerInWallet = optionalWallet.get().getCustomers()
+                    .stream()
+                    .filter(c -> c.getIdCustomer().equals(customer.getIdCustomer()))
+                    .findAny();
+        }
+
+        // Se nao existe wallet ou se o cliente nao esta na wallet, entao aplicamos a logica de adicionar na wallet.
+        if (!optionalWallet.isPresent() || !customerInWallet.isPresent()) {
+            List<Order> savedOrders = orderRepository.findByIdCustomer_idCustomer(customer.getIdCustomer());
+
+            int totalOrders = 0;
+
+            for (int i = 0; i < savedOrders.size(); i++) {
+                Order o = savedOrders.get(i);
+                if (o.getProfessionalCategory().getProfessional().getIdProfessional() == persistentProfessional
+                        .getIdProfessional()) {
+                    totalOrders++;
+                }
+            }
+
+            if (totalOrders >= 2) {
+                if (persistentProfessional.getWallet() == null) {
+                    persistentProfessional.setWallet(new Wallet());
+                    persistentProfessional.getWallet().setProfessional(persistentProfessional);
+                }
+                persistentProfessional.getWallet().getCustomers().add(customer);
+                professionalRepository.save(persistentProfessional);
+            }
+        }
     }
 
     private void applyVote(Order receivedOrder, Order persistentOrder) {

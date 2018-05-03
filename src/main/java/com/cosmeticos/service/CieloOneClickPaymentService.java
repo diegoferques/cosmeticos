@@ -4,6 +4,10 @@ import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.*;
+import com.cosmeticos.payment.cielo.CieloTransactionClient;
+import com.cosmeticos.payment.cielo.model.*;
+import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
+import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.CustomerRepository;
@@ -13,9 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -25,13 +33,10 @@ import static java.util.Optional.ofNullable;
  */
 @Slf4j
 @Service
-public class OneClickPaymentService implements Charger{
+public class CieloOneClickPaymentService implements Charger{
 
     @Autowired
-    private SuperpayOneClickClient oneClickClient;
-
-    @Autowired
-    private SuperpayCompletoClient completoClient;
+    private CieloTransactionClient cieloTransactionClient;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -57,6 +62,11 @@ public class OneClickPaymentService implements Charger{
     @Override
     public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
 
+
+
+
+/*
+
         Order order = chargeRequest.getBody().getOrder();
 
         String emailComprador = findPersistentUserEmail(order.getIdCustomer().getIdCustomer());
@@ -79,8 +89,8 @@ public class OneClickPaymentService implements Charger{
 
         ChargeResponse<Object> chargeResponse = new ChargeResponse<>(result);
 
-        return chargeResponse;
-
+        return chargeResponse;*/
+return null;
     }
 
     private String findPersistentUserEmail(Long idCustomer) {
@@ -91,115 +101,83 @@ public class OneClickPaymentService implements Charger{
 
     @Override
     public ChargeResponse<Object> reserve(ChargeRequest<Payment> chargeRequest) {
-        // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
 
         Payment receivedPayment = chargeRequest.getBody();
 
         Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
 
+        CreditCard creditCard = persistentPayment.getCreditCard();
+
         Order persistentOrder = persistentPayment.getOrder();
 
-        ProfessionalCategory professionalCategory = persistentOrder.getProfessionalCategory();
-        Category category = professionalCategory.getCategory();
-
         Customer customer = persistentOrder.getIdCustomer();
-        Address address = customer.getAddress();
-        User user = customer.getUser();
 
-        Long numeroTransacao = Long.valueOf(persistentPayment.getExternalTransactionId());
+        Address customerAddress = customer.getAddress();
 
-        // Nao se pega do payment pois o usuario pode ter alterado o cartao antees de concluir a order.
-        // TODO incluir trava pra nao deixar alterar cartao caso haja order aberta
-        CreditCard creditCard = user.getCreditCardCollection()
-                .stream()
-                .findFirst()
-                .get();
+        CieloCreditCard cieloCreditCard = CieloCreditCard.builder()
+                .brand(creditCard.getVendor())
+                .cardNumber(creditCard.getNumber())
+                .expirationDate(creditCard.getExpirationDate())
+                .saveCard(true)
+                .securityCode(creditCard.getSecurityCode())
+                .holder(creditCard.getOwnerName())
+                .build();
 
-        String token = creditCard.getToken();
-        String campainha = "http://ngrok/campainha/superpay";
-        String urlRedirecionamentoNaoPago = "";
-        String urlRedirecionamentoPago = "";
-        long valor = persistentPayment.getPriceRule().getPrice();
-        String bairroEnderecoComprador = address.getNeighborhood();
-        String cepEnderecoComprador = address.getCep();
-        String cidadeEnderecoCompra = address.getCity();
-        String emailComprador = user.getEmail();
-        String enderecoComprador = address.getAddress();
-        String estadoEnderecoComprador = address.getState();
-        String nomeComprador = customer.getNameCustomer();
-        String numeroEnderecoComprador = address.getNumber();
-        String paisComprar = address.getCountry();
-        String sexoComprador = String.valueOf(customer.getGenre());
-        String telefoneComprador = customer.getCellPhone();
-       // String cvv = creditCard.getSecurityCode(); //Eh oneclick.. nao precisa isso
-        String nomeProduto = category.getName();
-        Long valorUnitarioProduto = valor;
-        long tipoCliente = user.getPersonType().ordinal();
+        CieloAddress cieloAddress = CieloAddress.builder()
+                .street(customerAddress.getAddress())
+                .number(customerAddress.getNumber())
+                .city(customerAddress.getCity())
+                .complement(customerAddress.getComplement())
+                .state(customerAddress.getState())
+                .build();
 
-        String nomeCategoria = ofNullable(category.getOwnerCategory())
-                .map(c -> c.getName())
-                .orElse(category.getName());
+        CieloCustomer cieloCustomer = CieloCustomer.builder()
+                .name(customer.getNameCustomer())
+                .email(customer.getUser().getEmail())
+                .birthdate(new SimpleDateFormat("dd/MM/yyyy").format(customer.getBirthDate()))
+                .identity(customer.getCpf())
+                .address(cieloAddress)
+                .build();
 
-        SuperpayOneClickClient.RequestWrapper requestWrapper = new SuperpayOneClickClient.RequestWrapper();
-        requestWrapper.setBairroEnderecoComprador(bairroEnderecoComprador);
-        requestWrapper.setCampainha(campainha);
-        requestWrapper.setCepEnderecoComprador(cepEnderecoComprador);
-        requestWrapper.setCidadeEnderecoCompra(cidadeEnderecoCompra);
-        //requestWrapper.setCvv(cvv);
-        requestWrapper.setEstadoEnderecoComprador(estadoEnderecoComprador);
-        requestWrapper.setEnderecoComprador(enderecoComprador);
-        requestWrapper.setEmailComprador(emailComprador);
-        requestWrapper.setNomeCategoria(nomeCategoria);
-        requestWrapper.setNomeComprador(nomeComprador);
-        requestWrapper.setNomeProduto(nomeProduto);
-        requestWrapper.setNumeroEnderecoComprador(numeroEnderecoComprador);
-        requestWrapper.setNumeroTransacao(numeroTransacao);
-        requestWrapper.setPaisComprador(paisComprar);
-        requestWrapper.setSexoComprador(sexoComprador);
-        requestWrapper.setTelefoneAdicionalComprador(telefoneComprador);
-        requestWrapper.setTelefoneComprador(telefoneComprador);
-        requestWrapper.setTipoCliente(tipoCliente);
-        requestWrapper.setToken(token);
-        requestWrapper.setValor(valor);
-        requestWrapper.setValorUnitarioProduto(valorUnitarioProduto);
-        requestWrapper.setUrlRedirecionamentoNaoPago(urlRedirecionamentoNaoPago);
-        requestWrapper.setUrlRedirecionamentoPago(urlRedirecionamentoPago);
+        RequestCieloPayment cieloPayment = RequestCieloPayment.builder()
+                .capture(false)
+                .amount(persistentPayment.getPriceRule().getPrice().intValue())
+                .creditCard(cieloCreditCard)
+                .installments(1)
+                .type("CreditCard")
+                .build();
 
-        ResultadoPagamentoWS result = oneClickClient.pay(requestWrapper);
+        AuthorizeAndTokenRequest authorizeAndTokenRequest = AuthorizeAndTokenRequest.builder()
+                .customer(cieloCustomer)
+                .merchantOrderId(String.valueOf(persistentOrder.getIdOrder()))
+                .payment(cieloPayment)
+                .build();
 
-        if(mockReserveResponse != null)
-        {
-            log.warn("Estamos falsificando a resposta do superpay RESERVE para fins de testes.");
-            result.setStatusTransacao(mockReserveResponse);
-        }
+        AuthorizeAndTokenResponse authorizeResponse = cieloTransactionClient.reserve(null, authorizeAndTokenRequest);
 
-        return buildResponse(result);
+        return buildResponse(authorizeResponse);
     }
 
-    private ChargeResponse<Object> buildResponse(ResultadoPagamentoWS result) {
+    private ChargeResponse<Object> buildResponse(AuthorizeAndTokenResponse result) {
 
-        Integer superpayStatusStransacao = result.getStatusTransacao();
+        Integer cieloPaymentStatus = result.getPayment().getStatus();
 
-        // TODO: em producao descomentar Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
-        Payment.Status paymentStatus = Payment.Status.PAGO_E_CAPTURADO;
+        Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(cieloPaymentStatus);
 
-        org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
+        org.apache.log4j.MDC.put("cieloPaymentStatus", paymentStatus.toString() + "(" +cieloPaymentStatus + ")");
 
         if (paymentStatus.isSuccess()) {
 
-            //SE FOR PAGO E CAPTURADO, HOUVE UM ERRO NAS DEFINICOES DA SUPERPAY, MAS FOI FEITO O PAGAMENTO
             if (Payment.Status.PAGO_E_CAPTURADO.equals(paymentStatus)) {
                 log.warn("Pedido retornou como PAGO E CAPTURADO, mas o correto seria PAGO E 'NÃO' CAPTURADO.");
             }
 
-            //SE TRANSACAO JA PAGA, ESTAMOS TENTANDO EFETUAR O PAGAMENTO DE UM PEDIDO JA PAGO ANTERIORMENTE
             if (Payment.Status.TRANSACAO_JA_PAGA.equals(paymentStatus)) {
                 log.warn("Pedido retornou como TRANSACAO JA PAGA, possível tentativa de pagamento em duplicidade.");
             }
 
             ChargeResponse<Object> response = new ChargeResponse<>(result);
             response.setResponseCode(paymentStatus.getResponseCode());
-
             return response;
 
         } else {

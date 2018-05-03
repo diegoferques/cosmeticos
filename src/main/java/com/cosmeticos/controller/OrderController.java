@@ -3,7 +3,6 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -51,7 +50,7 @@ public class OrderController {
 
                 orderService.validateCreate(request.getOrder());
 
-                Order order = orderService.create(request);
+                Order order = orderService.create(request.getOrder());
 
                 MDC.put("newStatus", String.valueOf(order.getStatus()));
 
@@ -124,7 +123,7 @@ public class OrderController {
                     orderService.validateUpdate(request.getOrder());
                 }
 
-                Order order = orderService.update(request);
+                Order order = orderService.update(request.getOrder());
 
 
                 MDC.put("idCustomer", String.valueOf(order.getIdCustomer().getIdCustomer()));

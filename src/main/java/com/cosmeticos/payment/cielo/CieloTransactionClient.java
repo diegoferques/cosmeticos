@@ -1,14 +1,13 @@
-package com.cosmeticos.cielo;
+package com.cosmeticos.payment.cielo;
 
-import com.cosmeticos.cielo.model.AuthorizeAndTokenRequest;
-import com.cosmeticos.cielo.model.AuthorizeAndTokenResponse;
-import com.cosmeticos.cielo.model.CaptureResponse;
+import com.cosmeticos.payment.cielo.model.AuthorizeAndTokenRequest;
+import com.cosmeticos.payment.cielo.model.AuthorizeAndTokenResponse;
+import com.cosmeticos.payment.cielo.model.CaptureResponse;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @FeignClient(value = "cieloTransactionClient", url = "${creditcard.gw.transaction.url}")

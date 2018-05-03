@@ -1,12 +1,10 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.Balance;
 import com.cosmeticos.model.BalanceItem;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.repository.BalanceItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,6 @@
 package com.cosmeticos.validation;
 
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.model.Exception;
 import lombok.Data;
 
 import javax.persistence.EnumType;

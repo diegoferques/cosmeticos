@@ -1,11 +1,10 @@
 package com.cosmeticos.validation;
 
+import com.cosmeticos.commons.ResponseCode;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.cosmeticos.commons.ResponseCode;
-
-import lombok.Data;
 
 /**
  * Created by matto on 27/07/2017.

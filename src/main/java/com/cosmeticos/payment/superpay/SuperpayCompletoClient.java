@@ -1,4 +1,4 @@
-package com.cosmeticos.payment;
+package com.cosmeticos.payment.superpay;
 
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.superpay.ws.completo.*;

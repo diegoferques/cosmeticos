@@ -1,5 +1,5 @@
 
-package com.cosmeticos.cielo.model;
+package com.cosmeticos.payment.cielo.model;
 
 
 import lombok.Builder;
@@ -32,7 +32,7 @@ public class CieloCreditCard {
     /**
      * Booleano 	— 	Opcional (Default false) 	Booleano que identifica se o cartão será salvo para gerar o CardToken.
      */
-    public String saveCard;
+    public Boolean saveCard;
 
     /**
      * Texto 	Obrigatorio 	Bandeira do cartão (Visa / Master / Amex / Elo / Aura / JCB / Diners / Discover / Hipercard).

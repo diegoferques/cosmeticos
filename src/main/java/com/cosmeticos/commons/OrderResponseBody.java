@@ -1,15 +1,14 @@
 package com.cosmeticos.commons;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.cosmeticos.model.Order;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by matto on 17/06/2017.

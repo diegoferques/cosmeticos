@@ -1,6 +1,5 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.PriceRule;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.repository.PriceRuleRepository;

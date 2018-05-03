@@ -1,9 +1,7 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
 import com.cosmeticos.model.Vote;
-import com.cosmeticos.repository.OrderRepository;
 import com.cosmeticos.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

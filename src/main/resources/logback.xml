@@ -87,7 +87,7 @@
     </logger>
 
     <!-- Loga o request http do PegasusClient na integra. -->
-    <logger name="com.cosmeticos.cielo.CieloTransactionClient" additivity="false">
+    <logger name="com.cosmeticos.payment.cielo.CieloTransactionClient" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="HTTP_WIRE" />
         <appender-ref ref="CONSOLE" />

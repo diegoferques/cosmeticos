@@ -1,9 +1,6 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
-import com.cosmeticos.commons.ProfessionalRequestBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.commons.RoleResponseBody;
 import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.ChargeRequest;
@@ -17,11 +14,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import java.util.Optional;
 

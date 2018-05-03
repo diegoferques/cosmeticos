@@ -2,7 +2,6 @@ package com.cosmeticos.repository;
 
 import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Payment;
-import com.cosmeticos.payment.Charger;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;

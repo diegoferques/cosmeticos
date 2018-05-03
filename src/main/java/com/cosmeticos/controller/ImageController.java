@@ -1,13 +1,8 @@
 package com.cosmeticos.controller;
 
-import com.cosmeticos.commons.AddressResponseBody;
-import com.cosmeticos.commons.CategoryResponseBody;
 import com.cosmeticos.commons.ImageResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.Category;
 import com.cosmeticos.model.Image;
-import com.cosmeticos.service.AddressService;
 import com.cosmeticos.service.ImageService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;

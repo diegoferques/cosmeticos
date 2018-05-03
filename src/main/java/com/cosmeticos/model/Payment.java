@@ -2,13 +2,11 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.ResponseJsonView;
-import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
-import javax.validation.Constraint;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Arrays;

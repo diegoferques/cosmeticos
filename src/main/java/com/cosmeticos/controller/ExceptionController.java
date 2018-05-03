@@ -2,24 +2,19 @@ package com.cosmeticos.controller;
 
 import com.cosmeticos.commons.ExceptionRequestBody;
 import com.cosmeticos.commons.ExceptionResponseBody;
-import com.cosmeticos.commons.RoleRequestBody;
-import com.cosmeticos.commons.RoleResponseBody;
 import com.cosmeticos.model.Exception;
-import com.cosmeticos.model.Role;
 import com.cosmeticos.repository.ExceptionRepository;
 import com.cosmeticos.service.ExceptionService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.http.HttpEntity;
-
 
 import javax.validation.Valid;
 import java.util.List;

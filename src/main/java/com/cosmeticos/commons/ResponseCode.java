@@ -1,8 +1,7 @@
 package com.cosmeticos.commons;
 
-import org.springframework.http.HttpStatus;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.http.HttpStatus;
 
 /**
  * Classe criada para retornar no request http para informar detalhes sobre a requisicao feita pelo cliente.

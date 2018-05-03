@@ -2,8 +2,8 @@ package com.cosmeticos.payment.superpay.client.rest.model;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data

@@ -1,7 +1,6 @@
 package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Order;
-import com.cosmeticos.model.PriceRule;
 import lombok.Data;
 
 /**

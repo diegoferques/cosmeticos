@@ -1,12 +1,11 @@
 
-package com.cosmeticos.cielo.model;
+package com.cosmeticos.payment.cielo.model;
 
-import lombok.Builder;
+
 import lombok.Data;
 
-@Builder
 @Data
-public class CieloAddress {
+public class DeliveryAddress {
 
     public String street;
     public String number;
