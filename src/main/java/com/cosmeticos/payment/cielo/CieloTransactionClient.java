@@ -1,13 +1,22 @@
 package com.cosmeticos.payment.cielo;
 
-import com.cosmeticos.payment.cielo.model.AuthorizeAndTokenRequest;
-import com.cosmeticos.payment.cielo.model.AuthorizeAndTokenResponse;
-import com.cosmeticos.payment.cielo.model.CaptureResponse;
+import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.payment.cielo.model.*;
+import com.cosmeticos.validation.OrderException;
+import com.cosmeticos.validation.OrderValidationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Response;
+import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
+import java.util.List;
+
+import static feign.FeignException.errorStatus;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @FeignClient(value = "cieloTransactionClient", url = "${creditcard.gw.transaction.url}")
@@ -63,4 +72,31 @@ public interface CieloTransactionClient {
             @RequestHeader(value = "requestId", required = false) String requestId,
             @PathVariable(value = "PaymentId") String paymentId
     );
+
+
+    @Slf4j
+    class IprettyErrorDecoder implements ErrorDecoder {
+
+        @Override
+        public Exception decode(String methodKey, Response response) {
+
+            try {
+                CieloApiErrorResponseBody cieloResponse = readResponse(response);
+
+                CieloApiErrorCode cieloApiErrorCode = CieloApiErrorCode.from(cieloResponse.getCode());
+
+                return new OrderException(cieloApiErrorCode, cieloResponse, "Payment Failure");
+            } catch (IOException e) {
+                return new OrderValidationException(ResponseCode.GATEWAY_FAILURE, e);
+            }
+            //return errorStatus(methodKey, response);
+        }
+
+        private CieloApiErrorResponseBody readResponse(Response response) throws IOException {
+            byte[] body = response.request().body();
+            List<CieloApiErrorResponseBody> responseBodies = new ObjectMapper().readValue(body, List.class);
+
+            return responseBodies.get(0);
+        }
+    }
 }

@@ -13,7 +13,9 @@ import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.secure.spi.IntegrationException;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.Exception;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -89,8 +92,8 @@ public class CieloOneClickPaymentService implements Charger{
 
         ChargeResponse<Object> chargeResponse = new ChargeResponse<>(result);
 
-        return chargeResponse;*/
-return null;
+        */
+        throw new UnsupportedOperationException("Nao faremos add card em passos separados. O cartao sera salvo na primeira compra.");
     }
 
     private String findPersistentUserEmail(Long idCustomer) {
@@ -153,9 +156,16 @@ return null;
                 .payment(cieloPayment)
                 .build();
 
-        AuthorizeAndTokenResponse authorizeResponse = cieloTransactionClient.reserve(null, authorizeAndTokenRequest);
+        try {
+            AuthorizeAndTokenResponse authorizeResponse = cieloTransactionClient.reserve(null, authorizeAndTokenRequest);
 
-        return buildResponse(authorizeResponse);
+            return buildResponse(authorizeResponse);
+        } catch (FeignException e) {
+
+            org.apache.log4j.MDC.put("cieloHttpStatus", e.status());
+
+            throw new OrderValidationException(CieloApiErrorCode"Falha na integracao de RESERVE com a Cielo", e);
+        }
     }
 
     private ChargeResponse<Object> buildResponse(AuthorizeAndTokenResponse result) {
