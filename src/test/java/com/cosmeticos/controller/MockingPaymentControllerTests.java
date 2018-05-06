@@ -3,7 +3,6 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
 import com.cosmeticos.commons.CustomerResponseBody;
-import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
@@ -38,7 +37,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 
@@ -469,15 +467,10 @@ public class MockingPaymentControllerTests {
         Order orderAccepted = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderAccepted.setStatus(Order.Status.ACCEPTED);
-        OrderRequestBody orderRequestAccepted = new OrderRequestBody();
-        orderRequestAccepted.setOrder(orderAccepted);
-
-
-
 
 
         // TODO: apontar pro controller em vez do service.
-        Order orderAcceptedUpdated = orderService.update(orderRequestAccepted);
+        Order orderAcceptedUpdated = orderService.update(orderAccepted);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderAcceptedUpdated);
         Assert.assertEquals(Order.Status.ACCEPTED, orderAcceptedUpdated.getStatus());
@@ -487,10 +480,8 @@ public class MockingPaymentControllerTests {
         Order orderInProgress = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderInProgress.setStatus(Order.Status.INPROGRESS);
-        OrderRequestBody orderRequestInProgress = new OrderRequestBody();
-        orderRequestInProgress.setOrder(orderInProgress);
 
-        Order orderInProgressUpdated = orderService.update(orderRequestInProgress);
+        Order orderInProgressUpdated = orderService.update(orderInProgress);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderInProgressUpdated);
         Assert.assertEquals(Order.Status.INPROGRESS, orderInProgressUpdated.getStatus());
@@ -500,10 +491,8 @@ public class MockingPaymentControllerTests {
         Order orderExecuted = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderExecuted.setStatus(Order.Status.EXECUTED);
-        OrderRequestBody orderRequestExecuted = new OrderRequestBody();
-        orderRequestExecuted.setOrder(orderExecuted);
 
-        Order orderExecutedUpdated = orderService.update(orderRequestExecuted);
+        Order orderExecutedUpdated = orderService.update(orderExecuted);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderExecutedUpdated);
         Assert.assertEquals(Order.Status.EXECUTED, orderExecutedUpdated.getStatus());
@@ -514,10 +503,8 @@ public class MockingPaymentControllerTests {
         Order orderReady2Charge = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderReady2Charge.setStatus(Order.Status.READY2CHARGE);
-        OrderRequestBody orderRequestReady2Charge = new OrderRequestBody();
-        orderRequestReady2Charge.setOrder(orderReady2Charge);
 
-        Order orderReady2ChargeUpdated = orderService.update(orderRequestReady2Charge);
+        Order orderReady2ChargeUpdated = orderService.update(orderReady2Charge);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderReady2ChargeUpdated);
         Assert.assertEquals(Order.Status.READY2CHARGE, orderReady2ChargeUpdated.getStatus());

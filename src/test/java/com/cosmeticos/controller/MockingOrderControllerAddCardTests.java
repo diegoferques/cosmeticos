@@ -1,16 +1,13 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.MulticlickPaymentService;
-import com.cosmeticos.service.OneClickPaymentService;
-import com.cosmeticos.service.OrderService;
+import com.cosmeticos.service.SuperpayOneClickPaymentService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +18,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.lang.Exception;
 import java.net.URI;
 import java.sql.Timestamp;
@@ -45,7 +44,7 @@ public class MockingOrderControllerAddCardTests {
     private TestRestTemplate testRestTemplate;
 
     @MockBean
-    OneClickPaymentService oneClickPaymentService;
+    SuperpayOneClickPaymentService oneClickPaymentService;
 
     @Autowired
     private CustomerRepository customerRepository;

@@ -3,11 +3,13 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.PriceRule;
+import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OneClickPaymentService;
 import com.cosmeticos.service.OrderService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,14 +25,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.Exception;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import static java.time.LocalDateTime.now;
 
 /**
  * Card que originou esta classe https://trello.com/c/v676aMHw

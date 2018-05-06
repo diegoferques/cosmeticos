@@ -6,12 +6,12 @@ import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.SuperpayCompletoClient;
-import com.cosmeticos.payment.SuperpayOneClickClient;
+import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
+import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OneClickPaymentService;
 import com.cosmeticos.service.RandomCode;
+import com.cosmeticos.service.SuperpayOneClickPaymentService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,6 @@ import java.lang.Exception;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,13 +63,13 @@ public class MockingOrderController4OneClickWhereOneclickCardAlreadyAddedTests {
     private CreditCardRepository creditcardRepository;
 
     @Autowired
-    private OneClickPaymentService charger;
+    private SuperpayOneClickPaymentService charger;
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @MockBean
-    private OneClickPaymentService oneClickPaymentService;
+    private SuperpayOneClickPaymentService oneClickPaymentService;
 
     @MockBean
     private SuperpayOneClickClient oneClickClient;

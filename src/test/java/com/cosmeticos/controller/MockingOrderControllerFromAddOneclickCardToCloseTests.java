@@ -1,15 +1,18 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.*;
+import com.cosmeticos.commons.CreditCardResponseBody;
+import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.SuperpayCompletoClient;
-import com.cosmeticos.payment.SuperpayOneClickClient;
+import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
+import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OneClickPaymentService;
 import com.cosmeticos.service.RandomCode;
+import com.cosmeticos.service.SuperpayOneClickPaymentService;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,7 +69,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
     private CreditCardRepository creditcardRepository;
 
     @MockBean
-    private OneClickPaymentService charger;
+    private SuperpayOneClickPaymentService charger;
 
     private Customer c1;
     private Professional professional;

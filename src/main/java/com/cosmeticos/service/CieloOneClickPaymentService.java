@@ -1,35 +1,23 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
-import com.cosmeticos.payment.*;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.cielo.CieloTransactionClient;
 import com.cosmeticos.payment.cielo.model.*;
-import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
-import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
-import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
-import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.secure.spi.IntegrationException;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.Exception;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
 
 /**
  * Created by matto on 08/08/2017.
@@ -164,7 +152,7 @@ public class CieloOneClickPaymentService implements Charger{
 
             org.apache.log4j.MDC.put("cieloHttpStatus", e.status());
 
-            throw new OrderValidationException(CieloApiErrorCode"Falha na integracao de RESERVE com a Cielo", e);
+            throw new OrderValidationException(ResponseCode.GATEWAY_FAILURE, "Falha na integracao de RESERVE com a Cielo", e);
         }
     }
 
@@ -197,112 +185,12 @@ public class CieloOneClickPaymentService implements Charger{
 
     @Override
     public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
-        // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
-
-        Payment receivedPayment = chargeRequest.getBody();
-
-        Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
-
-        Order persistentOrder = persistentPayment.getOrder();
-
-        Customer persistentCustomer = persistentOrder.getIdCustomer();
-
-        User persistentUser = persistentCustomer.getUser();
-
-        Optional<CreditCard> optionalcc = persistentUser.getCreditCardCollection()
-                .stream()
-                .findFirst();
-
-        if(optionalcc.isPresent()) {
-            CreditCard creditCard = optionalcc.get();
-
-            String nomeTitularCarttaoCredito = creditCard.getOwnerName();
-
-            // TODO: incluir  a url verdadeira
-            String urlCampainha = "http://ngrok/campainha/superpay";
-            Long valor = receivedPayment.getPriceRule().getPrice();
-            String codigoSeguranca = creditCard.getSecurityCode();
-            String ip = httpServletRequest.getRemoteAddr();
-            Long numeroTransacao = Long.valueOf(persistentPayment.getExternalTransactionId());
-            int parcelas = persistentOrder.getPaymentCollection().size();
-            SuperpayFormaPagamento codigoFormaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
-            //String dataValidadeCartao = String.valueOf(creditCard.getExpirationDate());
-            //String urlRedirecionamentoNaoPago = "urlRedirecionamentoNaoPago.com";
-            //String urlRedirecionamentoPago = "urlRedirecionamentoPago.com";
-            //long valorDesconto = 10L;
-            //String origemTransacao = "ORIGEM";
-            //int idioma = 1;
-
-            MDC.put("superpayNumeroTransacao", String.valueOf(numeroTransacao));
-
-            /*
-            Existem duas classes com o mesmo nome nos dois wsdls da superpay. Como usamos as duas (oneclick e completo),
-            precisamos dar o qualified name da classe que queremos usar.
-             */
-            com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS result = completoClient.capturePayment(
-                    codigoSeguranca,
-                    ip,
-                    nomeTitularCarttaoCredito,
-                    valor,
-                    urlCampainha,
-                    numeroTransacao,
-                    parcelas, codigoFormaPagamento);
-
-            if(mockCaptureResponse != null)
-            {
-                log.warn("Estamos falsificando a resposta do superpay CAPTURE para fins de testes.");
-                result.setStatusTransacao(mockReserveResponse);
-            }
-
-            MDC.put("superpayStatusStransacao", String.valueOf(result.getStatusTransacao()));
-            MDC.put("superpayMensagemVenda", result.getMensagemVenda());
-
-            ChargeResponse<Object> response = new ChargeResponse<>(result);
-
-
-           /* response.setResponseCode(Payment.Status.fromSuperpayStatus(
-                    result.getStatusTransacao())
-                    .getResponseCode()
-            );*/
-            response.setResponseCode(Payment.Status.PAGO_E_CAPTURADO.getResponseCode());
-
-            return response;
-        }
-        else
-        {
-            throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE, "Usuario nao possui mais cartao. " +
-                    "Verifique se no meio do processo de contratação do profissional ele descadastrou seu cartao de credito");
-        }
+        throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
     public ChargeResponse<Object> getStatus(ChargeRequest<Payment> chargeRequest) {
-        // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
-        Order order = chargeRequest.getBody().getOrder();
-
-        CreditCard creditCard = order.getCreditCardCollection().stream().findFirst().get();
-        Customer customer = order.getIdCustomer();
-        User user = customer.getUser();
-
-        Payment payment = (Payment) order.getPaymentCollection();
-        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
-
-
-        String dataValidadeCartao = creditCard.getExpirationDate();
-        String emailComprador = user.getEmail();
-        String nomeTitularCartaoCredito = creditCard.getOwnerName();
-        String numeroCartaoCredito = creditCard.getSuffix();
-        String token = creditCard.getToken();
-
-        DadosCadastroPagamentoOneClickWS result = (oneClickClient.readCard(
-                dataValidadeCartao,
-                emailComprador,
-                formaPagamento,
-                nomeTitularCartaoCredito,
-                numeroCartaoCredito,
-                token));
-
-        return new ChargeResponse<Object>(result);
+        throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     // TODO avaliar se as classes concretas realmente devem implementar isso pra expor ou se isso fica de reposabilidade de cada classe concreta.

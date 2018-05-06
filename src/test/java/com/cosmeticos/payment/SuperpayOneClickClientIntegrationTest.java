@@ -1,6 +1,7 @@
 package com.cosmeticos.payment;
 
 import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
 import com.cosmeticos.payment.superpay.ws.oneclick.ResultadoPagamentoWS;
 import org.junit.Ignore;

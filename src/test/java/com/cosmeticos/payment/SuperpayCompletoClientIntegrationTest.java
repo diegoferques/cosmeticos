@@ -2,6 +2,7 @@ package com.cosmeticos.payment;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
+import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
 import com.cosmeticos.payment.superpay.ws.completo.CapturarTransacaoCompletaResponse;
 import com.cosmeticos.payment.superpay.ws.completo.ObjectFactory;
 import com.cosmeticos.payment.superpay.ws.completo.ResultadoPagamentoWS;

@@ -4,6 +4,9 @@ import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.payment.cielo.model.*;
 import com.cosmeticos.validation.OrderException;
 import com.cosmeticos.validation.OrderValidationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -14,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static feign.FeignException.errorStatus;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
-@FeignClient(value = "cieloTransactionClient", url = "${creditcard.gw.transaction.url}")
+@FeignClient(value = "cieloTransactionClient", url = "${creditcard.gw.transaction.url}", configuration = CieloTransactionClient.IprettyErrorDecoder.class)
 public interface CieloTransactionClient {
 
     /**
@@ -29,9 +36,8 @@ public interface CieloTransactionClient {
      * @return
      */
     @RequestMapping(
-            method = PUT,
-            //value = "/1/sales",
-            value = "/5ae739fa2f00007600f05a01",
+            method = POST,
+            value = "/1/sales",
             headers = {
 
                     /**
@@ -53,8 +59,7 @@ public interface CieloTransactionClient {
 
     @RequestMapping(
             method = PUT,
-            //value = "/1/sales/{PaymentId}/capture",
-            value = "/5ae772ed2f00001000f05a9a",
+            value = "/1/sales/{PaymentId}/capture",
             headers = {
 
                     /**
@@ -93,8 +98,12 @@ public interface CieloTransactionClient {
         }
 
         private CieloApiErrorResponseBody readResponse(Response response) throws IOException {
-            byte[] body = response.request().body();
-            List<CieloApiErrorResponseBody> responseBodies = new ObjectMapper().readValue(body, List.class);
+            InputStream body = response.body().asInputStream();
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+            List<CieloApiErrorResponseBody> responseBodies = mapper.readValue(body, new TypeReference<ArrayList<CieloApiErrorResponseBody>>() {} );
 
             return responseBodies.get(0);
         }
