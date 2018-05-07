@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,6 +39,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpResponse.response;
 
 /**
  * Testa um novo pedido sendo criado pra um cliente que ja fez um pedido outro dia, oportunidade na qual também registrou um cartao
@@ -81,6 +85,8 @@ public class MockingOrderController4OneClickWhereOneclickCardAlreadyAddedTests {
     private Professional professional;
     private ProfessionalCategory ps1;
     private PriceRule priceRule;
+
+    private ClientAndServer mockServer;
 
     @Before
     public void setup() throws ParseException {
@@ -163,6 +169,25 @@ public class MockingOrderController4OneClickWhereOneclickCardAlreadyAddedTests {
 
     @Test
     public void testOpenSecondOrderUsingOneclickCardRegisteredAtTheFirstOpenedOrder() throws Exception {
+
+        mockServer = startClientAndServer(9000);
+        mockServer.when(HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/1/card")
+                .withHeader("merchantId","1234")
+                .withHeader("merchantKey","abcd"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("{\n" +
+                                "  \"CardToken\": \"tokenFake\",\n" +
+                                "  \"Links\": {\n" +
+                                "    \"Method\": \"GET\",\n" +
+                                "    \"Rel\": \"self\",\n" +
+                                "    \"Href\": \"https://apiquerydev.cieloecommerce.cielo.com.br/1/card/db62dc71-d07b-4745-9969-42697b988ccb\"}\n" +
+                                "}"));
+
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // Criaremos uma order nova com registro de cartao oneclick, cancelaremos ela, e iniciaremos //
@@ -253,6 +278,8 @@ public class MockingOrderController4OneClickWhereOneclickCardAlreadyAddedTests {
         Order secondOrder = exchange2ndOrder.getBody().getOrderList().get(0);
 
         Assert.assertEquals(Order.Status.OPEN, secondOrder.getStatus());
+
+        mockServer.stop();
     }
 
     private ResponseEntity<OrderResponseBody> post(String json) throws URISyntaxException {

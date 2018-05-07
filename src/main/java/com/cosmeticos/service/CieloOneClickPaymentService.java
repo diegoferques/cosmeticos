@@ -54,7 +54,7 @@ public class CieloOneClickPaymentService implements Charger{
 
         CieloAddCardResponseBody cieloAddCardResponseBody = cieloTransactionClient.addCard(addCardRequestBody);
 
-        ChargeResponse<Object> chargeResponse = new ChargeResponse<>(cieloAddCardResponseBody);
+        ChargeResponse<Object> chargeResponse = new ChargeResponse<>(cieloAddCardResponseBody.getToken());
 
         return chargeResponse;
 
@@ -73,7 +73,14 @@ public class CieloOneClickPaymentService implements Charger{
 
         Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
 
-        CreditCard creditCard = persistentPayment.getCreditCard();
+        CreditCard creditCard = persistentPayment
+                .getOrder()
+                .getIdCustomer()
+                .getUser()
+                .getCreditCardCollection()
+                .stream()
+                .findFirst()
+                .get();
 
         Order persistentOrder = persistentPayment.getOrder();
 

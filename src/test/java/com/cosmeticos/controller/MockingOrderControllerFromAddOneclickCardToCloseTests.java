@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,6 +37,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.time.LocalDateTime.now;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpResponse.response;
 
 /**
  * Created by matto on 28/06/2017.
@@ -75,6 +79,8 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
     private Professional professional;
     private ProfessionalCategory ps1;
     private PriceRule priceRule;
+
+    private ClientAndServer mockServer;
 
     @Before
     public void setup() throws ParseException {
@@ -157,6 +163,81 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
     @Test
     public void testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard() throws Exception {
+
+        mockServer = startClientAndServer(9000);
+        mockServer.when(HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/1/card")
+                .withHeader("merchantId","1234")
+                .withHeader("merchantKey","abcd"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("{\n" +
+                                "  \"CardToken\": \"tokenFake\",\n" +
+                                "  \"Links\": {\n" +
+                                "    \"Method\": \"GET\",\n" +
+                                "    \"Rel\": \"self\",\n" +
+                                "    \"Href\": \"https://apiquerydev.cieloecommerce.cielo.com.br/1/card/db62dc71-d07b-4745-9969-42697b988ccb\"}\n" +
+                                "}"));
+
+        mockServer.when(HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/1/sales")
+                .withHeader("merchantId","1234")
+                .withHeader("merchantKey","abcd"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("{\n" +
+                                "    \"MerchantOrderId\": \"2014111706\",\n" +
+                                "    \"Customer\": {\n" +
+                                "        \"Name\": \"Comprador crédito simples\"\n" +
+                                "    },\n" +
+                                "    \"Payment\": {\n" +
+                                "        \"ServiceTaxAmount\": 0,\n" +
+                                "        \"Installments\": 1,\n" +
+                                "        \"Interest\": \"ByMerchant\",\n" +
+                                "        \"Capture\": false,\n" +
+                                "        \"Authenticate\": false,\n" +
+                                "        \"CreditCard\": {\n" +
+                                "            \"CardNumber\": \"455187******0183\",\n" +
+                                "            \"Holder\": \"Teste Holder\",\n" +
+                                "            \"ExpirationDate\": \"12/2030\",\n" +
+                                "            \"SaveCard\": false,\n" +
+                                "            \"Brand\": \"Visa\"\n" +
+                                "        },\n" +
+                                "        \"ProofOfSale\": \"674532\",\n" +
+                                "        \"Tid\": \"0305023644309\",\n" +
+                                "        \"AuthorizationCode\": \"123456\",\n" +
+                                "        \"PaymentId\": \"24bc8366-fc31-4d6c-8555-17049a836a07\",\n" +
+                                "        \"Type\": \"CreditCard\",\n" +
+                                "        \"Amount\": 15700,\n" +
+                                "        \"Currency\": \"BRL\",\n" +
+                                "        \"Country\": \"BRA\",\n" +
+                                "        \"ExtraDataCollection\": [],\n" +
+                                "        \"Status\": 1,\n" +
+                                "        \"ReturnCode\": \"4\",\n" +
+                                "        \"ReturnMessage\": \"Operation Successful\",\n" +
+                                "        \"Links\": [\n" +
+                                "            {\n" +
+                                "                \"Method\": \"GET\",\n" +
+                                "                \"Rel\": \"self\",\n" +
+                                "                \"Href\": \"https://apiquerysandbox.cieloecommerce.cielo.com.br/1/sales/{PaymentId}\"\n" +
+                                "            },\n" +
+                                "            {\n" +
+                                "                \"Method\": \"PUT\",\n" +
+                                "                \"Rel\": \"capture\",\n" +
+                                "                \"Href\": \"https://apisandbox.cieloecommerce.cielo.com.br/1/sales/{PaymentId}/capture\"\n" +
+                                "            },\n" +
+                                "            {\n" +
+                                "                \"Method\": \"PUT\",\n" +
+                                "                \"Rel\": \"void\",\n" +
+                                "                \"Href\": \"https://apisandbox.cieloecommerce.cielo.com.br/1/sales/{PaymentId}/void\"\n" +
+                                "            }\n" +
+                                "        ]\n" +
+                                "    }\n" +
+                                "}"));
 
 
 
@@ -266,6 +347,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
         updateToReady2chargee(orderId);
 
+        mockServer.stop();
     }
 
     ResponseEntity<OrderResponseBody> postOrder(String json) throws URISyntaxException {

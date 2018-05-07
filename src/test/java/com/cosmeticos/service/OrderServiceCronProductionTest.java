@@ -22,6 +22,6 @@ public class OrderServiceCronProductionTest {
 
     @Test
     public void test() {
-        Assert.assertEquals("0 0 9 * * ? ", cron);
+        Assert.assertEquals("0 0/10 * * * ?", cron);
     }
 }
