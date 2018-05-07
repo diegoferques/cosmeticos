@@ -1,6 +1,7 @@
 package com.cosmeticos.payment.cielo;
 
 import com.cosmeticos.commons.ResponseCode;
+import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.cielo.model.*;
 import com.cosmeticos.validation.OrderException;
 import com.cosmeticos.validation.OrderValidationException;
@@ -77,6 +78,25 @@ public interface CieloTransactionClient {
             @RequestHeader(value = "requestId", required = false) String requestId,
             @PathVariable(value = "PaymentId") String paymentId
     );
+
+
+    @RequestMapping(
+            method = POST,
+            value = "/1/card",
+            headers = {
+
+                    /**
+                     * Guid     Obrigatorio   Identificador da loja na Cielo.
+                     */
+                    "merchantId=${creditcard.gw.merchantid}",
+
+                    /**
+                     * Texto 	Obrigatorio 	Chave Publica para Autenticação Dupla na Cielo.
+                     */
+                    "merchantKey=${creditcard.gw.merchantKey}"
+            }
+    )
+    CieloAddCardResponseBody addCard(CieloAddCardRequestBody body);
 
 
     @Slf4j

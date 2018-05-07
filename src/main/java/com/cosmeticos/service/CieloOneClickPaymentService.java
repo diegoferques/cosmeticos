@@ -13,10 +13,8 @@ import com.cosmeticos.validation.OrderValidationException;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 
 /**
@@ -33,34 +31,10 @@ public class CieloOneClickPaymentService implements Charger{
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
-
-    @Autowired
     private CustomerRepository customerRepository;
-
-    /**
-     * Feito pq em dev, usando h2, o id de payment, usado como numeroTransacao, se repete toda vez q a aplicacao eh iniciada.
-     */
-    @Value("${superpay.numerotransacao.fake:false}")
-    private Boolean fakeNumeroTransacao;
-
-    //@Value("${superpay.mock.reserve.response}")
-    private Integer mockReserveResponse;
-
-    //@Value("${superpay.mock.capture.response}")
-    private Integer mockCaptureResponse;
 
     @Override
     public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
-
-
-
-
-/*
-
-        Order order = chargeRequest.getBody().getOrder();
-
-        String emailComprador = findPersistentUserEmail(order.getIdCustomer().getIdCustomer());
 
         Payment payment = chargeRequest.getBody();
 
@@ -69,19 +43,21 @@ public class CieloOneClickPaymentService implements Charger{
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getNumber();
         String dataValidadeCartao = creditCard.getExpirationDate();
+        String brand = creditCard.getVendor();
 
-        SuperpayFormaPagamento formaPagamento = SuperpayFormaPagamento.valueOf(creditCard.getVendor());
+        CieloAddCardRequestBody addCardRequestBody = CieloAddCardRequestBody.builder()
+            .cardNumber(numeroCartaoCredito)
+            .brand(brand)
+            .customerName(nomeTitularCartaoCredito)
+            .expirationDate(dataValidadeCartao)
+            .build();
 
-        String result = oneClickClient.addCard(dataValidadeCartao,
-                emailComprador,
-                formaPagamento,
-                nomeTitularCartaoCredito,
-                numeroCartaoCredito);
+        CieloAddCardResponseBody cieloAddCardResponseBody = cieloTransactionClient.addCard(addCardRequestBody);
 
-        ChargeResponse<Object> chargeResponse = new ChargeResponse<>(result);
+        ChargeResponse<Object> chargeResponse = new ChargeResponse<>(cieloAddCardResponseBody);
 
-        */
-        throw new UnsupportedOperationException("Nao faremos add card em passos separados. O cartao sera salvo na primeira compra.");
+        return chargeResponse;
+
     }
 
     private String findPersistentUserEmail(Long idCustomer) {
