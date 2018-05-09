@@ -168,7 +168,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         mockServer.when(HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/1/card")
-                .withHeader("merchantId","1234")
+                .withHeader("merchantId","873a9a0d-07dd-44a0-ae9d-c935061b9678")
                 .withHeader("merchantKey","abcd"))
                 .respond(response()
                         .withStatusCode(200)
@@ -184,7 +184,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         mockServer.when(HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/1/sales")
-                .withHeader("merchantId","1234")
+                .withHeader("merchantId","873a9a0d-07dd-44a0-ae9d-c935061b9678")
                 .withHeader("merchantKey","abcd"))
                 .respond(response()
                         .withStatusCode(200)
@@ -237,6 +237,32 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                                 "            }\n" +
                                 "        ]\n" +
                                 "    }\n" +
+                                "}"));
+
+        mockServer.when(HttpRequest.request()
+                .withMethod("PUT")
+                .withPath("/1/sales/24bc8366-fc31-4d6c-8555-17049a836a07/capture")
+                .withHeader("merchantId","873a9a0d-07dd-44a0-ae9d-c935061b9678")
+                .withHeader("merchantKey","abcd"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("{\n" +
+                                "    \"Status\": 2,\n" +
+                                "    \"ReturnCode\": \"6\",\n" +
+                                "    \"ReturnMessage\": \"Operation Successful\",\n" +
+                                "    \"Links\": [\n" +
+                                "        {\n" +
+                                "            \"Method\": \"GET\",\n" +
+                                "            \"Rel\": \"self\",\n" +
+                                "            \"Href\": \"https://apiquerysandbox.cieloecommerce.cielo.com.br/1/sales/{PaymentId}\"\n" +
+                                "        },\n" +
+                                "        {\n" +
+                                "            \"Method\": \"PUT\",\n" +
+                                "            \"Rel\": \"void\",\n" +
+                                "            \"Href\": \"https://apisandbox.cieloecommerce.cielo.com.br/1/sales/{PaymentId}/void\"\n" +
+                                "        }\n" +
+                                "    ]\n" +
                                 "}"));
 
 

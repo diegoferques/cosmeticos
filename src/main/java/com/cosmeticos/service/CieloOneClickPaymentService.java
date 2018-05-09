@@ -12,6 +12,7 @@ import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,7 @@ public class CieloOneClickPaymentService implements Charger{
                 .brand(creditCard.getVendor())
                 .cardNumber(creditCard.getNumber())
                 .expirationDate(creditCard.getExpirationDate())
-                .saveCard(true)
+                .saveCard(false) // Registramos o cartão numa etapa anterior.
                 .securityCode(creditCard.getSecurityCode())
                 .holder(creditCard.getOwnerName())
                 .build();
@@ -129,6 +130,12 @@ public class CieloOneClickPaymentService implements Charger{
 
         try {
             AuthorizeAndTokenResponse authorizeResponse = cieloTransactionClient.reserve(null, authorizeAndTokenRequest);
+
+            persistentPayment.setExternalTransactionId(authorizeResponse.getPayment().getPaymentId());
+
+            MDC.put("cieloPaymentId", persistentPayment.getExternalTransactionId());
+
+            paymentRepository.save(persistentPayment);
 
             return buildResponse(authorizeResponse);
         } catch (FeignException e) {
@@ -168,7 +175,15 @@ public class CieloOneClickPaymentService implements Charger{
 
     @Override
     public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+
+        Payment payment = chargeRequest.getBody();
+
+        CieloCaptureResponse captureResponse = cieloTransactionClient.capture(null, payment.getExternalTransactionId());
+
+        ChargeResponse<Object> chargeResponse = new ChargeResponse<>(captureResponse);
+        chargeResponse.setResponseCode(ResponseCode.SUCCESS);
+
+        return chargeResponse;
     }
 
     @Override

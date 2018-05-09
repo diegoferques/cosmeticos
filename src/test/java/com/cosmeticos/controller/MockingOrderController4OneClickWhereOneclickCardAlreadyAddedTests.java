@@ -174,7 +174,7 @@ public class MockingOrderController4OneClickWhereOneclickCardAlreadyAddedTests {
         mockServer.when(HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/1/card")
-                .withHeader("merchantId","1234")
+                .withHeader("merchantId","873a9a0d-07dd-44a0-ae9d-c935061b9678")
                 .withHeader("merchantKey","abcd"))
                 .respond(response()
                         .withStatusCode(200)

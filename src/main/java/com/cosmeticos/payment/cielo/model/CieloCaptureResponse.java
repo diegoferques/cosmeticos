@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CaptureResponse {
+public class CieloCaptureResponse {
 
     @JsonProperty("Status")
     public Integer status;

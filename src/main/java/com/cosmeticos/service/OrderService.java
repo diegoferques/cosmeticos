@@ -186,9 +186,10 @@ public class OrderService {
         /********************************************************/
 
         //Gera numeros de ate 8 digitos
-        validatedPayment.setExternalTransactionId(
-                String.valueOf(System.currentTimeMillis() % 8)
-        );
+        // O externalTransactionId sera informado no response do gateway nomomento do aceite do pedido e gravado em Payment.
+        //validatedPayment.setExternalTransactionId(
+        //        String.valueOf(System.currentTimeMillis() % 8)
+        //);
 
         MDC.put("superpayNumeroTransacao", validatedPayment.getExternalTransactionId());
 

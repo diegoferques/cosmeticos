@@ -16,11 +16,6 @@ import java.util.Optional;
 @Data
 public class Payment implements Serializable {
 
-	/**
-	 * Superpay só permite ate 8 caracteres: http://wiki.superpay.com.br/wikiSuperPay/index.php/Capturar_transação_SOAP
-	 */
-	@Size(max = 8)
-	private String externalTransactionId;
 
 	public enum Type{
 		CC, CASH, BOLETO
@@ -154,6 +149,12 @@ public class Payment implements Serializable {
 	@Transient
 	private CreditCard creditCard;
 
+	/*
+	 * Superpay só permite ate 8 caracteres: http://wiki.superpay.com.br/wikiSuperPay/index.php/Capturar_transação_SOAP
+
+	// Cielo eh string uuid - @Size(max = 8) */
+	private String externalTransactionId;
+
 	public Payment() {
 	}
 
@@ -161,10 +162,12 @@ public class Payment implements Serializable {
 		this.type = type;
 	}
 
+	/*Excluida a verificacao, pois a superapay aceita 8 digitos mas a Cielo, que usamos agora, aceita UUID
 	public String getExternalTransactionId() {
 		return externalTransactionId == null ? String.valueOf(id) : externalTransactionId;
-	}
-
+	}*/
+/*
+ /Excluida a verificacao, pois a superapay aceita 8 digitos mas a Cielo, que usamos agora, aceita UUID
 	public void setExternalTransactionId(String externalTransactionId) {
 		// Superpay só permite ate 8 caracteres: http://wiki.superpay.com.br/wikiSuperPay/index.php/Capturar_transação_SOAP
 		if(String.valueOf(externalTransactionId).length() > 8)
@@ -176,5 +179,5 @@ public class Payment implements Serializable {
 		else{
 			this.externalTransactionId = externalTransactionId;
 		}
-	}
+	}*/
 }

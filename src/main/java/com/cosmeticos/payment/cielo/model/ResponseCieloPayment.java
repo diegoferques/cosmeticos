@@ -39,7 +39,9 @@ public class ResponseCieloPayment {
     /**
      * Campo Identificador do Pedido. 	Guid 	36 	xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
      */
+    @JsonProperty("PaymentId")
     private String paymentId;
+
     private String type;
     private Integer amount;
     private Integer capturedAmount;

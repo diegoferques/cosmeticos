@@ -1,12 +1,10 @@
 package com.cosmeticos.payment.cielo;
 
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.cielo.model.*;
 import com.cosmeticos.validation.OrderException;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
@@ -20,10 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import static feign.FeignException.errorStatus;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
@@ -74,7 +70,7 @@ public interface CieloTransactionClient {
                     "merchantKey=${creditcard.gw.merchantKey}"
             }
     )
-    CaptureResponse capture(
+    CieloCaptureResponse capture(
             @RequestHeader(value = "requestId", required = false) String requestId,
             @PathVariable(value = "PaymentId") String paymentId
     );
@@ -106,15 +102,20 @@ public interface CieloTransactionClient {
         public Exception decode(String methodKey, Response response) {
 
             try {
-                CieloApiErrorResponseBody cieloResponse = readResponse(response);
+                if(response.status() == 404)
+                {
+                    return new OrderValidationException(ResponseCode.PAYMENT_NOT_FOUND, "PaymnetID nao encontrado!");
+                }
+                else {
+                    CieloApiErrorResponseBody cieloResponse = readResponse(response);
 
-                CieloApiErrorCode cieloApiErrorCode = CieloApiErrorCode.from(cieloResponse.getCode());
+                    CieloApiErrorCode cieloApiErrorCode = CieloApiErrorCode.from(cieloResponse.getCode());
 
-                return new OrderException(cieloApiErrorCode, cieloResponse, "Payment Failure");
+                    return new OrderException(cieloApiErrorCode, cieloResponse, "Payment Failure");
+                }
             } catch (IOException e) {
                 return new OrderValidationException(ResponseCode.GATEWAY_FAILURE, e);
             }
-            //return errorStatus(methodKey, response);
         }
 
         private CieloApiErrorResponseBody readResponse(Response response) throws IOException {

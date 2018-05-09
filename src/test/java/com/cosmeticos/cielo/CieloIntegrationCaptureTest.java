@@ -46,7 +46,7 @@ public class CieloIntegrationCaptureTest {
         mockServer.when(HttpRequest.request()
                 .withMethod("PUT")
                 .withPath("/1/sales/1231321/capture")
-                .withHeader("merchantId","1234")
+                .withHeader("merchantId","873a9a0d-07dd-44a0-ae9d-c935061b9678")
                 .withHeader("merchantKey","abcd"))
                 .respond(response()
                         .withStatusCode(200)
@@ -69,7 +69,7 @@ public class CieloIntegrationCaptureTest {
                                 "    ]\n" +
                                 "}"));
 
-        CaptureResponse captureResponse = transactionClient.capture(null, "1231321");
+        CieloCaptureResponse captureResponse = transactionClient.capture(null, "1231321");
 
         Assertions.assertThat(captureResponse.getStatus()).isEqualTo(2);
         Assertions.assertThat(captureResponse.getReturnCode()).isEqualTo("6");
