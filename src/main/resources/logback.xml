@@ -7,7 +7,7 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-           <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
+           <pattern>%d{dd/MM/yyyy HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
        </encoder>
     </appender>
 
@@ -23,7 +23,7 @@
                <logLevel/>
                <loggerName><fieldName>logger</fieldName></loggerName>
                <globalCustomFields><customFields>{"@source_host":"${HOSTNAME}"}</customFields></globalCustomFields>
-               <globalCustomFields><customFields>{"application": "ipretty-backend"}</customFields></globalCustomFields>
+               <globalCustomFields><customFields>{"application": "moviscription"}</customFields></globalCustomFields>
                <mdc />
                <message />
            </providers>
@@ -46,7 +46,7 @@
         </filter>
 
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
+            <pattern>%d{dd/MM/yyyy HH:mm:ss.SSS} %-5level [%logger{36}] - ${mdcPattern} %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH:-./log}/older/error.log.%d{yyyy-MM-dd}
@@ -67,7 +67,7 @@
         </filter>
 
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+            <pattern>%d{dd/MM/yyyy HH:mm:ss.SSS} %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH:-./log}/older/httpwire.log.%d{yyyy-MM-dd}
