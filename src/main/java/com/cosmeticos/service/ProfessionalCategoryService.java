@@ -1,6 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ProfessionalCategoryRequestBody;
+import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.model.User;
@@ -87,7 +88,7 @@ public class ProfessionalCategoryService {
 
     //TODO - VERIFICAR SE TEM UMA FORMA MELHOR DE FAZER, ACHEI MUITO TRABALHOSO COMO ESTA ATUALMENTE
     //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
-    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, String receivedLatitude, String receivedLongitude, String radius) {
+    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, Double receivedLatitude, Double receivedLongitude, String radius) {
 
 
         String serviceName = service.getCategory().getName();
@@ -105,23 +106,20 @@ public class ProfessionalCategoryService {
 
                 Professional professional = psl.getProfessional();
 
-                if (professional.getAddress() != null) {
+                Address professionalAddress = professional.getAddress();
 
-                    if (!professional.getAddress().getLatitude().isEmpty() &&
-                            !professional.getAddress().getLongitude().isEmpty()) {
+                if (professionalAddress != null) {
 
-                        Double distancia = getDistancia(
-                                Double.parseDouble(receivedLatitude),
-                                Double.parseDouble(receivedLongitude),
-                                Double.parseDouble(professional.getAddress().getLatitude()),
-                                Double.parseDouble(professional.getAddress().getLongitude())
-                        );
+                    Optional<Double> distanceFromOpt = professionalAddress.getDistanceFrom(receivedLatitude, receivedLongitude);
 
-                        if (distancia <= distanciaLimite) {
-                            professional.setDistance(distancia.longValue());
+                    if(distanceFromOpt.isPresent())
+                    {
+                        Double distance = distanceFromOpt.get();
+
+                        if (distance <= distanciaLimite) {
+                            professional.setDistance(distance.longValue());
                             professionalServices.add(psl);
                         }
-
                     }
                 }
 
@@ -134,18 +132,4 @@ public class ProfessionalCategoryService {
         return professionalServices;
     }
 
-    private double getDistancia(double latitude, double longitude, double latitudePto, double longitudePto){
-
-        latitude = Math.toRadians(latitude);
-        longitude = Math.toRadians(longitude);
-        latitudePto = Math.toRadians(latitudePto);
-        longitudePto = Math.toRadians(longitudePto);
-
-        double dlon, dlat, a, distancia;
-        dlon = longitudePto - longitude;
-        dlat = latitudePto - latitude;
-        a = Math.pow(Math.sin(dlat/2),2) + Math.cos(latitude) * Math.cos(latitudePto) * Math.pow(Math.sin(dlon/2),2);
-        distancia = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return 6378140 * distancia; /* 6378140 is the radius of the Earth in meters*/
-    }
 }
