@@ -510,5 +510,38 @@ public class ProfessionalService {
 
         MDC.put("bankAccountId", String.valueOf(persistentProfessional.getBankAccount().getId()));
     }
+
+    public List<Professional> findTop10ByOrderByUserEvaluationDesc(String receivedLatitude, String receivedLongitude, String searchRadius, Optional<String> orderByField, Integer limit) {
+
+        List<Professional> entitylist =  professionalRepository.findTop10ByOrderByUserEvaluationDesc();
+
+        Double distanciaLimite = Double.parseDouble(searchRadius);
+
+        List<Professional> resultList = new ArrayList<>(10);
+
+        for (Professional p : entitylist) {
+
+            Address professionalAddress = p.getAddress();
+
+            if (professionalAddress != null) {
+
+                Optional<Double> distanceFromOpt = professionalAddress.getDistanceFrom(
+                        Double.parseDouble(receivedLatitude),
+                        Double.parseDouble(receivedLongitude)
+                );
+
+                if (distanceFromOpt.isPresent()) {
+                    Double distance = distanceFromOpt.get();
+
+                    if (distance <= distanciaLimite) {
+                        p.setDistance(distance.longValue());
+                        resultList.add(p);
+                    }
+                }
+            }
+        }
+
+        return resultList;
+    }
 }
 

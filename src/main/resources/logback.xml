@@ -23,7 +23,7 @@
                <logLevel/>
                <loggerName><fieldName>logger</fieldName></loggerName>
                <globalCustomFields><customFields>{"@source_host":"${HOSTNAME}"}</customFields></globalCustomFields>
-               <globalCustomFields><customFields>{"application": "moviscription"}</customFields></globalCustomFields>
+               <globalCustomFields><customFields>{"application": "ipretty-backend"}</customFields></globalCustomFields>
                <mdc />
                <message />
            </providers>

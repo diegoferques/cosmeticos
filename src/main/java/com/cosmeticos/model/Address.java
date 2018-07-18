@@ -12,6 +12,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  *
@@ -171,5 +172,33 @@ public class Address implements Serializable {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    /**
+     *
+     * @param originLatitude
+     * @param originLongitude
+     * @return Vazio se this.latitude ou this.longitude forem nulos.
+     */
+    public Optional<Double> getDistanceFrom(double originLatitude, double originLongitude) {
+
+        if (this.latitude != null || this.longitude != null) {
+
+            originLatitude = Math.toRadians(originLatitude);
+            originLongitude = Math.toRadians(originLongitude);
+
+            Double myLatitude = Math.toRadians(Double.parseDouble(this.latitude));
+            Double myLongitude = Math.toRadians(Double.parseDouble(this.longitude));
+
+            double dlon, dlat, a, distancia;
+            dlon = myLongitude - originLongitude;
+            dlat = myLatitude - originLatitude;
+            a = Math.pow(Math.sin(dlat/2),2) + Math.cos(originLatitude) * Math.cos(myLatitude) * Math.pow(Math.sin(dlon/2),2);
+            distancia = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return Optional.of(6378140 * distancia); /* 6378140 is the radius of the Earth in meters*/
+        } else {
+            return Optional.empty();
+        }
     }
 }

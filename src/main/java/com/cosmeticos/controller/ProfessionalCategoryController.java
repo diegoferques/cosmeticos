@@ -120,7 +120,10 @@ public class ProfessionalCategoryController {
     ) {
 
         try {
-            List<ProfessionalCategory> entitylist = professionalCategoryService.getNearby(bindableQueryObject, latitude, longitude, searchRadius);
+            double receivedLatitude = Double.parseDouble(latitude);
+            double receivedLongitude = Double.parseDouble(longitude);
+
+            List<ProfessionalCategory> entitylist = professionalCategoryService.getNearby(bindableQueryObject, receivedLatitude, receivedLongitude, searchRadius);
 
             ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setProfessionalCategoryList(entitylist);

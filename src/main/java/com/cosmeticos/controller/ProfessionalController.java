@@ -451,6 +451,54 @@ public class ProfessionalController {
     }
 
     /**
+     *
+     * @param limit Nao esta implementado. Requer alteracoes na forma de busca, o que nao ha tempo habil para ser implementado. Este
+     *              endpoint retorna por default 10 registros.
+     * @param orderByField Requer uma sintaxe especifica para os valores onde. Os valores devem ser o nome dos atributos da
+     *                     classe Professional. E acessos a atributos de algum atributo de Professional, deve ser realizado
+     *                     utilizando '.'. Por exemplo: +nameProfesssional significa ORDER BY Professional.NAME_PROFESSIONAL ASC;
+     *                     -user.evaluation significa ORDER BY Professional.user.evaluation DESC;
+     *                     Omitir os sinais + ou - implica em ordernacao ascendente (ASC).
+     * @param latitude
+     * @param longitude
+     * @param searchRadius
+     * @return
+     */
+    @JsonView(ResponseJsonView.ProfessionalFindAll.class)
+    @RequestMapping(path = "/professionals/nearby/", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalResponseBody> nearby(
+            @RequestParam(name = "limit", required = false) Integer limit,
+            @RequestParam(name = "orderby", required = false) Optional<String> orderByField,
+            @RequestParam(name = "latitude") String latitude,
+            @RequestParam(name = "longitude") String longitude,
+            @RequestParam(name = "radius") String searchRadius
+    ) {
+
+        try {
+            limit = 10;
+
+            List<Professional> entitylist = service.findTop10ByOrderByUserEvaluationDesc(latitude, longitude, searchRadius, orderByField, limit);
+
+            ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+            responseBody.setProfessionalList(entitylist);
+            responseBody.setDescription("All Professionals retrieved.");
+
+            log.info("{} Professionals successfully retrieved.", entitylist.size());
+
+            return ok().body(responseBody);
+
+        } catch (Exception e) {
+            log.error("Failed to retrieve Professional: {}", e.getMessage(), e);
+
+            ProfessionalResponseBody responseBody = new ProfessionalResponseBody();
+            responseBody.setDescription(e.getMessage());
+
+            return ResponseEntity.status(500).body(responseBody);
+        }
+
+    }
+
+    /**
      * Verifica se o Service recebido no request possui ID. Isso indica que o cliente primeiro listou os services
      * e depois usou o Service desejado para o cadastro do Professional, que eh o fluxo correto.
      *

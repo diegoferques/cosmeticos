@@ -1,6 +1,7 @@
 package com.cosmeticos.repository;
 
 import com.cosmeticos.model.Professional;
+import com.cosmeticos.model.ProfessionalCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,5 +16,5 @@ public interface ProfessionalRepository extends
 {
     List<Professional> findTop10ByOrderByDateRegisterDesc();
     List<Professional> findByNameProfessional(String nameProfessional);
-
+    List<Professional> findTop10ByOrderByUserEvaluationDesc();
 }
