@@ -116,14 +116,15 @@ public class ProfessionalCategoryController {
             @ModelAttribute ProfessionalCategory bindableQueryObject,
             @RequestParam("latitude") String latitude,
             @RequestParam("longitude") String longitude,
-            @RequestParam("radius") String searchRadius
+            @RequestParam("radius") String searchRadius,
+            @RequestParam(value = "homecare", required = false) boolean homecare
     ) {
 
         try {
             double receivedLatitude = Double.parseDouble(latitude);
             double receivedLongitude = Double.parseDouble(longitude);
 
-            List<ProfessionalCategory> entitylist = professionalCategoryService.getNearby(bindableQueryObject, receivedLatitude, receivedLongitude, searchRadius);
+            List<ProfessionalCategory> entitylist = professionalCategoryService.getNearby(bindableQueryObject, receivedLatitude, receivedLongitude, searchRadius, homecare);
 
             ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
             responseBody.setProfessionalCategoryList(entitylist);

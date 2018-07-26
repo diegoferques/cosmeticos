@@ -14,8 +14,6 @@ import java.util.Set;
 @Transactional
 public interface ProfessionalCategoryRepository extends JpaRepository<ProfessionalCategory, Long> {
 
-    Set<ProfessionalCategory> findByProfessional_idProfessional(Long idProfessional);
-
     @Query("SELECT ps FROM" +
             " ProfessionalCategory ps" +
             " WHERE " +
@@ -25,7 +23,13 @@ public interface ProfessionalCategoryRepository extends JpaRepository<Profession
     )
     List<ProfessionalCategory> findByPriceRuleNotNullAndService(String categoryName);
 
-    //ProfessionalCategory findByPriceRuleListId(Long id);
-
-    //Set<ProfessionalServices> findByServiceIdService(Long idCategory);
+    @Query("SELECT ps FROM" +
+            " ProfessionalCategory ps" +
+            " WHERE " +
+            "ps.professional.status = 'ACTIVE' " +
+            "AND ps.category.name = ?1 " +
+            "AND ps.priceRuleList IS NOT EMPTY " +
+            "AND ps.professional.attendance = 0"
+    )
+    List<ProfessionalCategory> findByPriceRuleNotNullAndServiceAndHomecare(String categoryName);
 }

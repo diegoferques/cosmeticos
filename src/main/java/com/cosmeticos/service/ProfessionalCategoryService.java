@@ -86,47 +86,49 @@ public class ProfessionalCategoryService {
         return this.repository.findAll(Example.of(professionalCategoryProbe));
     }
 
-    //TODO - VERIFICAR SE TEM UMA FORMA MELHOR DE FAZER, ACHEI MUITO TRABALHOSO COMO ESTA ATUALMENTE
-    //TODO - FALTA IMPLEMENTAR O METODO DO REPOSITORIO PARA TRAZER SOMENTE OS QUE CONTEMPLAM O SERVICE NO REQUEST
-    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, Double receivedLatitude, Double receivedLongitude, String radius) {
-
+    public List<ProfessionalCategory> getNearby(ProfessionalCategory service, Double receivedLatitude, Double receivedLongitude, String radius, Boolean homeCare) {
 
         String serviceName = service.getCategory().getName();
 
-        List<ProfessionalCategory> professionalCategoryList = repository.findByPriceRuleNotNullAndService(
-                serviceName
-        );
+        List<ProfessionalCategory> professionalCategoryList = null;
+
+        if(homeCare) {
+            professionalCategoryList = repository.findByPriceRuleNotNullAndServiceAndHomecare(serviceName);
+        }
+        else{
+            professionalCategoryList = repository.findByPriceRuleNotNullAndService(serviceName);
+        }
 
         List<ProfessionalCategory> professionalServices = new ArrayList<>();
 
         //ACHEI MELHOR PARSEAR SOMENTE UMA VEZ, POR ISSO CRIEI ESSA VARIAVEL
         Double distanciaLimite = Double.parseDouble(radius);
 
-            for (ProfessionalCategory psl : professionalCategoryList) {
+        for (ProfessionalCategory psl : professionalCategoryList) {
 
-                Professional professional = psl.getProfessional();
+            Professional professional = psl.getProfessional();
 
-                Address professionalAddress = professional.getAddress();
+            Address professionalAddress = professional.getAddress();
 
-                if (professionalAddress != null) {
+            if (professionalAddress != null) {
 
-                    Optional<Double> distanceFromOpt = professionalAddress.getDistanceFrom(receivedLatitude, receivedLongitude);
+                Optional<Double> distanceFromOpt = professionalAddress.getDistanceFrom(receivedLatitude, receivedLongitude);
 
-                    if(distanceFromOpt.isPresent())
-                    {
-                        Double distance = distanceFromOpt.get();
+                if(distanceFromOpt.isPresent())
+                {
+                    Double distance = distanceFromOpt.get();
 
-                        if (distance <= distanciaLimite) {
-                            professional.setDistance(distance.longValue());
-                            professionalServices.add(psl);
-                        }
+                    if (distance <= distanciaLimite) {
+                        professional.setDistance(distance.longValue());
+                        professionalServices.add(psl);
                     }
                 }
-
-                User persistentUser = professional.getUser();
-
-                persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
             }
+
+            User persistentUser = professional.getUser();
+
+            persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
+        }
 
 
         return professionalServices;
