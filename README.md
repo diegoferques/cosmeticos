@@ -36,3 +36,6 @@ Projeto sem nome definido, estamos aguardando o cliente.
 - Mantenha a branch DEV sempre atualizada no repositorio local. Faça pull nela constantemente.
 
 - A branch MASTER só pode ser atualizada quando a change estiver indo para produção e o merge tem que ser feito exclusivamente com a branch DEV.
+
+# Endpoints REST
+- professionalcategory/search: utiliza o termo de busca (query) para filtrar 3 dados: nome da categoria, nome da regra de preco e nome do profissional. Vide ProfessionalCategoryRepository. Como a propria query determina, apenas categorias que possuam tabela de preço e associadas a profissionais serao retornadas. 

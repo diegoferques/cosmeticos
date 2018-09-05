@@ -56,6 +56,7 @@ public class OrderPreLoadConfiguration {
 
         Category service = new Category();
         service.setName("PEDICURE");
+        service.setImageUrl("pes");
         serviceRepository.save(service);
 
         PriceRule pr1 = new PriceRule("Francesinha", 10000L);

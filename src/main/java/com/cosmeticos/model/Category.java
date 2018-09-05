@@ -52,6 +52,10 @@ public class Category implements Serializable {
     @Column(unique = true)
     private String name;
 
+    /**
+     * Usado pelo aplicativo. O aplicativo nao busca a imagem na internet, na verdade aqui devemos setar
+     * o nome da imagem embarcada no aplicativo. TODO: criar atributo iconResource
+     */
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
             ResponseJsonView.OrderControllerCreate.class,

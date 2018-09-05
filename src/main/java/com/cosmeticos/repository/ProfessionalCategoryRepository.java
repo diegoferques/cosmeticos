@@ -3,6 +3,7 @@ package com.cosmeticos.repository;
 import com.cosmeticos.model.ProfessionalCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -32,4 +33,24 @@ public interface ProfessionalCategoryRepository extends JpaRepository<Profession
             "AND ps.professional.attendance = 0"
     )
     List<ProfessionalCategory> findByPriceRuleNotNullAndServiceAndHomecare(String categoryName);
+
+    /**
+     * TODO: esta query deve ser indexada ou movida pra uma logica de elasticsearch
+     * @param queryString
+     * @return
+     */
+    @Query("SELECT DISTINCT ps " +
+            "FROM ProfessionalCategory ps " +
+            "   JOIN ps.professional p " +
+            "   JOIN ps.category c " +
+            "   JOIN ps.priceRuleList pr " +
+            "WHERE " +
+            "   p.status = 'ACTIVE' " +
+            "   AND (" +
+            "       upper(c.name) like upper(?1) " + // Buscamos categorias com nome que bata com a queryString
+            "       OR upper(pr.name) like upper(?1)" +  // ou categorias que possuam preco com a descricao que bata com a queryString
+            "       OR upper(p.nameProfessional) like upper(?1)" + // ou categorias que possuam nome de profissional que bata com a queryString
+            "   )"
+    )
+    List<ProfessionalCategory> search(String queryString);
 }

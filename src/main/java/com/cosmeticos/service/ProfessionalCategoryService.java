@@ -76,6 +76,13 @@ public class ProfessionalCategoryService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProfessionalCategory> search(String query) {
+        return repository.search(query);
+
+       /* return StreamSupport.stream(result.spliterator(), false)
+                .collect(Collectors.toList());*/
+    }
+
 
     /**
      * Usa a api Example do spring-data.

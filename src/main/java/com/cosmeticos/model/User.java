@@ -199,6 +199,7 @@ public class User implements Serializable {
             ResponseJsonView.OrderControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.ProfessionalCategoryFindAll.class,
+            ResponseJsonView.ProfessionalFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class
     })
     //@Transient

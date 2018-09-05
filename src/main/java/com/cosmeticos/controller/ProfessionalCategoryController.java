@@ -171,6 +171,34 @@ public class ProfessionalCategoryController {
         }
     }
 
+
+    @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
+    @RequestMapping(path = "/professionalcategories/search", method = RequestMethod.GET)
+    public HttpEntity<ProfessionalCategoryResponseBody> search(@RequestParam(name = "q") String query) {
+
+        try {
+            List<ProfessionalCategory> categoryList = professionalCategoryService.search(query);
+
+            if (!categoryList.isEmpty()) {
+
+                ProfessionalCategoryResponseBody response = new ProfessionalCategoryResponseBody();
+                response.setProfessionalCategoryList(categoryList);
+
+                log.info("Busca de categoria com [{}] resultados.", categoryList.size());
+
+                return ok().body(response);
+            } else {
+                log.error("Nenhum registro encontrado para query: {}", query);
+                return notFound().build();
+            }
+        } catch (Exception e) {
+            log.error("Falha na busca por {}", query, e);
+            ProfessionalCategoryResponseBody responseBody = new ProfessionalCategoryResponseBody();
+            responseBody.setDescription(e.getMessage());
+            return ResponseEntity.status(500).body(responseBody);
+        }
+    }
+
     private ProfessionalCategoryResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()
