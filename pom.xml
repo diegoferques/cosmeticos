@@ -23,6 +23,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <spring-cloud.version>Edgware.SR2</spring-cloud.version>
+
+        <!-- Versoes das apis usadas pelo security -->
+        <commons-lang.version>3.6</commons-lang.version>
+        <guava.version>20.0</guava.version>
+        <jwt.version>0.9.1</jwt.version>
+        <joda-time.version>2.9.9</joda-time.version>
+        <mockito.version>2.17.0</mockito.version>
     </properties>
 
     <dependencies>
@@ -95,8 +102,7 @@
         </dependency>
 
 
-        <!-- Adicionado por Diego Fernandes <dependency> <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId> </dependency> -->
+        <!-- Adicionado por Diego Fernandes -->
         <!-- <dependency> <groupId>org.springframework.security</groupId> <artifactId>spring-security-web</artifactId>
             </dependency> <dependency> <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId> <scope>runtime</scope> </dependency> -->
@@ -153,6 +159,44 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-remote-shell</artifactId>
+        </dependency>
+
+
+        <!-- Dependencias do security-->
+
+        <!-- Adicionado por Diego Fernandes -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
         </dependency>
     </dependencies>
 

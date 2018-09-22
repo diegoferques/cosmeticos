@@ -35,7 +35,7 @@ public interface ProfessionalCategoryRepository extends JpaRepository<Profession
     List<ProfessionalCategory> findByPriceRuleNotNullAndServiceAndHomecare(String categoryName);
 
     /**
-     * TODO: esta query deve ser indexada ou movida pra uma logica de elasticsearch
+     * TODO: esta query deve ser indexada ou movida pra elasticsearch
      * @param queryString
      * @return
      */
