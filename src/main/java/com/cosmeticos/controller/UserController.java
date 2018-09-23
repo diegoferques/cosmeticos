@@ -8,14 +8,17 @@ import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Image;
 import com.cosmeticos.model.User;
 import com.cosmeticos.repository.UserRepository;
+import com.cosmeticos.security.user.auth.api.UserAuthenticationService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -43,7 +46,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-
+    @Autowired
+    @NonNull
+    private UserAuthenticationService authentication;
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public HttpEntity<UserResponseBody> create(@Valid @RequestBody UserRequestBody request, BindingResult bindingResult) {
@@ -215,6 +220,18 @@ public class UserController {
             responseBody.setDescription(e.getMessage());
             return ResponseEntity.status(500).body(responseBody);
         }
+    }
+
+
+    @GetMapping("/current")
+    public HttpEntity<UserResponseBody> getCurrent(@AuthenticationPrincipal final User user) {
+        return findAllBy(user, null);
+    }
+
+    @GetMapping("/logout")
+    public boolean logout(@AuthenticationPrincipal final User user) {
+        authentication.logout(user);
+        return true;
     }
 
     //TODO - AO CHAMAR ESTE ENDPOINT COM UM EMAIL QUE NAO EXISTE NO BANCO, RETORNA ERRO 500

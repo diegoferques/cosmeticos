@@ -5,9 +5,12 @@ import com.cosmeticos.commons.CustomerRequestBody;
 import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.User;
+import com.cosmeticos.security.user.auth.api.UserAuthenticationService;
 import com.cosmeticos.service.CustomerService;
 import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -34,6 +37,10 @@ public class CustomerController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    @NonNull
+    private UserAuthenticationService authentication;
+
     @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers", method = RequestMethod.POST)
     public HttpEntity<CustomerResponseBody> create(@Valid @RequestBody CustomerRequestBody request,
@@ -42,7 +49,6 @@ public class CustomerController {
             if(bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
-
             } else {
 
                 String userEmail = "";
@@ -60,9 +66,10 @@ public class CustomerController {
 
                 } else {
                     Customer customer = service.create(request);
+
                     log.info("Customer adicionado com sucesso:  [{}]", customer);
-                    //return ok().build();
-                    return ok(new CustomerResponseBody(customer));
+
+                    return ok(login(customer, null).getBody());
                 }
             }
         } catch (Exception e) {
@@ -250,6 +257,27 @@ public class CustomerController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @PostMapping("/login")
+    HttpEntity<CustomerResponseBody> login(
+            @ModelAttribute Customer customerRequest,
+            @RequestHeader(value=Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
+    ) {
+        HttpEntity<CustomerResponseBody> entity = findById(customerRequest, firebaseUserToken);
+
+        Customer customer = entity.getBody().getCustomerList().get(0);
+        User user = customer.getUser();
+
+        String username = user.getEmail();
+        String password = user.getPassword();
+        String token = authentication
+                .login(username, password)
+                .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
+
+        user.setAuthToken(token);
+
+        return entity;
     }
 
     private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {

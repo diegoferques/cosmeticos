@@ -13,13 +13,12 @@ import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Where;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -28,7 +27,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)// usar NON_EMPTY o jackson considera 0 (credicardCount) como vazio e nao exibe o atributo no json
 @Data
 @Entity
-public class User implements Serializable {
+public class User implements UserDetails {
 
     public void addVote(Vote v) {
         voteCollection.add(v);
@@ -127,6 +126,21 @@ public class User implements Serializable {
     })
     @Column(unique = true)
     private String email;
+
+    @JsonView({
+            ResponseJsonView.WalletsFindAll.class,
+            ResponseJsonView.OrderControllerCreate.class,
+            ResponseJsonView.OrderControllerFindBy.class,
+            ResponseJsonView.OrderControllerUpdate.class,
+            ResponseJsonView.ProfessionalFindAll.class,
+            ResponseJsonView.ProfessionalUpdate.class,
+            ResponseJsonView.ProfessionalCreate.class,
+            ResponseJsonView.CustomerControllerUpdate.class,
+            ResponseJsonView.CustomerControllerGet.class,
+            ResponseJsonView.ProfessionalCategoryFindAll.class
+    })
+    @Column(unique = true)
+    private String authToken;
 
     private String sourceApp;
 
@@ -260,9 +274,39 @@ public class User implements Serializable {
         return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
     }
 
-    //@JsonIgnore // Impede que o password seja mostrado ao se retornar um json no endpoint.
+    @JsonIgnore
+    @Override
     public String getPassword() {
         return password;
+    }
+
+    @JsonIgnore
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 
