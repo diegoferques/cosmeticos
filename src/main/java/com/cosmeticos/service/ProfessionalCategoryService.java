@@ -48,13 +48,13 @@ public class ProfessionalCategoryService {
     }
 
     public Optional<ProfessionalCategory> find(Long id){
-        return Optional.ofNullable(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public void delete(Long id){
 
         // TODO: DELETE fazer endpoint professionals/id/professionalCategory/id ... gambi abaixo
-       ProfessionalCategory professionalCategory = repository.findOne(id);
+       ProfessionalCategory professionalCategory = repository.findById(id).get();
 
         Optional<Professional> optional = professionalService.find(professionalCategory.getProfessional().getIdProfessional());
 

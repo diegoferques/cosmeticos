@@ -55,7 +55,7 @@ public class ScheduleRepositoryTests {
 
 	@Test
 	public void testSchedule1ActiveOnDecember31th() {
-		Schedule schedule = repository.findOne(1L);
+		Schedule schedule = repository.findById(1L);
 
 		Assert.assertNotNull(schedule);
 
@@ -69,7 +69,7 @@ public class ScheduleRepositoryTests {
 
 	@Test
 	public void testSchedule2ActiveOnDecember30th() {
-		Schedule schedule = repository.findOne(2L);
+		Schedule schedule = repository.findById(2L);
 		Assert.assertNotNull(schedule);
 
 		LocalDateTime ldt = LocalDateTime.ofInstant(schedule.getScheduleStart().toInstant(), ZoneId.systemDefault());
@@ -82,7 +82,7 @@ public class ScheduleRepositoryTests {
 
 	@Test
 	public void testSchedule3ActiveOnDecember29th() {
-		Schedule schedule = repository.findOne(3L);
+		Schedule schedule = repository.findById(3L);
 		Assert.assertNotNull(schedule);
 
 		LocalDateTime ldt = LocalDateTime.ofInstant(schedule.getScheduleStart().toInstant(), ZoneId.systemDefault());
@@ -95,7 +95,7 @@ public class ScheduleRepositoryTests {
 
 	@Test
 	public void testSchedule4ActiveOnDecember28th() {
-		Schedule schedule = repository.findOne(4L);
+		Schedule schedule = repository.findById(4L);
 		Assert.assertNotNull(schedule);
 
 		LocalDateTime ldt = LocalDateTime.ofInstant(schedule.getScheduleStart().toInstant(), ZoneId.systemDefault());
@@ -108,7 +108,7 @@ public class ScheduleRepositoryTests {
 
 	@Test
 	public void testSchedule5InactiveOnDecember27th() {
-		Schedule schedule = repository.findOne(5L);
+		Schedule schedule = repository.findById(5L);
 		Assert.assertNotNull(schedule);
 
 		LocalDateTime ldt = LocalDateTime.ofInstant(schedule.getScheduleStart().toInstant(), ZoneId.systemDefault());

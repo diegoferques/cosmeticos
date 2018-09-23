@@ -22,7 +22,7 @@ public class FirebasePushNotifierServiceTest {
     @Test
     public void pushIntegrationTest() throws Exception {
 
-        Order one = orderRepository.findOne(1L);
+        Order one = orderRepository.findById(1L);
 
 
         // Este token muda com frequencia, portanto, eh interessante por um @IfProfileValue neste metodo de teste.

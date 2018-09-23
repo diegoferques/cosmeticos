@@ -18,7 +18,7 @@ public class BankAccountService {
 
     public Optional<BankAccount> findById(Long id)
     {
-        return Optional.ofNullable(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public void update(BankAccount bankAccount) {

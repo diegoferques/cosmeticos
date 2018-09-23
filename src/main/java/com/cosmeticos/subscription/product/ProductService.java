@@ -33,7 +33,7 @@ public class ProductService {
 
         Long requestedIdProduct = productFromRequest.getIdProduct();
 
-        Optional<Product> optional = Optional.ofNullable(productRepository.findOne(requestedIdProduct));
+        Optional<Product> optional = productRepository.findById(requestedIdProduct);
 
         if(optional.isPresent()){
             Product persistentProduct = optional.get();
@@ -51,7 +51,7 @@ public class ProductService {
     }
 
     public Optional<Product> find(Long id){
-        return Optional.ofNullable(productRepository.findOne(id));
+        return productRepository.findById(id);
     }
 
     public List<Product> findAll(){

@@ -32,7 +32,7 @@ public class LocationService {
     }
 
     public Optional<Location> find(Long idLocation) {
-        return Optional.of(locationRepository.findOne(idLocation));
+        return (locationRepository.findById(idLocation));
     }
 
     public Location create(LocationRequestBody request) {
@@ -47,7 +47,7 @@ public class LocationService {
     public Location update(LocationRequestBody request) {
 
         Location lr = request.getLocation();
-        Location location = locationRepository.findOne(lr.getId());
+        Location location = locationRepository.findById(lr.getId()).get();
 
         if(!StringUtils.isEmpty(lr.getLatitude())) {
             location.setLatitude(lr.getLatitude());

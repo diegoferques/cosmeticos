@@ -62,7 +62,7 @@ public class ProfessionalService {
     private String rescueRequestMailBody;
 
     public Optional<Professional> find(Long idProfessional) {
-        return Optional.ofNullable(professionalRepository.findOne(idProfessional));
+        return (professionalRepository.findById(idProfessional));
     }
 
     public Professional create(ProfessionalRequestBody request) {
@@ -115,7 +115,7 @@ public class ProfessionalService {
 
     public Optional<Professional> update(Professional receivedProfessional) {
 
-        Optional<Professional> optional = Optional.ofNullable(professionalRepository.findOne(receivedProfessional.getIdProfessional()));
+        Optional<Professional> optional = (professionalRepository.findById(receivedProfessional.getIdProfessional()));
 
         if (optional.isPresent()) {
 
@@ -166,7 +166,7 @@ public class ProfessionalService {
 
             if (receivedProfessional.getEmployeesCollection() != null) {
                 for (Professional professionalItem : receivedProfessional.getEmployeesCollection()) {
-                    Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
+                    Professional persistentProfessionalItem = professionalRepository.findById(professionalItem.getIdProfessional()).get();
                     persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
@@ -183,7 +183,7 @@ public class ProfessionalService {
             /*
             if(cr.getEmployeesCollection() != null){
                 for(Professional professionalItem : cr.getEmployeesCollection()){
-                    Professional persistentProfessionalItem = professionalRepository.findOne(professionalItem.getIdProfessional());
+                    Professional persistentProfessionalItem = professionalRepository.findById(professionalItem.getIdProfessional());
                     persistentProfessional.addEmployees(persistentProfessionalItem);
                 }
             }
@@ -418,7 +418,7 @@ public class ProfessionalService {
     }
 
     public void deleteEmployee(Long bossId, Long employeeId) {
-        Professional boss = professionalRepository.findOne(bossId);
+        Professional boss = professionalRepository.findById(bossId).get();
 
         Professional employee = boss.getEmployeesCollection()
                 .stream()
@@ -449,7 +449,7 @@ public class ProfessionalService {
 
     public void createRescueRequest(Long idProfessional) {
 
-        Professional professional = professionalRepository.findOne(idProfessional);
+        Professional professional = professionalRepository.findById(idProfessional).get();
 
         if (professional.getBankAccount() != null) {
             String email = professional.getUser().getEmail();
@@ -497,7 +497,7 @@ public class ProfessionalService {
 
     public void createBankAccount(Long idProfessional, BankAccount request) {
 
-        Professional persistentProfessional = professionalRepository.findOne(idProfessional);
+        Professional persistentProfessional = professionalRepository.findById(idProfessional).get();
 
         if (persistentProfessional == null) {
             throw new IllegalArgumentException("Profissional com id: " + idProfessional + " nao encontrao.");

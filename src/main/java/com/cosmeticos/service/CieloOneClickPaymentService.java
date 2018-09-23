@@ -12,6 +12,7 @@ import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,7 @@ public class CieloOneClickPaymentService implements Charger{
     }
 
     private String findPersistentUserEmail(Long idCustomer) {
-        Customer persistentCustomer = this.customerRepository.findOne(idCustomer);
+        Customer persistentCustomer = this.customerRepository.findById(idCustomer).get();
 
         return  persistentCustomer.getUser().getEmail();
     }
@@ -71,7 +72,7 @@ public class CieloOneClickPaymentService implements Charger{
 
         Payment receivedPayment = chargeRequest.getBody();
 
-        Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
+        Payment persistentPayment = paymentRepository.findById(receivedPayment.getId()).get();
 
         CreditCard creditCard = persistentPayment
                 .getOrder()
@@ -133,7 +134,7 @@ public class CieloOneClickPaymentService implements Charger{
             return buildResponse(authorizeResponse);
         } catch (FeignException e) {
 
-            org.apache.log4j.MDC.put("cieloHttpStatus", e.status());
+            MDC.put("cieloHttpStatus", String.valueOf(e.status()));
 
             throw new OrderValidationException(ResponseCode.GATEWAY_FAILURE, "Falha na integracao de RESERVE com a Cielo", e);
         }
@@ -145,7 +146,7 @@ public class CieloOneClickPaymentService implements Charger{
 
         Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(cieloPaymentStatus);
 
-        org.apache.log4j.MDC.put("cieloPaymentStatus", paymentStatus.toString() + "(" +cieloPaymentStatus + ")");
+        MDC.put("cieloPaymentStatus", paymentStatus.toString() + "(" +cieloPaymentStatus + ")");
 
         if (paymentStatus.isSuccess()) {
 

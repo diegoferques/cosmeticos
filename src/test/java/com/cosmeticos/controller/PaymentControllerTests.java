@@ -212,7 +212,7 @@ public class PaymentControllerTests {
 
         //TODO - AO BUSCAR NO BANCO O CUSTOMER PELO ID, O ADDRESS RETORNADO NAO EH O MESMO QUE FOI CRIADO INICIALMENTE
         //ABAIXO SEGUE O CUSTOMER QUE BUSCAMOS NO BANCO PELO ID DO CUSTOMER CRIADO ACIMA, O ID DE ADDRESS RETORNADO FOI 7
-        Customer customer2 = customerRepository.findOne(customer.getIdCustomer());
+        Customer customer2 = customerRepository.findById(customer.getIdCustomer());
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
 
@@ -370,10 +370,10 @@ public class PaymentControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
         Order order = exchangeCreate.getBody().getOrderList().get(0);
-        Order order1 = orderRepository.findOne(order.getIdOrder());
+        Order order1 = orderRepository.findById(order.getIdOrder());
 
         //TODO - OS DO ENDERECO NAO ESTAO VINDO
-        Address address = addressRepository.findOne(order1.getIdCustomer().getAddress().getIdAddress());
+        Address address = addressRepository.findById(order1.getIdCustomer().getAddress().getIdAddress());
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
@@ -395,7 +395,7 @@ public class PaymentControllerTests {
     public void testCapturarTransacaoOK() throws URISyntaxException, ParseException, JsonProcessingException, OrderValidationException {
 
         //CERTIFIQUE-SE QUE A ORDER ABAIXO ESTA COM O STATUS READY2CHARGE, CASO CONTRARIO RETORNARA UM ERRO!
-        Order order = orderRepository.findOne(14L);
+        Order order = orderRepository.findById(14L);
 
         ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(order.getPaymentCollection().stream().findFirst().get()));
 

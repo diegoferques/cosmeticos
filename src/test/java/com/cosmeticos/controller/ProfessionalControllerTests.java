@@ -1435,7 +1435,7 @@ public class ProfessionalControllerTests {
 		Assert.assertNotNull(deleteResponse);
 		Assert.assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
 
-		Professional persistentBoss = professionalRepository.findOne(professionalBoss.getIdProfessional());
+		Professional persistentBoss = professionalRepository.findById(professionalBoss.getIdProfessional());
 
 		Assert.assertEquals(1, persistentBoss
 				.getEmployeesCollection()
@@ -1656,7 +1656,7 @@ public class ProfessionalControllerTests {
 
 
 		// Assertando o que ficou no banco, pois o retorno da api pode divergir do que ficou no banco. O que ficou no banco eh o dado real.
-		Professional ultimateProfessional = professionalRepository.findOne(professional.getIdProfessional());
+		Professional ultimateProfessional = professionalRepository.findById(professional.getIdProfessional());
 		Assert.assertEquals(4, ultimateProfessional
 				.getProfessionalCategoryCollection()
 				.size()
@@ -1787,7 +1787,7 @@ public class ProfessionalControllerTests {
 
 
 		// Assertando o que ficou no banco, pois o retorno da api pode divergir do que ficou no banco. O que ficou no banco eh o dado real.
-		Professional ultimateProfessional = professionalRepository.findOne(professional.getIdProfessional());
+		Professional ultimateProfessional = professionalRepository.findById(professional.getIdProfessional());
 		Assert.assertEquals(1, ultimateProfessional
 				.getProfessionalCategoryCollection()
 				.size()

@@ -58,7 +58,7 @@ public class PaymentController {
 
         CampainhaSuperpeyResponseBody responseBody = new CampainhaSuperpeyResponseBody();
 
-        Optional<Payment> paymentOptional = Optional.ofNullable(paymentRepository.findOne(numeroTransacao));
+        Optional<Payment> paymentOptional = paymentRepository.findById(numeroTransacao);
 
         if(paymentOptional.isPresent()) {
 

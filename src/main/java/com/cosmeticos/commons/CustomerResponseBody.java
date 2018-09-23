@@ -2,6 +2,7 @@ package com.cosmeticos.commons;
 
 import com.cosmeticos.model.Customer;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Data
 @Builder
+@AllArgsConstructor
 public class CustomerResponseBody {
 
     @JsonView(

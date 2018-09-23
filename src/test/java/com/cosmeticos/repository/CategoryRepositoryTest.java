@@ -41,7 +41,7 @@ public class CategoryRepositoryTest {
 
         @Test
         public void testFindServiceCabelo() {
-            Category service = repository.findOne(id);
+            Category service = repository.findById(id);
             Assert.assertNotNull(service);
 
             // Confere se o Service que retornou confere com o primeiro Service inserido.
@@ -63,7 +63,7 @@ public class CategoryRepositoryTest {
 
             repository.save(owner);
 
-            Category c = repository.findOne(child.getIdCategory());
+            Category c = repository.findById(child.getIdCategory());
             Assert.assertNotNull(c);
             Assert.assertNotNull(c.getOwnerCategory());
             Assert.assertEquals(c.getOwnerCategory().getIdCategory(), owner.getIdCategory());

@@ -34,7 +34,6 @@ public class OrderStatusHandler {
 	/**
 	 * Antes de atribuir o status, verificamos se a transicao do status antigo pro
 	 * novo eh permitida.
-	 * @param status
 	 * @return
 	 */
 	public Order.Status handle(final Order order, Status candidateState) {

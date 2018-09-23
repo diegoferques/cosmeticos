@@ -254,7 +254,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateReady2Charger.getStatusCode());
 
 
-        Order orderUpdateReady2Charger =  orderRepository.findOne(orderUpdateSemiClosed.getIdOrder());
+        Order orderUpdateReady2Charger =  orderRepository.findById(orderUpdateSemiClosed.getIdOrder());
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
         Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());

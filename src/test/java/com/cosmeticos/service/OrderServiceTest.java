@@ -141,9 +141,9 @@ public class OrderServiceTest {
     public void testUpdateStatus(){
 
         orderService.scheduledUpdateStatus();
-        o3 = orderRepository.findOne(o3.getIdOrder());
-        o4 = orderRepository.findOne(o4.getIdOrder());
-        o5 = orderRepository.findOne(o5.getIdOrder());
+        o3 = orderRepository.findById(o3.getIdOrder());
+        o4 = orderRepository.findById(o4.getIdOrder());
+        o5 = orderRepository.findById(o5.getIdOrder());
 
         Assert.assertEquals(Order.Status.SEMI_CLOSED, o4.getStatus());
 

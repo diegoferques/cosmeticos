@@ -72,7 +72,7 @@ public class CustomerRepositoryTests {
 
         repository.save(c1);
 
-        Customer customer = repository.findOne(c1.getIdCustomer());
+        Customer customer = repository.findById(c1.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
@@ -116,7 +116,7 @@ public class CustomerRepositoryTests {
 
         repository.save(c2);
 
-        Customer customer = repository.findOne(c2.getIdCustomer());
+        Customer customer = repository.findById(c2.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
@@ -161,7 +161,7 @@ public class CustomerRepositoryTests {
         repository.save(c3);
 
 
-        Customer customer = repository.findOne(c3.getIdCustomer());
+        Customer customer = repository.findById(c3.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
@@ -206,7 +206,7 @@ public class CustomerRepositoryTests {
 
 
 
-        Customer customer = repository.findOne(c4.getIdCustomer());
+        Customer customer = repository.findById(c4.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());
@@ -246,7 +246,7 @@ public class CustomerRepositoryTests {
         repository.save(c5);
 
 
-        Customer customer = repository.findOne(c5.getIdCustomer());
+        Customer customer = repository.findById(c5.getIdCustomer());
         Assert.assertNotNull(customer);
         Assert.assertNotNull(customer.getAddress());
         Assert.assertNotNull(customer.getUser());

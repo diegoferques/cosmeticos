@@ -31,9 +31,9 @@ public class UserPreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data(){
 
-        Order o1 = orderRepository.findOne(1L);
+        Order o1 = orderRepository.findById(1L).get();
 
-        Order o2 = orderRepository.findOne(2L);
+        Order o2 = orderRepository.findById(2L).get();
 
         CreditCard cc = CreditCard.builder().build();
         cc.setToken("4321");

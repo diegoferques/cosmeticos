@@ -86,7 +86,7 @@ public class SuperpayOneClickPaymentService implements Charger{
     }
 
     private String findPersistentUserEmail(Long idCustomer) {
-        Customer persistentCustomer = this.customerRepository.findOne(idCustomer);
+        Customer persistentCustomer = this.customerRepository.findById(idCustomer).get();
 
         return  persistentCustomer.getUser().getEmail();
     }
@@ -97,7 +97,7 @@ public class SuperpayOneClickPaymentService implements Charger{
 
         Payment receivedPayment = chargeRequest.getBody();
 
-        Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
+        Payment persistentPayment = paymentRepository.findById(receivedPayment.getId()).get();
 
         Order persistentOrder = persistentPayment.getOrder();
 
@@ -185,7 +185,7 @@ public class SuperpayOneClickPaymentService implements Charger{
         // TODO: em producao descomentar Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
         Payment.Status paymentStatus = Payment.Status.PAGO_E_CAPTURADO;
 
-        org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
+        MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
 
         if (paymentStatus.isSuccess()) {
 
@@ -215,7 +215,7 @@ public class SuperpayOneClickPaymentService implements Charger{
 
         Payment receivedPayment = chargeRequest.getBody();
 
-        Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
+        Payment persistentPayment = paymentRepository.findById(receivedPayment.getId()).get();
 
         Order persistentOrder = persistentPayment.getOrder();
 

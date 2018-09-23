@@ -68,7 +68,7 @@ public class UserService {
 
         Long requestedIdLogin = userFromRequest.getIdLogin();
 
-        Optional<User> optional = Optional.ofNullable(repository.findOne(requestedIdLogin));
+        Optional<User> optional = (repository.findById(requestedIdLogin));
 
         if (optional.isPresent()) {
             User persistentUser = optional.get();
@@ -138,24 +138,9 @@ public class UserService {
 
         return optional;
     }
-    /*esse método estava causando o bug na hora de atualizar status pra inactive.
-    private void inactiveUserType(User user) {
 
-        User persistentUser = repository.findOne(user.getIdLogin());
-
-        if (User.UserType.customer.equals(user.getUserType())) {
-            Customer customer = persistentUser.getCustomer();
-            customer.setStatus(Customer.Status.INACTIVE.ordinal());
-            customerService.update(customer);
-        } else {
-            Professional professional = persistentUser.getProfessional();
-            professional.setStatus(Professional.Status.INACTIVE);
-            professionalService.update(professional);
-        }
-    }
-    */
     public Optional<User> find(Long id) {
-        return Optional.ofNullable(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public void deletar() {
@@ -183,9 +168,7 @@ public class UserService {
 
     public Boolean verifyEmailExistsforUpdate(User receivedUser) {
 
-        Optional<User> persistentUserOpt = Optional.ofNullable(
-                repository.findOne(receivedUser.getIdLogin())
-        );
+        Optional<User> persistentUserOpt = repository.findById(receivedUser.getIdLogin());
 
         if (persistentUserOpt.isPresent()) {
             User persistentUser = persistentUserOpt.get();
@@ -312,7 +295,7 @@ public class UserService {
     }
 
     public User addImage(Long idUser, Image image) {
-        User user = repository.findOne(idUser);
+        User user = repository.findById(idUser).get();
 
         // TODO: transformar em property
         String s3host = "https://s3-sa-east-1.amazonaws.com";

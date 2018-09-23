@@ -249,7 +249,7 @@ public class MulticlickPaymentService implements Charger {
         request.setItensDoPedido(itensDoPedido);
 
         //TIVE QUE ADICIONAR ISSO AQUI PARA CONSEGUIR PEGAR E PASSAR OS DADOS DE USER, POIS O DE ORDER ESTA COMO NULL
-        Customer customer = customerRepository.findOne(order.getIdCustomer().getIdCustomer());
+        Customer customer = customerRepository.findById(order.getIdCustomer().getIdCustomer()).get();
 
         DadosCobranca dadosCobranca = this.getDadosCobranca(customer);
         request.setDadosCobranca(dadosCobranca);
@@ -377,7 +377,7 @@ public class MulticlickPaymentService implements Charger {
     //PEGAMOS O ENDERECO DA COBRANCA PARA UTILIZAR NA REQUISICAO
     private Endereco getEnderecoCobranca(Address orderAddress) {
         //TODO - NAO SEI POR QUAL MOTIVO, MAS OS DADOS DO ENDERECO NAO ESTAO VINDO NEM ACIMA E NEM ABAIXO
-        Address address = addressRepository.findOne(orderAddress.getIdAddress());
+        Address address = addressRepository.findById(orderAddress.getIdAddress()).get();
         Endereco enderecoCobranca = new Endereco();
 
         enderecoCobranca.setLogradouro(address.getAddress());
@@ -398,7 +398,7 @@ public class MulticlickPaymentService implements Charger {
     //GERAMOS UM CARTAO DE TESTE DA SUPERPAY PARA USAR NOS TESTES
     public CreditCard getPaymentCreditCard(Order order)  {
 
-        Customer persistentCustomer = customerRepository.findOne(order.getIdCustomer().getIdCustomer());
+        Customer persistentCustomer = customerRepository.findById(order.getIdCustomer().getIdCustomer()).get();
 
         Optional<CreditCard> optionalCc = persistentCustomer
                 .getUser()
@@ -464,7 +464,7 @@ public class MulticlickPaymentService implements Charger {
 
             RetornoTransacao retornoTransacao = exchange.getBody();
 
-            Payment payment = paymentRepository.findOne(numeroTransacao);
+            Payment payment = paymentRepository.findById(numeroTransacao).get();
             payment.setStatus(Payment.Status.fromSuperpayStatus(retornoTransacao.getStatusTransacao()));
 
             Boolean result = updatePaymentStatus(payment);

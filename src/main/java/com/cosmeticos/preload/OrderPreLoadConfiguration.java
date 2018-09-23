@@ -36,23 +36,17 @@ public class OrderPreLoadConfiguration {
     @Autowired
     private CategoryRepository serviceRepository;
 
-    @Autowired
-    private PriceRuleRepository priceRuleRepository;
-
-    @Autowired
-    private PaymentRepository paymentRepository;
-
     @PostConstruct
     @Transactional
     public void insertInitialH2Data() throws URISyntaxException {
 
-        //User u1 = userRepository.findOne(1L);
-        //Address a1 = addressRepository.findOne(1L);
-        Customer c1 = customerRepository.findOne(1L);
-        Professional p1 = professionalRepository.findOne(1L);// Garry@bol
-        Professional p3 = professionalRepository.findOne(3L);// Diego@bol
-        //Schedule s1 = scheduleRepository.findOne(1L);
-        //Schedule s2 = scheduleRepository.findOne(2L);
+        //User u1 = userRepository.findById(1L);
+        //Address a1 = addressRepository.findById(1L);
+        Customer c1 = customerRepository.findById(1L).get();
+        Professional p1 = professionalRepository.findById(1L).get();// Garry@bol
+        Professional p3 = professionalRepository.findById(3L).get();// Diego@bol
+        //Schedule s1 = scheduleRepository.findById(1L);
+        //Schedule s2 = scheduleRepository.findById(2L);
 
         Category service = new Category();
         service.setName("PEDICURE");
