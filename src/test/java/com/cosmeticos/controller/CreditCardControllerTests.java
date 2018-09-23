@@ -176,11 +176,11 @@ public class CreditCardControllerTests {
 
         ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
 
-        User afterPostUser = userRepository.findById(user.getIdLogin());
+        User afterPostUser = userRepository.findById(user.getIdLogin()).get();
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
 
-        professional = professionalRepository.findById(professional.getIdProfessional());
+        professional = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertTrue("Nao veio cartao de credito", professional.getUser().getCreditCardCount() > 0);
 
@@ -199,11 +199,11 @@ public class CreditCardControllerTests {
 
         ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
 
-        User afterPostUser = userRepository.findById(user.getIdLogin());
+        User afterPostUser = userRepository.findById(user.getIdLogin()).get();
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
 
-        customer = customerRepository.findById(customer.getIdCustomer());
+        customer = customerRepository.findById(customer.getIdCustomer()).get();
 
         Assert.assertTrue("Nao veio cartao de credito para o customer", customer.getUser().getCreditCardCount() > 0);
 
@@ -227,11 +227,11 @@ public class CreditCardControllerTests {
        // Customer retrievedCustomer = getCustomer()
 
 
-        User afterPostUser = userRepository.findById(user.getIdLogin());
+        User afterPostUser = userRepository.findById(user.getIdLogin()).get();
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
 
-        customer = customerRepository.findById(customer.getIdCustomer());
+        customer = customerRepository.findById(customer.getIdCustomer()).get();
 
         Assert.assertTrue("Nao veio cartao de credito para o customer", customer.getUser().getCreditCardCount() > 0);
 

@@ -90,7 +90,7 @@ public class UserRepositoryTests {
          Aqui o cascade nao funiona. Parece que se ja houver item pesistente na lista, o insert
          do transiente nao ocorre. Eh necessario apelar ao creditCardRepository
           */
-        User u = userRepository.findById(userId);
+        User u = userRepository.findById(userId).get();
         u.setPersonType(User.PersonType.JURIDICA);
         u.addCreditCard(newCC);
 
@@ -122,7 +122,7 @@ public class UserRepositoryTests {
 
         userRepository.save(u2);
 
-        u2 = userRepository.findById(u2.getIdLogin());
+        u2 = userRepository.findById(u2.getIdLogin()).get();
 
         CreditCard ccNovo = CreditCard.builder().build();
         ccNovo.setToken("77777");
@@ -148,7 +148,7 @@ public class UserRepositoryTests {
     {
 
 
-        User u2 = userRepository.findById(this.userId);
+        User u2 = userRepository.findById(this.userId).get();
         u2.setPersonType(User.PersonType.JURIDICA);
         u2.getCreditCardCollection().forEach(cc -> cc.setToken("ALTEREI"));
 
@@ -201,11 +201,11 @@ public class UserRepositoryTests {
         userRepository.saveAndFlush(u1);
 
         // Conferindo se o usuario ainda possui 2 cartoes apos eu mandar atualizar apenas 1.
-        User updatedUser = userRepository.findById(u1.getIdLogin());
+        User updatedUser = userRepository.findById(u1.getIdLogin()).get();
         Assert.assertEquals(2, updatedUser.getCreditCardCollection().size());
 
         // Verficando se o cartao que mandamos o controller atualizar foi realmente atualizado no banco.
-        CreditCard updatedCC = ccRepository.findById(ccToBeChanged.getIdCreditCard());
+        CreditCard updatedCC = ccRepository.findById(ccToBeChanged.getIdCreditCard()).get();
         Assert.assertNotNull(updatedCC);
         Assert.assertEquals("ALTERADOOOOOOOOOOOOO", updatedCC.getToken());
         Assert.assertEquals(CreditCard.Status.INACTIVE, updatedCC.getStatus());

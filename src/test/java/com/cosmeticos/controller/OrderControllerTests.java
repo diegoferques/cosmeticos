@@ -1623,7 +1623,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdateProfessionalVote.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateProfessionalVote.getStatusCode());
 
-        Order orderUpdateProfessionalVote =  orderRepository.findById(createdOrder.getIdOrder());
+        Order orderUpdateProfessionalVote =  orderRepository.findById(createdOrder.getIdOrder()).get();
 
         //Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
 

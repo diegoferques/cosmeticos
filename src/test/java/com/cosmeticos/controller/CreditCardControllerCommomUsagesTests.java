@@ -82,7 +82,7 @@ public class CreditCardControllerCommomUsagesTests {
 
         ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
 
-        User afterPostUser = userRepository.findById(user.getIdLogin());
+        User afterPostUser = userRepository.findById(user.getIdLogin()).get();
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         Assert.assertTrue("Ha mais de um cartao", afterPostUser.getCreditCardCollection().size() == 1);
 

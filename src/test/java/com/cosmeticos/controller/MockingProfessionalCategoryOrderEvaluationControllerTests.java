@@ -3,8 +3,6 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.LocationService;
@@ -13,15 +11,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.Exception;
 import java.net.URI;
@@ -254,7 +249,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateReady2Charger.getStatusCode());
 
 
-        Order orderUpdateReady2Charger =  orderRepository.findById(orderUpdateSemiClosed.getIdOrder());
+        Order orderUpdateReady2Charger =  orderRepository.findById(orderUpdateSemiClosed.getIdOrder()).get();
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
         Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());

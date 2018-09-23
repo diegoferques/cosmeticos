@@ -30,8 +30,8 @@ public class CustomerWalletReposioryTests {
     @Test
     public void insereCustomerEmWalletEWalletEmProfessional(){
 
-        Customer c1 = customerRepository.findById(1L);
-        Customer c2 = customerRepository.findById(2L);
+        Customer c1 = customerRepository.findById(1L).get();
+        Customer c2 = customerRepository.findById(2L).get();
 
 
         Wallet cw1 = new Wallet();

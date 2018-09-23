@@ -145,11 +145,11 @@ public class MockingPaymentControllerTests {
         Assert.assertEquals(exchangeCreate.getBody().getDescription(), HttpStatus.OK, exchangeCreate.getStatusCode());
 
         Order order = exchangeCreate.getBody().getOrderList().get(0);
-        Order order1 = orderRepository.findById(order.getIdOrder());
+        Order order1 = orderRepository.findById(order.getIdOrder()).get();
 
         //TODO - OS DO ENDERECO NAO ESTAO VINDO
         //RESP: Nem deveria. Ver meu outro "Resp" acima
-        Address address = addressRepository.findById(order1.getIdCustomer().getAddress().getIdAddress());
+        Address address = addressRepository.findById(order1.getIdCustomer().getAddress().getIdAddress()).get();
 
         /************ FIM DAS PRE_CONDICOES **********************************/
 
@@ -344,7 +344,7 @@ public class MockingPaymentControllerTests {
 
         //TODO - AO BUSCAR NO BANCO O CUSTOMER PELO ID, O ADDRESS RETORNADO NAO EH O MESMO QUE FOI CRIADO INICIALMENTE
         //ABAIXO SEGUE O CUSTOMER QUE BUSCAMOS NO BANCO PELO ID DO CUSTOMER CRIADO ACIMA, O ID DE ADDRESS RETORNADO FOI 7
-        Customer customer2 = customerRepository.findById(customer.getIdCustomer());
+        Customer customer2 = customerRepository.findById(customer.getIdCustomer()).get();
 
 		return customer;
 	}
@@ -370,7 +370,7 @@ public class MockingPaymentControllerTests {
         //validatePaymentStatusAndSendCapture
 
         // TODO: diego, seu teste ta dependendo de do preload, nao pode.. tem q criar essa order dentro do seu metodo de teste.
-        Order order = orderRepository.findById(3L);
+        Order order = orderRepository.findById(3L).get();
 
         // DIEGO, acho que aqui vc queria execuutar o metodo mas como ele ta mocado, vai sempre responder false e o teste vai falhar.
         // O Mockito permite desmocar um bean, basta fazer o que fiz acima pro paymentController
@@ -464,7 +464,7 @@ public class MockingPaymentControllerTests {
 
 
         //--- INICIO - ABAIXO MUDAMOS DE OPEN PARA ACCEPTED ---//
-        Order orderAccepted = orderRepository.findById(order.getIdOrder());
+        Order orderAccepted = orderRepository.findById(order.getIdOrder()).get();
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderAccepted.setStatus(Order.Status.ACCEPTED);
 
@@ -477,7 +477,7 @@ public class MockingPaymentControllerTests {
         //--- FIM ---//
 
         //--- INICIO - ABAIXO MUDAMOS DE ACCEPTED PARA INPROGRESS ---//
-        Order orderInProgress = orderRepository.findById(order.getIdOrder());
+        Order orderInProgress = orderRepository.findById(order.getIdOrder()).get();
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderInProgress.setStatus(Order.Status.INPROGRESS);
 
@@ -488,7 +488,7 @@ public class MockingPaymentControllerTests {
         //--- FIM ---//
 
         //--- INICIO - ABAIXO MUDAMOS DE INPROGRESS PARA EXECUTED ---//
-        Order orderExecuted = orderRepository.findById(order.getIdOrder());
+        Order orderExecuted = orderRepository.findById(order.getIdOrder()).get();
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderExecuted.setStatus(Order.Status.EXECUTED);
 
@@ -500,7 +500,7 @@ public class MockingPaymentControllerTests {
 
 
         //--- INICIO - ABAIXO MUDAMOS DE INPROGRESS PARA READY2CHARGE E, AUTOMATICAMENTE, EFETUAMOS A CAPTURA ---//
-        Order orderReady2Charge = orderRepository.findById(order.getIdOrder());
+        Order orderReady2Charge = orderRepository.findById(order.getIdOrder()).get();
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
         orderReady2Charge.setStatus(Order.Status.READY2CHARGE);
 

@@ -19,7 +19,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 @AllArgsConstructor(access = PACKAGE)
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-final class TokenAuthenticationService implements UserAuthenticationService {
+public final class TokenAuthenticationService implements UserAuthenticationService {
     @NonNull
     TokenService tokens;
 

@@ -42,7 +42,7 @@ public class RoleRepositoryTests {
 
 	@Test
 	public void testFindRoleADMIN() {
-		Role schedule = repository.findById(1L);
+		Role schedule = repository.findById(1L).get();
 		Assert.assertNotNull(schedule);
 
 		// Confere se o Role que retornou confere com a primeira Role inserida.
@@ -51,7 +51,7 @@ public class RoleRepositoryTests {
 
 	@Test
 	public void testFindRoleCUSTOMER() {
-		Role schedule = repository.findById(2L);
+		Role schedule = repository.findById(2L).get();
 		Assert.assertNotNull(schedule);
 
 		// Confere se o Role que retornou confere com a primeira Role inserida.
@@ -60,7 +60,7 @@ public class RoleRepositoryTests {
 
 	@Test
 	public void testFindRolePROFESSIONAL() {
-		Role schedule = repository.findById(3L);
+		Role schedule = repository.findById(3L).get();
 		Assert.assertNotNull(schedule);
 
 		// Confere se o Role que retornou confere com a primeira Role inserida.
@@ -69,7 +69,7 @@ public class RoleRepositoryTests {
 
 	@Test
 	public void testFindRoleCALLCENTER() {
-		Role schedule = repository.findById(4L);
+		Role schedule = repository.findById(4L).get();
 		Assert.assertNotNull(schedule);
 
 		// Confere se o Role que retornou confere com a primeira Role inserida.

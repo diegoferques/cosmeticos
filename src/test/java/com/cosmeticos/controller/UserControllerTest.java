@@ -166,7 +166,7 @@ public class UserControllerTest {
         Assert.assertEquals(HttpStatus.OK, rsp2.getStatusCode());
         Assert.assertEquals(HttpStatus.OK, rsp3.getStatusCode());
 
-        user = userRepository.findById(user.getIdLogin());
+        user = userRepository.findById(user.getIdLogin()).get();
 
         Assert.assertEquals(
                 "Nao foram inseridas as 3 imagens",
@@ -209,7 +209,7 @@ public class UserControllerTest {
         Assert.assertEquals(HttpStatus.OK, rsp2.getStatusCode());
         Assert.assertEquals(HttpStatus.OK, rsp3.getStatusCode());
 
-        user = userRepository.findById(user.getIdLogin());
+        user = userRepository.findById(user.getIdLogin()).get();
 
         Assert.assertEquals(
                 "Nao foram inseridas as 3 imagens",
@@ -223,7 +223,7 @@ public class UserControllerTest {
                         .findFirst().get().getId()
         );
 
-        user = userRepository.findById(user.getIdLogin());
+        user = userRepository.findById(user.getIdLogin()).get();
 
         Assert.assertEquals(
                 "Nao foi removida a imagem.",
@@ -342,11 +342,11 @@ public class UserControllerTest {
         Assert.assertEquals(HttpStatus.OK, rsp.getStatusCode());
 
         // Conferindo se o usuario ainda possui 2 cartoes apos eu mandar atualizar apenas 1.
-        User updatedUser = userRepository.findById(u1.getIdLogin());
+        User updatedUser = userRepository.findById(u1.getIdLogin()).get();
         Assert.assertEquals(2, updatedUser.getCreditCardCollection().size());
 
         // Verficando se o cartao que mandamos o controller atualizar foi realmente atualizado no banco.
-        CreditCard updatedCC = ccRepository.findById(idToken1234);
+        CreditCard updatedCC = ccRepository.findById(idToken1234).get();
         Assert.assertNotNull(updatedCC);
         Assert.assertEquals("ALTERADOOOOOOOOOOOOO", updatedCC.getToken());
 

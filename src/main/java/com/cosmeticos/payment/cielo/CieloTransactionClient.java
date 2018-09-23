@@ -1,18 +1,16 @@
 package com.cosmeticos.payment.cielo;
 
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.payment.cielo.model.*;
 import com.cosmeticos.validation.OrderException;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import static feign.FeignException.errorStatus;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
