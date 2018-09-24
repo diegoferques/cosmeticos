@@ -66,7 +66,6 @@ public class CustomerService {
         c.getUser().setCustomer(c);
         c.getUser().setPersonType(c.getPersonType());
         c.getUser().setStatus(User.Status.ACTIVE);
-        c.getUser().getAuthorities().add(new SimpleGrantedAuthority(Role.Names.ROLE_USER.toString()));
 
         return repository.save(c);
     }
