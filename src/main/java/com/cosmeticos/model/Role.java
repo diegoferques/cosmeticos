@@ -4,6 +4,8 @@
  */
 package com.cosmeticos.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -15,6 +17,8 @@ import java.util.Collection;
  *
  * @author magarrett.dias
  */
+@AllArgsConstructor
+@Builder
 @Data
 @Entity
 public class Role implements Serializable {
@@ -57,5 +61,8 @@ public class Role implements Serializable {
     public String toString() {
         return "javaapplication2.entity.Role[ idRole=" + idRole + " ]";
     }
-    
+
+    public enum Names {
+        ROLE_USER
+    }
 }

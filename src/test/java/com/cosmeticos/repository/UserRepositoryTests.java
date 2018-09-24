@@ -49,7 +49,7 @@ public class UserRepositoryTests {
 
         //User
         User u1 = new User();
-        u1.setUsername("KillerUserrepositorytest");
+
         u1.setPassword("109809876");
         u1.setEmail("KillerUserrepositorytest@gmail.com");
         u1.setSourceApp("facebook");
@@ -114,7 +114,7 @@ public class UserRepositoryTests {
     {
 
         User u2 = new User();
-        u2.setUsername("KILLER sem cartao card 22 maluco");
+
         u2.setPassword("10980999876");
         u2.setEmail("Killercard22222@gmail.com");
         u2.setSourceApp("facebook");
@@ -176,7 +176,7 @@ public class UserRepositoryTests {
         cc2.setStatus(CreditCard.Status.ACTIVE);
 
         User u1 = new User();
-        u1.setUsername("KILLER card 22 maluco");
+
         u1.setPassword("109809876");
         u1.setEmail("Killercard22@gmail.com");
         u1.setSourceApp("facebook");

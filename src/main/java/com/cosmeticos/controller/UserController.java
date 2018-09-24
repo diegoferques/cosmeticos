@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static org.springframework.http.ResponseEntity.*;
 
 
@@ -65,7 +66,7 @@ public class UserController {
                 log.error("Nao e permitido cadastro de usuario associados a cartoes pre-existentes.");
                 return badRequest().body(responseBody);
 
-            } else if(service.verifyEmailExistsforCreate(request.getEntity().getEmail())) {
+            } else if (service.verifyEmailExistsforCreate(request.getEntity().getEmail())) {
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("E-mail já existente.");
                 log.error("Nao e permitido cadastro de usuario associados a emails pre-existentes.");
@@ -109,7 +110,7 @@ public class UserController {
                 log.error("BAD REQUEST: Entity ID must to be set!");
                 return badRequest().body(responseBody);
 
-            } else if(service.verifyEmailExistsforUpdate(request.getEntity())) {
+            } else if (service.verifyEmailExistsforUpdate(request.getEntity())) {
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("E-mail já existente.");
                 log.error("Nao e permitido atualizar usuario para um novo emails pre-existentes.");
@@ -173,8 +174,53 @@ public class UserController {
 
     }
 
+    @JsonView(ResponseJsonView.ProfessionalCategoryFindAll.class)
+    @PostMapping("/users/login")
+    HttpEntity<UserResponseBody> login(
+            @ModelAttribute User userRequest,
+            @RequestHeader(value = Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
+    ) {
+        if(ofNullable(userRequest.getEmail()).isPresent()) {
+
+            Optional<User> userOptional = userRepository.findByEmail(userRequest.getEmail());
+
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
+                // Atualizamos o firebase token
+                if (!StringUtils.isEmpty(firebaseUserToken)) {
+                    user.setFirebaseInstanceId(firebaseUserToken);
+                }
+
+                String username = user.getEmail();
+                String password = user.getPassword();
+                String token = authentication
+                        .login(username, password)
+                        .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
+
+                user.setAuthToken(token);
+
+                service.update(user);
+
+                return ok(new UserResponseBody(user));
+            } else {
+                log.error("Nenhum registro encontrado para o User=[{}]", userRequest);
+                UserResponseBody responseBody = new UserResponseBody();
+                responseBody.setDescription("No Users could be found: " + userRequest.getEmail());
+                return status(HttpStatus.NOT_FOUND).body(responseBody);
+            }
+        }
+        else
+        {
+            UserResponseBody responseBody = new UserResponseBody();
+            responseBody.setDescription("'entity' is null");
+            return status(HttpStatus.BAD_REQUEST).body(responseBody);
+        }
+    }
+
     /**
      * Usado para o login por enquanto.
+     *
      * @param userAttr
      * @return
      */
@@ -182,25 +228,22 @@ public class UserController {
     @RequestMapping(path = "/users", method = RequestMethod.GET)
     public HttpEntity<UserResponseBody> findAllBy(
             @ModelAttribute User userAttr,
-            @RequestHeader(value=Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
+            @RequestHeader(value = Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
     ) {
 
         try {
 
             List<User> entitylist = service.findAllBy(userAttr);
 
-            if(entitylist.isEmpty())
-            {
+            if (entitylist.isEmpty()) {
                 log.error("Nenhum registro encontrado para o User=[{}]", userAttr);
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("No Users could be found!");
                 return status(HttpStatus.NOT_FOUND).body(responseBody);
-            }
-            else {
+            } else {
 
                 // Atualizamos o firebase token
-                if(!StringUtils.isEmpty(firebaseUserToken))
-                {
+                if (!StringUtils.isEmpty(firebaseUserToken)) {
                     User user = entitylist.get(0);
                     user.setFirebaseInstanceId(firebaseUserToken);
                     service.update(user);
@@ -293,7 +336,7 @@ public class UserController {
         UserResponseBody responseBody = new UserResponseBody();
 
         String receivedToken = request.getEntity().getLostPasswordToken();
-        if(receivedToken == null || receivedToken.isEmpty() ){
+        if (receivedToken == null || receivedToken.isEmpty()) {
             responseBody.setDescription("Token vazio");
             return badRequest().body(responseBody);
         }
@@ -303,11 +346,11 @@ public class UserController {
         Optional<User> userOptional = service.findByEmail(request.getEntity().getEmail());
 
         if (userOptional.isPresent()) {
-            if(!receivedToken.equals(userOptional.get().getLostPasswordToken())){
+            if (!receivedToken.equals(userOptional.get().getLostPasswordToken())) {
                 responseBody.setDescription("Token Invalido");
                 return badRequest().body(responseBody);
             }
-        }else{
+        } else {
             return notFound().build();
         }
 
@@ -315,16 +358,13 @@ public class UserController {
 
         ResponseEntity<UserResponseBody> response = (ResponseEntity<UserResponseBody>) update(request, bindingResult);
 
-        if(HttpStatus.OK.equals(response.getStatusCode()))
-        {
+        if (HttpStatus.OK.equals(response.getStatusCode())) {
             service.invalidateToken(request.getEntity());
             service.sendSuccesfullPasswordResetMessage(request.getEntity().getEmail());
 
             return response;
 
-        }
-        else
-        {
+        } else {
             return response;
         }
     }
@@ -334,7 +374,7 @@ public class UserController {
 
         try {
 
-            if(request.getEntity().getEmail().isEmpty() || request.getEntity().getLostPasswordToken().isEmpty()) {
+            if (request.getEntity().getEmail().isEmpty() || request.getEntity().getLostPasswordToken().isEmpty()) {
                 UserResponseBody responseBody = new UserResponseBody();
                 responseBody.setDescription("Requisição inválida!");
                 log.error("Requisição inválida!.");
@@ -352,7 +392,7 @@ public class UserController {
 
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
 
-                } else if(!service.validateToken(userOptional.get(), request.getEntity())) {
+                } else if (!service.validateToken(userOptional.get(), request.getEntity())) {
                     UserResponseBody responseBody = new UserResponseBody();
                     responseBody.setDescription("Token ou email inválido!");
                     log.error("Token ou email inválido!.");
@@ -368,7 +408,6 @@ public class UserController {
                 }
 
             }
-
 
 
         } catch (Exception e) {
@@ -418,14 +457,11 @@ public class UserController {
     }
 
     private boolean validateCreditCards(Set<CreditCard> creditCardCollection) {
-        if(CollectionUtils.isEmpty(creditCardCollection))
-        {
+        if (CollectionUtils.isEmpty(creditCardCollection)) {
             return true;
-        }
-        else{
-            for (CreditCard cc : creditCardCollection ) {
-                if (cc.getIdCreditCard() != null)
-                {
+        } else {
+            for (CreditCard cc : creditCardCollection) {
+                if (cc.getIdCreditCard() != null) {
                     return false;
                 }
             }

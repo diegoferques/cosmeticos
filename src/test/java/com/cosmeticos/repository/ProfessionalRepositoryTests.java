@@ -44,7 +44,7 @@ public class ProfessionalRepositoryTests {
     public void testFindByNameEqualJoaoDaSilva123() {
 
         Address address = new Address();
-        User u1 = new User("username123","654321","username123@gmail" );
+        User u1 = new User("username123@gmail","654321" );
         u1.setPersonType(User.PersonType.JURIDICA);
 
         Professional p1 = new Professional();
@@ -85,7 +85,7 @@ public class ProfessionalRepositoryTests {
         cw1.getCustomers().add(c1);
         cw1.getCustomers().add(c2);
 
-        User u1 = new User("garrydias", "123qwe", "garrydias@bol");
+        User u1 = new User("garrydias@bol", "123qwe");
         u1.setPersonType(User.PersonType.FISICA);
 
         Professional p1 = new Professional();
@@ -105,7 +105,7 @@ public class ProfessionalRepositoryTests {
     @Test
     public void testFindByNameEqualFubanga() {
 
-        User user6 = new User("fubangamaloca", "123abc", "joana6@bol");
+        User user6 = new User("joana6@bol", "123abc");
         user6.setPersonType(User.PersonType.FISICA);
 
         Address address6 = new Address();
@@ -127,7 +127,7 @@ public class ProfessionalRepositoryTests {
 
         repository.save(s6);
 
-        User user7 = new User("bocada", "123abc", "joao7@bol");
+        User user7 = new User("joao7@bol", "123abc");
         user7.setPersonType(User.PersonType.JURIDICA);
 
         Address address7 = new Address();

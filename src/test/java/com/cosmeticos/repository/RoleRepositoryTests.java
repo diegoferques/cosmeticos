@@ -22,18 +22,10 @@ public class RoleRepositoryTests {
 	@Before
 	public void setupTests()
 	{
-		Role s1 = new Role();
-		s1.setName("ADMIN");
-
-		Role s2 = new Role();
-		s2.setName("CUSTOMER");
-
-		Role s3 = new Role();
-		s3.setName("PROFESSIONAL");
-
-		Role s4 = new Role();
-		s4.setName("CALLCENTER");
-
+		Role s1 = Role.builder().name("ADMIN").build();
+		Role s2 = Role.builder().name("CUSTOMER").build();
+		Role s3 = Role.builder().name("PROFESSIONAL").build();
+		Role s4 = Role.builder().name("CALLCENTER").build();
 		repository.save(s1);
 		repository.save(s2);
 		repository.save(s3);

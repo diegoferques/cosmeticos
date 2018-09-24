@@ -50,11 +50,11 @@ public class OrderServiceTest {
     public void setUp() throws Exception {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testUpdateStatus-cliente");
+
         c1.getUser().setEmail("testUpdateStatus-cliente@bol");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testUpdateStatus-professional");
+
         professional.getUser().setEmail("testUpdateStatus-professional@bol");
 
         customerRepository.save(c1);

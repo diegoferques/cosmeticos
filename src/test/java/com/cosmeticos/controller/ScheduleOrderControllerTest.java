@@ -94,11 +94,11 @@ public class ScheduleOrderControllerTest {
           */
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-cliente_Schedule");
+
         c1.getUser().setEmail(System.nanoTime() + "-cliente@bol_Schedule");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime() + "-professional_Schedule");
+
         professional.getUser().setEmail(System.nanoTime() + "-professional@bol_Schedule");
 
         customerRepository.save(c1);
@@ -180,15 +180,15 @@ public class ScheduleOrderControllerTest {
           */
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-cliente_SchedulePut");
+
         c1.getUser().setEmail(System.nanoTime() + "-cliente@bol_SchedulePut");
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername(System.nanoTime() + "-cliente_ScheduleFail");
+
         c2.getUser().setEmail(System.nanoTime() + "-cliente@bol_SchedulePutFail");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime() + "-professional_SchedulePut");
+
         professional.getUser().setEmail(System.nanoTime() + "-professional@bol_SchedulePut");
 
         customerRepository.save(c1);

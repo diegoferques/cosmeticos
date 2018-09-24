@@ -216,7 +216,6 @@ public class PaymentControllerTests {
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testPaymentOk-professional");
         professional.getUser().setEmail("testPaymentOk-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.605.789-06");

@@ -72,10 +72,8 @@ public class CashOrderControllerTests {
 
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
         c1.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime()+ "-createOrderOk" + "-professional");
         professional.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-professional@bol");
 
         customerRepository.save(c1);

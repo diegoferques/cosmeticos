@@ -63,17 +63,17 @@ public class MockingOrderControllerWithWalletConstraintFailBugTests {
     public void setUp() throws Exception {
 
         c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testaddwallet-cliente");
+
         c1.getUser().setEmail("testaddwallet-cliente@bol");
         customerRepository.save(c1);
 
         professionalA = ProfessionalControllerTests.createFakeProfessional();
-        professionalA.getUser().setUsername("testaddwallet-professionalA");
+
         professionalA.getUser().setEmail("testaddwallet-professionalA@bol");
         professionalRepository.save(professionalA);
 
         professionalB = ProfessionalControllerTests.createFakeProfessional();
-        professionalB.getUser().setUsername("testaddwallet-professionalB");
+
         professionalB.getUser().setEmail("testaddwallet-professionalB@bol");
         professionalRepository.save(professionalB);
 

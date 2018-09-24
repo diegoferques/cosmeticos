@@ -86,14 +86,12 @@ public class MockingOrderControllerAddCardTests {
 
 
         c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
-                + "-cliente");
+
         c1.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-cliente@bol");
 
         professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
-                + "-professional");
+
         professional.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
                 + "-professional@bol");
 

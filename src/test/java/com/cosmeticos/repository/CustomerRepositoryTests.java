@@ -47,7 +47,7 @@ public class CustomerRepositoryTests {
     @Test
     public void testCustomer1() {
 
-        User u1 = new  User("uu1", "u1pass", "uu1@gmail.com");
+        User u1 = new  User("uu1@gmail.com", "u1pass");
         Address address = new Address();
 
         //TODO: pesquisar como gravar apenas dia mes e ano.
@@ -92,7 +92,7 @@ public class CustomerRepositoryTests {
     @Test
     public void testCustomer2() throws ParseException {
 
-        User u2 = new  User("uu2", "u2pass", "uu2@gmail.com");
+        User u2 = new  User("uu2@gmail.com", "u2pass");
         Address address2 = new Address();
 
         Date birthDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("1981-01-20");
@@ -136,7 +136,7 @@ public class CustomerRepositoryTests {
     @Test
     public void testCustomer3() throws ParseException {
 
-        User u3 = new  User("uu3", "u3pass", "uu3@gmail.com");
+        User u3 = new  User("uu3@gmail.com", "u3pass");
         Address address3 = new Address();
 
         Date birthDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("1982-01-20");
@@ -181,7 +181,7 @@ public class CustomerRepositoryTests {
     @Test
     public void testCustomer4() throws ParseException {
 
-        User u4 = new  User("uu4", "u4pass", "uu4@gmail.com");
+        User u4 = new  User("uu4@gmail.com", "u4pass");
         Address address4 = new Address();
 
         Date birthDate4 = new SimpleDateFormat("yyyy-MM-dd").parse("1983-01-20");
@@ -225,7 +225,7 @@ public class CustomerRepositoryTests {
     @Test
     public void testCustomer5() throws ParseException {
 
-        User u5 = new  User("uu5", "u5pass", "uu5@gmail.com");
+        User u5 = new  User("uu5@gmail.com", "u5pass");
         Address address5 = new Address();
         Date birthDate5 = new SimpleDateFormat("yyyy-MM-dd").parse("1984-01-20");
         c5 = new Customer();
@@ -282,7 +282,7 @@ public class CustomerRepositoryTests {
         //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
-        u.setUsername("diegoferques");
+
         //u.getCustomerCollection().add(c);
         userRepository.save(u);
         return u;

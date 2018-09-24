@@ -58,7 +58,7 @@ public class MockingUserControllerTests {
         //PRIMEIRO CRIAMOS UM USUARIO PARA DEPOIS SOLICITAR A TROCA DA SENHA//
 
         User user = new User();
-        user.setUsername("Killer");
+
         user.setEmail("killerhomage@gmail.com");
         user.setPersonType(User.PersonType.FISICA);
 

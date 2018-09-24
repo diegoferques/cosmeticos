@@ -59,4 +59,8 @@ public class RoleService {
         return StreamSupport.stream(result.spliterator(), false)
                 .collect(Collectors.toList());
     }
+
+    public Role findByName(String s) {
+        return repository.findByName(s);
+    }
 }

@@ -117,7 +117,7 @@ public class CustomerPreLoadConfiguration {
 
             //ADICIONADO PARA TESTAR PELO POSTMAN O CARD RNF76
             Customer customer = createFakeCustomer();
-            customer.getUser().setUsername("testPaymentPreload-customer1");
+
             customer.getUser().setEmail("testPaymentPreload-customer1@email.com");
             customer.getUser().setPassword("123");
             customer.setCpf("098.605.789-05");
@@ -135,7 +135,7 @@ public class CustomerPreLoadConfiguration {
         //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
-        u.setUsername(username);
+
         u.setPersonType(personType);
         u.setStatus(User.Status.ACTIVE);
         //u.getCustomerCollection().add(c);

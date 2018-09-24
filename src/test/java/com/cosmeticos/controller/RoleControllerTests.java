@@ -27,8 +27,7 @@ public class RoleControllerTests {
 	@Test
 	public void testCreateOK() {
 
-		Role r = new Role();
-		r.setName("CONTENTMANAGER");
+		Role r = Role.builder().name("CONTENTMANAGER").build();
 
 		RoleRequestBody request = new RoleRequestBody();
 		request.setEntity(r);

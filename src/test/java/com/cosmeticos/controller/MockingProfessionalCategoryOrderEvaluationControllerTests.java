@@ -78,11 +78,11 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
        // ).thenReturn(sourceLocation);
 
         c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
+
         c1.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
 
         professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime()+ "-createOrderOk" + "-professional");
+
         professional.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-professional@bol");
 
         professional.getAddress().setLatitude("-22.7245761");

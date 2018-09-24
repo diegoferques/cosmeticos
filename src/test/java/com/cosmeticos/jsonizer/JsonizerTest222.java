@@ -26,8 +26,7 @@ public class JsonizerTest222 {
     public void jsonizeRole() throws Exception {
         om.enable(SerializationFeature.INDENT_OUTPUT);
 
-        Role r= new Role();
-        r.setName("qualquer coisa");
+        Role r = Role.builder().name("qualquer coisa").build();
 
         RoleRequestBody body = new RoleRequestBody();
         body.setEntity(r);
@@ -50,7 +49,6 @@ public class JsonizerTest222 {
         //User
         User u1 = new User();
         u1.getCreditCardCollection().add(cc);
-        u1.setUsername("KILLER");
         u1.setPassword("109809876");
         u1.setEmail("Killer@gmail.com");
         u1.setSourceApp("facebook");
@@ -92,7 +90,7 @@ public class JsonizerTest222 {
         c1.setNameProfessional("João da Silva");
         c1.setStatus(Professional.Status.ACTIVE);
         c1.setAddress(new Address());
-        c1.setUser(new User("profissional1", "123qwe", "profissional1@gmail.con"));
+        c1.setUser(new User("profissional1@gmail.con", "123qwe"));
         c1.setHabilityCollection(new HashSet<Hability>(){{
             add(new Hability("Escova Progressiva"));
             add(new Hability("Relaxamento"));

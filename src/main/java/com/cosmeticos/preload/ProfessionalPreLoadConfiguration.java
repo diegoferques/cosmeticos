@@ -46,7 +46,7 @@ public class ProfessionalPreLoadConfiguration {
         cw1.getCustomers().add(c1);
         cw1.getCustomers().add(c2);
 
-        User user1 = new User("garry", "123qwe", "garry@bol.com");
+        User user1 = new User("garry@bol.com", "123qwe");
         user1.setStatus(User.Status.ACTIVE);
         user1.addVote(new Vote(3));
         user1.addVote(new Vote(5));
@@ -86,7 +86,7 @@ public class ProfessionalPreLoadConfiguration {
 
 
         ////////////////////////////////////////
-        User user2 = new User("Diego", "123qwe", "Diego@bol.com");
+        User user2 = new User("Diego@bol.com", "123qwe");
         user2.setStatus(User.Status.ACTIVE);
 
         Address address2 = new Address();
@@ -125,7 +125,7 @@ public class ProfessionalPreLoadConfiguration {
         s3.setAddress(address3);
         address3.setProfessional(s3);
 
-        s3.setUser(user3 = new User("Deivison", "123qwe", "Deivison@bol.com"));
+        s3.setUser(user3 = new User("Deivison@bol.com", "123qwe"));
         user3.setStatus(User.Status.ACTIVE);
         user3.setProfessional(s3);
         user3.setPersonType(User.PersonType.JURIDICA);
@@ -143,7 +143,7 @@ public class ProfessionalPreLoadConfiguration {
         s4.setAddress(address4);
         address4.setProfessional(s4);
 
-        s4.setUser(user4 = new User("Vinicius", "123qwe", "Vinicius@bol.com"));
+        s4.setUser(user4 = new User("Vinicius@bol.com", "123qwe"));
         user4.setStatus(User.Status.ACTIVE);
         user4.setProfessional(s4);
         user4.setPersonType(User.PersonType.FISICA);
@@ -163,7 +163,7 @@ public class ProfessionalPreLoadConfiguration {
         s5.setAddress(address5);
         address5.setProfessional(s5);
 
-        s5.setUser(user5 = new User("Habib@bol", "123qwe", "Habib@bol.com"));
+        s5.setUser(user5 = new User("Habib@bol.com", "123qwe"));
         user5.setStatus(User.Status.ACTIVE);
         user5.setProfessional(s5);
         user5.setPersonType(User.PersonType.JURIDICA);
@@ -178,7 +178,7 @@ public class ProfessionalPreLoadConfiguration {
         //Alterar ProfessionalPreLoadConfiguration, de modo a incluir + 2 profissionais
         //com endereços e Locations fictícios.
 
-        User user6 = new User("kelly", "123abc", "joana@bol.com");
+        User user6 = new User("joana@bol.com", "123abc");
 
         Address address6 = new Address();
         address6.setAddress("Travessa Tuviassuiara, 32");
@@ -201,7 +201,7 @@ public class ProfessionalPreLoadConfiguration {
 
         repository.save(s6);
 
-        User user7 = new User("kdoba", "123abc", "joao@bol");
+        User user7 = new User("joao@bol", "123abc");
         Address address7 = new Address();
         address7.setAddress("Avenida Marechal Floriano, 46");
         address7.setNeighborhood("Centro ");
@@ -224,7 +224,7 @@ public class ProfessionalPreLoadConfiguration {
         repository.save(s7);
 
         //ADICIONADO NOVO PROFESSIONAL COM EMAIL CORRETO PARA TESTAR CORRETAMENTE NO APP
-        User user8 = new User("emailOk", "123abc", "ok@email.com");
+        User user8 = new User("ok@email.com", "123abc");
         Address address8 = new Address();
         address8.setAddress("Rua José Paulino, 152");
         address8.setNeighborhood("Rodilândia ");
@@ -248,7 +248,7 @@ public class ProfessionalPreLoadConfiguration {
 
         //ADICIONADO PARA TESTAR PELO POSTMAN O CARD RNF76
         Professional professional = createFakeProfessional();
-        professional.getUser().setUsername("testPaymentPreload-professional");
+
         professional.getUser().setEmail("testPaymentPreload-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("098.605.789-06");
@@ -296,7 +296,7 @@ public class ProfessionalPreLoadConfiguration {
         //u.setUser(1234L);
         u.setPassword("123qwe");
         u.setSourceApp("google+");
-        u.setUsername(username);
+
         //u.getCustomerCollection().add(c);
         //userRepository.save(u);
         return u;

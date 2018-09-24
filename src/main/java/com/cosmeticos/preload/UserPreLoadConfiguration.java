@@ -51,7 +51,7 @@ public class UserPreLoadConfiguration {
 
         User u1 = new User();
         u1.getCreditCardCollection().add(cc);
-        u1.setUsername("KILLER");
+
         u1.setPassword("109809876");
         u1.setEmail("killer@gmail.com");
         u1.setSourceApp("facebook");
@@ -82,7 +82,7 @@ public class UserPreLoadConfiguration {
         User u2 = new User();
 
         u2.getCreditCardCollection().add(cc2);
-        u2.setUsername("NAMEK");
+
         u2.setPassword("1234098765");
         u2.setEmail("namek@gmail.com");
         u2.setSourceApp("google+");
@@ -96,7 +96,7 @@ public class UserPreLoadConfiguration {
 
 
         User u3 = new User();
-        u3.setUsername("FULANO");
+
         u3.setPassword("12323454");
         u3.setEmail("fulano@gmail.com");
         u3.setSourceApp("gmail");
@@ -104,7 +104,7 @@ public class UserPreLoadConfiguration {
 
 
         User u4 = new User();
-        u4.setUsername("KIRA");
+
         u4.setPassword("09877");
         u4.setEmail("kira@hotmail.com");
         u4.setSourceApp("facebook");
@@ -112,14 +112,14 @@ public class UserPreLoadConfiguration {
 
 
         User u5 = new User();
-        u5.setUsername("CICLANO");
+
         u5.setPassword("1234");
         u5.setEmail("ciclanor@gmail.com");
         u5.setSourceApp("google+");
         u5.setPersonType(User.PersonType.FISICA);
 
         User u6 = new User();
-        u6.setUsername("diegoferques");
+
         u6.setPassword("abc123");
         u6.setEmail("diegoferques@gmail.com");
         u6.setSourceApp("google+");

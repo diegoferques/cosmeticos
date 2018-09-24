@@ -307,7 +307,6 @@ public class CustomerControllerTests {
 		//u.setUser(1234L);
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
-		u.setUsername(String.valueOf(System.nanoTime()) );
 		u.setPersonType(User.PersonType.JURIDICA);
 		u.setStatus(User.Status.ACTIVE);
 		return u;

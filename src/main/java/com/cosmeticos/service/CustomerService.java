@@ -1,13 +1,11 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.CustomerRequestBody;
-import com.cosmeticos.model.Address;
-import com.cosmeticos.model.CreditCard;
-import com.cosmeticos.model.Customer;
-import com.cosmeticos.model.User;
+import com.cosmeticos.model.*;
 import com.cosmeticos.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +25,9 @@ public class CustomerService {
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private RoleService roleService;
 
     public Optional<Customer> find(Long idCustomer) {
         return (repository.findById(idCustomer));
@@ -55,10 +56,8 @@ public class CustomerService {
         c.setCpf(request.getCustomer().getCpf());
         //TODO - Não poderia ser o TimeStamp do banco?
         c.setDateRegister(Calendar.getInstance().getTime());
-        //c.setDateRegister(Timestamp.valueOf(LocalDateTime.now()));
         c.setGenre(request.getCustomer().getGenre());
         c.setNameCustomer(request.getCustomer().getNameCustomer());
-        //c.setOrderCollection(null);
         c.setStatus(Customer.Status.ACTIVE.ordinal());
 
         c.setAddress(addressService.createFromCustomer(request));
@@ -67,6 +66,7 @@ public class CustomerService {
         c.getUser().setCustomer(c);
         c.getUser().setPersonType(c.getPersonType());
         c.getUser().setStatus(User.Status.ACTIVE);
+        c.getUser().getAuthorities().add(new SimpleGrantedAuthority(Role.Names.ROLE_USER.toString()));
 
         return repository.save(c);
     }

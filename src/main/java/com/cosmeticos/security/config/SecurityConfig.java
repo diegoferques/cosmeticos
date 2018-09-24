@@ -28,7 +28,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled=truee)
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -36,8 +36,9 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             new AntPathRequestMatcher("/public/**"),
 
             // Estes dois endpoints sao legados e por conveniencia nao incluiremos no path "/public"
-            new AntPathRequestMatcher("/customers", POST.toString()),
-            new AntPathRequestMatcher("/professionals", POST.toString())
+            new AntPathRequestMatcher("/users/login", POST.toString()),
+            new AntPathRequestMatcher("/customers", POST.toString()), // Cria cliente
+            new AntPathRequestMatcher("/professionals", POST.toString()) // Cria profissional
     );
 
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
@@ -61,6 +62,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+
         http
                 .sessionManagement()
                 .sessionCreationPolicy(STATELESS)
@@ -73,8 +75,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(provider)
                 .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
-                .requestMatchers(PROTECTED_URLS)
-                .authenticated()
+                .requestMatchers(PROTECTED_URLS).hasAnyRole("ROLE_ADMIN", "ROLE_FOO")
+                .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
                 .formLogin().disable()

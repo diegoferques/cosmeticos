@@ -92,11 +92,6 @@ public class User implements UserDetails {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })
-  
-    //@NotEmpty(message = "UserName cannot be empty")
-    // TODO: apagaremos este atributo pois usaremos somente email
-    @Column(unique = true)
-    private String username;
 
     private String password;
 
@@ -250,11 +245,15 @@ public class User implements UserDetails {
 
     private String firebaseInstanceId;
 
+    public String getUsername()
+    {
+        return email;
+    }
+
     public User() {
     }
 
-    public User(String username, String password, String email) {
-        this.username = username;
+    public User(String email, String password) {
         this.password = password;
         this.email = email;
     }
@@ -314,7 +313,7 @@ public class User implements UserDetails {
     public int hashCode() {
         int hash = 0;
         hash += (idLogin != null ? idLogin.hashCode() :
-                username != null ? username.hashCode() : 0);
+                email != null ? email.hashCode() : 0);
         return hash;
     }
 

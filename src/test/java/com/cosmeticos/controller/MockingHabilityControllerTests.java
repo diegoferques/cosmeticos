@@ -90,7 +90,6 @@ public class MockingHabilityControllerTests {
 		u.setEmail("diego@bol.com");
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
-		u.setUsername("diegoferques");
 
 		return u;
 	}

@@ -274,10 +274,8 @@ public class OrderControllerTests {
           */
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-cliente");
         c1.getUser().setEmail(System.nanoTime() + "-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime() + "-professional");
         professional.getUser().setEmail(System.nanoTime() + "-professional@bol");
 
         customerRepository.save(c1);
@@ -343,11 +341,11 @@ public class OrderControllerTests {
     @Test public void testaddwallet() throws URISyntaxException {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testaddwallet-cliente");
+
         c1.getUser().setEmail("testaddwallet-cliente@bol");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testaddwallet-professional");
+
         professional.getUser().setEmail("testaddwallet-professional@bol");
 
         customerRepository.save(c1);
@@ -443,10 +441,10 @@ public class OrderControllerTests {
     public void updateStatusWithJson() throws URISyntaxException {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("updateStatusWithJson-cliente");
+
         c1.getUser().setEmail("updateStatusWithJson-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("updateStatusWithJson-professional");
+
         professional.getUser().setEmail("updateStatusWithJson-professional@bol");
 
         customerRepository.save(c1);
@@ -517,10 +515,10 @@ public class OrderControllerTests {
 
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testParaTravarUpdateDeStatus-cliente");
+
         c1.getUser().setEmail("testParaTravarUpdateDeStatus-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testParaTravarUpdateDeStatus-professional");
+
         professional.getUser().setEmail("testParaTravarUpdateDeStatus-professional@bol");
 
         customerRepository.save(c1);
@@ -678,10 +676,10 @@ public class OrderControllerTests {
     public void createOrderOk() throws URISyntaxException {
 
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
+
         c1.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime()+ "-createOrderOk" + "-professional");
+
         professional.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-professional@bol");
 
         customerRepository.save(c1);
@@ -1825,13 +1823,13 @@ public class OrderControllerTests {
 
         // Criando usuario sem cartao de credito.
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-customer1");
+
         c1.getUser().setEmail("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-customer1@email.com");
         c1.getUser().setPassword("123");
         c1.setCpf("123.456.789-02");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-professional");
+
         professional.getUser().setEmail("testGivenUserWithoutDoCreateOrderWithPaymentTypeCcThenReturnUnsupportedPaymentType-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");

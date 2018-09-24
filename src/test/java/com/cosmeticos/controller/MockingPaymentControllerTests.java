@@ -271,7 +271,7 @@ public class MockingPaymentControllerTests {
 
     private ProfessionalCategory createProfessionalWhatever(String email, String cnpj) {
 		 Professional professional = ProfessionalControllerTests.createFakeProfessional();
-	        professional.getUser().setUsername(email);
+
 	        professional.getUser().setEmail(email);
 	        professional.getUser().setPassword("123");
 	        professional.setCnpj(cnpj);
@@ -637,19 +637,19 @@ public class MockingPaymentControllerTests {
 
         //SETAMOS E SALVAMOS O PROFESSIONAL, CUSTOMER 1 E CUSTOMER 2 QUE QUE VAMOS UTILIZAR NESTE TESTE
         Customer c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername("testConflictedOrder-customer1");
+
         c1.getUser().setEmail("testConflictedOrder-customer1@email.com");
         c1.getUser().setPassword("123");
         c1.setCpf("123.456.789-01");
 
         Customer c2 = CustomerControllerTests.createFakeCustomer();
-        c2.getUser().setUsername("testConflictedOrder-customer2");
+
         c2.getUser().setEmail("testConflictedOrder-customer2@email.com");
         c2.getUser().setPassword("123");
         c2.setCpf("123.456.789-02");
 
         Professional professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername("testConflictedOrder-professional");
+
         professional.getUser().setEmail("testConflictedOrder-professional@email.com");
         professional.getUser().setPassword("123");
         professional.setCnpj("123.456.789-03");

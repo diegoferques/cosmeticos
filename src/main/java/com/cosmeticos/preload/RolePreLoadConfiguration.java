@@ -22,26 +22,16 @@ public class RolePreLoadConfiguration {
     @PostConstruct
     public void insertInitialH2Data()
     {
-        Role s1 = new Role();
-        s1.setName("ADMIN");
-
-        Role s2 = new Role();
-        s2.setName("CUSTOMER");
-
-        Role s3 = new Role();
-        s3.setName("PROFESSIONAL");
-
-        Role s4 = new Role();
-        s4.setName("CALLCENTER");
-
-        Role s5 = new Role();
-        s5.setName("CONTENTMANAGER");
+        Role s1 = Role.builder().name("ADMIN").build();
+        Role s2 = Role.builder().name("CUSTOMER").build();
+        Role s3 = Role.builder().name("PROFESSIONAL").build();
+        Role s4 = Role.builder().name("CALLCENTER").build();
+        Role s5 = Role.builder().name("CONTENTMANAGER").build();
 
         repository.save(s1);
         repository.save(s2);
         repository.save(s3);
         repository.save(s4);
         repository.save(s5);
-
     }
 }

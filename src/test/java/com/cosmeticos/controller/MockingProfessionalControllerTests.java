@@ -110,7 +110,7 @@ public class MockingProfessionalControllerTests {
 		u.setEmail("diego@bol.com");
 		u.setPassword("123qwe");
 		u.setSourceApp("google+");
-		u.setUsername("diegoferques");
+
 		u.setPersonType(User.PersonType.FISICA);
 
 		return u;

@@ -39,7 +39,7 @@ public final class TokenAuthenticationService implements UserAuthenticationServi
         return Optional
                 .of(tokens.verify(token))
                 .map(map -> map.get("username"))
-                .flatMap(users::findByUsername);
+                .flatMap(users::findByEmail);
     }
 
     @Override

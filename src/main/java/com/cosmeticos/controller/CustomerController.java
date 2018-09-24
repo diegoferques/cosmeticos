@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +71,7 @@ public class CustomerController {
 
                     log.info("Customer adicionado com sucesso:  [{}]", customer);
 
-                    return ok(login(customer, null).getBody());
+                    return ok(new CustomerResponseBody(customer));
                 }
             }
         } catch (Exception e) {
@@ -84,6 +86,7 @@ public class CustomerController {
         }
     }
 
+    @Secured("ROLE_ADMIN")
     @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
     public HttpEntity<CustomerResponseBody> findById(@PathVariable Long idCustomer) {
@@ -257,27 +260,6 @@ public class CustomerController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-    }
-
-    @PostMapping("/login")
-    HttpEntity<CustomerResponseBody> login(
-            @ModelAttribute Customer customerRequest,
-            @RequestHeader(value=Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
-    ) {
-        HttpEntity<CustomerResponseBody> entity = findById(customerRequest.getIdCustomer());
-
-        Customer customer = entity.getBody().getCustomerList().get(0);
-        User user = customer.getUser();
-
-        String username = user.getEmail();
-        String password = user.getPassword();
-        String token = authentication
-                .login(username, password)
-                .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
-
-        user.setAuthToken(token);
-
-        return entity;
     }
 
     private CustomerResponseBody buildErrorResponse(BindingResult bindingResult) {

@@ -144,7 +144,6 @@ public class ProfessionalCategoryControllerTests {
         u.setEmail("diego@bol.com");
         u.setPassword("123qwe");
         u.setSourceApp("google+");
-        u.setUsername("diegoferques");
         u.setPersonType(User.PersonType.JURIDICA);
 
         return u;
