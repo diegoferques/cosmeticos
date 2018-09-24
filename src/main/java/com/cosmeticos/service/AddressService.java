@@ -38,18 +38,18 @@ public class AddressService {
         Address a = new Address();
         Customer customer = request.getCustomer();
         Address address = customer.getAddress();
-        String complement = address.getComplement();
 
-        a.setAddress(request.getCustomer().getAddress().getAddress());
-        a.setCep(request.getCustomer().getAddress().getCep());
-        a.setCity(request.getCustomer().getAddress().getCity());
-        a.setState(request.getCustomer().getAddress().getState());
-        a.setCountry(request.getCustomer().getAddress().getCountry());
-        a.setNeighborhood(request.getCustomer().getAddress().getNeighborhood());
-        a.setComplement(complement);
+
+        a.setAddress(address.getAddress());
+        a.setCep(address.getCep());
+        a.setCity(address.getCity());
+        a.setState(address.getState());
+        a.setCountry(address.getCountry());
+        a.setNeighborhood(address.getNeighborhood());
+        a.setComplement(address.getComplement());
 
         LocationGoogle geocode = locationService.getGeoCode(a);
-        if(geocode  != null) {
+        if (geocode != null) {
             a.setLatitude(geocode.getLat().toString());
             a.setLongitude(geocode.getLng().toString());
         } else {
@@ -64,7 +64,7 @@ public class AddressService {
 
         Address address = professional.getAddress();
 
-        if(address != null) {
+        if (address != null) {
             LocationGoogle geocode = locationService.getGeoCode(address);
 
             address.setLatitude(geocode.getLat().toString());
@@ -73,7 +73,7 @@ public class AddressService {
 
 
         }
-return address;
+        return address;
     }
 
     public void updateGeocodeFromProfessionalUpdate(Professional professionalRequest) {
@@ -84,7 +84,7 @@ return address;
 
         Address addressRequest = professionalRequest.getAddress();
 
-        if(address != null) {
+        if (address != null) {
 
             address.setAddress(addressRequest.getAddress());
             address.setNeighborhood(addressRequest.getNeighborhood());
@@ -125,8 +125,8 @@ return address;
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
-        String urlViaCepPrefix= "https://viacep.com.br/ws/";
-        String urlViaCepSuffix  = "/json/";
+        String urlViaCepPrefix = "https://viacep.com.br/ws/";
+        String urlViaCepSuffix = "/json/";
         String urlViaCep = urlViaCepPrefix + cep + urlViaCepSuffix;
 
         ResponseEntity<AddressViacep> sourceResponse =
@@ -134,7 +134,7 @@ return address;
 
         AddressViacep addressViacep = sourceResponse.getBody();
 
-        if(wasFound(addressViacep)) {
+        if (wasFound(addressViacep)) {
             Address address = new Address();
 
             address.setAddress(addressViacep.getLogradouro());
@@ -145,9 +145,7 @@ return address;
             address.setCep(addressViacep.getCep());
 
             return Optional.ofNullable(address);
-        }
-        else
-        {
+        } else {
             return Optional.empty();
         }
 

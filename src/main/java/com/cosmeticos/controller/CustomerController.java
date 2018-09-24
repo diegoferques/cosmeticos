@@ -264,7 +264,7 @@ public class CustomerController {
             @ModelAttribute Customer customerRequest,
             @RequestHeader(value=Application.FIREBASE_USER_TOKEN_HEADER_KEY, required = false) String firebaseUserToken
     ) {
-        HttpEntity<CustomerResponseBody> entity = findById(customerRequest, firebaseUserToken);
+        HttpEntity<CustomerResponseBody> entity = findById(customerRequest.getIdCustomer());
 
         Customer customer = entity.getBody().getCustomerList().get(0);
         User user = customer.getUser();

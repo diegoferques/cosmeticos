@@ -22,6 +22,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -30,9 +31,15 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 class SecurityConfig extends WebSecurityConfigurerAdapter {
+
     private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/public/**")
+            new AntPathRequestMatcher("/public/**"),
+
+            // Estes dois endpoints sao legados e por conveniencia nao incluiremos no path "/public"
+            new AntPathRequestMatcher("/customers", POST.toString()),
+            new AntPathRequestMatcher("/professionals", POST.toString())
     );
+
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
     TokenAuthenticationProvider provider;

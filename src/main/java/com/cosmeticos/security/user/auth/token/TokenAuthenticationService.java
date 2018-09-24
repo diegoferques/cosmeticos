@@ -29,7 +29,7 @@ public final class TokenAuthenticationService implements UserAuthenticationServi
     @Override
     public Optional<String> login(final String username, final String password) {
         return users
-                .findByUsername(username)
+                .findByEmail(username)
                 .filter(user -> Objects.equals(password, user.getPassword()))
                 .map(user -> tokens.expiring(ImmutableMap.of("username", username)));
     }
