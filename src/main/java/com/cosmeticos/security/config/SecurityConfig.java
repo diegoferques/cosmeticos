@@ -28,7 +28,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=truee)
+@EnableGlobalMethodSecurity(prePostEnabled=true, securedEnabled = true)
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -75,8 +75,9 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(provider)
                 .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
-                .requestMatchers(PROTECTED_URLS).hasAnyRole("ROLE_ADMIN", "ROLE_FOO")
-                .anyRequest().authenticated()
+                .requestMatchers(PROTECTED_URLS)//.hasAnyRole("ROLE_ADMIN", "ROLE_FOO")
+                //.anyRequest()
+                .authenticated()
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
