@@ -86,10 +86,9 @@ public class CustomerController {
         }
     }
 
-    @Secured("ROLE_USER")
     @JsonView(ResponseJsonView.CustomerControllerGet.class)
     @RequestMapping(path = "/customers/{idCustomer}", method = RequestMethod.GET)
-    public HttpEntity<CustomerResponseBody> findById(@AuthenticationPrincipal User user, @PathVariable Long idCustomer) {
+    public HttpEntity<CustomerResponseBody> findById(@PathVariable Long idCustomer) {
 
         try {
 

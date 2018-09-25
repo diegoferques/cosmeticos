@@ -30,12 +30,11 @@ public class Role implements Serializable {
     @NotEmpty(message="Role name cannot be empty")
     private String name;
 
-    // TODO: role pertence a User, logo, o mappedBy deve ficar aqui e nao em User.
-    @JoinTable(name = "UserRoles", joinColumns = {
-        @JoinColumn(name = "idRole", referencedColumnName = "idRole")}, inverseJoinColumns = {
-        @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")})
-    @ManyToMany
+    @ManyToMany(mappedBy = "roleCollection", fetch = FetchType.EAGER)
     private Collection<User> userCollection;
+
+    public Role() {
+    }
 
     @Override
     public int hashCode() {

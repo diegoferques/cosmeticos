@@ -27,11 +27,13 @@ public class RolePreLoadConfiguration {
         Role s3 = Role.builder().name("PROFESSIONAL").build();
         Role s4 = Role.builder().name("CALLCENTER").build();
         Role s5 = Role.builder().name("CONTENTMANAGER").build();
+        Role s6 = Role.builder().name("USER").build();
 
         repository.save(s1);
         repository.save(s2);
         repository.save(s3);
         repository.save(s4);
         repository.save(s5);
+        repository.save(s6);
     }
 }

@@ -14,6 +14,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -21,10 +22,10 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
- *
  * @author magarrett.dias
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)// usar NON_EMPTY o jackson considera 0 (credicardCount) como vazio e nao exibe o atributo no json
+@JsonInclude(JsonInclude.Include.NON_NULL)
+// usar NON_EMPTY o jackson considera 0 (credicardCount) como vazio e nao exibe o atributo no json
 @Data
 @Entity
 public class User implements UserDetails {
@@ -39,6 +40,7 @@ public class User implements UserDetails {
         image.setUser(this);
     }
 
+
     /**
      * Os tipo sao referentes as classes que tem User. {@link Customer} e {@link Professional}.
      * Manter um enum aqui nesta classe eh mais conveniente.
@@ -47,19 +49,19 @@ public class User implements UserDetails {
         professional, customer
     }
 
-    public  enum Status {
+    public enum Status {
 
         ACTIVE, INACTIVE, GONE, PENDING_PAYMENT
 
     }
 
-    public enum PersonType{
+    public enum PersonType {
 
         FISICA, JURIDICA
 
     }
 
-    public enum UserType{
+    public enum UserType {
 
         customer, professional
 
@@ -160,7 +162,11 @@ public class User implements UserDetails {
     })
     private User.Type userType;
 
-    @ManyToMany(mappedBy = "userCollection", fetch = FetchType.EAGER)
+    // TODO: role pertence a User, logo, o mappedBy deve ficar aqui e nao em User.
+    @JoinTable(name = "UserRoles", joinColumns = {
+            @JoinColumn(name = "idLogin", referencedColumnName = "idLogin")}, inverseJoinColumns = {
+            @JoinColumn(name = "idRole", referencedColumnName = "idRole")})
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roleCollection;
 
 
@@ -171,7 +177,8 @@ public class User implements UserDetails {
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class
     })*/
-    @JsonIgnore // O cartao nunca é retornado nos request ou recebidos. Recebemos o cartao atraves de Payment, no momento da compra da order.
+    @JsonIgnore
+    // O cartao nunca é retornado nos request ou recebidos. Recebemos o cartao atraves de Payment, no momento da compra da order.
     @Where(clause = "status != 1")
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
@@ -189,12 +196,12 @@ public class User implements UserDetails {
     @Cascade(CascadeType.ALL)
     private Set<Image> imageCollection = new HashSet<>();
 
-    @JsonBackReference(value="user-customer")
+    @JsonBackReference(value = "user-customer")
     @OneToOne(mappedBy = "user")
     @JoinColumn(name = "idUser")
     private Customer customer;
 
-    @JsonBackReference(value="user-professional")
+    @JsonBackReference(value = "user-professional")
     @OneToOne(mappedBy = "user")
     @JoinColumn(name = "idUser")
     private Professional professional;
@@ -214,12 +221,12 @@ public class User implements UserDetails {
     //@Transient
     private Float evaluation = .0f;
 
-   //@JsonView({
-   //        ResponseJsonView.CustomerControllerUpdate.class,
-   //        ResponseJsonView.CustomerControllerGet.class
-   //})
-   //@Transient //TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
-   //private Integer creditCardCount = 0;
+    //@JsonView({
+    //        ResponseJsonView.CustomerControllerUpdate.class,
+    //        ResponseJsonView.CustomerControllerGet.class
+    //})
+    //@Transient //TODO: resolver o problema do jackson que nao mostra no json se estiver com @Transient, infelizmente gravaremos no banco.
+    //private Integer creditCardCount = 0;
 
     @JsonView({
             ResponseJsonView.ProfessionalCategoryFindAll.class,
@@ -245,8 +252,7 @@ public class User implements UserDetails {
 
     private String firebaseInstanceId;
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return email;
     }
 
@@ -258,17 +264,16 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public void addCreditCard(CreditCard cc)
-   {
-       cc.setUser(this);
-       this.getCreditCardCollection().add(cc);
-   }
+    public void addCreditCard(CreditCard cc) {
+        cc.setUser(this);
+        this.getCreditCardCollection().add(cc);
+    }
 
-   @JsonView({
+    @JsonView({
             ResponseJsonView.CustomerControllerUpdate.class,
             ResponseJsonView.CustomerControllerGet.class,
             ResponseJsonView.ProfessionalFindAll.class,
-   })
+    })
     public Integer getCreditCardCount() {
         return creditCardCollection.isEmpty() ? 0 : creditCardCollection.size();
     }
@@ -282,7 +287,15 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        for (Role role : getRoleCollection()) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+                /*role.getPrivileges().stream()
+                        .map(p -> new SimpleGrantedAuthority(p.getName()))
+                        .forEach(authorities::add);*/
+        }
+        return authorities;
     }
 
     @JsonIgnore

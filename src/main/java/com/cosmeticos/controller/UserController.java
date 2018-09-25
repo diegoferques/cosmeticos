@@ -6,7 +6,9 @@ import com.cosmeticos.commons.UserRequestBody;
 import com.cosmeticos.commons.UserResponseBody;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Image;
+import com.cosmeticos.model.Role;
 import com.cosmeticos.model.User;
+import com.cosmeticos.repository.RoleRepository;
 import com.cosmeticos.repository.UserRepository;
 import com.cosmeticos.security.user.auth.api.UserAuthenticationService;
 import com.cosmeticos.service.UserService;
@@ -46,6 +48,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     @NonNull
@@ -199,6 +204,7 @@ public class UserController {
                         .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
 
                 user.setAuthToken(token);
+                user.getRoleCollection().add(roleRepository.findByName("USER"));
 
                 service.update(user);
 

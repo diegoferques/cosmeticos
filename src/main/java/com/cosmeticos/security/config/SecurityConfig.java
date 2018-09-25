@@ -36,6 +36,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             new AntPathRequestMatcher("/public/**"),
 
             // Estes dois endpoints sao legados e por conveniencia nao incluiremos no path "/public"
+            new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/users/login", POST.toString()),
             new AntPathRequestMatcher("/customers", POST.toString()), // Cria cliente
             new AntPathRequestMatcher("/professionals", POST.toString()) // Cria profissional
@@ -75,8 +76,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(provider)
                 .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
-                .requestMatchers(PROTECTED_URLS)//.hasAnyRole("ROLE_ADMIN", "ROLE_FOO")
-                //.anyRequest()
+                .requestMatchers(PROTECTED_URLS)
                 .authenticated()
                 .and()
                 .csrf().disable()
