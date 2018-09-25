@@ -204,6 +204,8 @@ public class UserController {
                         .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
 
                 user.setAuthToken(token);
+
+                // TODO: ainda nao esta ativa validacao de autorizacao pois nao esta funfando 100%
                 user.getRoleCollection().add(roleRepository.findByName("USER"));
 
                 service.update(user);

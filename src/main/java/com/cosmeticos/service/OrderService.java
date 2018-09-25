@@ -30,6 +30,7 @@ import java.util.*;
 
 import static com.cosmeticos.model.Order.Status.*;
 import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
+import static java.time.LocalDateTime.now;
 import static java.util.Optional.ofNullable;
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -1107,14 +1108,11 @@ public class OrderService {
 
         int count = 0;
 
-        // TODO: colocar esses minutos no properties
-        LocalDateTime oneHourAfter = LocalDateTime.now().plusHours(1);
-
         for (Order o : onlyOrsersFinishedByProfessionals) {
             LocalDateTime orderCreationDate = o.getLastStatusUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-
-            if (orderCreationDate.isAfter(oneHourAfter)) {
+            // TODO: colocar esses minutos no properties
+            if (orderCreationDate.plusHours(1).isBefore(now())) {
                 o.setStatus(Order.Status.EXPIRED);
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
