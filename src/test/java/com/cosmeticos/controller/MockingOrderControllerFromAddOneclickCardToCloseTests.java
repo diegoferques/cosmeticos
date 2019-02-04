@@ -16,6 +16,7 @@ import com.cosmeticos.service.SuperpayOneClickPaymentService;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -161,6 +162,12 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         professionalCategoryRepository.save(ps1);
     }
 
+    /**
+     *
+     * @throws Exception
+     */
+    @Ignore("Ignored because this is a specific superpay test. As we´re using Cielo as charging provider, there´s no need" +
+            " to perform this test.")
     @Test
     public void testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard() throws Exception {
 
