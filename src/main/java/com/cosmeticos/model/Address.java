@@ -14,6 +14,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Optional;
 
+import static java.text.MessageFormat.format;
+
 /**
  *
  * @author magarrett.dias
@@ -200,5 +202,9 @@ public class Address implements Serializable {
         } else {
             return Optional.empty();
         }
+    }
+
+    public String getFormattedAddress() {
+        return format("{0}, {1}, {2}, {3}", address, neighborhood, city, state);
     }
 }

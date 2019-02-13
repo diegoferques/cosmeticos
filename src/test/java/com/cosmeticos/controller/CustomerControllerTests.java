@@ -5,6 +5,7 @@ import com.cosmeticos.commons.CustomerResponseBody;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,11 +100,6 @@ public class CustomerControllerTests {
 		testCreateOK = exchange.getBody().getCustomerList().get(0);
 	}
 
-	//TODO - FIZ PULL DE DEV PARA INICIAR UM NOVO CARD E COMECOU A APRESENTAR ERRO ABAIXO
-	//TESTEI DAS DUAS FORMAS (COMENTADA E DESCOMENTADA), FIQUEI MAIS DE 1 HORA TENTANDO RESOLVER
-	//PAREI PARA DAR CONTINUIDADE NO MEU CARD RFN42
-	// TODO: corrigir este teste pq esta chegando customer null no controller
-	//@Ignore
 	@Test
 	public void testUpdateOK() throws IOException, URISyntaxException {
 		emailTeste = "emailUpdateOk@teste.com";
@@ -123,28 +119,17 @@ public class CustomerControllerTests {
 
 		ResponseEntity<CustomerResponseBody> exchange = putCustomer(restTemplate, content);
 
-		Assert.assertNotNull(exchange);
-		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-		Assert.assertEquals("Diego Fernandes Marques da Silva", exchange.getBody().getCustomerList().get(0).getNameCustomer());
-
-/*
-		Customer c1 = testCreateOK;
-		c1.setNameCustomer("Diego Fernandes Marques da Silva");
-
-		CustomerRequestBody cr = new CustomerRequestBody();
-		cr.setCustomer(c1);
-
-		final ResponseEntity<CustomerResponseBody> exchange = //
-				restTemplate.exchange( //
-						"/customers", //
-						HttpMethod.PUT, //
-						new HttpEntity(cr), // Body
-						CustomerResponseBody.class);
 
 		Assert.assertNotNull(exchange);
 		Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-		Assert.assertEquals("Diego Fernandes Marques da Silva", exchange.getBody().getCustomerList().get(0).getNameCustomer());
-		*/
+
+		Customer customer = exchange.getBody().getCustomerList().get(0);
+		Assert.assertEquals("Diego Fernandes Marques da Silva", customer.getNameCustomer());
+
+		// Devido a suspeitas de que o update esta apagando as coordenadas, deveoms garantir que isso nao ocorre
+		Address address = customer.getAddress();
+		Assertions.assertThat(address.getLatitude()).isNotNull();
+		Assertions.assertThat(address.getLongitude()).isNotNull();
 	}
 
 	@Test

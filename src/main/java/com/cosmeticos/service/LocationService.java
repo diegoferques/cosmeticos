@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Optional;
 
+import static java.text.MessageFormat.format;
+
 /**
  * Created by matto on 10/07/2017.
  */
@@ -72,10 +74,10 @@ public class LocationService {
     public LocationGoogle getGeoCode(Address a) {
 
 
-        String googleKey = "AIzaSyDdNCXGRO5OxTcBkpzgURHceKgbZyj1g9w";
+        String googleKey = "AIzaSyAX_6LfSGQ1np0j3AOu7uNx5PyiPX71zJI";
         String googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?";
         String urlSource = googleUrl +
-                "address=" + a.getAddress()+ a.getNeighborhood() + a.getCity() + a.getState() +
+                "address=" + a.getFormattedAddress() +
                 "&key=" + googleKey;
 
         RestTemplate restTemplate = restTemplateBuilder.build();
