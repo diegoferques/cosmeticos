@@ -73,6 +73,7 @@ public class CieloOneClickPaymentService implements Charger{
 
         Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
 
+        // TODO: eh necessario criar mais testes e mudar o esquema do cartao de credito
         CreditCard creditCard = persistentPayment
                 .getOrder()
                 .getIdCustomer()
@@ -129,6 +130,8 @@ public class CieloOneClickPaymentService implements Charger{
 
         try {
             AuthorizeAndTokenResponse authorizeResponse = cieloTransactionClient.reserve(null, authorizeAndTokenRequest);
+
+            receivedPayment.setStatus(Payment.Status.fromSuperpayStatus(authorizeResponse.getPayment().getStatus()));
 
             return buildResponse(authorizeResponse);
         } catch (FeignException e) {

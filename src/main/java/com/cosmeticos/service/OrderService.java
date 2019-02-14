@@ -1,6 +1,5 @@
 package com.cosmeticos.service;
 
-import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
@@ -29,6 +28,8 @@ import java.time.ZoneId;
 import java.util.*;
 
 import static com.cosmeticos.model.Order.Status.*;
+import static com.cosmeticos.model.Payment.Status.PAGO_E_CAPTURADO;
+import static com.cosmeticos.model.Payment.Type.CC;
 import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 import static java.util.Optional.ofNullable;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -125,6 +126,7 @@ public class OrderService {
         if (paymentCollection.isEmpty()) {
             throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Nao foi configurado objeto payment.");
         } else {
+            // Apesar de ser uma lista, so trabalhamos com 1 payment
             validatedPayment = paymentCollection.stream().findFirst().get();
         }
 
@@ -138,43 +140,57 @@ public class OrderService {
         Payment receivedPayment = validatedPayment;
         Payment.Type paymentType = receivedPayment.getType();
 
-        /*
-        Como tratar pagamento com cartao:
+        /* Como tratar pagamento com cartao:
         - Cartao com oneclick: tem q vir cartao no order.payment; cc.oneclick tem q ser true.
         - Cartao com oneclick: demais vezes
         - Cartao sem oneclick: primeira vez
+        - ATUALIZADO fev 2019: Nao importa esssa logica toda, se tiver cartao na requisicao, sempre sera oneClick.
          */
-        if (Payment.Type.CC.equals(paymentType)) {
+        if (CC.equals(paymentType)) {
 
             // Ha um risco serio de stackoverflow fazendo isso, mas precisamos da Order setada aqui para nao tomarmos
             // nullpointer nas implementacoes de Charger.addCard9(). TODO: Ver pq os testes nao detectaram essa falha.
             receivedPayment.setOrder(receivedOrder);
 
-            Optional<CreditCard> optionalReceivedCc = ofNullable(receivedPayment.getCreditCard());
+            // fev 2019: O cliente nao grava mais cartao durante a compra: https://trello.com/c/Y48N2tPo.
+            // dev 2019: testes unitarios q usam cartao devem fazer o request de insercao de cartao
+            // Optional<CreditCard> optionalReceivedCc = ofNullable(receivedPayment.getCreditCard());
 
             User persistentUser = persistentCustomer.getUser();
 
-            if (
-                // Condicoes de quando o cliente cadastra cartao oneclick
-                    (optionalReceivedCc.isPresent() && Boolean.valueOf(String.valueOf(optionalReceivedCc.get().isOneClick())))
+            assertUserHasCreditCard(persistentUser);
 
-                            // Condicao pra quando o cliente compra com oneclick a partir da segunda vez (sem enviar cc no request)
-                            || userHasOneClickCard(persistentUser)) {
+            Collection<CreditCard> persistentCreditCards = persistentUser.getCreditCardCollection();
 
+            CreditCard cc = persistentCreditCards.stream().findFirst().get();
+
+            receivedPayment.setCreditCard(cc);
+
+            // fev 2019: O cliente nao grava mais cartao durante a compra: https://trello.com/c/Y48N2tPo.
+            //if (persistentUser.getCreditCardCollection().isEmpty()) {
+            //    throw new OrderValidationException(
+            //            ResponseCode.INVALID_PAYMENT_TYPE,
+            //            "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
+            //                    persistentUser.toString()
+            //    );
+            //}
+            //else{
+//
+                /*
                 if (shouldSaveForOneClick(persistentUser, optionalReceivedCc)) {
                     userService.addCreditCard(persistentUser, receivedPayment);
-                }
+                }*/
 
                 // Validamos se ja foi gravado cartao antes.
                 // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-                validateAndApplyOneclickCreditcard(persistentUser, validatedPayment);
+               // assertUserHasCreditCard(persistentUser, validatedPayment);
 
-            } else if (optionalReceivedCc.isPresent()) {
-                receivedPayment.setCreditCard(optionalReceivedCc.get());
-            } else {
-                throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE,
-                        "Request de pagamento por cartao mas cartao nao chegou com o request e o usuario nao possui cartao oneclick");
-            }
+           // } else if (optionalReceivedCc.isPresent()) {
+           //     receivedPayment.setCreditCard(optionalReceivedCc.get());
+           // } else {
+           //     throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE,
+           //             "Request de pagamento por cartao mas cartao nao chegou com o request e o usuario nao possui cartao oneclick");
+           // }
         }
 
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
@@ -318,7 +334,7 @@ public class OrderService {
             for (Payment newPayment : persistentOrder.getPaymentCollection()) {
                 //persistentOrder.addPayment(newPayment);
                 //orderRepository.save(persistentOrder);
-                if (Payment.Type.CC.equals(newPayment.getType())) {
+                if (CC.equals(newPayment.getType())) {
                     this.sendPaymentRequest(newPayment);
                 }
             }
@@ -333,7 +349,7 @@ public class OrderService {
                 persistentOrder.addPayment(newPayment);
                 orderRepository.save(persistentOrder);
 
-                if (Payment.Type.CC.equals(newPayment.getType())) {
+                if (CC.equals(newPayment.getType())) {
                     this.validateScheduledAndsendPaymentRequest(newPayment);
                 }
             }
@@ -351,13 +367,13 @@ public class OrderService {
         //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
         if (persistentOrder.getStatus() == Order.Status.READY2CHARGE) {
             //TODO - VERIFICAR SE ESTA FUNCIONANDO PARA EFETUAR A CAPTURA CORRETAMENTE
-            //O CARTAO ESTA VINDO NULL
+            // Este payment esta vindo sem o status que o gateway retornou. Talvez este payment nao esteja sendo salvo corretamente
             Payment payment = persistentOrder.getPaymentCollection()
                     .stream()
                     .findFirst()
                     .get();
 
-            if (Payment.Type.CC.equals(payment.getType())) {
+            if (CC.equals(payment.getType())) {
                 //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
                 if (this.sendPaymentCapture(payment)) {
 
@@ -394,7 +410,11 @@ public class OrderService {
 
             if (CLOSED.equals(persistentOrder.getStatus())
                     || AUTO_CLOSED.equals(persistentOrder.getStatus())) {
-                balanceItemService.create(creditFromOrder(persistentOrder));
+
+                if(persistentOrder.isCreditCard())
+                {
+                    balanceItemService.create(creditFromOrder(persistentOrder));
+                }
             }
         }
 
@@ -463,23 +483,17 @@ public class OrderService {
      * cartao registrado.
      *
      * @param persistentUser
-     * @param receivedPayment
+     *
      */
-    private void validateAndApplyOneclickCreditcard(User persistentUser, Payment receivedPayment) {
-        if (Payment.Type.CC.equals(receivedPayment.getType())) {
-            Collection<CreditCard> persistentCreditCards = persistentUser.getCreditCardCollection();
+    private void assertUserHasCreditCard(User persistentUser) {
+        Collection<CreditCard> persistentCreditCards = persistentUser.getCreditCardCollection();
 
-            if (persistentCreditCards.isEmpty()) {
-                throw new OrderValidationException(
-                        ResponseCode.INVALID_PAYMENT_TYPE,
-                        "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
-                                persistentUser.toString()
-                );
-            } else {
-                Optional<CreditCard> cc = persistentCreditCards.stream().findFirst();
-
-                receivedPayment.setCreditCard(cc.get());
-            }
+        if (persistentCreditCards.isEmpty()) {
+            throw new OrderValidationException(
+                    ResponseCode.INVALID_PAYMENT_TYPE,
+                    "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
+                            persistentUser.toString()
+            );
         }
     }
 
@@ -586,18 +600,28 @@ public class OrderService {
 
     }
 
+    /**
+     * Captura um pagamento caso ele ja nao tenha sido capturado anteriormente.
     //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
     //BRANCH: RNF101
     //BRANCH: RNFapp39-templatando-plus-cartao
+     */
     private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
-        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
+        // Se ja esta PAGO_E_CAPTURADO nao precisamos capturar mais nada.
+        if(PAGO_E_CAPTURADO.equals(payment.getStatus()))
+        {
+            return false;
+        }
+        else {
+            ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
 
-        switch (chargeResponse.getResponseCode()) {
-            case SUCCESS:
-            case GATEWAY_DUPLICATE_PAYMENT:
-                return true;
-            default:
-                throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
+            switch (chargeResponse.getResponseCode()) {
+                case SUCCESS:
+                case GATEWAY_DUPLICATE_PAYMENT:
+                    return true;
+                default:
+                    throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
+            }
         }
     }
 
@@ -756,7 +780,7 @@ public class OrderService {
 
         for (Payment payment : paymentList) {
             if (payment.getType() != null) {
-                if (payment.getType().equals(Payment.Type.CC)) {
+                if (payment.getType().equals(CC)) {
                     // TODO: requer refactoring quando comecarmos a fazer pagamento com 2 cartoes.
 
                     if (Payment.Status.PAGO_E_NAO_CAPTURADO ==
@@ -901,11 +925,15 @@ public class OrderService {
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
 
-                balanceItemService.create(creditFromOrder(o));
+                if(o.isCreditCard())
+                {
+                    balanceItemService.create(creditFromOrder(o));
+                }
             }
         }
-        log.info("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
+        log.debug("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
     }
+
 
     /**
      * @param receivedOrder TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a
@@ -1121,7 +1149,7 @@ public class OrderService {
                 count++;
             }
         }
-        log.info("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
+        log.debug("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
     }
 
     public void validateScheduleEndDate(Order receivedOrder) throws OrderValidationException {

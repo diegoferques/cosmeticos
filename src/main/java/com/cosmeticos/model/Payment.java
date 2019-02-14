@@ -150,6 +150,8 @@ public class Payment implements Serializable {
 	 * banco. No banco fica so o token e o que vem no request vem com dados completos.
 	 * Precisamos de um outro objeto para representar ESTE cartao de credito. ATUALIZADO: talvez nao precisemos, pois
 	 * o que vai ao banco fica associado ao user e nao ao payment.
+	 * ATUALIZADO fev 2019: O cartao nao trafega mais na criacao de uma Order. Eh expor demais o cartao. O cartao eh incluido
+	 * pelo usuario numa tela separada do app, assim como ocorre com o Uber. Este atributo serve apenas para operacoes de backend.
 	 */
 	@Transient
 	private CreditCard creditCard;

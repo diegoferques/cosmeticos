@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
+
 /**
  *
  * @author magarrett.dias
@@ -189,6 +191,23 @@ public class Order implements Serializable {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	/**
+	 *
+	 * @return TRUE, se a Order for paga no cartao de credito.
+	 */
+	public boolean isCreditCard()
+	{
+		Set<Payment> payments = paymentCollection;
+		if(payments != null && !payments.isEmpty())
+		{
+			return payments.stream()
+					.filter(p -> p.getCreditCard() != null)
+					.findFirst()
+					.isPresent();
+		}
+		return false;
 	}
 
 	@Override

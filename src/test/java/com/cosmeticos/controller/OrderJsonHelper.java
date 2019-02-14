@@ -27,7 +27,6 @@ class OrderJsonHelper {
             boolean oneClickSave,
             PriceRule priceRule) {
 
-        //String cc = "         \"creditCard\": null,\n";
         String cc = "";
         if (paymentType.equals(Payment.Type.CC)) {
 
@@ -39,6 +38,7 @@ class OrderJsonHelper {
                         "\t\t        \"securityCode\": \"098\",\n" +
                         "\t\t        \"expirationDate\": \"" + Timestamp.valueOf(now().plusDays(30)).getTime() + "\",\n" +
                         "\t\t        \"vendor\": \"MasterCard\",\n" +
+                        "\t\t        \"oneClick\": \""+ oneClickSave +"\",\n" +
                         "\t\t        \"status\": \"ACTIVE\"\n" +
                         "\t\t     },\n";
             }
@@ -94,7 +94,7 @@ class OrderJsonHelper {
                 professionalCategory,
                 paymentType,
                 false,
-                false,
+                true,
                 priceRule
         );
     }

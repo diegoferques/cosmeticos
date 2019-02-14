@@ -82,4 +82,26 @@ public class BalanceItemService {
     public List<BalanceItem> listAll() {
         return repository.findAll();
     }
+
+    /**
+     * O resgate eh sempre total. O que o profissional tiver na conta sera transferido na sua totalidade.
+     * @param email
+     * @return The full balance withdrawaled
+     */
+    public Long withdrawal(String email) {
+        List<BalanceItem> balanceItens = findByProfessional(email);
+
+        Long balance = balanceItens.stream().mapToLong(i -> i.getValue()).sum();
+
+        BalanceItem item = new BalanceItem();
+        item.setDate(Timestamp.valueOf(now()));
+        item.setType(BalanceItem.Type.WITHDRALL);
+        item.setEmail(email);
+        item.setDescription("Resgate de saldo");
+        item.setValue(balance < 0 ? balance : -balance);
+
+        create(item);
+
+        return balance;
+    }
 }

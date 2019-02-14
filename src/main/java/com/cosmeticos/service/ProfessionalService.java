@@ -454,18 +454,7 @@ public class ProfessionalService {
         if (professional.getBankAccount() != null) {
             String email = professional.getUser().getEmail();
 
-            List<BalanceItem> balanceItens = balanceItemService.findByProfessional(email);
-
-            Long balance = balanceItens.stream().mapToLong(i -> i.getValue()).sum();
-
-            BalanceItem item = new BalanceItem();
-            item.setDate(Timestamp.valueOf(now()));
-            item.setType(BalanceItem.Type.WITHDRALL);
-            item.setEmail(email);
-            item.setDescription("Resgate de saldo");
-            item.setValue(balance < 0 ? balance : -balance);
-
-            balanceItemService.create(item);
+            Long balance = balanceItemService.withdrawal(email);
 
             MDC.put("withdrawalRequested", String.valueOf(balance));
             MDC.put("professionalEmail", email);

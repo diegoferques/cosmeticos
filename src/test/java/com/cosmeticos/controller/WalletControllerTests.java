@@ -58,7 +58,7 @@ public class WalletControllerTests {
 
 		// Clientes existentes procuram o profissional pela segunda vez
 		Customer c1 = CustomerControllerTests.createFakeCustomer();
-		c1.setNameCustomer("c1");
+		c1.setNameCustomer("nonCreditCardCustomer");
 		c1.getUser().setEmail("abcqwe@c.com");
 		c1.getUser().setUsername("abcqwe");
 		Customer c2 = CustomerControllerTests.createFakeCustomer();

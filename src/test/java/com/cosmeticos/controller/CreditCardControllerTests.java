@@ -243,23 +243,27 @@ public class CreditCardControllerTests {
         User user = new User();
         user.setIdLogin(sourceUser.getIdLogin());
 
-        CreditCard cc = CreditCard.builder()
-                .expirationDate(now().getMonth().toString() + "/" + now().plusYears(3).getYear())
-                .lastUsage(Timestamp.valueOf(LocalDateTime.now()))
-                .number("0000000000000001")
-                .oneClick(true)
-                .ownerName("testeCadastrarCartaoParaCustomerUser")
-                .securityCode("123")
-                .status(CreditCard.Status.ACTIVE)
-                .suffix("0001")
-                .vendor("VISA")
-                .user(user)
-                .build();
+        CreditCard cc = buildTestCreditCard(user);
 
         CreditCardRequestBody body = new CreditCardRequestBody();
         body.setEntity(cc);
 
         return Utility.toJson(body);
+    }
+
+    public static CreditCard buildTestCreditCard(User user) {
+        return CreditCard.builder()
+                    .expirationDate(now().getMonth().toString() + "/" + now().plusYears(3).getYear())
+                    .lastUsage(Timestamp.valueOf(LocalDateTime.now()))
+                    .number("0000000000000001")
+                    .oneClick(true)
+                    .ownerName("testeCadastrarCartaoParaCustomerUser")
+                    .securityCode("123")
+                    .status(CreditCard.Status.ACTIVE)
+                    .suffix("0001")
+                    .vendor("VISA")
+                    .user(user)
+                    .build();
     }
 
     private ResponseEntity<?> postEntity(String url, String body, Class<?> responseClass) throws URISyntaxException {
