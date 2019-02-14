@@ -1,12 +1,11 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.commons.CampainhaSuperpeyResponseBody;
-import com.cosmeticos.commons.CustomerResponseBody;
-import com.cosmeticos.commons.OrderResponseBody;
+import com.cosmeticos.commons.*;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.MulticlickPaymentService;
@@ -14,12 +13,15 @@ import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.RandomCode;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import lombok.val;
+import org.assertj.core.api.Assertions;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -39,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpResponse.response;
 
 /**
  * Created by matto on 17/08/2017.
@@ -49,9 +53,6 @@ public class MockingPaymentControllerTests {
 
     @MockBean
     private MulticlickPaymentService paymentService;
-
-   // @MockBean
-   // private PaymentController paymentController;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -77,6 +78,30 @@ public class MockingPaymentControllerTests {
     @Autowired
     ProfessionalCategoryRepository professionalServicesRepository;
 
+    private static ClientAndServer mockServer;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+
+        mockServer = startClientAndServer(9000);
+
+            mockServer.when(HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/1/card")
+                .withHeader("merchantId","1234")
+                .withHeader("merchantKey","abcd"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("{\n" +
+                                "  \"CardToken\": \"db62dc71-d07b-4745-9969-42697b988ccb\",\n" +
+                                "  \"Links\": {\n" +
+                                "    \"Method\": \"GET\",\n" +
+                                "    \"Rel\": \"self\",\n" +
+                                "    \"Href\": \"https://apiquerydev.cieloecommerce.cielo.com.br/1/card/db62dc71-d07b-4745-9969-42697b988ccb\"}\n" +
+                                "}"));
+    }
+
 
     @Test
     public void testNonScheduledPaymentCcOk() throws URISyntaxException, ParseException, JsonProcessingException {
@@ -99,8 +124,10 @@ public class MockingPaymentControllerTests {
 
         Customer customer = postCustomerWhatever("testPaymentOk-customer1@email.com");
 
-        //putCustomerAddCreditCard(customer);
-
+        String ccJson = CreditCardControllerTests.sampleJsonCreditcard(customer.getUser());
+        ResponseEntity<?> exchange = RequestHelper.postEntity(restTemplate,"/creditCard", ccJson, CreditCardResponseBody.class );
+        val body = (CreditCardResponseBody) exchange.getBody();
+        Assertions.assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK).as(body.getDescription());
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
 
@@ -176,8 +203,10 @@ public class MockingPaymentControllerTests {
 
         Customer customer = postCustomerWhatever("testScheduledOrderPaymentOk-customer1@email.com");
 
-        //putCustomerAddCreditCard(customer);
-
+        String ccJson = CreditCardControllerTests.sampleJsonCreditcard(customer.getUser());
+        ResponseEntity<?> exchange = RequestHelper.postEntity(restTemplate,"/creditCard", ccJson, CreditCardResponseBody.class );
+        val body = (CreditCardResponseBody) exchange.getBody();
+        Assertions.assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK).as(body.getDescription());
 
         //-------- FIM DA CRIACAO DE CUSTOMER ----------/
 
@@ -221,51 +250,6 @@ public class MockingPaymentControllerTests {
 
         // Confirmando se a order foi mesmo pro banco apesar do status ter sido 200.
         Assert.assertNotNull("A order nao foi icluido no banco", orderRepository.findOne(order.getIdOrder()));
-
-    }
-
-    /**
-     * Adicionar cartao ao usuario sempre grava cartao oneclick
-     * @param customer
-     * @throws URISyntaxException
-     */
-    private void putCustomerAddCreditCard(Customer customer) throws URISyntaxException {
-        String jsonCustomerCreate = "{\n" +
-                "   \"customer\":{\n" +
-                "      \"personType\": \"FISICA\",\n" +
-                "      \"idCustomer\": "+ customer.getIdCustomer() +",\n" +
-                "      \"user\":{\n" +
-                "         \"idLogin\":"+customer.getUser().getIdLogin()+",\n" +
-                "         \"creditCardCollection\": [\n" +
-                    "         {\n" +
-                    "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
-                    "\t\t        \"ownerName\": \"Teste\",\n" +
-                    "\t\t        \"suffix\": \""+new RandomCode(4).nextString()+"\",\n" +
-                    "\t\t        \"number\": \""+new RandomCode(16).nextString()+"\",\n" +
-                    "\t\t        \"securityCode\": \"098\",\n" +
-                    "\t\t        \"expirationDate\": \""+ Timestamp.valueOf(now().plusDays(30)).getTime() +"\",\n" +
-                    "\t\t        \"vendor\": \"MasterCard\",\n" +
-                    "\t\t        \"status\": \"ACTIVE\"\n" +
-                    "\t\t     }\n" +
-                "         ]\n" +
-                "      }\n" +
-                "   }\n" +
-                "}";
-
-        System.out.println(jsonCustomerCreate);
-
-        RequestEntity<String> entityCustomer =  RequestEntity
-                .put(new URI("/customers"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(jsonCustomerCreate);
-
-        ResponseEntity<CustomerResponseBody> exchange = restTemplate
-                .exchange(entityCustomer, CustomerResponseBody.class);
-
-        Assert.assertNotNull(exchange);
-        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(customer.getNameCustomer(), exchange.getBody().getCustomerList().get(0).getNameCustomer());
 
     }
 
@@ -532,21 +516,18 @@ public class MockingPaymentControllerTests {
         ).thenReturn(optionalFakeRetornoTransacao);
 
         Mockito.when(
-                paymentService.updatePaymentStatus(Mockito.any())
-        ).thenReturn(true);
+                paymentService.updatePaymentStatus(Mockito.anyObject())
+        ).thenReturn(Boolean.TRUE);
 
         String numeroTransacao = "3";
         String codigoEstabelecimento = "1501698887865";
         String campoLivre1 = "TESTE";
 
-        //PaymentControllerTests paymentControllerTests = new PaymentControllerTests();
-        //ResponseEntity<CampainhaSuperpeyResponseBody> exchange = paymentControllerTests.executaCampainha(
         ResponseEntity<CampainhaSuperpeyResponseBody> exchange = this.executaCampainha(
                 numeroTransacao, codigoEstabelecimento, campoLivre1);
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-
     }
 
     private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {

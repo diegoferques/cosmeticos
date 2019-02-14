@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.cosmeticos.model.Payment.Type.CC;
-import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 
 /**
  *
@@ -85,18 +84,6 @@ public class Order implements Serializable {
     @Enumerated(EnumType.STRING)
 	private Status status;
 
-    /*
-	@JsonView({
-			ResponseJsonView.OrderControllerCreate.class,
-			ResponseJsonView.OrderControllerUpdate.class,
-			ResponseJsonView.OrderControllerFindBy.class
-	})
-	@Basic(optional = false)
-	@Column(name = "payment_Type")
-	@Enumerated(EnumType.STRING)
-	private PayType paymentType; */
-
-
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
@@ -141,13 +128,6 @@ public class Order implements Serializable {
     })
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
-
-    // TODO: estudar futuro deste infeliz atributo
-	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
-			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
-			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	@ManyToMany(fetch = FetchType.EAGER)
-	private Set<CreditCard> creditCardCollection = new HashSet<>();
 
 	@JsonView({
 			ResponseJsonView.OrderControllerCreate.class,

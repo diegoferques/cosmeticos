@@ -34,11 +34,7 @@ public class CieloOneClickPaymentService implements Charger{
     private CustomerRepository customerRepository;
 
     @Override
-    public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
-
-        Payment payment = chargeRequest.getBody();
-
-        CreditCard creditCard = payment.getCreditCard();
+    public ChargeResponse<Object> addCard(CreditCard creditCard) {
 
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getNumber();
@@ -73,7 +69,7 @@ public class CieloOneClickPaymentService implements Charger{
 
         Payment persistentPayment = paymentRepository.findOne(receivedPayment.getId());
 
-        // TODO: eh necessario criar mais testes e mudar o esquema do cartao de credito
+        // TODO: eh necessario criar mais testes que garantam funcionamento de vendas com cartaoo.
         CreditCard creditCard = persistentPayment
                 .getOrder()
                 .getIdCustomer()
@@ -131,6 +127,7 @@ public class CieloOneClickPaymentService implements Charger{
         try {
             AuthorizeAndTokenResponse authorizeResponse = cieloTransactionClient.reserve(null, authorizeAndTokenRequest);
 
+            // Nao eh boa ideia essa alteracao por referencia.
             receivedPayment.setStatus(Payment.Status.fromSuperpayStatus(authorizeResponse.getPayment().getStatus()));
 
             return buildResponse(authorizeResponse);

@@ -1,6 +1,7 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.commons.CreditCardResponseBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +31,9 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * Created by matto on 28/06/2017.
@@ -65,7 +68,8 @@ public class MockingOrderControllerAddCardTests {
     @Qualifier(value = "charger")
     private Charger charger;
 
-    private Customer c1;
+    private Customer customer;
+
     private Professional professional;
     private ProfessionalCategory ps1;
     private PriceRule priceRule;
@@ -77,29 +81,16 @@ public class MockingOrderControllerAddCardTests {
         ////////////// SETUP     //////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
-        ChargeResponse<Object> response = new ChargeResponse<>("tokenFake");
-        response.setResponseCode(ResponseCode.SUCCESS);
-
-        Mockito.when(
-                charger.addCard(Mockito.anyObject())
-        ).thenReturn(response);
-
-
-        c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
-                + "-cliente");
-        c1.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
-                + "-cliente@bol");
 
         professional = ProfessionalControllerTests.createFakeProfessional();
-        professional.getUser().setUsername(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
-                + "-professional");
-        professional.getUser().setEmail(System.nanoTime()+ "-testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard"
-                + "-professional@bol");
-
-
-        customerRepository.save(c1);
+        professional.getUser().setUsername(System.nanoTime()+ "-"+getClass().getSimpleName()+ "-professional");
+        professional.getUser().setEmail(System.nanoTime()+ "-"+getClass().getSimpleName()+ "-professional@bol");
         professionalRepository.save(professional);
+
+        customer = CustomerControllerTests.createFakeCustomer();
+        customer.getUser().setUsername(System.nanoTime() + "-"+getClass().getSimpleName()+ "-cliente");
+        customer.getUser().setEmail(System.nanoTime()+ "-"+getClass().getSimpleName()+ "-cliente@bol");
+        customerRepository.save(customer);
 
         priceRule = new PriceRule();
         priceRule.setName("RULE");
@@ -117,7 +108,27 @@ public class MockingOrderControllerAddCardTests {
     @Test
     public void testOpenOrderAndSaveOneClickCreditcardAfterSuccesfullySuperpayAddCard() throws Exception {
 
+        ChargeResponse<Object> response = new ChargeResponse<>("tokenFake");
+        response.setResponseCode(ResponseCode.SUCCESS);
 
+        Mockito.when(
+                charger.addCard(Mockito.anyObject())
+        ).thenReturn(response);
+        String addCardJson = "{\n" +
+                "  \"entity\" : {\n" +
+                "    \"number\" : \"123123123\",\n" +
+                "    \"securityCode\" : \"123\",\n" +
+                "    \"user\" : {\n" +
+                "      \"idLogin\" : "+ customer.getUser().getIdLogin()+"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        ResponseEntity<?> addCardExchange = RequestHelper.postEntity(testRestTemplate,"/creditCard", addCardJson, CreditCardResponseBody.class);
+
+        CreditCardResponseBody responseBody = (CreditCardResponseBody) addCardExchange.getBody();
+
+        assertThat(addCardExchange.getStatusCode()).isEqualTo(OK).as(responseBody.getDescription());
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         ////////////// TESTING   //////////////////////////////////////////////////////////////////////
@@ -134,7 +145,7 @@ public class MockingOrderControllerAddCardTests {
                 "    },\n" +
 
                 "    \"idCustomer\" : {\n" +
-                "      \"idCustomer\" : "+ c1.getIdCustomer() +"\n" +
+                "      \"idCustomer\" : "+ customer.getIdCustomer() +"\n" +
                 "    },\n" +
 
                 "    \"paymentCollection\" : \n" +
@@ -144,10 +155,6 @@ public class MockingOrderControllerAddCardTests {
                 "         \"parcelas\": 1,\n" +
                 "         \"priceRule\": {\n" +
                 "             \"id\": " + priceRule.getId() + "\n" +
-                "         },\n" +
-
-                "         \"creditCard\": {\n" +
-                "            \"oneClick\": true"+
                 "         }\n" +
 
                 "       }\n" +
@@ -167,11 +174,11 @@ public class MockingOrderControllerAddCardTests {
                 .exchange(entity, OrderResponseBody.class);
 
         Assert.assertNotNull(exchange);
-        Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        Assert.assertEquals(OK, exchange.getStatusCode());
         Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
 
-        List<CreditCard> cards = creditcardRepository.findByUserEmail(c1.getUser().getEmail());
+        List<CreditCard> cards = creditcardRepository.findByUserEmail(customer.getUser().getEmail());
         Optional<CreditCard> ccOptional = cards.stream().findFirst();
 
         Assert.assertTrue(ccOptional.isPresent());

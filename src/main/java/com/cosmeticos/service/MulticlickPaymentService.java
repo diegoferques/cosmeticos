@@ -491,7 +491,7 @@ public class MulticlickPaymentService implements Charger {
     }
 
     @Override
-    public ChargeResponse addCard(ChargeRequest chargeRequest) {
+    public ChargeResponse addCard(CreditCard creditCard) {
         log.debug("Nao implementado.");
         return null;
     }

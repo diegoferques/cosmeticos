@@ -31,7 +31,6 @@ import static com.cosmeticos.model.Order.Status.*;
 import static com.cosmeticos.model.Payment.Status.PAGO_E_CAPTURADO;
 import static com.cosmeticos.model.Payment.Type.CC;
 import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
-import static java.util.Optional.ofNullable;
 import static org.springframework.util.StringUtils.isEmpty;
 
 /**
@@ -140,11 +139,8 @@ public class OrderService {
         Payment receivedPayment = validatedPayment;
         Payment.Type paymentType = receivedPayment.getType();
 
-        /* Como tratar pagamento com cartao:
-        - Cartao com oneclick: tem q vir cartao no order.payment; cc.oneclick tem q ser true.
-        - Cartao com oneclick: demais vezes
-        - Cartao sem oneclick: primeira vez
-        - ATUALIZADO fev 2019: Nao importa esssa logica toda, se tiver cartao na requisicao, sempre sera oneClick.
+        /*
+        Se for venda a cartao, pegamos o cartao associado ao User.
          */
         if (CC.equals(paymentType)) {
 
@@ -154,7 +150,6 @@ public class OrderService {
 
             // fev 2019: O cliente nao grava mais cartao durante a compra: https://trello.com/c/Y48N2tPo.
             // dev 2019: testes unitarios q usam cartao devem fazer o request de insercao de cartao
-            // Optional<CreditCard> optionalReceivedCc = ofNullable(receivedPayment.getCreditCard());
 
             User persistentUser = persistentCustomer.getUser();
 
@@ -165,32 +160,6 @@ public class OrderService {
             CreditCard cc = persistentCreditCards.stream().findFirst().get();
 
             receivedPayment.setCreditCard(cc);
-
-            // fev 2019: O cliente nao grava mais cartao durante a compra: https://trello.com/c/Y48N2tPo.
-            //if (persistentUser.getCreditCardCollection().isEmpty()) {
-            //    throw new OrderValidationException(
-            //            ResponseCode.INVALID_PAYMENT_TYPE,
-            //            "Cliente solicitou compra por cartao de credito mas nao possui cartao de credito cadastrado: " +
-            //                    persistentUser.toString()
-            //    );
-            //}
-            //else{
-//
-                /*
-                if (shouldSaveForOneClick(persistentUser, optionalReceivedCc)) {
-                    userService.addCreditCard(persistentUser, receivedPayment);
-                }*/
-
-            // Validamos se ja foi gravado cartao antes.
-            // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-            // assertUserHasCreditCard(persistentUser, validatedPayment);
-
-            // } else if (optionalReceivedCc.isPresent()) {
-            //     receivedPayment.setCreditCard(optionalReceivedCc.get());
-            // } else {
-            //     throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE,
-            //             "Request de pagamento por cartao mas cartao nao chegou com o request e o usuario nao possui cartao oneclick");
-            // }
         }
 
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
@@ -229,8 +198,8 @@ public class OrderService {
         paymentRepository.save(validatedPayment);// Pra ver se grava o pricerule pq nao esta salvando.
 
         org.apache.log4j.MDC.put("idOrder", newOrder.getIdOrder());
-        // Buscando se o customer que chegou no request esta na wallet
 
+        // Buscando se o customer que chegou no request esta na wallet
         addInWallet(persistentProfessionalCategory.getProfessional(), persistentCustomer);
 
         firebasePushNotifierService.push(newOrder);
@@ -248,7 +217,6 @@ public class OrderService {
 
         //ADICIONEI ESSA VALIDACAO DE TENTATIVA DE ATUALIZACAO DE STATUS PARA O MESMO QUE JA ESTA EM ORDER
         if (persistentOrder.getStatus() == receivedOrder.getStatus()) {
-            //throw new IllegalStateException("PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
             throw new OrderValidationException(ResponseCode.INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
         }
 
@@ -279,9 +247,7 @@ public class OrderService {
         /* Removendo isso pq senao estou permitindo que uma Order mude de customer, o que nao eh permitido.
         Na verdade deveria haver uma validacao de que se o customer da Order que veio do request eh diferente
         do customer que esta na Order gravada no banco.
-        if (!isEmpty(receivedOrder.getIdCustomer())) {
-            persistentOrder.setIdCustomer(receivedOrder.getIdCustomer());
-        }*/
+        */
         if (!isEmpty(receivedOrder.getIdCustomer())) {
             if (receivedOrder.getIdCustomer().getIdCustomer() != persistentOrder.getIdCustomer().getIdCustomer()) {
                 throw new OrderValidationException(ResponseCode.ILLEGAL_ORDER_OWNER_CHANGE,
@@ -323,17 +289,12 @@ public class OrderService {
 
         applyVote(receivedOrder, persistentOrder);
 
-        // TODO: remover isso de antes de chamar o superpay
-        //orderRepository.save(persistentOrder);
-
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
         // Utilizamos a order persistente pois ela possui TODOS os atributos setados
         if (receivedOrder.getStatus() == Order.Status.ACCEPTED) {
 
 
             for (Payment newPayment : persistentOrder.getPaymentCollection()) {
-                //persistentOrder.addPayment(newPayment);
-                //orderRepository.save(persistentOrder);
                 if (CC.equals(newPayment.getType())) {
                     this.sendPaymentRequest(newPayment);
                 }
@@ -357,17 +318,10 @@ public class OrderService {
 
         boolean mustPersistOrder = false;
 
-        //TODO - CRIAR METODO DE VALIDAR PAYMENT RESPONSE LANCANDO ORDER VALIDATION EXCEPTION COM...
-        //HTTPSTATUS DEFINIDO PARA CADA STATUS DE PAGAMENTO DA SUPERPAY
-        //CARD: https://trello.com/c/fyPMjNJI/113-adequar-status-do-pagamento-do-superpay-aos-nossos-status-da-order
-        //BRANCH: RNF101
-
         //ACHEI MELHOR FAZER UMA NOVA VERIFICACAO APOS SALVAR, POIS PRECISAMOS TER ARMAZENADO QUANDO MUDAMOS O STATUS
         //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
         //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
         if (persistentOrder.getStatus() == Order.Status.READY2CHARGE) {
-            //TODO - VERIFICAR SE ESTA FUNCIONANDO PARA EFETUAR A CAPTURA CORRETAMENTE
-            // Este payment esta vindo sem o status que o gateway retornou. Talvez este payment nao esteja sendo salvo corretamente
             Payment payment = persistentOrder.getPaymentCollection()
                     .stream()
                     .findFirst()
@@ -445,13 +399,6 @@ public class OrderService {
             Boolean oneclick = persistentUserCreditCard.isOneClick();
             return oneclick == null ? true : oneclick;
         }
-    }
-
-    private boolean shouldSaveForOneClick(User persistentUser, Optional<CreditCard> optionalReceivedCc) {
-
-        return optionalReceivedCc.isPresent() // Deve ter chegado no request um CC
-                && optionalReceivedCc.get().isOneClick() // O CC que chegou no request deve estar marcado pra oneclick
-                && persistentUser.getCreditCardCollection().isEmpty(); // O usuario nao deve possuir cartao pre cadastrado.
     }
 
     /**
@@ -709,45 +656,7 @@ public class OrderService {
     @Scheduled(cron = "${order.payment.ready2charge.cron}")
     public void findReady2ChargeOrdersAndSendPaymentCron() throws Exception {
 
-        // TODO: nao buscamos order, buscamos payments com status de falha
-        ///List<Order> orderList = orderRepository.findByStatus(Order.Status.READY2CHARGE);
-
-        /*for (Order order: orderList) {
-            this.sendPaymentCapture(order);
-        }*/
-
         List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.READY2CHARGE);
-
-        for (Payment payment : paymentList) {
-            this.sendPaymentCapture(payment);
-        }
-
-    }
-
-    //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
-    //BRANCH: RNF101
-    //TODO - ACHEI NECESSARIO CRIAR UM CRON PARA PEDIDOS QUE AINDA ESTAO EM ACCEPTED POR ALGUM ERRO OCORRIDO SEM PAYMENT
-    //SE FOR USAR ESSE CRON, SERA NECESSARIO DESCOMENTAR AQUI E EM PROPERTIES
-    //@Scheduled(cron = "${order.payment.accepted.cron}")
-    private void findAcceptedOrdersAndSendPaymentCron() throws Exception {
-
-        // TODO:  Nao buscamos order, buscamos por payment.
-        /*List<Order> orderList = orderRepository.findByStatus(Order.Status.ACCEPTED);
-
-		for (Order order: orderList) {
-			//TODO - URGENTE: SE DER ALGUM ERRO NA HORA DE EFETUAR A RESERVA QUANDO MUDAR O STATUS PARA ACCEPTED...
-			//AQUI FARIAMOS A RETENTATIVA NO CRON, POREM, EM QUAL SITUACAO DEVEMOS EFETUAR A TENTATIVA NOVAMENTE...
-			//E EM QUAL DEVEMOS TOMAR OUTRAS ATITUDES, BEM COMO NAO PERMITIR A CONTINUIDADE DE ORDER SE NAO PAGAR EM DINHEIRO
-
-            // TODO:  NAO tem como estar vazio. Quando chega um pedido de pagamento, eh nossa obrigacao salvar um payment junto com a order.
-			if (order.getPaymentCollection().isEmpty()) {
-
-				this.sendPaymentCapture(order);
-			}
-
-		}*/
-
-        List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.ACCEPTED);
 
         for (Payment payment : paymentList) {
             this.sendPaymentCapture(payment);
@@ -855,16 +764,7 @@ public class OrderService {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
     }
 
-    public List<Order> findBy(Order bindableQueryObject) {
-        // return orderRepository.findTop10ByOrderByDateDesc();
-        return orderRepository.findAll(Example.of(bindableQueryObject));
-    }
-
     public List<Order> findByStatusNotCancelledOrClosed() {
-        // return orderRepository.findTop10ByOrderByDateDesc();
-        // return orderRepository.findAll(Example.of(bindableQueryObject));
-        // return orderRepository.findAllCustom();
-        // return orderRepository.findByQueryAnnotation();
         return orderRepository.findByStatusNotIn(Arrays.asList(CANCELLED, CLOSED, AUTO_CLOSED, EXPIRED));
     }
 
@@ -958,7 +858,6 @@ public class OrderService {
             validateIfThereAreRunningOrders(receivedOrder, professional);
         }
     }
-
 
     /**
      * @param receivedOrder TODO: Ta escroto essas duas excecoes fazendo amesma coisa.. depois arrumo.. tem q ficar so a

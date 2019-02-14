@@ -53,10 +53,6 @@ public class UserService {
     private ImageService imageService;
 
     @Autowired
-    @Qualifier("charger")
-    private Charger charger;
-
-    @Autowired
     private CreditCardRepository creditCardRepository;
 
     public User create(UserRequestBody request) {
@@ -276,23 +272,6 @@ public class UserService {
         user.setLostPassword(false);
         user.setLostPasswordToken(null);
         update(user);
-    }
-
-    public User addCreditCard(User user, Payment payment) {
-
-        ChargeResponse<Object> result = charger.addCard(new ChargeRequest<>(payment));
-
-        String token = result.getBody().toString();
-
-        CreditCard cc = payment.getCreditCard();
-        cc.setToken(token);
-
-        user.addCreditCard(cc);
-
-        update(user);
-
-        return user;
-
     }
 
     public List<User> findAllBy(final User userProbe) {

@@ -10,40 +10,14 @@ import static java.time.LocalDateTime.now;
 
 class OrderJsonHelper {
 
-    /**
-     * @param customer
-     * @param professionalCategory
-     * @param paymentType
-     * @param oneClick             Determina se sera criado um json pra oneclick
-     * @param oneClickSave         Determina se sera criado um json pra oneclick mas sendo o primeiro envio de cartao do cliente.
-     * @param priceRule
-     * @return
-     */
+
     public static String buildJsonCreateNonScheduledOrder(
             Customer customer,
             ProfessionalCategory professionalCategory,
             Payment.Type paymentType,
-            boolean oneClick,
-            boolean oneClickSave,
             PriceRule priceRule) {
 
-        String cc = "";
-        if (paymentType.equals(Payment.Type.CC)) {
-
-            if (oneClickSave || !oneClick) {
-                cc = "         \"creditCard\": {\n" +
-                        "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
-                        "\t\t        \"ownerName\": \"Teste\",\n" +
-                        "\t\t        \"suffix\": \"" + new RandomCode(4).nextString() + "\",\n" +
-                        "\t\t        \"securityCode\": \"098\",\n" +
-                        "\t\t        \"expirationDate\": \"" + Timestamp.valueOf(now().plusDays(30)).getTime() + "\",\n" +
-                        "\t\t        \"vendor\": \"MasterCard\",\n" +
-                        "\t\t        \"oneClick\": \""+ oneClickSave +"\",\n" +
-                        "\t\t        \"status\": \"ACTIVE\"\n" +
-                        "\t\t     },\n";
-            }
-        }
-
+        // Faz pagamento avulso de cartao. Sem salvar pra oneclick
         return "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : " + Timestamp.valueOf(LocalDateTime.now()).getTime() + ",\n" +
@@ -66,10 +40,6 @@ class OrderJsonHelper {
                 "    [\n" +
                 "       {\n" +
 
-
-                cc +
-
-
                 "         \"type\": \"" + paymentType.toString() + "\",\n" +
                 "         \"parcelas\": 1,\n" +
                 "         \"priceRule\": {\n" +
@@ -80,23 +50,6 @@ class OrderJsonHelper {
 
                 "  }\n" +
                 "}";
-    }
-
-    public static String buildJsonCreateNonScheduledOrder(
-            Customer customer,
-            ProfessionalCategory professionalCategory,
-            Payment.Type paymentType,
-            PriceRule priceRule) {
-
-        // Faz pagamento avulso de cartao. Sem salvar pra oneclick
-        return buildJsonCreateNonScheduledOrder(
-                customer,
-                professionalCategory,
-                paymentType,
-                false,
-                true,
-                priceRule
-        );
     }
 
     /**
@@ -116,25 +69,6 @@ class OrderJsonHelper {
                                                        boolean oneClick,
                                                        boolean oneClickSave,
                                                        Long scheduleStart) {
-
-        //String cc = "         \"creditCard\": null,\n";
-        String cc = "";
-        if (paymentType.equals(Payment.Type.CC)) {
-
-            if (oneClickSave || !oneClick) {
-                cc = "         \"creditCard\": {\n" +
-                        "\t\t        \"token\": \"ALTERADOOOOOOOOOOOOO\",\n" +
-                        "\t\t        \"ownerName\": \"Teste\",\n" +
-                        "\t\t        \"suffix\": \"" + new RandomCode(4).nextString() + "\",\n" +
-                        "\t\t        \"securityCode\": \"098\",\n" +
-                        "\t\t        \"expirationDate\": \"" + Timestamp.valueOf(now().plusDays(30)).getTime() + "\",\n" +
-                        "\t\t        \"vendor\": \"MasterCard\",\n" +
-                        "\t\t        \"status\": \"ACTIVE\",\n" +
-                        "\t\t        \"oneClick\": " + oneClick + "\n" +
-                        "\t\t     },\n";
-            }
-        }
-
         return "{\n" +
                 "  \"order\" : {\n" +
                 "    \"date\" : " + Timestamp.valueOf(LocalDateTime.now()).getTime() + ",\n" +
@@ -156,10 +90,6 @@ class OrderJsonHelper {
                 "    \"paymentCollection\" : \n" +
                 "    [\n" +
                 "       {\n" +
-
-
-                cc +
-
 
                 "         \"type\": \"" + paymentType.toString() + "\",\n" +
                 "         \"parcelas\": 1,\n" +

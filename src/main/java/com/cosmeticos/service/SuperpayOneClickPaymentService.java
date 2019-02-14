@@ -3,7 +3,9 @@ package com.cosmeticos.service;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.commons.SuperpayFormaPagamento;
 import com.cosmeticos.model.*;
-import com.cosmeticos.payment.*;
+import com.cosmeticos.payment.ChargeRequest;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.SuperpayCompletoClient;
 import com.cosmeticos.payment.superpay.SuperpayOneClickClient;
 import com.cosmeticos.payment.superpay.ws.oneclick.DadosCadastroPagamentoOneClickWS;
@@ -57,16 +59,9 @@ public class SuperpayOneClickPaymentService implements Charger{
     private Integer mockCaptureResponse;
 
     @Override
-    public ChargeResponse<Object> addCard(ChargeRequest<Payment> chargeRequest) {
+    public ChargeResponse<Object> addCard(CreditCard creditCard) {
 
-        Order order = chargeRequest.getBody().getOrder();
-
-        String emailComprador = findPersistentUserEmail(order.getIdCustomer().getIdCustomer());
-
-        Payment payment = chargeRequest.getBody();
-
-        CreditCard creditCard = payment.getCreditCard();
-
+        String emailComprador = creditCard.getUser().getEmail();
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getNumber();
         String dataValidadeCartao = creditCard.getExpirationDate();
@@ -85,11 +80,13 @@ public class SuperpayOneClickPaymentService implements Charger{
 
     }
 
+    /*
+Esta classe nao tem q ficar buscando ngm no banco. Os objetos ja devem chegar prontos.
     private String findPersistentUserEmail(Long idCustomer) {
         Customer persistentCustomer = this.customerRepository.findOne(idCustomer);
 
         return  persistentCustomer.getUser().getEmail();
-    }
+    }*/
 
     @Override
     public ChargeResponse<Object> reserve(ChargeRequest<Payment> chargeRequest) {
@@ -294,7 +291,14 @@ public class SuperpayOneClickPaymentService implements Charger{
         // TODO o que esta implmentado no teste SuperpayOneClickClientIntegrationTest deve ser reproduzido aqui para o metodo addCard
         Order order = chargeRequest.getBody().getOrder();
 
-        CreditCard creditCard = order.getCreditCardCollection().stream().findFirst().get();
+        CreditCard creditCard = ofNullable(order)
+                .map(o -> o.getIdCustomer())
+                .map(c -> c.getUser())
+                .map(u -> u.getCreditCardCollection().stream().findFirst())
+                .filter(ccOptional -> ccOptional.isPresent())
+                .map(ccOptional -> ccOptional.get())
+                .orElseThrow(() -> new IllegalStateException("Usuario do pedido '"+order.getIdOrder()+"' nao possui cartao de credito."));
+
         Customer customer = order.getIdCustomer();
         User user = customer.getUser();
 
