@@ -43,12 +43,6 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     @MockBean
     private CieloTransactionClient cieloTransactionClient;
 
-    @MockBean
-    private LocationService locationService;
-
-    @Autowired
-    private CategoryRepository serviceRepository;
-
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -70,12 +64,11 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
-    Customer nonCreditCardCustomer;
-    Customer creditCardCustomer;
-    Professional professional;
-    ProfessionalCategory ps1;
-
-    PriceRule pr = null;
+    private Customer nonCreditCardCustomer;
+    private Customer creditCardCustomer;
+    private Professional professional;
+    private ProfessionalCategory ps1;
+    private PriceRule pr = null;
 
     @Before
     public void setUp() throws Exception {

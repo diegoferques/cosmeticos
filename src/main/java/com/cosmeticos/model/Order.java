@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.cosmeticos.model.Payment.Type.CC;
 import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 
 /**
@@ -203,7 +204,7 @@ public class Order implements Serializable {
 		if(payments != null && !payments.isEmpty())
 		{
 			return payments.stream()
-					.filter(p -> p.getCreditCard() != null)
+					.filter(p -> CC.equals(p.getType()))
 					.findFirst()
 					.isPresent();
 		}

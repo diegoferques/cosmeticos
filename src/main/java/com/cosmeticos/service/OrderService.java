@@ -181,16 +181,16 @@ public class OrderService {
                     userService.addCreditCard(persistentUser, receivedPayment);
                 }*/
 
-                // Validamos se ja foi gravado cartao antes.
-                // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
-               // assertUserHasCreditCard(persistentUser, validatedPayment);
+            // Validamos se ja foi gravado cartao antes.
+            // Valida se o usuario que paga com cartao realmente possui cartao cadastrado.
+            // assertUserHasCreditCard(persistentUser, validatedPayment);
 
-           // } else if (optionalReceivedCc.isPresent()) {
-           //     receivedPayment.setCreditCard(optionalReceivedCc.get());
-           // } else {
-           //     throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE,
-           //             "Request de pagamento por cartao mas cartao nao chegou com o request e o usuario nao possui cartao oneclick");
-           // }
+            // } else if (optionalReceivedCc.isPresent()) {
+            //     receivedPayment.setCreditCard(optionalReceivedCc.get());
+            // } else {
+            //     throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_TYPE,
+            //             "Request de pagamento por cartao mas cartao nao chegou com o request e o usuario nao possui cartao oneclick");
+            // }
         }
 
         // Validamos o Payment recebido para que o cron nao tenha que descobrir que o payment esta mal configurado.
@@ -374,12 +374,16 @@ public class OrderService {
                     .get();
 
             if (CC.equals(payment.getType())) {
-                //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-                if (this.sendPaymentCapture(payment)) {
+
+                if (    // Se ja esta PAGO_E_CAPTURADO nao precisamos capturar mais nada e nao executara a proxima clausula.
+                        PAGO_E_CAPTURADO.equals(payment.getStatus()) ||
+
+                                //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
+                                this.sendPaymentCapture(payment)) {
 
                     //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
                     //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
-                    //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA SEMI_CLOSED
+                    //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA CLOSED
                     persistentOrder.setStatus(Order.Status.CLOSED);
                     persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
 
@@ -411,15 +415,13 @@ public class OrderService {
             if (CLOSED.equals(persistentOrder.getStatus())
                     || AUTO_CLOSED.equals(persistentOrder.getStatus())) {
 
-                if(persistentOrder.isCreditCard())
-                {
+                if (persistentOrder.isCreditCard()) {
                     balanceItemService.create(creditFromOrder(persistentOrder));
                 }
             }
         }
 
-        if(!previousOrderStatus.equals(persistentOrder.getStatus()))
-        {
+        if (!previousOrderStatus.equals(persistentOrder.getStatus())) {
             // TODO: Mandar pruma fila, ser assincrono.
             firebasePushNotifierService.push(persistentOrder);
         }
@@ -483,7 +485,6 @@ public class OrderService {
      * cartao registrado.
      *
      * @param persistentUser
-     *
      */
     private void assertUserHasCreditCard(User persistentUser) {
         Collection<CreditCard> persistentCreditCards = persistentUser.getCreditCardCollection();
@@ -602,27 +603,22 @@ public class OrderService {
 
     /**
      * Captura um pagamento caso ele ja nao tenha sido capturado anteriormente.
-    //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
-    //BRANCH: RNF101
-    //BRANCH: RNFapp39-templatando-plus-cartao
+     * //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
+     * //BRANCH: RNF101
+     * //BRANCH: RNFapp39-templatando-plus-cartao
      */
     private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
-        // Se ja esta PAGO_E_CAPTURADO nao precisamos capturar mais nada.
-        if(PAGO_E_CAPTURADO.equals(payment.getStatus()))
-        {
-            return false;
-        }
-        else {
-            ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
 
-            switch (chargeResponse.getResponseCode()) {
-                case SUCCESS:
-                case GATEWAY_DUPLICATE_PAYMENT:
-                    return true;
-                default:
-                    throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
-            }
+        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
+
+        switch (chargeResponse.getResponseCode()) {
+            case SUCCESS:
+            case GATEWAY_DUPLICATE_PAYMENT:
+                return true;
+            default:
+                throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
         }
+
     }
 
     private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
@@ -925,8 +921,7 @@ public class OrderService {
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
 
-                if(o.isCreditCard())
-                {
+                if (o.isCreditCard()) {
                     balanceItemService.create(creditFromOrder(o));
                 }
             }
@@ -991,7 +986,7 @@ public class OrderService {
         // So a Order gravada no banco eh que sabe dizer se a order eh agendada ou nao.
         if (persistentOrder.isScheduled()) {
             // Se for nulo, entao nao eh intencao do cliente atualizar o agendamento, logo, nao validamos.
-            if(receivedOrder.getScheduleId() != null) {
+            if (receivedOrder.getScheduleId() != null) {
                 validateScheduleEndDate(receivedOrder);
             }
         } else {
@@ -1004,7 +999,7 @@ public class OrderService {
     private void validateIfThereAreOrderToSameProfessionalAndSameService(Order receivedOrder, ProfessionalCategory professionalCategory) {
 
         // Nao validamos orders agendadas pq os horarios sao diferentes.
-        if(!receivedOrder.isScheduled()) {
+        if (!receivedOrder.isScheduled()) {
             if (Order.Status.OPEN.equals(receivedOrder.getStatus()) ||
                     Order.Status.ACCEPTED.equals(receivedOrder.getStatus()) ||
                     Order.Status.INPROGRESS.equals(receivedOrder.getStatus())) {
@@ -1113,8 +1108,8 @@ public class OrderService {
         Long idProfessional = p.getIdProfessional();
         Date pretendedStart = order.getScheduleId().getScheduleStart();
         //Date pretendedEnd = order.getScheduleId().getScheduleEnd();
-		/*
-		Aplico mais filtros na query e trago só as orders que interessa.
+        /*
+        Aplico mais filtros na query e trago só as orders que interessa.
 
 		Eh sempre a melhor opcao deixar os filtros na responsabilidade do banco.
 		 */
