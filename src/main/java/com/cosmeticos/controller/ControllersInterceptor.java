@@ -36,12 +36,11 @@ public class ControllersInterceptor extends HandlerInterceptorAdapter {
 
 		log.debug("{}.{}", getClass().getSimpleName(), "preHandle");
 
-		// TODO: Vinicius, catar dentro do parametro request o path da url que foi chamada (soh o que vem depois do localhost:8080
-		MDC.put("urlPath", request.getRequestURL().toString());
+		MDC.put("urlPath", request.getContextPath());
+		MDC.put("verb", request.getMethod());
+		MDC.put("queries", request.getQueryString());
 
 		applyPrincipalEmail(request);
-
-		//applyFirebaseUserToken(request); MUITO CUSTOSO
 
 		return super.preHandle(request, response, handler);
 	}

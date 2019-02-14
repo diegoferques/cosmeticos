@@ -188,7 +188,7 @@ public class CashOrderControllerTests {
                 "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
 
                 "    \"idCustomer\" : {\n" +
-                "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
+                "        \"idCustomer\": "+nonCreditCardCustomer.getIdCustomer()+",\n" +
                 "        \"user\" : {\n" +
                 "            \"voteCollection\" : [\n" +
                 "                {\n" +

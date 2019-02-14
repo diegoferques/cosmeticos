@@ -2,9 +2,12 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.User;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,10 @@ public class CreditCardService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    @Qualifier("charger")
+    private Charger charger;
 
     public List<CreditCard> findAll() {
 
@@ -64,7 +71,15 @@ public class CreditCardService {
             if (activeCard.isPresent()) {
                 throw new IllegalStateException("Usuario ja possui um cartao cadastrado.");
             } else {
-                return this.repository.save(creditCard);
+                persistentUser.getCreditCardCollection().add(creditCard);
+
+                ChargeResponse<Object> result = charger.addCard(creditCard);
+                String token = result.getBody().toString();
+                creditCard.setToken(token);
+                creditCard.setStatus(CreditCard.Status.ACTIVE);
+                this.userRepository.save(persistentUser);
+
+                return creditCard;
             }
         } else {
             throw new IllegalStateException("Usuario nao informado na requisicao");
@@ -124,5 +139,4 @@ public class CreditCardService {
             throw new IllegalStateException("O Cartão de crédito não foi localizado");
         }
     }
-
 }

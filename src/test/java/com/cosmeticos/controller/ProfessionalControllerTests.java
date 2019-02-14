@@ -779,7 +779,7 @@ public class ProfessionalControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameProfessional(String.valueOf(System.nanoTime()) );
-		//c1.setOrderCollection(null);
+		//nonCreditCardCustomer.setOrderCollection(null);
 		c1.setStatus(Professional.Status.ACTIVE);
 		c1.setAddress(createFakeAddress());
 		c1.setUser(UserControllerTest.createFakeUser(String.valueOf(System.nanoTime()) , String.valueOf(System.nanoTime()) + "@2.com"));

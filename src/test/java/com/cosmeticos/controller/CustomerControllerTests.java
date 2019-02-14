@@ -6,9 +6,11 @@ import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.User;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.mockserver.MockServer;
+import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -23,6 +25,9 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpResponse.response;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,6 +39,19 @@ public class CustomerControllerTests {
 	private Customer testCreateOK;
 
 	private String emailTeste = "";
+
+	private static ClientAndServer mockServer;
+
+	@BeforeClass
+	public static void setUp() throws Exception {
+
+		mockServer = startClientAndServer(9000);
+	}
+
+	@AfterClass
+	public static void tearDown() throws Exception {
+		mockServer.stop();
+	}
 
 	/**
 	 * Inicializa o H2 com dados iniciais.
@@ -102,6 +120,85 @@ public class CustomerControllerTests {
 
 	@Test
 	public void testUpdateOK() throws IOException, URISyntaxException {
+
+		mockServer.when(
+				HttpRequest.request()
+						.withMethod("GET")
+						.withPath("/maps/api/geocode/json?address=null,%20null,%20null,%20null&key=AIzaSyAX_6LfSGQ1np0j3AOu7uNx5PyiPX71zJI")
+		)
+				.respond(response()
+						.withStatusCode(200)
+						.withHeader("Content-Type", "application/json;charset=UTF-8")
+						.withBody("{\n" +
+								"   \"results\" : [\n" +
+								"      {\n" +
+								"         \"address_components\" : [\n" +
+								"            {\n" +
+								"               \"long_name\" : \"Rua Itaquatia\",\n" +
+								"               \"short_name\" : \"R. Itaquatia\",\n" +
+								"               \"types\" : [ \"route\" ]\n" +
+								"            },\n" +
+								"            {\n" +
+								"               \"long_name\" : \"Primavera\",\n" +
+								"               \"short_name\" : \"Primavera\",\n" +
+								"               \"types\" : [ \"political\", \"sublocality\", \"sublocality_level_1\" ]\n" +
+								"            },\n" +
+								"            {\n" +
+								"               \"long_name\" : \"Queimados\",\n" +
+								"               \"short_name\" : \"Queimados\",\n" +
+								"               \"types\" : [ \"administrative_area_level_2\", \"political\" ]\n" +
+								"            },\n" +
+								"            {\n" +
+								"               \"long_name\" : \"Rio de Janeiro\",\n" +
+								"               \"short_name\" : \"RJ\",\n" +
+								"               \"types\" : [ \"administrative_area_level_1\", \"political\" ]\n" +
+								"            },\n" +
+								"            {\n" +
+								"               \"long_name\" : \"Brazil\",\n" +
+								"               \"short_name\" : \"BR\",\n" +
+								"               \"types\" : [ \"country\", \"political\" ]\n" +
+								"            },\n" +
+								"            {\n" +
+								"               \"long_name\" : \"26385\",\n" +
+								"               \"short_name\" : \"26385\",\n" +
+								"               \"types\" : [ \"postal_code\", \"postal_code_prefix\" ]\n" +
+								"            }\n" +
+								"         ],\n" +
+								"         \"formatted_address\" : \"R. Itaquatia - Primavera, Queimados - RJ, Brazil\",\n" +
+								"         \"geometry\" : {\n" +
+								"            \"bounds\" : {\n" +
+								"               \"northeast\" : {\n" +
+								"                  \"lat\" : -22.7038891,\n" +
+								"                  \"lng\" : -43.5504807\n" +
+								"               },\n" +
+								"               \"southwest\" : {\n" +
+								"                  \"lat\" : -22.7088299,\n" +
+								"                  \"lng\" : -43.5552875\n" +
+								"               }\n" +
+								"            },\n" +
+								"            \"location\" : {\n" +
+								"               \"lat\" : -22.7061124,\n" +
+								"               \"lng\" : -43.5520657\n" +
+								"            },\n" +
+								"            \"location_type\" : \"GEOMETRIC_CENTER\",\n" +
+								"            \"viewport\" : {\n" +
+								"               \"northeast\" : {\n" +
+								"                  \"lat\" : -22.7038891,\n" +
+								"                  \"lng\" : -43.5504807\n" +
+								"               },\n" +
+								"               \"southwest\" : {\n" +
+								"                  \"lat\" : -22.7088299,\n" +
+								"                  \"lng\" : -43.5552875\n" +
+								"               }\n" +
+								"            }\n" +
+								"         },\n" +
+								"         \"place_id\" : \"ChIJ1dkjrplcmQARVJdzoiYlpNE\",\n" +
+								"         \"types\" : [ \"route\" ]\n" +
+								"      }\n" +
+								"   ],\n" +
+								"   \"status\" : \"OK\"\n" +
+								"}\n"));
+
 		emailTeste = "emailUpdateOk@teste.com";
 		this.testCreateOK();
 
@@ -323,7 +420,7 @@ public class CustomerControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameCustomer(String.valueOf(System.nanoTime()));
-		//c1.setOrderCollection(null);
+		//nonCreditCardCustomer.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setAddress(createFakeAddress(c1));
 		c1.setUser(createFakeLogin(c1));
@@ -331,4 +428,5 @@ public class CustomerControllerTests {
 
 		return c1;
 	}
+
 }

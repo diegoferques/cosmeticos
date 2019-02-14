@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.cosmeticos.model.Payment.Type.CC;
+
 /**
  *
  * @author magarrett.dias
@@ -82,18 +84,6 @@ public class Order implements Serializable {
     @Enumerated(EnumType.STRING)
 	private Status status;
 
-    /*
-	@JsonView({
-			ResponseJsonView.OrderControllerCreate.class,
-			ResponseJsonView.OrderControllerUpdate.class,
-			ResponseJsonView.OrderControllerFindBy.class
-	})
-	@Basic(optional = false)
-	@Column(name = "payment_Type")
-	@Enumerated(EnumType.STRING)
-	private PayType paymentType; */
-
-
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
             ResponseJsonView.OrderControllerUpdate.class,
@@ -139,13 +129,6 @@ public class Order implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireTime;
 
-    // TODO: estudar futuro deste infeliz atributo
-	@JoinTable(name = "ORDER_CREDITCARD", joinColumns = {
-			@JoinColumn(name = "id_order", referencedColumnName = "idOrder")}, inverseJoinColumns = {
-			@JoinColumn(name = "id_creditcard", referencedColumnName = "idCreditCard")})
-	@ManyToMany(fetch = FetchType.EAGER)
-	private Set<CreditCard> creditCardCollection = new HashSet<>();
-
 	@JsonView({
 			ResponseJsonView.OrderControllerCreate.class,
 			ResponseJsonView.OrderControllerUpdate.class,
@@ -189,6 +172,23 @@ public class Order implements Serializable {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	/**
+	 *
+	 * @return TRUE, se a Order for paga no cartao de credito.
+	 */
+	public boolean isCreditCard()
+	{
+		Set<Payment> payments = paymentCollection;
+		if(payments != null && !payments.isEmpty())
+		{
+			return payments.stream()
+					.filter(p -> CC.equals(p.getType()))
+					.findFirst()
+					.isPresent();
+		}
+		return false;
 	}
 
 	@Override

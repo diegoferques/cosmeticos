@@ -183,6 +183,27 @@ public class JsonizerTest222 {
     }
 
     @Test
+    public void jsonizeCreateCCRequest() throws Exception {
+        om.enable(SerializationFeature.INDENT_OUTPUT);
+
+        User user = new User ();
+        user.setIdLogin(1L);
+
+        CreditCard card = CreditCard.builder()
+                .number("123123123")
+                .securityCode("123")
+                .user(user)
+                .build();
+
+        CreditCardRequestBody body = new CreditCardRequestBody();
+        body.setEntity(card);
+
+        String json = om.writeValueAsString(body);
+
+        System.out.println(json);
+    }
+
+    @Test
     public void justPrintJson()
     {
 

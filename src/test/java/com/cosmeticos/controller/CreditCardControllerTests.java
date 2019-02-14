@@ -3,10 +3,13 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.CreditCardRequestBody;
 import com.cosmeticos.commons.CreditCardResponseBody;
+import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.model.Customer;
 import com.cosmeticos.model.Professional;
 import com.cosmeticos.model.User;
+import com.cosmeticos.payment.ChargeResponse;
+import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.CreditCardRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
@@ -16,8 +19,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,6 +37,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.time.LocalDate.now;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * Created by Vinicius on 08/07/2017.
@@ -54,11 +62,17 @@ public class CreditCardControllerTests {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @MockBean
+    @Qualifier(value = "charger")
+    private Charger charger;
+
     @Before
-    public void setupTests() throws ParseException{
-
-
-
+    public void setupTests() throws ParseException {
+        ChargeResponse<Object> response = new ChargeResponse<>("tokenFake");
+        response.setResponseCode(ResponseCode.SUCCESS);
+        Mockito.when(
+                charger.addCard(Mockito.anyObject())
+        ).thenReturn(response);
     }
 
     @Test
@@ -84,7 +98,7 @@ public class CreditCardControllerTests {
             Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
 
             for (int i = 0; i < entityList.size(); i++) {
-                CreditCard cc =  entityList.get(i);
+                CreditCard cc = entityList.get(i);
 
                 User u = cc.getUser();
                 //cc.setUser(u);
@@ -99,6 +113,7 @@ public class CreditCardControllerTests {
 
 
     }
+
     @Test
     public void fazerTesteDeBuscaPara2CartaoPeloEmail() throws ParseException {
 
@@ -119,7 +134,7 @@ public class CreditCardControllerTests {
         Assert.assertTrue("Nao foram retornados profissionais.", entityList.size() > 0);
 
         for (int i = 0; i < entityList.size(); i++) {
-            CreditCard cc =  entityList.get(i);
+            CreditCard cc = entityList.get(i);
 
             User u = cc.getUser();
             //cc.setUser(u);
@@ -129,10 +144,11 @@ public class CreditCardControllerTests {
 
         }
     }
+
     @Test
     public void testeDeBuscaPeloEmail() throws ParseException, URISyntaxException {
 
-        RequestEntity<Void> entity =  RequestEntity
+        RequestEntity<Void> entity = RequestEntity
                 //"/creditCard?user.email=ciclanor@gmail.com",
                 .get(new URI("/creditCard?user.email="))
                 .accept(MediaType.APPLICATION_JSON)
@@ -141,9 +157,9 @@ public class CreditCardControllerTests {
         ResponseEntity<Void> getExchange = restTemplate
                 .exchange(entity, Void.class);
 
-                Assert.assertEquals(HttpStatus.NOT_FOUND, getExchange.getStatusCode());
+        Assert.assertEquals(HttpStatus.NOT_FOUND, getExchange.getStatusCode());
 
-        }
+    }
 
     @Test
     public void testeCadastrarCartaoParaProfessionalUser() throws ParseException, URISyntaxException, JsonProcessingException {
@@ -156,25 +172,9 @@ public class CreditCardControllerTests {
         User user = new User();
         user.setIdLogin(professional.getUser().getIdLogin());
 
-        CreditCard cc = CreditCard.builder()
-                .expirationDate(now().getMonth().toString() + "/" + now().plusYears(3).getYear())
-                .lastUsage(Timestamp.valueOf(LocalDateTime.now()))
-                .number("0000000000000001")
-                .oneClick(true)
-                .ownerName("testeCadastrarCartaoParaUser")
-                .securityCode("123")
-                .status(CreditCard.Status.ACTIVE)
-                .suffix("0001")
-                .vendor("VISA")
-                .user(user)
-                .build();
+        String json = sampleJsonCreditcard(user);
 
-        CreditCardRequestBody body = new CreditCardRequestBody();
-        body.setEntity(cc);
-
-        String json = Utility.toJson(body);
-
-        ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
+        ResponseEntity<?> exchange = RequestHelper.postEntity(restTemplate, "/creditCard", json, CreditCardResponseBody.class);
 
         User afterPostUser = userRepository.findOne(user.getIdLogin());
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -197,7 +197,7 @@ public class CreditCardControllerTests {
 
         String json = buildCreditCardJson(user);
 
-        ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
+        ResponseEntity<?> exchange = RequestHelper.postEntity(restTemplate, "/creditCard", json, CreditCardResponseBody.class);
 
         User afterPostUser = userRepository.findOne(user.getIdLogin());
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
@@ -222,9 +222,9 @@ public class CreditCardControllerTests {
 
         String json = buildCreditCardJson(user);
 
-        ResponseEntity<?> exchange = postEntity("/creditCard", json, CreditCardResponseBody.class );
+        ResponseEntity<?> exchange = RequestHelper.postEntity(restTemplate, "/creditCard", json, CreditCardResponseBody.class);
 
-       // Customer retrievedCustomer = getCustomer()
+        // Customer retrievedCustomer = getCustomer()
 
 
         User afterPostUser = userRepository.findOne(user.getIdLogin());
@@ -243,12 +243,46 @@ public class CreditCardControllerTests {
         User user = new User();
         user.setIdLogin(sourceUser.getIdLogin());
 
-        CreditCard cc = CreditCard.builder()
+        CreditCard cc = buildTestCreditCard(user);
+
+        CreditCardRequestBody body = new CreditCardRequestBody();
+        body.setEntity(cc);
+
+        return Utility.toJson(body);
+    }
+
+    public static CreditCard buildTestCreditCard(User user) {
+        return CreditCard.builder()
                 .expirationDate(now().getMonth().toString() + "/" + now().plusYears(3).getYear())
                 .lastUsage(Timestamp.valueOf(LocalDateTime.now()))
                 .number("0000000000000001")
                 .oneClick(true)
                 .ownerName("testeCadastrarCartaoParaCustomerUser")
+                .securityCode("123")
+                .status(CreditCard.Status.ACTIVE)
+                .suffix("0001")
+                .vendor("VISA")
+                .user(user)
+                .build();
+    }
+
+
+    public static ResponseEntity<CreditCardResponseBody> getCreditcard(final TestRestTemplate restTemplate, String query) throws URISyntaxException {
+
+        return restTemplate.exchange( //
+                "/creditCard" + (query != null && !query.isEmpty() ? "?" + query : ""), //
+                HttpMethod.GET, //
+                null,
+                CreditCardResponseBody.class);
+    }
+
+    public static String sampleJsonCreditcard(User user) throws JsonProcessingException {
+        CreditCard cc = CreditCard.builder()
+                .expirationDate(now().getMonth().toString() + "/" + now().plusYears(3).getYear())
+                .lastUsage(Timestamp.valueOf(LocalDateTime.now()))
+                .number("0000000000000001")
+                .oneClick(true)
+                .ownerName("testeCadastrarCartaoParaUser")
                 .securityCode("123")
                 .status(CreditCard.Status.ACTIVE)
                 .suffix("0001")
@@ -261,28 +295,4 @@ public class CreditCardControllerTests {
 
         return Utility.toJson(body);
     }
-
-    private ResponseEntity<?> postEntity(String url, String body, Class<?> responseClass) throws URISyntaxException {
-        RequestEntity<String> entity = RequestEntity
-                    .post(new URI(url))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(body);
-
-        ResponseEntity<?> exchange = restTemplate
-                .exchange(entity, responseClass);
-
-        return exchange;
-    }
-
-    public static ResponseEntity<CreditCardResponseBody> getCreditcard(final TestRestTemplate restTemplate, String query) throws URISyntaxException {
-
-        return restTemplate.exchange( //
-                "/creditCard" + (query != null && !query.isEmpty() ? "?" + query : ""), //
-                HttpMethod.GET, //
-                null,
-                CreditCardResponseBody.class);
-    }
-
-
 }

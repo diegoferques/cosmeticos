@@ -43,8 +43,6 @@ public class OrderController {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
                 return badRequest().body(buildErrorResponse(bindingResult));
             } else {
-
-
                 MDC.put("idCustomer", String.valueOf(request.getOrder().getIdCustomer().getIdCustomer()));
                 MDC.put("customerUserStatus", String.valueOf(request.getOrder().getIdCustomer().getStatus()));
 

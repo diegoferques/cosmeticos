@@ -20,6 +20,7 @@ public interface ProfessionalCategoryRepository extends JpaRepository<Profession
             " WHERE " +
             "ps.professional.status = 'ACTIVE' " +
             "AND ps.category.name = ?1 " +
+            "AND ps.professional.status != 'INACTIVE' " +
             "AND ps.priceRuleList IS NOT EMPTY"
     )
     List<ProfessionalCategory> findByPriceRuleNotNullAndService(String categoryName);
@@ -30,6 +31,7 @@ public interface ProfessionalCategoryRepository extends JpaRepository<Profession
             "ps.professional.status = 'ACTIVE' " +
             "AND ps.category.name = ?1 " +
             "AND ps.priceRuleList IS NOT EMPTY " +
+            "AND ps.professional.status != 'INACTIVE' " +
             "AND ps.professional.attendance = 0"
     )
     List<ProfessionalCategory> findByPriceRuleNotNullAndServiceAndHomecare(String categoryName);

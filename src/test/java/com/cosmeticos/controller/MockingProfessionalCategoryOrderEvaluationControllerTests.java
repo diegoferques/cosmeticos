@@ -3,9 +3,10 @@ package com.cosmeticos.controller;
 import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ProfessionalCategoryResponseBody;
-import com.cosmeticos.commons.ProfessionalResponseBody;
-import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.*;
+import com.cosmeticos.payment.cielo.CieloTransactionClient;
+import com.cosmeticos.payment.cielo.model.AuthorizeAndTokenResponse;
+import com.cosmeticos.payment.cielo.model.ResponseCieloPayment;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.LocationService;
 import com.cosmeticos.service.VoteService;
@@ -15,19 +16,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.Exception;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
+
+import static com.cosmeticos.controller.CreditCardControllerTests.buildTestCreditCard;
 
 /**
  * Created by matto on 19/07/2017.
@@ -40,10 +41,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    private LocationService locationService;
-
-    @Autowired
-    private CategoryRepository serviceRepository;
+    private CieloTransactionClient cieloTransactionClient;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -61,13 +59,16 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     private VoteService voteService;
 
     @Autowired
+    private CreditCardRepository creditCardRepository;
+
+    @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
-    Customer c1;
-    Professional professional;
-    ProfessionalCategory ps1;
-
-    PriceRule pr = null;
+    private Customer nonCreditCardCustomer;
+    private Customer creditCardCustomer;
+    private Professional professional;
+    private ProfessionalCategory ps1;
+    private PriceRule pr = null;
 
     @Before
     public void setUp() throws Exception {
@@ -82,9 +83,13 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
        //         locationService.getGeoCode(Mockito.any())
        // ).thenReturn(sourceLocation);
 
-        c1 = CustomerControllerTests.createFakeCustomer();
-        c1.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
-        c1.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
+        nonCreditCardCustomer = CustomerControllerTests.createFakeCustomer();
+        nonCreditCardCustomer.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-cliente");
+        nonCreditCardCustomer.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-cliente@bol");
+
+        creditCardCustomer = CustomerControllerTests.createFakeCustomer();
+        creditCardCustomer.getUser().setUsername(System.nanoTime() + "-createOrderOk" + "-clientecc");
+        creditCardCustomer.getUser().setEmail(System.nanoTime()+ "-createOrderOk" + "-clientecc@bol");
 
         professional = ProfessionalControllerTests.createFakeProfessional();
         professional.getUser().setUsername(System.nanoTime()+ "-createOrderOk" + "-professional");
@@ -94,8 +99,11 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         professional.getAddress().setLongitude("-43.51020159999999");
         professional.getAddress().setProfessional(professional);
 
+        customerRepository.save(nonCreditCardCustomer);
 
-        customerRepository.save(c1);
+        customerRepository.save(creditCardCustomer);
+        creditCardRepository.save(buildTestCreditCard(creditCardCustomer.getUser()));
+
         professionalRepository.save(professional);
 
         Category category = categoryRepository.findByName("PEDICURE");
@@ -112,13 +120,22 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
     @Test
     public void testNearbyWithDistance() throws ParseException, URISyntaxException {
 
+        ResponseCieloPayment mockСieloPayment = new ResponseCieloPayment();
+        mockСieloPayment.setStatus(Payment.Status.PAGO_E_CAPTURADO.getSuperpayStatusTransacao());
+
+        AuthorizeAndTokenResponse mockedResponse = new AuthorizeAndTokenResponse();
+        mockedResponse.setPayment(mockСieloPayment);
+
+        Mockito.when(cieloTransactionClient.reserve(Mockito.anyString(), Mockito.anyObject()))
+                .thenReturn(mockedResponse);
+
         //////////////////////////////////////////////////////////////////////////////////
         //////// CRIANDO ORDER  //////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////
         String json = OrderJsonHelper.buildJsonCreateNonScheduledOrder(
-                c1,
+                creditCardCustomer,
                 ps1,
-                Payment.Type.CASH,
+                Payment.Type.CC,
                 pr
         );
 
@@ -139,7 +156,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
                 "\n}\n" +
                 "}";
 
-// todo: FAZER O PUT
+
         RequestEntity<String> entityUpdateAccepted =  RequestEntity
                 .put(new URI("/orders"))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +185,6 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
                 "\n}\n" +
                 "}";
 
-// todo: FAZER O PUT
 
         RequestEntity<String> entityUpdateInProgress =  RequestEntity
                 .put(new URI("/orders"))
@@ -257,6 +273,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Order orderUpdateReady2Charger =  orderRepository.findOne(orderUpdateSemiClosed.getIdOrder());
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
+        // fev 2019: Este teste falha pq a aplciacao esta considerando PAGO_E_CAPTURADO como erro. Na vdd devemos aceitar esse status e simplesmente nao fazer o capture.
         Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());
 
         User professionalUser = orderUpdateReady2Charger.getProfessionalCategory()

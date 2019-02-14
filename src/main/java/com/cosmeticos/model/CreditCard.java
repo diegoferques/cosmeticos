@@ -115,29 +115,9 @@ public class CreditCard implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsage;
 
-/*
-    @JsonView({
-            ResponseJsonView.CreditCardFindAll.class,
-            ResponseJsonView.OrderControllerFindBy.class,
-            ResponseJsonView.CreditCardFindAll.class,
-            ResponseJsonView.CustomerControllerUpdate.class,
-            ResponseJsonView.CustomerControllerGet.class
-    })
-    private Boolean oneClick = false;*/
-
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "creditCardCollection")
-    private Collection<Order> orders = new ArrayList<>();
-
     public Boolean isOneClick() {
         return oneClick;
     }
-
-    /*@ManyToOne
-    private Professional professional;
-
-    @ManyToOne
-    private Customer customer;
-    */
 
     @Override
     public int hashCode() {

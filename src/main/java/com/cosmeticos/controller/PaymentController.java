@@ -100,8 +100,6 @@ public class PaymentController {
 
                     if (paymentOptional.isPresent()) {
 
-                        // Comentado pq comentei o getStatus
-                        // Boolean updateStatus = paymentService.updatePaymentStatus(retornoConsulta.get());
                         Boolean updateStatus = paymentService.updatePaymentStatus(paymentOptional.get());
 
                         if (updateStatus) {

@@ -145,11 +145,15 @@ public class Payment implements Serializable {
 	@JoinColumn(name = "price_rule_id", referencedColumnName = "id")
 	private PriceRule priceRule;
 
+	private String lastCardDigits;
+
 	/**
 	 * TODO: o cartao de credito que vem com Payment no request de abertura de order eh diferente do que gravamos no
 	 * banco. No banco fica so o token e o que vem no request vem com dados completos.
 	 * Precisamos de um outro objeto para representar ESTE cartao de credito. ATUALIZADO: talvez nao precisemos, pois
 	 * o que vai ao banco fica associado ao user e nao ao payment.
+	 * ATUALIZADO fev 2019: O cartao nao trafega mais na criacao de uma Order. Eh expor demais o cartao. O cartao eh incluido
+	 * pelo usuario numa tela separada do app, assim como ocorre com o Uber. Este atributo serve apenas para operacoes de backend.
 	 */
 	@Transient
 	private CreditCard creditCard;
@@ -159,6 +163,15 @@ public class Payment implements Serializable {
 
 	public Payment(Type type) {
 		this.type = type;
+	}
+
+	public String getLastCardDigits() {
+		if(creditCard == null || creditCard.getNumber() == null || creditCard.getNumber().isEmpty())
+			return "";
+		else{
+			int numerSize = creditCard.getNumber().length();
+			return creditCard.getNumber().substring(numerSize - 5);
+		}
 	}
 
 	public String getExternalTransactionId() {
