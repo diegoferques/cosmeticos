@@ -5,10 +5,9 @@ import com.cosmeticos.commons.CreditCardResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.CreditCard;
 import com.cosmeticos.service.CreditCardService;
-import com.cosmeticos.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -25,15 +24,12 @@ import static org.springframework.http.ResponseEntity.*;
 /**
  * Created by Vinicius on 07/07/2017.
  */
+@AllArgsConstructor
 @Slf4j
 @RestController
 public class CreditCardController {
 
-    @Autowired
     private CreditCardService service;
-
-    @Autowired
-    private UserService userService;
 
     @JsonView(ResponseJsonView.CreditCardFindAll.class)
     @RequestMapping(path = "/creditCard", method = RequestMethod.GET)

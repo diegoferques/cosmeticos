@@ -1,7 +1,10 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.commons.ResponseCode;
-import com.cosmeticos.model.*;
+import com.cosmeticos.model.CreditCard;
+import com.cosmeticos.model.Customer;
+import com.cosmeticos.model.Order;
+import com.cosmeticos.model.Payment;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
@@ -14,8 +17,6 @@ import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
 
 import static java.time.LocalDate.now;
 
@@ -100,33 +101,9 @@ public class CieloOneClickPaymentService implements Charger{
 
         Order persistentOrder = persistentPayment.getOrder();
 
-        Customer customer = persistentOrder.getIdCustomer();
-
-        Address customerAddress = customer.getAddress();
-
         CieloCreditCard cieloCreditCard = CieloCreditCard.builder()
-                .brand(creditCard.getVendor())
-                .cardNumber(creditCard.getNumber())
-                .expirationDate(creditCard.getExpirationDate())
-                .saveCard(true)
+                .cardToken(creditCard.getToken())
                 .securityCode(creditCard.getSecurityCode())
-                .holder(creditCard.getOwnerName())
-                .build();
-
-        CieloAddress cieloAddress = CieloAddress.builder()
-                .street(customerAddress.getAddress())
-                .number(customerAddress.getNumber())
-                .city(customerAddress.getCity())
-                .complement(customerAddress.getComplement())
-                .state(customerAddress.getState())
-                .build();
-
-        CieloCustomer cieloCustomer = CieloCustomer.builder()
-                .name(customer.getNameCustomer())
-                .email(customer.getUser().getEmail())
-                .birthdate(new SimpleDateFormat("dd/MM/yyyy").format(customer.getBirthDate()))
-                .identity(customer.getCpf())
-                .address(cieloAddress)
                 .build();
 
         RequestCieloPayment cieloPayment = RequestCieloPayment.builder()
@@ -137,8 +114,8 @@ public class CieloOneClickPaymentService implements Charger{
                 .type("CreditCard")
                 .build();
 
+        // Este objeto nao precisa enviar tudo, so o payment e o orderid. So seria necessario se quisessemos gravar o cartao.
         AuthorizeAndTokenRequest authorizeAndTokenRequest = AuthorizeAndTokenRequest.builder()
-                .customer(cieloCustomer)
                 .merchantOrderId(String.valueOf(persistentOrder.getIdOrder()))
                 .payment(cieloPayment)
                 .build();
