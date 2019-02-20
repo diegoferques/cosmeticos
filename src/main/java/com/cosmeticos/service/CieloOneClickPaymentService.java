@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 
+import static java.time.LocalDate.now;
+
 /**
  * Created by matto on 08/08/2017.
  */
@@ -38,15 +40,16 @@ public class CieloOneClickPaymentService implements Charger{
 
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getNumber();
-        String dataValidadeCartao = creditCard.getExpirationDate();
+        String dataValidadeCartao = handleExpirationDate(creditCard.getExpirationDate());
         String brand = creditCard.getVendor();
 
         CieloAddCardRequestBody addCardRequestBody = CieloAddCardRequestBody.builder()
-            .cardNumber(numeroCartaoCredito)
-            .brand(brand)
-            .customerName(nomeTitularCartaoCredito)
-            .expirationDate(dataValidadeCartao)
-            .build();
+                .cardNumber(numeroCartaoCredito)
+                .brand(brand)
+                .customerName(nomeTitularCartaoCredito)
+                .holder(nomeTitularCartaoCredito)
+                .expirationDate(dataValidadeCartao)
+                .build();
 
         CieloAddCardResponseBody cieloAddCardResponseBody = cieloTransactionClient.addCard(addCardRequestBody);
 
@@ -54,6 +57,22 @@ public class CieloOneClickPaymentService implements Charger{
 
         return chargeResponse;
 
+    }
+
+    /**
+     * Retorna formato MM/yyyy caso o formato recebido seja MM/yy
+     * @param expirationDate
+     * @return
+     */
+    private String handleExpirationDate(String expirationDate) {
+        String separator = "/";
+        String[] date = expirationDate.split(separator);
+        String year = date[1];
+        if(year.length() == 2)
+        {
+            year = String.valueOf(now().getYear()).substring(0, 2) + year;
+        }
+        return String.format("%s%s%s", date[0], separator, year);
     }
 
     private String findPersistentUserEmail(Long idCustomer) {

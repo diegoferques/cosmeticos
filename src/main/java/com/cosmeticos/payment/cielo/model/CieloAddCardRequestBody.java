@@ -24,4 +24,8 @@ public class CieloAddCardRequestBody {
     @NotEmpty
     @JsonProperty("Brand")
     private String brand;
+
+    @NotEmpty
+    @JsonProperty("Holder")
+    private String holder;
 }

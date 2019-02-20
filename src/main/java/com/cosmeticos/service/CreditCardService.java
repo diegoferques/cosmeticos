@@ -108,8 +108,9 @@ public class CreditCardService {
                     persistentCreditCard.setStatus(creditCardFromRequest.getStatus());
                 }
 
-                if(creditCardFromRequest.getExpirationDate() != persistentCreditCard.getExpirationDate()) {
-                    persistentCreditCard.setExpirationDate(creditCardFromRequest.getExpirationDate());
+                String receivedExpirationDate = creditCardFromRequest.getExpirationDate();
+                if(receivedExpirationDate != persistentCreditCard.getExpirationDate()) {
+                    persistentCreditCard.setExpirationDate(receivedExpirationDate);
                 }
 
                 if(creditCardFromRequest.getOwnerName() != persistentCreditCard.getOwnerName()) {
