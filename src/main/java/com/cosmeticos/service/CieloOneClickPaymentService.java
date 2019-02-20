@@ -14,8 +14,8 @@ import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.PaymentRepository;
 import com.cosmeticos.validation.OrderValidationException;
 import feign.FeignException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static java.time.LocalDate.now;
@@ -23,17 +23,20 @@ import static java.time.LocalDate.now;
 /**
  * Created by matto on 08/08/2017.
  */
+@AllArgsConstructor
 @Slf4j
 @Service
 public class CieloOneClickPaymentService implements Charger{
 
-    @Autowired
+    private enum Vendor
+    {
+        VISA, MASTER, AMEX, ELO, AURA, JCB, DINERS, DISCOVER, HIPERCARD
+    }
+
     private CieloTransactionClient cieloTransactionClient;
 
-    @Autowired
     private PaymentRepository paymentRepository;
 
-    @Autowired
     private CustomerRepository customerRepository;
 
     @Override
@@ -42,7 +45,7 @@ public class CieloOneClickPaymentService implements Charger{
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getNumber();
         String dataValidadeCartao = handleExpirationDate(creditCard.getExpirationDate());
-        String brand = creditCard.getVendor();
+        String brand = Vendor.valueOf(creditCard.getVendor().toUpperCase()).name();
 
         CieloAddCardRequestBody addCardRequestBody = CieloAddCardRequestBody.builder()
                 .cardNumber(numeroCartaoCredito)
