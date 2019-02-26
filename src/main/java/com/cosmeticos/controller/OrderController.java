@@ -83,7 +83,7 @@ public class OrderController {
             MDC.put("responseCode", String.valueOf(e.getCode()));
             MDC.put("httpStatus", String.valueOf(e.getCode().getHttpStatus()));
 
-            log.error("Erro no insert: {} ", msg, e);
+            log.error("Erro no insert: {} ", msg);
 
             return ResponseEntity.status(e.getCode().getHttpStatus()).body(orderResponseBody);
 

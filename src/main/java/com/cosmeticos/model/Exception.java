@@ -20,7 +20,25 @@ public class Exception implements Serializable {
     private Long id;
 
     public enum Status{
-        RESOLVED, UNRESOLVED, FAILED_SENDING_MAIL, UNRESOLVED_BUT_NOTIFIED
+        /**
+         * Erro foi registrado e ainda nao foi resolvido.
+         */
+        UNRESOLVED,
+
+        /**
+         * Erro foi analizado e corrigido no aplicativo.
+         */
+        RESOLVED,
+
+        /**
+         * Erro ainda nao foi corrigido mas e as equipes ja foram notificadas do erro por email.
+         */
+        UNRESOLVED_BUT_NOTIFIED,
+
+        /**
+         * Erro ainda nao foi corrigido e nem conseguimos notificar as equipes por email.
+         */
+        FAILED_SENDING_MAIL
     }
 
     //@Transient
@@ -31,6 +49,8 @@ public class Exception implements Serializable {
     private String osVersion;
 
     private Status status;
+
+    private String userEmail;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
