@@ -3,7 +3,6 @@ package com.cosmeticos.controller;
 import com.cosmeticos.commons.ExceptionRequestBody;
 import com.cosmeticos.commons.ExceptionResponseBody;
 import com.cosmeticos.model.Exception;
-import com.cosmeticos.repository.ExceptionRepository;
 import com.cosmeticos.service.ExceptionService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -31,15 +30,10 @@ import static org.springframework.http.ResponseEntity.*;
 public class ExceptionController {
 
     @Autowired
-    private ExceptionRepository exceptionRepository;
-
-    @Autowired
     private ExceptionService exceptionService;
 
     @RequestMapping(path = "/exceptions", method = RequestMethod.POST)
     public HttpEntity<ExceptionResponseBody> create(@Valid @RequestBody ExceptionRequestBody request, BindingResult bindingResult) {
-
-
         try {
             if (bindingResult.hasErrors()) {
                 log.error("Erros na requisicao do cliente: {}", bindingResult.toString());
@@ -56,7 +50,7 @@ public class ExceptionController {
 
                 log.info("Exception adicionado:  [{}]", exception);
 
-                return ok(new ExceptionResponseBody(exception));
+                return ok(new ExceptionResponseBody(cloneForLightResponse(exception)));
 
             }
         }catch(java.lang.Exception e){
@@ -68,6 +62,7 @@ public class ExceptionController {
             return ResponseEntity.status(500).body(responseBody);
         }
     }
+
 
     @RequestMapping(path = "/exceptions", method = RequestMethod.PUT)
     public HttpEntity<ExceptionResponseBody> update(@Valid @RequestBody ExceptionRequestBody request, BindingResult
@@ -88,7 +83,7 @@ public class ExceptionController {
                     Exception updatedException = optional.get();
 
                     ExceptionResponseBody responseBody = new ExceptionResponseBody();
-                    responseBody.getExceptionList().add(updatedException);
+                    responseBody.getExceptionList().add(cloneForLightResponse(updatedException));
 
                     log.info("Exception atualizado com sucesso:  [{}]", updatedException);
 
@@ -115,5 +110,11 @@ public class ExceptionController {
         ExceptionResponseBody responseBody = new ExceptionResponseBody();
         responseBody.setDescription(errors.toString());
         return responseBody;
+    }
+
+    private Exception cloneForLightResponse(Exception exception) {
+        Exception newException = new Exception();
+        newException.setId(exception.getId());
+        return newException;
     }
 }
