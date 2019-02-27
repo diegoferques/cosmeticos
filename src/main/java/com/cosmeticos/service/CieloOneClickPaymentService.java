@@ -30,7 +30,17 @@ public class CieloOneClickPaymentService implements Charger{
 
     private enum Vendor
     {
-        VISA, MASTER, AMEX, ELO, AURA, JCB, DINERS, DISCOVER, HIPERCARD
+        VISA("VISA"), MASTERCARD("MASTER"), AMEX("AMEX"), ELO("ELO"), AURA("AURA"), JCB("JCB"), DINERS("DINERS"), DISCOVER("DISCOVER"), HIPERCARD("HIPERCARD");
+
+        private Vendor(String cieloSpell) {
+            this.cieloSpell = cieloSpell;
+        }
+
+        private String cieloSpell;
+
+        public String getCieloSpell() {
+            return cieloSpell;
+        }
     }
 
     private CieloTransactionClient cieloTransactionClient;
@@ -45,7 +55,7 @@ public class CieloOneClickPaymentService implements Charger{
         String nomeTitularCartaoCredito = creditCard.getOwnerName();
         String numeroCartaoCredito = creditCard.getNumber();
         String dataValidadeCartao = handleExpirationDate(creditCard.getExpirationDate());
-        String brand = Vendor.valueOf(creditCard.getVendor().toUpperCase()).name();
+        String brand = Vendor.valueOf(creditCard.getVendor().toUpperCase()).getCieloSpell();
 
         CieloAddCardRequestBody addCardRequestBody = CieloAddCardRequestBody.builder()
                 .cardNumber(numeroCartaoCredito)
