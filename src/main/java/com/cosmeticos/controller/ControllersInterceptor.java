@@ -20,9 +20,6 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 public class ControllersInterceptor extends HandlerInterceptorAdapter {
 
-	@Autowired
-	private UserRepository userRepository;
-
 	/**
 	 * Quando um cliente chama um endpoint, este metodo eh executado antes do metodo do Controller anotado com @RequestMapping
 	 * @param request

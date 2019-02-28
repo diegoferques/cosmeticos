@@ -67,7 +67,7 @@
         </filter>
 
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+            <pattern>%d %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH:-./log}/older/httpwire.log.%d{yyyy-MM-dd}
@@ -93,8 +93,12 @@
         <appender-ref ref="CONSOLE" />
     </logger>
 
+
     <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter">
-        <level value="DEBUG" />
+        <!-- Remocao do log level DEBUG eh que ativa o log, segundo este post https://stackoverflow.com/a/54545890/3810036.
+         Os demais tutoriais estao todos furados. -->
+        <!--<level value="DEBUG" />-->
+
         <appender-ref ref="HTTP_WIRE" />
     </logger>
 
