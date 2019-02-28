@@ -2,6 +2,7 @@ package com.cosmeticos.model;
 
 import com.cosmeticos.commons.ResponseJsonView;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -90,7 +91,7 @@ public class CreditCard implements Serializable {
     })
     private Boolean oneClick;
 
-    // TODO: Incluir @Transient do jpa assim q  o problema  entre o jackson e as a notacoes jpq terminarem.
+    @JsonProperty("cvv")
     private String securityCode;
 
     @JsonView({
