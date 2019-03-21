@@ -2,7 +2,8 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.Application;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Order.Status;
+import com.cosmeticos.model.OrderStatus;
+import com.cosmeticos.service.order.OrderStatusValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class OrderTest {
 
 	@Autowired
-	private OrderStatusHandler handler;
+	private OrderStatusValidator validator;
 	
 	private Order order;
 
@@ -27,83 +28,83 @@ public class OrderTest {
 
 	@Test
 	public void testNullToOpen() {
-		Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
+		Assert.assertEquals(OrderStatus.OPEN, validator.validate(order, OrderStatus.OPEN));
 	}
 	
 	
 	@Test
 	public void testOpenToAccepted() {
-		order.setStatus(Status.OPEN);
-		Assert.assertEquals(Status.ACCEPTED, handler.handle(order, Status.ACCEPTED));
+		order.setStatus(OrderStatus.OPEN);
+		Assert.assertEquals(OrderStatus.ACCEPTED, validator.validate(order, OrderStatus.ACCEPTED));
 	}
 	
 	@Test
 	public void testOpenToScheduled() {
-		order.setStatus(Status.OPEN);
-		Assert.assertEquals(Status.SCHEDULED, handler.handle(order, Status.SCHEDULED));
+		order.setStatus(OrderStatus.OPEN);
+		Assert.assertEquals(OrderStatus.SCHEDULED, validator.validate(order, OrderStatus.SCHEDULED));
 	}
 	
 	@Test
 	public void testOpenToCancelled() {
-		order.setStatus(Status.OPEN);
-		Assert.assertEquals(Status.CANCELLED, handler.handle(order, Status.CANCELLED));
+		order.setStatus(OrderStatus.OPEN);
+		Assert.assertEquals(OrderStatus.CANCELLED, validator.validate(order, OrderStatus.CANCELLED));
 	}
 
 	@Test
 	public void testOpenToExpired() {
-		order.setStatus(Status.OPEN);
-		Assert.assertEquals(Status.EXPIRED, handler.handle(order, Status.EXPIRED));
+		order.setStatus(OrderStatus.OPEN);
+		Assert.assertEquals(OrderStatus.EXPIRED, validator.validate(order, OrderStatus.EXPIRED));
 	}
 	
 	@Test
 	public void testAcceptedToInprogress() {
-		order.setStatus(Status.ACCEPTED);
-		Assert.assertEquals(Status.INPROGRESS, handler.handle(order, Status.INPROGRESS));
+		order.setStatus(OrderStatus.ACCEPTED);
+		Assert.assertEquals(OrderStatus.INPROGRESS, validator.validate(order, OrderStatus.INPROGRESS));
 	}
 	
 	@Test
 	public void testAcceptedToCancelled() {
-		order.setStatus(Status.ACCEPTED);
-		Assert.assertEquals(Status.CANCELLED, handler.handle(order, Status.CANCELLED));
+		order.setStatus(OrderStatus.ACCEPTED);
+		Assert.assertEquals(OrderStatus.CANCELLED, validator.validate(order, OrderStatus.CANCELLED));
 	}
 	
 	@Test
 	public void testScheduledToInprogress() {
-		order.setStatus(Status.SCHEDULED);
-		Assert.assertEquals(Status.INPROGRESS, handler.handle(order, Status.INPROGRESS));
+		order.setStatus(OrderStatus.SCHEDULED);
+		Assert.assertEquals(OrderStatus.INPROGRESS, validator.validate(order, OrderStatus.INPROGRESS));
 	}
 	
 	
 	@Test
 	public void testScheduledToCanceled() {
-		order.setStatus(Status.SCHEDULED);
-		Assert.assertEquals(Status.CANCELLED, handler.handle(order, Status.CANCELLED));
+		order.setStatus(OrderStatus.SCHEDULED);
+		Assert.assertEquals(OrderStatus.CANCELLED, validator.validate(order, OrderStatus.CANCELLED));
 	}
 	
 	@Test
 	public void testInprogressToSemiclosed() {
-		order.setStatus(Status.INPROGRESS);
-		Assert.assertEquals(Status.SEMI_CLOSED, handler.handle(order, Status.SEMI_CLOSED));
+		order.setStatus(OrderStatus.INPROGRESS);
+		Assert.assertEquals(OrderStatus.SEMI_CLOSED, validator.validate(order, OrderStatus.SEMI_CLOSED));
 	}
 	
 	
 	@Test
 	public void testInprogressToCancelled() {
-		order.setStatus(Status.INPROGRESS);
-		Assert.assertEquals(Status.CANCELLED, handler.handle(order, Status.CANCELLED));
+		order.setStatus(OrderStatus.INPROGRESS);
+		Assert.assertEquals(OrderStatus.CANCELLED, validator.validate(order, OrderStatus.CANCELLED));
 	}
 	
 	@Test
 	public void testSemiclosedToClosed() {
-		order.setStatus(Status.SEMI_CLOSED);
-		Assert.assertEquals(Status.CLOSED, handler.handle(order, Status.CLOSED));
+		order.setStatus(OrderStatus.SEMI_CLOSED);
+		Assert.assertEquals(OrderStatus.CLOSED, validator.validate(order, OrderStatus.CLOSED));
 	}
 	
 	@Test
 	public void testFailOnOpenToClosed() {
 		try {
-			order.setStatus(Status.OPEN);
-			Assert.assertEquals(Status.CLOSED, handler.handle(order, Status.CLOSED));
+			order.setStatus(OrderStatus.OPEN);
+			Assert.assertEquals(OrderStatus.CLOSED, validator.validate(order, OrderStatus.CLOSED));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);
@@ -113,8 +114,8 @@ public class OrderTest {
 	@Test
 	public void testFailOnCancelledToOpen() {
 		try {
-			order.setStatus(Status.CANCELLED);
-			Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
+			order.setStatus(OrderStatus.CANCELLED);
+			Assert.assertEquals(OrderStatus.OPEN, validator.validate(order, OrderStatus.OPEN));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);
@@ -124,8 +125,8 @@ public class OrderTest {
 	@Test
 	public void testFailOnExpiredToOpen() {
 		try {
-			order.setStatus(Status.EXPIRED);
-			Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
+			order.setStatus(OrderStatus.EXPIRED);
+			Assert.assertEquals(OrderStatus.OPEN, validator.validate(order, OrderStatus.OPEN));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);
@@ -135,8 +136,8 @@ public class OrderTest {
 	@Test
 	public void testFailOnClosedToOpen() {
 		try {
-			order.setStatus(Status.CLOSED);
-			Assert.assertEquals(Status.OPEN, handler.handle(order, Status.OPEN));
+			order.setStatus(OrderStatus.CLOSED);
+			Assert.assertEquals(OrderStatus.OPEN, validator.validate(order, OrderStatus.OPEN));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);
@@ -146,8 +147,8 @@ public class OrderTest {
 	@Test
 	public void testFailOnScheduledToClosed() {
 		try {
-			order.setStatus(Status.SCHEDULED);
-			Assert.assertEquals(Status.CLOSED, handler.handle(order, Status.CLOSED));
+			order.setStatus(OrderStatus.SCHEDULED);
+			Assert.assertEquals(OrderStatus.CLOSED, validator.validate(order, OrderStatus.CLOSED));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);
@@ -157,8 +158,8 @@ public class OrderTest {
 	@Test
 	public void testFailOnInprogressToClosed() {
 		try {
-			order.setStatus(Status.INPROGRESS);
-			Assert.assertEquals(Status.CLOSED, handler.handle(order, Status.CLOSED));
+			order.setStatus(OrderStatus.INPROGRESS);
+			Assert.assertEquals(OrderStatus.CLOSED, validator.validate(order, OrderStatus.CLOSED));
 			Assert.fail("setStatus deveria ter lancado excecao");
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);

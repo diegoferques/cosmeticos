@@ -10,7 +10,7 @@ import com.cosmeticos.model.ProfessionalCategory;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.OrderService;
+import com.cosmeticos.service.order.OrderService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

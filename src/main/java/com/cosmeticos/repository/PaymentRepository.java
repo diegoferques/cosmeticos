@@ -1,6 +1,6 @@
 package com.cosmeticos.repository;
 
-import com.cosmeticos.model.Order;
+import com.cosmeticos.model.OrderStatus;
 import com.cosmeticos.model.Payment;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -21,7 +21,6 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
      *
      * https://stackoverflow.com/a/36540371/3810036 Diz que payment nao pode ser opcional. Mas payment eh opciional, pq
      * a pricerule eh criada pelo profissional no momento do cadastro,e no cadastro nao ha payment.
-     * @param paymentId
      * @return
      */
     /*@Query(value = "" +
@@ -38,5 +37,5 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
             "NOT IN (1, 2, 5)")
     List<Payment> findFailedPayments();
 
-    List<Payment> findByOrderStatus(Order.Status orderStatus);
+    List<Payment> findByOrderStatus(OrderStatus orderStatus);
 }

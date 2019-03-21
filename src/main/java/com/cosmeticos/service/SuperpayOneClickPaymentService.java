@@ -179,7 +179,7 @@ Esta classe nao tem q ficar buscando ngm no banco. Os objetos ja devem chegar pr
 
         Integer superpayStatusStransacao = result.getStatusTransacao();
 
-        // TODO: em producao descomentar Payment.Status paymentStatus = Payment.Status.fromSuperpayStatus(superpayStatusStransacao);
+        // TODO: em producao descomentar Payment.OrderStatus paymentStatus = Payment.OrderStatus.fromSuperpayStatus(superpayStatusStransacao);
         Payment.Status paymentStatus = Payment.Status.PAGO_E_CAPTURADO;
 
         org.apache.log4j.MDC.put("superpayStatusStransacao", paymentStatus.toString() + "(" + paymentStatus.getSuperpayStatusTransacao() + ")");
@@ -271,7 +271,7 @@ Esta classe nao tem q ficar buscando ngm no banco. Os objetos ja devem chegar pr
             ChargeResponse<Object> response = new ChargeResponse<>(result);
 
 
-           /* response.setResponseCode(Payment.Status.fromSuperpayStatus(
+           /* response.setResponseCode(Payment.OrderStatus.fromSuperpayStatus(
                     result.getStatusTransacao())
                     .getResponseCode()
             );*/

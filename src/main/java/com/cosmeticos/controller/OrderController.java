@@ -4,7 +4,8 @@ import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseJsonView;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.service.OrderService;
+import com.cosmeticos.model.OrderStatus;
+import com.cosmeticos.service.order.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
@@ -114,7 +115,7 @@ public class OrderController {
             } else {
 
 
-                if (Order.Status.CANCELLED.equals(request.getOrder().getStatus())) {
+                if (OrderStatus.CANCELLED.equals(request.getOrder().getStatus())) {
                     orderService.abort(request.getOrder());
                 } else {
                     // Pedidos de cancelamento devem ser acatados, nao devemos por obstaculos no desejo do usuario de cancelar. Nao no backend.

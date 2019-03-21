@@ -29,7 +29,7 @@ public class CieloCustomer {
     public DeliveryAddress deliveryAddress;
 
     /**
-     * Texto 	Opcional    Status de cadastro do comprador na loja (NEW / EXISTING)
+     * Texto 	Opcional    OrderStatus de cadastro do comprador na loja (NEW / EXISTING)
      */
     private String status;
 

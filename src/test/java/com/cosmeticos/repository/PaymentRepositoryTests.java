@@ -86,7 +86,7 @@ public class PaymentRepositoryTests {
 		Order o = new Order();
 		o.setProfessionalCategory(pr.getProfessionalCategory());
 		o.addPayment(p);
-		o.setStatus(Order.Status.OPEN);
+		o.setStatus(OrderStatus.OPEN);
 		o.setIdCustomer(customer);
 		o.setAttendanceType(Order.AttendanceType.HOME_CARE);
 

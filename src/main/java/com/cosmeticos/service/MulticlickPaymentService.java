@@ -12,6 +12,7 @@ import com.cosmeticos.payment.superpay.client.rest.model.*;
 import com.cosmeticos.repository.AddressRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.PaymentRepository;
+import com.cosmeticos.service.order.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -423,7 +424,7 @@ public class MulticlickPaymentService implements Charger {
 
         Boolean validateAndCapture = false;
 
-        if (order.getStatus() == Order.Status.READY2CHARGE) {
+        if (order.getStatus() == OrderStatus.READY2CHARGE) {
 
             Optional<RetornoTransacao> retornoConsultaTransacao = consultaTransacao(payment.getId());
 
@@ -441,12 +442,12 @@ public class MulticlickPaymentService implements Charger {
 
                     validateAndCapture = true;
                 } else {
-                    log.error("Status do pagamento na Superpay não permite captura");
+                    log.error("OrderStatus do pagamento na Superpay não permite captura");
                 }
             }
 
         } else {
-            throw new OrderValidationException(ResponseCode.FORBIDEN_PAYMENT, "Status da Order não permite efetuar captura do pagamento");
+            throw new OrderValidationException(ResponseCode.FORBIDEN_PAYMENT, "OrderStatus da Order não permite efetuar captura do pagamento");
         }
 
         return validateAndCapture;

@@ -8,8 +8,8 @@ import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.MulticlickPaymentService;
-import com.cosmeticos.service.OrderService;
 import com.cosmeticos.service.VoteService;
+import com.cosmeticos.service.order.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -122,7 +122,7 @@ public class OrderControllerTests {
         ).thenReturn(mockedResponse);
 
         ////////////////////////////////////////////////////////////////////////////
-        ///////// Mocando Update Payment Status, que ainda nao foi implementado  ///
+        ///////// Mocando Update Payment OrderStatus, que ainda nao foi implementado  ///
         ////////////////////////////////////////////////////////////////////////////
         Mockito.doReturn(true).when(paymentService).
                 updatePaymentStatus(Mockito.anyObject()
@@ -214,7 +214,7 @@ public class OrderControllerTests {
                 "  \"order\" : {\n" +
 
                 "    \"idOrder\" : "+orderInserida.getIdOrder()+",\n" +
-                "    \"status\" : "+ Order.Status.CANCELLED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.CANCELLED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -235,7 +235,7 @@ public class OrderControllerTests {
 
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.CANCELLED, orderAtualizada.getStatus());
+        Assert.assertEquals(OrderStatus.CANCELLED, orderAtualizada.getStatus());
 
         orderRestultFrom_testUpdateOk = exchange.getBody().getOrderList().get(0);
 
@@ -244,7 +244,7 @@ public class OrderControllerTests {
         Order s1 = fakeOrder();
 
 
-        s1.setStatus(Order.Status.CANCELLED);
+        s1.setStatus(OrderStatus.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -259,7 +259,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
         
-        Assert.assertEquals( Order.Status.CANCELLED, exchange.getBody().getOrderList().get(0).getHttpStatus()); */
+        Assert.assertEquals( OrderStatus.CANCELLED, exchange.getBody().getOrderList().get(0).getHttpStatus()); */
 
     }
 
@@ -329,7 +329,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getScheduleId());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory());
         Assert.assertNotNull(exchange.getBody().getOrderList().get(0).getProfessionalCategory().getCategory());
@@ -508,7 +508,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals(Order.Status.CLOSED,
+        Assert.assertEquals(OrderStatus.CLOSED,
                 exchangePut.getBody().getOrderList().get(0).getStatus());
     }
 
@@ -567,7 +567,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : \""+Order.Status.CLOSED + "\"\n" +
+                "    \"status\" : \""+ OrderStatus.CLOSED + "\"\n" +
                 "  }\n" +
                 "}";
 
@@ -582,13 +582,13 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals(Order.Status.CLOSED,
+        Assert.assertEquals(OrderStatus.CLOSED,
                 exchangePut.getBody().getOrderList().get(0).getStatus());
 
         String jsonUpdate2 = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+newOrder.getIdOrder()+",\n" +
-                "    \"status\" : \""+Order.Status.SEMI_CLOSED + "\"\n" +
+                "    \"status\" : \""+ OrderStatus.SEMI_CLOSED + "\"\n" +
                 "  }\n" +
                 "}";
 
@@ -722,7 +722,7 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
 
 
@@ -812,11 +812,11 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.SCHEDULED +"\"\n" +
+                "    \"status\" : \""+ OrderStatus.SCHEDULED +"\"\n" +
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                //"      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
+                //"      \"status\" : \""+ Schedule.OrderStatus.DENIED +"\"\n" +
                 //"    }" +
                 "\n}\n" +
                 "}";
@@ -836,7 +836,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
         //Assert.assertNotNull(exchangeUpdate.getBody().getOrderList().get(0).getScheduleId());
-        Assert.assertEquals(Order.Status.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         orderRestultFrom_updateScheduledOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
     }
@@ -851,11 +851,11 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ o1.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.EXECUTED +"\"\n" +
+                "    \"status\" : \""+ OrderStatus.EXECUTED +"\"\n" +
                 //"    \"scheduleId\" : {\n" +
                 //"      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 //"      \"scheduleDate\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 07, 22, 30, 0)).getTime()  +"\",\n" +
-                //"      \"status\" : \""+ Schedule.Status.DENIED +"\"\n" +
+                //"      \"status\" : \""+ Schedule.OrderStatus.DENIED +"\"\n" +
                 //"    }" +
                 "\n}\n" +
                 "}";
@@ -874,7 +874,7 @@ public class OrderControllerTests {
         //TODO - FINALIZAR OS ASSERTS
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        Assert.assertEquals(Order.Status.EXECUTED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.EXECUTED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         //orderRestultFrom_updateOrderOkToScheduled = exchangeUpdate.getBody().getOrderList().get(0);
     }
@@ -946,7 +946,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
 
-        Assert.assertEquals(Order.Status.CANCELLED,
+        Assert.assertEquals(OrderStatus.CANCELLED,
                 exchangePut.getBody().getOrderList().get(0).getStatus());
 
     }
@@ -985,14 +985,14 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
         //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
         ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.CANCELLED);
+                createdOrder.getIdOrder(), OrderStatus.CANCELLED);
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
@@ -1000,7 +1000,7 @@ public class OrderControllerTests {
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
         //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CANCELLED
-        Assert.assertEquals(Order.Status.CANCELLED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.CANCELLED, orderUpdateAccepted.getStatus());
         //-------
 
         final ResponseEntity<OrderResponseBody> exchange = //
@@ -1016,8 +1016,8 @@ public class OrderControllerTests {
 
         for (Order order : exchange.getBody().getOrderList()) {
             //ABAIXO VERIFICAMOS SE NENHUM STATUS DOS PEDISOS SAO CANCELLED OU CLOSED
-            Assert.assertNotEquals(Order.Status.CANCELLED, order.getStatus());
-            Assert.assertNotEquals(Order.Status.CLOSED, order.getStatus());
+            Assert.assertNotEquals(OrderStatus.CANCELLED, order.getStatus());
+            Assert.assertNotEquals(OrderStatus.CLOSED, order.getStatus());
         }
 
     }
@@ -1056,14 +1056,14 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
         //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
         ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.CLOSED);
+                createdOrder.getIdOrder(), OrderStatus.CLOSED);
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
@@ -1071,7 +1071,7 @@ public class OrderControllerTests {
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
         //ABAIXO GARANTIMOS QUE REALMENTE TEMOS NO BANCO UM ORDER COM STATUS CLOSED
-        Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.CLOSED, orderUpdateAccepted.getStatus());
         //-------
 
         //ABAIXO LISTAMOS TODOS OS ORDERS EXISTENTES, MAS NAO DEVEM VIR OS CANCELLED OU CLOSED
@@ -1088,8 +1088,8 @@ public class OrderControllerTests {
 
         for (Order order : exchange.getBody().getOrderList()) {
             //ABAIXO VERIFICAMOS SE NENHUM STATUS DOS PEDISOS SAO CANCELLED OU CLOSED
-            Assert.assertNotEquals(Order.Status.CANCELLED, order.getStatus());
-            Assert.assertNotEquals(Order.Status.CLOSED, order.getStatus());
+            Assert.assertNotEquals(OrderStatus.CANCELLED, order.getStatus());
+            Assert.assertNotEquals(OrderStatus.CLOSED, order.getStatus());
         }
 
     }
@@ -1131,21 +1131,21 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
         //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
         ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.ACCEPTED);
+                createdOrder.getIdOrder(), OrderStatus.ACCEPTED);
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.ACCEPTED, orderUpdateAccepted.getStatus());
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
@@ -1212,7 +1212,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : " + newOrder.getIdOrder() + ",\n" +
-                "    \"status\" : \"" + Order.Status.EXPIRED + "\"\n" +
+                "    \"status\" : \"" + OrderStatus.EXPIRED + "\"\n" +
                 "  }\n" +
                 "}";
 
@@ -1227,13 +1227,13 @@ public class OrderControllerTests {
 
         Assert.assertNotNull(exchangePut);
         Assert.assertEquals(HttpStatus.OK, exchangePut.getStatusCode());
-        Assert.assertEquals(Order.Status.EXPIRED,
+        Assert.assertEquals(OrderStatus.EXPIRED,
                 exchangePut.getBody().getOrderList().get(0).getStatus());
 
         String jsonUpdate2 = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : " + newOrder.getIdOrder() + ",\n" +
-                "    \"status\" : \"" + Order.Status.OPEN + "\"\n" +
+                "    \"status\" : \"" + OrderStatus.OPEN + "\"\n" +
                 "  }\n" +
                 "}";
 
@@ -1293,21 +1293,21 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
         //ATUALIZAMOS ORDER PARA IN_PROGRESS PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
         ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.INPROGRESS);
+                createdOrder.getIdOrder(), OrderStatus.INPROGRESS);
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.INPROGRESS, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, orderUpdateAccepted.getStatus());
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
@@ -1373,7 +1373,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
@@ -1382,7 +1382,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" + // semi closed envia voto pro customer. CLOSED eh pro profissional
+                "    \"status\" : \""+ OrderStatus.SEMI_CLOSED +"\",\n" + // semi closed envia voto pro customer. CLOSED eh pro profissional
                 "    \"idCustomer\" : {\n" +
                 "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
                 "        \"user\" : {\n" +
@@ -1412,7 +1412,7 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
         Order orderUpdateSemiclosed = exchangeUpdate.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateSemiclosed.getStatus());
+        Assert.assertEquals(OrderStatus.SEMI_CLOSED, orderUpdateSemiclosed.getStatus());
 
         Customer updatedCustomer = orderUpdateSemiclosed.getIdCustomer();
 
@@ -1454,7 +1454,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate);
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
@@ -1463,7 +1463,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
+                "    \"status\" : \""+ OrderStatus.SEMI_CLOSED +"\",\n" +
                 "    \"idCustomer\" : {\n" +
                 "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
                 "        \"user\" : {\n" +
@@ -1493,7 +1493,7 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdate.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.SEMI_CLOSED, orderUpdateAccepted.getStatus());
 
         float vote = voteService.getUserEvaluation(c1.getUser());
         Assert.assertNotNull(vote);
@@ -1532,7 +1532,7 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate);
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
 
@@ -1542,7 +1542,7 @@ public class OrderControllerTests {
         String jsonUpdateSemiclosed = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ createdOrder.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
+                "    \"status\" : \""+ OrderStatus.SEMI_CLOSED +"\",\n" +
                 "    \"idCustomer\" : {\n" +
                 "        \"idCustomer\": "+c1.getIdCustomer()+",\n" +
                 "        \"user\" : {\n" +
@@ -1572,7 +1572,7 @@ public class OrderControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdate.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.SEMI_CLOSED, orderUpdateAccepted.getStatus());
 
         float vote = voteService.getUserEvaluation(c1.getUser());
         Assert.assertNotNull(vote);
@@ -1588,7 +1588,7 @@ public class OrderControllerTests {
                     "  \"order\" : {\n" +
                     "    \"idOrder\" : "+createdOrder.getIdOrder()+",\n" +
                     "    \"date\" : "+Timestamp.valueOf(LocalDateTime.now()).getTime()+",\n" +
-                    "    \"status\" : \""+Order.Status.READY2CHARGE +"\",\n" +
+                    "    \"status\" : \""+ OrderStatus.READY2CHARGE +"\",\n" +
 
                     "    \"professionalCategory\" : {\n" +
                     "       \"professional\" : {\n" +
@@ -1625,10 +1625,10 @@ public class OrderControllerTests {
 
         Order orderUpdateProfessionalVote =  orderRepository.findOne(createdOrder.getIdOrder());
 
-        //Assert.assertEquals(Order.Status.CLOSED, orderUpdateAccepted.getStatus());
+        //Assert.assertEquals(OrderStatus.CLOSED, orderUpdateAccepted.getStatus());
 
         // Se mandamos readytocharge, devemos esperar CLOSED.
-        Assert.assertEquals(Order.Status.CLOSED, orderUpdateProfessionalVote.getStatus());
+        Assert.assertEquals(OrderStatus.CLOSED, orderUpdateProfessionalVote.getStatus());
 
         User professionalUser = orderUpdateProfessionalVote.getProfessionalCategory()
                 .getProfessional().getUser();
@@ -1669,7 +1669,7 @@ public class OrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : " + o1.getIdOrder() + ",\n" +
-                "    \"status\" : \"" + Order.Status.SCHEDULED + "\", \n" +
+                "    \"status\" : \"" + OrderStatus.SCHEDULED + "\", \n" +
                 "    \"scheduleId\" : {\n" +
                 "      \"scheduleId\" : "+ o1.getScheduleId().getScheduleId() +",\n" +
                 "      \"scheduleStart\" : \""+ Timestamp.valueOf(LocalDateTime.MAX.of(2017, 07, 05, 12, 10, 0)).getTime() +"\",\n" +
@@ -1696,7 +1696,7 @@ public class OrderControllerTests {
         List<Order> orderList = exchangeUpdate.getBody().getOrderList();
 
         if(!orderList.isEmpty()){
-            Assert.assertEquals(Order.Status.SCHEDULED, orderList.get(0).getStatus());
+            Assert.assertEquals(OrderStatus.SCHEDULED, orderList.get(0).getStatus());
             orderRestultFrom_updateScheduledOrderOkToScheduled = orderList.get(0);
 
         }
@@ -1719,7 +1719,7 @@ public class OrderControllerTests {
 
     }
 
-    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, Order.Status status) throws URISyntaxException {
+    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, OrderStatus status) throws URISyntaxException {
 
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
@@ -1778,21 +1778,21 @@ public class OrderControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
         //ATUALIZAMOS ORDER PARA IN_PROGRESS PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
         ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.INPROGRESS);
+                createdOrder.getIdOrder(), OrderStatus.INPROGRESS);
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.INPROGRESS, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, orderUpdateAccepted.getStatus());
         //-------
 
         //TENTAMOS CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL ENQUANTO ELE JA TEM UM ORDER COM STATUS ACCEPTED
@@ -1805,7 +1805,7 @@ public class OrderControllerTests {
                 .body(jsonCreate2);
 
         ResponseEntity<OrderResponseBody> exchangeCreate2 = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.SCHEDULED);
+                createdOrder.getIdOrder(), OrderStatus.SCHEDULED);
 
         Assert.assertNotNull(exchangeCreate2);
         Assert.assertEquals(HttpStatus.OK, exchangeCreate2.getStatusCode());

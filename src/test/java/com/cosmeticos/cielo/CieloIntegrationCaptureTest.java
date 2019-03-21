@@ -52,7 +52,7 @@ public class CieloIntegrationCaptureTest {
                         .withStatusCode(200)
                         .withHeader("Content-Type", "application/json;charset=UTF-8")
                         .withBody("{\n" +
-                                "    \"Status\": 2,\n" +
+                                "    \"OrderStatus\": 2,\n" +
                                 "    \"ReturnCode\": \"6\",\n" +
                                 "    \"ReturnMessage\": \"Operation Successful\",\n" +
                                 "    \"Links\": [\n" +

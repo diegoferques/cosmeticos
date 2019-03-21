@@ -202,7 +202,7 @@ public class MockingOrderControllerAvoidOrAlowSimultaneousOpenOrdersTests {
         String jsonUpdateInprogress = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.INPROGRESS.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.INPROGRESS.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -220,7 +220,7 @@ public class MockingOrderControllerAvoidOrAlowSimultaneousOpenOrdersTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateInProgress.getStatusCode());
 
         Order orderUpdateInProgress= exchangeUpdateInProgress.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.INPROGRESS, orderUpdateInProgress.getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, orderUpdateInProgress.getStatus());
 
 
     }
@@ -234,7 +234,7 @@ public class MockingOrderControllerAvoidOrAlowSimultaneousOpenOrdersTests {
         String jsonUpdateAccepted = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.ACCEPTED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.ACCEPTED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -252,7 +252,7 @@ public class MockingOrderControllerAvoidOrAlowSimultaneousOpenOrdersTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.ACCEPTED, orderUpdateAccepted.getStatus());
 
     }
 

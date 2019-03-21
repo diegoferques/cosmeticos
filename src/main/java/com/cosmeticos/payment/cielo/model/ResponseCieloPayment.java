@@ -47,9 +47,9 @@ public class ResponseCieloPayment {
     private List<Object> extraDataCollection = null;
 
     /**
-     * Status da Transação. 	Byte 	— 	2
+     * OrderStatus da Transação. 	Byte 	— 	2
      */
-    @JsonProperty("Status")
+    @JsonProperty("OrderStatus")
     private Integer status;
 
     /**

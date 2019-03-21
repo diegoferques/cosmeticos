@@ -75,7 +75,7 @@ public class CieloIntegrationReserveTest {
                                 "        \"Currency\": \"BRL\",\n" +
                                 "        \"Country\": \"BRA\",\n" +
                                 "        \"ExtraDataCollection\": [],\n" +
-                                "        \"Status\": 1,\n" +
+                                "        \"OrderStatus\": 1,\n" +
                                 "        \"ReturnCode\": \"4\",\n" +
                                 "        \"ReturnMessage\": \"Operation Successful\",\n" +
                                 "        \"Links\": [\n" +

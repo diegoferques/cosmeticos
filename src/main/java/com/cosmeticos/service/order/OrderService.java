@@ -1,34 +1,27 @@
-package com.cosmeticos.service;
+package com.cosmeticos.service.order;
 
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
-import com.cosmeticos.payment.ChargeRequest;
-import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.Charger;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.service.BalanceItemService;
+import com.cosmeticos.service.FirebasePushNotifierService;
+import com.cosmeticos.service.WalletService;
 import com.cosmeticos.validation.OrderValidationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Example;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.servlet.http.HttpSession;
 import java.lang.Exception;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-import static com.cosmeticos.model.Order.Status.*;
-import static com.cosmeticos.model.Payment.Status.PAGO_E_CAPTURADO;
+import static com.cosmeticos.model.OrderStatus.*;
 import static com.cosmeticos.model.Payment.Type.CC;
 import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -39,15 +32,6 @@ import static org.springframework.util.StringUtils.isEmpty;
 @Slf4j
 @org.springframework.stereotype.Service
 public class OrderService {
-
-    @Value("${order.payment.secheduled.startDay}")
-    private String daysToStartPayment;
-
-    @Value("${order.payment.secheduled.daysBeforeStartToNotification}")
-    private String daysBeforeStartToNotification;
-
-    @Autowired
-    private RandomCode randomCode;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -65,20 +49,10 @@ public class OrderService {
     private PenaltyService penaltyService;
 
     @Autowired
-    @Qualifier("charger")
-    private Charger paymentService;
-
-    @Autowired
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @Autowired
     private PriceRuleRepository priceRuleRepository;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private VoteService voteService;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -90,7 +64,7 @@ public class OrderService {
     private FirebasePushNotifierService firebasePushNotifierService;
 
     @Autowired
-    private HttpSession httpSession;
+    private ApplicationContext applicationContext;
 
     public Optional<Order> find(Long idOrder) {
         return Optional.of(orderRepository.findOne(idOrder));
@@ -183,7 +157,7 @@ public class OrderService {
         order.setIdCustomer(persistentCustomer);
         order.setDate(Calendar.getInstance().getTime());
         order.setLastStatusUpdate(order.getDate());
-        order.setStatus(Order.Status.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
+        order.setStatus(OrderStatus.OPEN); // O STATUS INICIAL SERA DEFINIDO COMO CRIADO
         order.setProfessionalCategory(persistentProfessionalCategory);
         order.setAttendanceType(receivedOrder.getAttendanceType());
         order.setExpireTime(new Date(order.getDate().getTime() +
@@ -211,7 +185,7 @@ public class OrderService {
 
         Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
 
-        Order.Status previousOrderStatus = persistentOrder.getStatus();
+        OrderStatus previousOrderStatus = persistentOrder.getStatus();
 
         MDC.put("previousOrderStatus", String.valueOf(previousOrderStatus));
 
@@ -220,11 +194,11 @@ public class OrderService {
             throw new OrderValidationException(ResponseCode.INVALID_ORDER_STATUS, "PROIBIDO ATUALIZAR PARA O MESMO STATUS.");
         }
 
-        if (Order.Status.CLOSED == persistentOrder.getStatus()) {
+        if (OrderStatus.CLOSED == persistentOrder.getStatus()) {
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
-        if (Order.Status.EXPIRED == persistentOrder.getStatus()) {
+        if (OrderStatus.EXPIRED == persistentOrder.getStatus()) {
             throw new IllegalStateException("PROIBIDO ATUALIZAR STATUS.");
         }
 
@@ -287,11 +261,15 @@ public class OrderService {
             }
         }
 
-        applyVote(receivedOrder, persistentOrder);
+        receivedOrder.getStatus().handle(applicationContext, receivedOrder, persistentOrder);
+
+        OrderStatus newStatus = persistentOrder.getStatus();
+
+        // applyVote(receivedOrder, persistentOrder);
 
         //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
         // Utilizamos a order persistente pois ela possui TODOS os atributos setados
-        if (receivedOrder.getStatus() == Order.Status.ACCEPTED) {
+       /* if (receivedOrder.getStatus() == OrderStatus.ACCEPTED) {
 
 
             for (Payment newPayment : persistentOrder.getPaymentCollection()) {
@@ -299,12 +277,12 @@ public class OrderService {
                     this.sendPaymentRequest(newPayment);
                 }
             }
-        }
+        }*//*
         //TIVE QUE COMENTAR A VALIDACAO ABAIXO POIS ESTAVA DANDO O ERRO ABAIXO:
         //QUANDO VAMOS ATUALIZAR PARA SCHEDULED, AINDA NAO TEMOS OS DADOS QUE VAO SER ATUALIZADOS
         //-- VALIDANDO O COMENTARIO ACIMA --//
         //AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-        else if (receivedOrder.getStatus() == Order.Status.SCHEDULED) {
+        else if (receivedOrder.getStatus() == OrderStatus.SCHEDULED) {
 
             for (Payment newPayment : persistentOrder.getPaymentCollection()) {
                 persistentOrder.addPayment(newPayment);
@@ -314,14 +292,14 @@ public class OrderService {
                     this.validateScheduledAndsendPaymentRequest(newPayment);
                 }
             }
-        }
+        }*/
 
-        boolean mustPersistOrder = false;
-
+        boolean mustPersistOrder = !previousOrderStatus.equals(newStatus);
+/*
         //ACHEI MELHOR FAZER UMA NOVA VERIFICACAO APOS SALVAR, POIS PRECISAMOS TER ARMAZENADO QUANDO MUDAMOS O STATUS
         //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
         //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
-        if (persistentOrder.getStatus() == Order.Status.READY2CHARGE) {
+        if (persistentOrder.getStatus() == OrderStatus.READY2CHARGE) {
             Payment payment = persistentOrder.getPaymentCollection()
                     .stream()
                     .findFirst()
@@ -338,11 +316,11 @@ public class OrderService {
                     //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
                     //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
                     //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA CLOSED
-                    persistentOrder.setStatus(Order.Status.CLOSED);
+                    persistentOrder.setStatus(OrderStatus.CLOSED);
                     persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
 
                 } else {
-                    persistentOrder.setStatus(Order.Status.FAILED_ON_PAYMENT);
+                    persistentOrder.setStatus(OrderStatus.FAILED_ON_PAYMENT);
                     persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
                 }
 
@@ -354,14 +332,17 @@ public class OrderService {
                 //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
                 // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
                 // Garry: Ta estranho mesmo.. vamos apagar esta instrucao
-                persistentOrder.setStatus(Order.Status.CLOSED);
+                persistentOrder.setStatus(OrderStatus.CLOSED);
 
                 mustPersistOrder = true;
+            }
+            else {
+                log.debug("bate aqui?");
             }
         } else {
 
             mustPersistOrder = true;
-        }
+        }*/
 
         if (mustPersistOrder) {
             orderRepository.save(persistentOrder);
@@ -487,10 +468,10 @@ public class OrderService {
             }
         }
     }
-
+/*
     private void applyVote(Order receivedOrder, Order persistentOrder) {
 
-        if (receivedOrder.getStatus() == Order.Status.SEMI_CLOSED) {
+        if (receivedOrder.getStatus() == OrderStatus.SEMI_CLOSED) {
 
             // Aplicado ao Customer quando o professional encerra o servico
 
@@ -514,7 +495,7 @@ public class OrderService {
                 }
             }
 
-        } else if (receivedOrder.getStatus() == Order.Status.READY2CHARGE) {
+        } else if (receivedOrder.getStatus() == OrderStatus.READY2CHARGE) {
 
             // Aplicado ao Professional quando o customer confirma realização do servico e avalia o professional
 
@@ -524,9 +505,6 @@ public class OrderService {
             ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
             User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
 
-            // tm algo errado aki...  eu nomeio os objetos com receivedXXX pra saber o q veio do request e persistentXXX pra saber o q veio do banco
-            // esse erro de lazy só faz sentido se o objeto veio do banco. Acho q em algum momento rolou confussao e  o receivedXX recebeu algo
-            // persistente. Vo dar uma debugada reversa rsrsjah eh
             if (!receivedUser.getVoteCollection().isEmpty()) {
                 Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
 
@@ -534,7 +512,6 @@ public class OrderService {
 
                 MDC.put("professionalVote", String.valueOf(receivedvote.getValue()));
             }
-
         }
     }
 
@@ -546,7 +523,7 @@ public class OrderService {
         persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
 
 
-    }
+    }*/
 
     /**
      * Captura um pagamento caso ele ja nao tenha sido capturado anteriormente.
@@ -554,7 +531,7 @@ public class OrderService {
      * //BRANCH: RNF101
      * //BRANCH: RNFapp39-templatando-plus-cartao
      */
-    private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
+    /*private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
 
         ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
 
@@ -566,9 +543,9 @@ public class OrderService {
                 throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
         }
 
-    }
+    }*/
 
-    private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
+   /* private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
 
         Order persistenOrder = payment.getOrder();
 
@@ -649,116 +626,7 @@ public class OrderService {
         return success;
 
     }
-
-    //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
-    //BRANCH: RNF101
-    //TODO - ACHEI NECESSARIO CRIAR UM CRON PARA PEDIDOS QUE AINDA ESTAO EM READY2CHARGE POR ALGUM ERRO OCORRIDO
-    @Scheduled(cron = "${order.payment.ready2charge.cron}")
-    public void findReady2ChargeOrdersAndSendPaymentCron() throws Exception {
-
-        List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.READY2CHARGE);
-
-        for (Payment payment : paymentList) {
-            this.sendPaymentCapture(payment);
-        }
-
-    }
-
-    //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
-    //BRANCH: RNF101
-    @Scheduled(cron = "${order.payment.secheduled.cron}")
-    public void findScheduledOrdersValidateAndSendPaymentRequest() throws Exception {
-
-        List<Payment> paymentList = paymentRepository.findByOrderStatus(Order.Status.SCHEDULED);
-
-        int daysToStart = Integer.parseInt(daysToStartPayment);
-        int daysBeforeStart = Integer.parseInt(daysBeforeStartToNotification);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
-        //INSTANCIAMOS O CALENDARIO
-        Calendar c = Calendar.getInstance();
-
-        //DATA ATUAL
-        //EX.: 20/08/2017
-        Date now = c.getTime();
-
-        for (Payment payment : paymentList) {
-            if (payment.getType() != null) {
-                if (payment.getType().equals(CC)) {
-                    // TODO: requer refactoring quando comecarmos a fazer pagamento com 2 cartoes.
-
-                    if (Payment.Status.PAGO_E_NAO_CAPTURADO ==
-                            payment.getStatus()) {
-
-                        Order order = payment.getOrder();
-
-                        //PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
-                        Date scheduleDateStart = order.getScheduleId().getScheduleStart();
-
-                        //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
-                        c.setTime(scheduleDateStart);
-
-                        //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
-                        c.add(Calendar.DATE, -daysToStart);
-
-                        //DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
-                        Date dateToStartPayment = c.getTime();
-
-
-                        //--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS NOTIFICACOES AO CLIENTE CASO FALHE ---//
-                        //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
-                        c.setTime(scheduleDateStart);
-
-                        //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
-                        c.add(Calendar.DATE, -daysBeforeStart);
-
-                        //UM DIA ANTES PARA NOTIFICAR AO CLIENTE SE DER ERRO NA RESERVA NO CARTAO E SUGERIR TROCAR PARA DINHEIRO
-                        Date dateToStartNotification = c.getTime();
-
-                        //TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
-                        if (sdf.format(now).equals(sdf.format(dateToStartNotification))) {
-                            //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-                            if (!sendPaymentRequest(payment)) {
-                                //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
-                                log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
-                            }
-
-                            //TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
-                        } else if (sdf.format(now).equals(sdf.format(scheduleDateStart))) {
-                            //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-                            if (!sendPaymentRequest(payment)) {
-                                //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
-                                log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
-                                        " forma de pagamento seja alterado para dinheiro");
-                            }
-
-                            //TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
-                            //SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
-                        } else if (now.after(dateToStartPayment)) {
-                            //AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
-                            sendPaymentRequest(payment);
-
-                            //TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
-                        } else {
-                            log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + order.getIdOrder());
-                        }
-                    }
-                }
-            } else {
-                log.error("Pagamento sem PaymentType: paymentId{}, orderId{}",
-                        payment.getId(), payment.getOrder().getIdOrder());
-            }
-        }
-
-    }
-
-    private Boolean sendPaymentRequest(Payment payment) throws Exception {
-
-        ChargeResponse<Object> retornoTransacaoSuperpay = paymentService.reserve(new ChargeRequest<>(payment));
-
-        return ResponseCode.SUCCESS.equals(retornoTransacaoSuperpay.getResponseCode());
-    }
+*/
 
     public String delete() {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
@@ -807,7 +675,7 @@ public class OrderService {
     @Scheduled(cron = "${order.unfinished.cron}")
     public void scheduledUpdateStatus() {
 
-        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.SEMI_CLOSED);
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(OrderStatus.SEMI_CLOSED);
 
         int count = onlyOrsersFinishedByProfessionals.size();
 
@@ -817,7 +685,7 @@ public class OrderService {
             LocalDate limitDate = LocalDate.now().minusDays(5);
 
             if (lastUpdateLocalDate.isBefore(limitDate)) {
-                o.setStatus(Order.Status.AUTO_CLOSED);
+                o.setStatus(OrderStatus.AUTO_CLOSED);
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
 
@@ -826,7 +694,7 @@ public class OrderService {
                 }
             }
         }
-        log.debug("{} orders foram atualizada para {}.", count, Order.Status.AUTO_CLOSED.toString());
+        log.debug("{} orders foram atualizada para {}.", count, OrderStatus.AUTO_CLOSED.toString());
     }
 
 
@@ -899,9 +767,9 @@ public class OrderService {
 
         // Nao validamos orders agendadas pq os horarios sao diferentes.
         if (!receivedOrder.isScheduled()) {
-            if (Order.Status.OPEN.equals(receivedOrder.getStatus()) ||
-                    Order.Status.ACCEPTED.equals(receivedOrder.getStatus()) ||
-                    Order.Status.INPROGRESS.equals(receivedOrder.getStatus())) {
+            if (OrderStatus.OPEN.equals(receivedOrder.getStatus()) ||
+                    OrderStatus.ACCEPTED.equals(receivedOrder.getStatus()) ||
+                    OrderStatus.INPROGRESS.equals(receivedOrder.getStatus())) {
 
                 Long idOrder = receivedOrder.getIdOrder() == null ? 0L : receivedOrder.getIdOrder();
                 List<Order> orderList = null;
@@ -931,9 +799,9 @@ public class OrderService {
     private void validateIfThereAreRunningOrders(Order receivedOrder, Professional professional) {
 
         //ESSA VALIDACAO SO DEVERA SER EXECUTADA NOS STATUS ABAIXO
-        if (Order.Status.OPEN.equals(receivedOrder.getStatus()) ||
-                Order.Status.ACCEPTED.equals(receivedOrder.getStatus()) ||
-                Order.Status.INPROGRESS.equals(receivedOrder.getStatus())) {
+        if (OrderStatus.OPEN.equals(receivedOrder.getStatus()) ||
+                OrderStatus.ACCEPTED.equals(receivedOrder.getStatus()) ||
+                OrderStatus.INPROGRESS.equals(receivedOrder.getStatus())) {
 
             Long idOrder = receivedOrder.getIdOrder() == null ? 0L : receivedOrder.getIdOrder();
 
@@ -1025,7 +893,7 @@ public class OrderService {
     @Scheduled(cron = "${order.expired.cron}")
     public void updateStatusOpenToExpired() {
 
-        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(Order.Status.OPEN);
+        List<Order> onlyOrsersFinishedByProfessionals = orderRepository.findByStatus(OrderStatus.OPEN);
 
         int count = 0;
 
@@ -1037,19 +905,19 @@ public class OrderService {
 
 
             if (orderCreationDate.isAfter(oneHourAfter)) {
-                o.setStatus(Order.Status.EXPIRED);
+                o.setStatus(OrderStatus.EXPIRED);
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
                 count++;
             }
         }
-        log.debug("{} orders foram atualizada para {}.", count, Order.Status.EXPIRED.toString());
+        log.debug("{} orders foram atualizada para {}.", count, OrderStatus.EXPIRED.toString());
     }
 
     public void validateScheduleEndDate(Order receivedOrder) throws OrderValidationException {
 
         if (receivedOrder.getScheduleId().getScheduleEnd() == null
-                && Order.Status.SCHEDULED.equals(receivedOrder.getStatus())) {
+                && OrderStatus.SCHEDULED.equals(receivedOrder.getStatus())) {
             throw new OrderValidationException(ResponseCode.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
         }
 

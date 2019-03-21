@@ -88,7 +88,7 @@ public class OrderPreLoadConfiguration {
         pr1.addPayment(payment1);
 
         Order o1 = new Order();
-        o1.setStatus(Order.Status.OPEN);
+        o1.setStatus(OrderStatus.OPEN);
         o1.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o1.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(20)));
         o1.setAttendanceType(Order.AttendanceType.HOME_CARE);
@@ -109,7 +109,7 @@ public class OrderPreLoadConfiguration {
         pr1.addPayment(payment2);
 
         Order o2 = new Order();
-        o2.setStatus(Order.Status.OPEN);
+        o2.setStatus(OrderStatus.OPEN);
         o2.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o2.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusHours(2)));
         o2.setAttendanceType(Order.AttendanceType.HOME_CARE);
@@ -126,7 +126,7 @@ public class OrderPreLoadConfiguration {
         pr1.addPayment(payment3);
 
         Order o3 = new Order();
-        o3.setStatus(Order.Status.OPEN);
+        o3.setStatus(OrderStatus.OPEN);
         o3.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o3.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(10)));
         o3.setIdCustomer(c1);
@@ -143,7 +143,7 @@ public class OrderPreLoadConfiguration {
         pr1.addPayment(payment4);
 
         Order o4 = new Order();
-        o4.setStatus(Order.Status.OPEN);
+        o4.setStatus(OrderStatus.OPEN);
         o4.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o4.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(90)));
         o4.setIdCustomer(c1);
@@ -153,7 +153,7 @@ public class OrderPreLoadConfiguration {
         //o4.setIdLocation();
         o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
-        o4.setStatus(Order.Status.SEMI_CLOSED);
+        o4.setStatus(OrderStatus.SEMI_CLOSED);
 
         orderRepository.save(o4);
 
@@ -162,7 +162,7 @@ public class OrderPreLoadConfiguration {
         pr1.addPayment(payment5);
 
         Order o5 = new Order();
-        o5.setStatus(Order.Status.OPEN);
+        o5.setStatus(OrderStatus.OPEN);
         o5.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o5.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now().plusMinutes(19)));
         o5.setIdCustomer(c1);
@@ -172,7 +172,7 @@ public class OrderPreLoadConfiguration {
 
         o5.setProfessionalCategory(ps1);
         //o5.setScheduleId(s2);
-        o5.setStatus(Order.Status.SEMI_CLOSED);
+        o5.setStatus(OrderStatus.SEMI_CLOSED);
         orderRepository.save(o5);
 
 
@@ -185,7 +185,7 @@ public class OrderPreLoadConfiguration {
 
         //Scheduled Order
         Order o6 = new Order();
-        o6.setStatus(Order.Status.OPEN);
+        o6.setStatus(OrderStatus.OPEN);
         o6.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o6.setIdCustomer(c1);
@@ -205,7 +205,7 @@ public class OrderPreLoadConfiguration {
 
         //Scheduled Order
         Order o7 = new Order();
-        o7.setStatus(Order.Status.OPEN);
+        o7.setStatus(OrderStatus.OPEN);
         o7.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o7.setIdCustomer(c1);
@@ -224,7 +224,7 @@ public class OrderPreLoadConfiguration {
 
         //Scheduled Order
         Order o8 = new Order();
-        o8.setStatus(Order.Status.INPROGRESS);
+        o8.setStatus(OrderStatus.INPROGRESS);
         o8.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o8.setIdCustomer(c1);
@@ -248,7 +248,7 @@ public class OrderPreLoadConfiguration {
 
         //Scheduled Order
         Order o9 = new Order();
-        o9.setStatus(Order.Status.SCHEDULED);
+        o9.setStatus(OrderStatus.SCHEDULED);
         o9.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o9.setIdCustomer(c1);
@@ -270,7 +270,7 @@ public class OrderPreLoadConfiguration {
         pr10.addPayment(p10);
 
         Order o10 = new Order();
-        o10.setStatus(Order.Status.SCHEDULED);
+        o10.setStatus(OrderStatus.SCHEDULED);
         o10.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o10.setAttendanceType(Order.AttendanceType.HOME_CARE);
@@ -307,7 +307,7 @@ public class OrderPreLoadConfiguration {
         pr12.addPayment(p11);
 
         Order o11 = new Order();
-        o11.setStatus(Order.Status.SCHEDULED);
+        o11.setStatus(OrderStatus.SCHEDULED);
         o11.setDate(Timestamp.valueOf(LocalDateTime.now()));
         o11.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.now()));
         o11.setAttendanceType(Order.AttendanceType.HOME_CARE);

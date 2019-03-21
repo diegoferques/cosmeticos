@@ -25,19 +25,6 @@ import static com.cosmeticos.model.Payment.Type.CC;
 @Table(name = "[ORDER]")
 public class Order implements Serializable {
 
-    public enum Status {
-		OPEN, SCHEDULED, INPROGRESS, ACCEPTED, CANCELLED,
-
-		/**
-		 * @deprecated Este status perdeu sentido. Eh um status a mais desnecessario no processo de compra.
-		 */
-		EXECUTED, SEMI_CLOSED, AUTO_CLOSED, CLOSED, EXPIRED, FAILED_ON_PAYMENT, READY2CHARGE;
-
-		public String getTranslationPropertyKey() {
-			return "order.status." + this.name();
-		}
-	}
-
 	public enum PayType{
     	CASH, CREDITCARD
 	}
@@ -82,7 +69,7 @@ public class Order implements Serializable {
 	@Basic(optional = false)
 	@Column(name = "status")
     @Enumerated(EnumType.STRING)
-	private Status status;
+	private OrderStatus status;
 
     @JsonView({
             ResponseJsonView.OrderControllerCreate.class,
@@ -146,7 +133,7 @@ public class Order implements Serializable {
 		this.idOrder = idOrder;
 	}
 
-	public Order(Long idOrder, Date date, Status status) {
+	public Order(Long idOrder, Date date, OrderStatus status) {
 		this();
 		this.idOrder = idOrder;
 		this.date = date;
@@ -170,7 +157,7 @@ public class Order implements Serializable {
 		payment.setOrder(this);
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(OrderStatus status) {
 		this.status = status;
 	}
 

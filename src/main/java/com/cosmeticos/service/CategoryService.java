@@ -53,7 +53,7 @@ public class CategoryService {
     }
 
     public void deletar(){
-        throw new UnsupportedOperationException("Excluir de acordo com o Status. ");
+        throw new UnsupportedOperationException("Excluir de acordo com o OrderStatus. ");
     }
 
     public List<Category> findAll() {

@@ -83,7 +83,7 @@ public class ExceptionService {
                 String osVersion = e.getOsVersion();
                 Exception.Status status = e.getStatus();
 
-                // Sistema Operacional: {0}, Modelo do Aparelho: {1}, Status da Falha: {2}\n\nStack Trace:\n\n{3}
+                // Sistema Operacional: {0}, Modelo do Aparelho: {1}, OrderStatus da Falha: {2}\n\nStack Trace:\n\n{3}
                 String message = MessageFormat.format(
                         this.emailMessagePattern,
                         osVersion,

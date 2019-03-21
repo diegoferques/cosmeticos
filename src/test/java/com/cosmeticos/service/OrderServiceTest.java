@@ -5,6 +5,7 @@ import com.cosmeticos.controller.CustomerControllerTests;
 import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.*;
+import com.cosmeticos.service.order.OrderService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class OrderServiceTest {
         priceRule3.addPayment(payment3);
 
         o3 = new Order();
-        o3.setStatus(Order.Status.OPEN);
+        o3.setStatus(OrderStatus.OPEN);
         o3.setDate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setLastStatusUpdate(Timestamp.valueOf(LocalDateTime.MAX.of(2017, 06, 24, 14, 30, 0)));
         o3.setIdCustomer(c1);
@@ -110,7 +111,7 @@ public class OrderServiceTest {
         //o4.setIdLocation();
         o4.setProfessionalCategory(ps1);
         //o4.setScheduleId(s1);
-        o4.setStatus(Order.Status.SEMI_CLOSED);
+        o4.setStatus(OrderStatus.SEMI_CLOSED);
         o4.addPayment(payment4);
 
         orderRepository.save(o4);
@@ -131,7 +132,7 @@ public class OrderServiceTest {
         o5.setProfessionalCategory(ps1);
         o5.setAttendanceType(Order.AttendanceType.HOME_CARE);
         //o5.setScheduleId(s2);
-        o5.setStatus(Order.Status.SEMI_CLOSED);
+        o5.setStatus(OrderStatus.SEMI_CLOSED);
         o5.addPayment(payment5);
         orderRepository.save(o5);
     }
@@ -145,9 +146,9 @@ public class OrderServiceTest {
         o4 = orderRepository.findOne(o4.getIdOrder());
         o5 = orderRepository.findOne(o5.getIdOrder());
 
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, o4.getStatus());
+        Assert.assertEquals(OrderStatus.SEMI_CLOSED, o4.getStatus());
 
-        Assert.assertEquals(Order.Status.AUTO_CLOSED, o5.getStatus());
-        Assert.assertEquals(Order.Status.OPEN, o3.getStatus());
+        Assert.assertEquals(OrderStatus.AUTO_CLOSED, o5.getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, o3.getStatus());
     }
 }

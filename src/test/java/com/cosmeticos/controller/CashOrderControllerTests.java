@@ -115,7 +115,7 @@ public class CashOrderControllerTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, responsedOrder.getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, responsedOrder.getStatus());
         Assert.assertFalse(responsedOrder.getPaymentCollection().isEmpty());
         Assert.assertEquals(Payment.Type.CASH, responsedOrder.getPaymentCollection().stream().findFirst().get().getType());
         Assert.assertNull(responsedOrder.getScheduleId());
@@ -126,7 +126,7 @@ public class CashOrderControllerTests {
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderOpenOk.getIdOrder()+",\n" +
-                "    \"status\" : "+ Order.Status.ACCEPTED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.ACCEPTED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -146,33 +146,32 @@ public class CashOrderControllerTests {
         Order orderAtualizada = responseBodyDoPut.getOrderList().get(0);
 
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
-        Assert.assertEquals(Order.Status.ACCEPTED, orderAtualizada.getStatus());
+        Assert.assertEquals(OrderStatus.ACCEPTED, orderAtualizada.getStatus());
 
         Order createdOrder = exchangeUpdate.getBody().getOrderList().get(0);
 
 
         ResponseEntity<OrderResponseBody> exchangeUpdateInProgress = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.INPROGRESS);
+                createdOrder.getIdOrder(), OrderStatus.INPROGRESS);
 
         Assert.assertNotNull(exchangeUpdateInProgress);
         Assert.assertNotNull(exchangeUpdateInProgress.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateInProgress.getStatusCode());
-        Assert.assertEquals(Order.Status.INPROGRESS, exchangeUpdateInProgress.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, exchangeUpdateInProgress.getBody().getOrderList().get(0).getStatus());
 
         Order updatedOrder = exchangeUpdateInProgress.getBody().getOrderList().get(0);
 
 
         ResponseEntity<OrderResponseBody> exchangeUpdaterReady2Charge = this.updateOrderStatus(
-                updatedOrder.getIdOrder(), Order.Status.READY2CHARGE);
+                updatedOrder.getIdOrder(), OrderStatus.READY2CHARGE);
 
         Assert.assertNotNull(exchangeUpdaterReady2Charge);
         Assert.assertNotNull(exchangeUpdaterReady2Charge.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdaterReady2Charge.getStatusCode());
 
         // Quando se atualiza pra READY2CHARGE espera-se que o servidor retorne CLOSED.
-        Assert.assertEquals(Order.Status.CLOSED, exchangeUpdaterReady2Charge.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.CLOSED, exchangeUpdaterReady2Charge.getBody().getOrderList().get(0).getStatus());
 
-        Order readyOrder = exchangeUpdateInProgress.getBody().getOrderList().get(0);
 
 
 
@@ -185,7 +184,7 @@ public class CashOrderControllerTests {
         String jsonUpdateSemiclosed = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+ readyOrder.getIdOrder() +",\n" +
-                "    \"status\" : \""+ Order.Status.SEMI_CLOSED +"\",\n" +
+                "    \"status\" : \""+ Order.OrderStatus.SEMI_CLOSED +"\",\n" +
 
                 "    \"idCustomer\" : {\n" +
                 "        \"idCustomer\": "+nonCreditCardCustomer.getIdCustomer()+",\n" +
@@ -215,10 +214,10 @@ public class CashOrderControllerTests {
         Assert.assertNotNull(exchangeUpdaterSemiClosed);
         Assert.assertNotNull(exchangeUpdaterSemiClosed.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeUpdaterSemiClosed.getStatusCode());
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, exchangeUpdaterSemiClosed.getBody().getOrderList().get(0).getStatus());*/
+        Assert.assertEquals(Order.OrderStatus.SEMI_CLOSED, exchangeUpdaterSemiClosed.getBody().getOrderList().get(0).getStatus());*/
     }
 
-    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, Order.Status status) throws URISyntaxException {
+    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, OrderStatus status) throws URISyntaxException {
 
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +

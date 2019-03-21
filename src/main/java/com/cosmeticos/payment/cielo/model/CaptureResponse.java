@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class CaptureResponse {
 
-    @JsonProperty("Status")
+    @JsonProperty("OrderStatus")
     public Integer status;
 
     @JsonProperty("ReturnCode")

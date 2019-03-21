@@ -145,7 +145,7 @@ public class ScheduleOrderControllerTest {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
 
         Schedule s = exchange.getBody().getOrderList().get(0).getScheduleId();
 
@@ -241,7 +241,7 @@ public class ScheduleOrderControllerTest {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
 
         Schedule s = exchange.getBody().getOrderList().get(0).getScheduleId();
 
@@ -270,7 +270,7 @@ public class ScheduleOrderControllerTest {
 
         String jsonUpdate = OrderJsonHelper.buildJsonUpdateScheduledOrder(
                 o1.getIdOrder(),
-                Order.Status.SCHEDULED,
+                OrderStatus.SCHEDULED,
                 o1.getScheduleId().getScheduleId(),
                 Timestamp.valueOf(scheduleStart.plusHours(4)).getTime()
 
@@ -295,7 +295,7 @@ public class ScheduleOrderControllerTest {
         String scheduleUpdate = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(s1.getScheduleEnd());
         Assert.assertEquals("15/09/2017 14:00", scheduleUpdate);
 
-        Assert.assertEquals(Order.Status.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.SCHEDULED, exchangeUpdate.getBody().getOrderList().get(0).getStatus());
 
         String jsonFail =
                 OrderJsonHelper.buildJsonCreateScheduledOrder(
@@ -388,7 +388,7 @@ public class ScheduleOrderControllerTest {
 
     }
 
-    public ResponseEntity<OrderResponseBody> updateOrderStatusInSchedule(Long orderId, Order.Status status) throws URISyntaxException {
+    public ResponseEntity<OrderResponseBody> updateOrderStatusInSchedule(Long orderId, OrderStatus status) throws URISyntaxException {
 
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +

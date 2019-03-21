@@ -1,12 +1,10 @@
 package com.cosmeticos.controller;
 
 import com.cosmeticos.model.*;
-import com.cosmeticos.service.RandomCode;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static java.time.LocalDateTime.now;
 
 class OrderJsonHelper {
 
@@ -122,7 +120,7 @@ class OrderJsonHelper {
     }
 
     public static String buildJsonUpdateScheduledOrder(Long idOrder,
-                                                       Order.Status orderStatus,
+                                                       OrderStatus orderStatus,
                                                        Long scheduleId,
                                                        Long scheduleEnd) {
         return "{\n" +

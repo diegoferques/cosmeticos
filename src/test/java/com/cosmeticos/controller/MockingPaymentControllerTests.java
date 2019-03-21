@@ -5,12 +5,10 @@ import com.cosmeticos.commons.*;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.Charger;
 import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
 import com.cosmeticos.service.MulticlickPaymentService;
-import com.cosmeticos.service.OrderService;
-import com.cosmeticos.service.RandomCode;
+import com.cosmeticos.service.order.OrderService;
 import com.cosmeticos.validation.OrderValidationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.val;
@@ -21,7 +19,6 @@ import org.mockito.Mockito;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -450,48 +447,48 @@ public class MockingPaymentControllerTests {
         //--- INICIO - ABAIXO MUDAMOS DE OPEN PARA ACCEPTED ---//
         Order orderAccepted = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
-        orderAccepted.setStatus(Order.Status.ACCEPTED);
+        orderAccepted.setStatus(OrderStatus.ACCEPTED);
 
 
         // TODO: apontar pro controller em vez do service.
         Order orderAcceptedUpdated = orderService.update(orderAccepted);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderAcceptedUpdated);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderAcceptedUpdated.getStatus());
+        Assert.assertEquals(OrderStatus.ACCEPTED, orderAcceptedUpdated.getStatus());
         //--- FIM ---//
 
         //--- INICIO - ABAIXO MUDAMOS DE ACCEPTED PARA INPROGRESS ---//
         Order orderInProgress = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
-        orderInProgress.setStatus(Order.Status.INPROGRESS);
+        orderInProgress.setStatus(OrderStatus.INPROGRESS);
 
         Order orderInProgressUpdated = orderService.update(orderInProgress);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderInProgressUpdated);
-        Assert.assertEquals(Order.Status.INPROGRESS, orderInProgressUpdated.getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, orderInProgressUpdated.getStatus());
         //--- FIM ---//
 
         //--- INICIO - ABAIXO MUDAMOS DE INPROGRESS PARA EXECUTED ---//
         Order orderExecuted = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
-        orderExecuted.setStatus(Order.Status.EXECUTED);
+        orderExecuted.setStatus(OrderStatus.EXECUTED);
 
         Order orderExecutedUpdated = orderService.update(orderExecuted);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderExecutedUpdated);
-        Assert.assertEquals(Order.Status.EXECUTED, orderExecutedUpdated.getStatus());
+        Assert.assertEquals(OrderStatus.EXECUTED, orderExecutedUpdated.getStatus());
         //--- FIM ---//
 
 
         //--- INICIO - ABAIXO MUDAMOS DE INPROGRESS PARA READY2CHARGE E, AUTOMATICAMENTE, EFETUAMOS A CAPTURA ---//
         Order orderReady2Charge = orderRepository.findOne(order.getIdOrder());
         //APOS CRIAR ORDER, MUDAMOS SEU STATUS PARA ACCEPTED
-        orderReady2Charge.setStatus(Order.Status.READY2CHARGE);
+        orderReady2Charge.setStatus(OrderStatus.READY2CHARGE);
 
         Order orderReady2ChargeUpdated = orderService.update(orderReady2Charge);
         //ABAIXO VERIFICAMOS SE TUDO CORREU CONFORME O ESPERADO
         Assert.assertNotNull(orderReady2ChargeUpdated);
-        Assert.assertEquals(Order.Status.READY2CHARGE, orderReady2ChargeUpdated.getStatus());
+        Assert.assertEquals(OrderStatus.READY2CHARGE, orderReady2ChargeUpdated.getStatus());
         //--- FIM ---//
 
 
@@ -682,14 +679,14 @@ public class MockingPaymentControllerTests {
         Assert.assertNotNull(exchangeCreate.getBody().getOrderList());
         Assert.assertEquals(HttpStatus.OK, exchangeCreate.getStatusCode());
 
-        Assert.assertEquals(Order.Status.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchangeCreate.getBody().getOrderList().get(0).getStatus());
 
         Order createdOrder = exchangeCreate.getBody().getOrderList().get(0);
         //-------
 
         //ATUALIZAMOS ORDER PARA ACCEPTED PARA, POSTERIORMENTE, TENTAR CRIAR NOVO ORDER PARA O MESMO PROFESSIONAL
         ResponseEntity<OrderResponseBody> exchangeUpdateAccepted = this.updateOrderStatus(
-                createdOrder.getIdOrder(), Order.Status.ACCEPTED);
+                createdOrder.getIdOrder(), OrderStatus.ACCEPTED);
 
         Assert.assertNotNull(exchangeUpdateAccepted);
         Assert.assertNotNull(exchangeUpdateAccepted.getBody().getOrderList());
@@ -697,7 +694,7 @@ public class MockingPaymentControllerTests {
         Assert.assertEquals(HttpStatus.CONFLICT, exchangeUpdateAccepted.getStatusCode());
 /*
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getHttpStatus());
+        Assert.assertEquals(Order.OrderStatus.ACCEPTED, orderUpdateAccepted.getHttpStatus());
         //-------
 
  //Removi pq antes o put estava indo no ssuperpay mas agora nao vai mais.
@@ -723,7 +720,7 @@ public class MockingPaymentControllerTests {
         Assert.assertEquals(HttpStatus.CONFLICT, exchangeCreate2.getStatusCode()); */
     }
 
-    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, Order.Status status) throws URISyntaxException {
+    public ResponseEntity<OrderResponseBody> updateOrderStatus(Long orderId, OrderStatus status) throws URISyntaxException {
 
         String jsonUpdate = "{\n" +
                 "  \"order\" : {\n" +

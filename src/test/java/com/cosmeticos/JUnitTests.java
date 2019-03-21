@@ -18,7 +18,6 @@ import java.text.ParseException;
 /**
  * Created by matto on 28/06/2017.
  */
-@ActiveProfiles("prod")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class JUnitTests {

@@ -103,7 +103,6 @@ public class Customer implements Serializable {
     })
     private Integer status;
 
-   // @JsonManagedReference(value="user-customer")
     @JsonView({
             ResponseJsonView.WalletsFindAll.class,
             ResponseJsonView.OrderControllerFindBy.class,

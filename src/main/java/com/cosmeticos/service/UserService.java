@@ -98,7 +98,7 @@ public class UserService {
                 /*
                 // Remove a conta do usuario
                 // TODO: criar endpoint especifico pra signout
-                if (User.Status.INACTIVE.equals(userFromRequest.getStatus())) {
+                if (User.OrderStatus.INACTIVE.equals(userFromRequest.getStatus())) {
                     this.inactiveUserType(userFromRequest);
                 }
                 */
@@ -141,11 +141,11 @@ public class UserService {
 
         if (User.UserType.customer.equals(user.getUserType())) {
             Customer customer = persistentUser.getCustomer();
-            customer.setStatus(Customer.Status.INACTIVE.ordinal());
+            customer.setStatus(Customer.OrderStatus.INACTIVE.ordinal());
             customerService.update(customer);
         } else {
             Professional professional = persistentUser.getProfessional();
-            professional.setStatus(Professional.Status.INACTIVE);
+            professional.setStatus(Professional.OrderStatus.INACTIVE);
             professionalService.update(professional);
         }
     }
@@ -155,7 +155,7 @@ public class UserService {
     }
 
     public void deletar() {
-        throw new UnsupportedOperationException("Excluir de acordo com o Status. ");
+        throw new UnsupportedOperationException("Excluir de acordo com o OrderStatus. ");
     }
 
     public List<User> findAll() {

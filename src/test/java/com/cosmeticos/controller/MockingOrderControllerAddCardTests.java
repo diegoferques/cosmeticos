@@ -175,7 +175,7 @@ public class MockingOrderControllerAddCardTests {
 
         Assert.assertNotNull(exchange);
         Assert.assertEquals(OK, exchange.getStatusCode());
-        Assert.assertEquals(Order.Status.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, exchange.getBody().getOrderList().get(0).getStatus());
         Assert.assertNull(exchange.getBody().getOrderList().get(0).getScheduleId());
 
         List<CreditCard> cards = creditcardRepository.findByUserEmail(customer.getUser().getEmail());

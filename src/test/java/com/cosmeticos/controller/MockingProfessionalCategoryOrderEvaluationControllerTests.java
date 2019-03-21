@@ -8,7 +8,6 @@ import com.cosmeticos.payment.cielo.CieloTransactionClient;
 import com.cosmeticos.payment.cielo.model.AuthorizeAndTokenResponse;
 import com.cosmeticos.payment.cielo.model.ResponseCieloPayment;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.LocationService;
 import com.cosmeticos.service.VoteService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -152,7 +151,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         String jsonUpdateAccepted = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.ACCEPTED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.ACCEPTED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -171,7 +170,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.ACCEPTED, orderUpdateAccepted.getStatus());
 
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +180,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         String jsonUpdateInprogress = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.INPROGRESS.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.INPROGRESS.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -200,7 +199,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateInProgress.getStatusCode());
 
         Order orderUpdateInProgress= exchangeUpdateInProgress.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.INPROGRESS, orderUpdateInProgress.getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, orderUpdateInProgress.getStatus());
 
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +211,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         String jsonUpdateSemiclosed = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.SEMI_CLOSED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.SEMI_CLOSED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -230,7 +229,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateSemiClosed.getStatusCode());
 
         Order orderUpdateSemiClosed= exchangeUpdateSemiClosed.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateSemiClosed.getStatus());
+        Assert.assertEquals(OrderStatus.SEMI_CLOSED, orderUpdateSemiClosed.getStatus());
 
 
         //////////////////////////////////////////////////////////////////////////////////
@@ -240,7 +239,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         String jsonUpdateReady2charge = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.READY2CHARGE.ordinal() +",\n" +
+                "    \"status\" : "+ OrderStatus.READY2CHARGE.ordinal() +",\n" +
                 "    \"professionalCategory\" : {\n" +
                 "       \"professional\" : {\n" +
                 "        \"user\" : {\n" +
@@ -274,7 +273,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
         // fev 2019: Este teste falha pq a aplciacao esta considerando PAGO_E_CAPTURADO como erro. Na vdd devemos aceitar esse status e simplesmente nao fazer o capture.
-        Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());
+        Assert.assertEquals(OrderStatus.CLOSED, orderUpdateReady2Charger.getStatus());
 
         User professionalUser = orderUpdateReady2Charger.getProfessionalCategory()
                 .getProfessional().getUser();

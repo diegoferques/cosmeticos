@@ -167,7 +167,7 @@ public enum CieloApiErrorCode {
         }
         else
         {
-            throw new IllegalArgumentException("Status da Cielo nao mapeado: " + status);
+            throw new IllegalArgumentException("OrderStatus da Cielo nao mapeado: " + status);
         }
     }
 }

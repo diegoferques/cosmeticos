@@ -21,7 +21,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.cosmeticos.model.Order.Status.OPEN;
+import static com.cosmeticos.model.OrderStatus.OPEN;
 import static org.springframework.http.HttpMethod.POST;
 
 /**

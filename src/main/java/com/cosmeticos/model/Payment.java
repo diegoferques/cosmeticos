@@ -66,7 +66,7 @@ public class Payment implements Serializable {
 		 *
 		 * @param success Informa se consideramos o status retornado do superpay como sucesso ou nao. Simplifica nossos IFs.
 		 * @param superpayStatus Codigo da superpay. Detalhes sobre este codigo na documentacao do superpay.
-		 * @param status Http Status que determinamos que serao retornados ao App de acordo com cada status do superpay
+		 * @param status Http OrderStatus que determinamos que serao retornados ao App de acordo com cada status do superpay
 		 * @param responseCode Codigo de resposta da nossa aplicacao. Consulte a documentacao dessa classe.
 		 */
 		private Status(Boolean success, Integer superpayStatus, HttpStatus status, ResponseCode responseCode) {
@@ -97,7 +97,7 @@ public class Payment implements Serializable {
 			}
 			else
 			{
-				throw new IllegalArgumentException("Status do superpay nao mapeado: " + superpayStatusStransacao);
+				throw new IllegalArgumentException("OrderStatus do superpay nao mapeado: " + superpayStatusStransacao);
 			}
 		}
 	}

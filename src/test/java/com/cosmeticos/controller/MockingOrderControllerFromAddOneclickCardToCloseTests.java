@@ -223,7 +223,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
                                 "        \"Currency\": \"BRL\",\n" +
                                 "        \"Country\": \"BRA\",\n" +
                                 "        \"ExtraDataCollection\": [],\n" +
-                                "        \"Status\": 1,\n" +
+                                "        \"OrderStatus\": 1,\n" +
                                 "        \"ReturnCode\": \"4\",\n" +
                                 "        \"ReturnMessage\": \"Operation Successful\",\n" +
                                 "        \"Links\": [\n" +
@@ -303,7 +303,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
         Order order = exchange.getBody().getOrderList().get(0);
 
-        Assert.assertEquals(Order.Status.OPEN, order.getStatus());
+        Assert.assertEquals(OrderStatus.OPEN, order.getStatus());
         Assert.assertNull(order.getScheduleId());
 
         List<CreditCard> cards = creditcardRepository.findByUserEmail(c1.getUser().getEmail());
@@ -379,7 +379,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         String jsonUpdateReady2charge = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.READY2CHARGE.ordinal() +",\n" +
+                "    \"status\" : "+ OrderStatus.READY2CHARGE.ordinal() +",\n" +
                 "    \"professionalCategory\" : {\n" +
                 "       \"professional\" : {\n" +
                 "        \"user\" : {\n" +
@@ -411,7 +411,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
 
         Order orderUpdateReady2Charger =  exchangeUpdateReady2Charger.getBody().getOrderList().get(0);
 
-        Assert.assertEquals(Order.Status.CLOSED, orderUpdateReady2Charger.getStatus());
+        Assert.assertEquals(OrderStatus.CLOSED, orderUpdateReady2Charger.getStatus());
 
     }
 
@@ -426,7 +426,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         String jsonUpdateSemiclosed = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.SEMI_CLOSED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.SEMI_CLOSED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -444,7 +444,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateSemiClosed.getStatusCode());
 
         Order orderUpdateSemiClosed= exchangeUpdateSemiClosed.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.SEMI_CLOSED, orderUpdateSemiClosed.getStatus());
+        Assert.assertEquals(OrderStatus.SEMI_CLOSED, orderUpdateSemiClosed.getStatus());
 
 
     }
@@ -458,7 +458,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         String jsonUpdateInprogress = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.INPROGRESS.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.INPROGRESS.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -476,7 +476,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateInProgress.getStatusCode());
 
         Order orderUpdateInProgress= exchangeUpdateInProgress.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.INPROGRESS, orderUpdateInProgress.getStatus());
+        Assert.assertEquals(OrderStatus.INPROGRESS, orderUpdateInProgress.getStatus());
 
 
     }
@@ -490,7 +490,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         String jsonUpdateAccepted = "{\n" +
                 "  \"order\" : {\n" +
                 "    \"idOrder\" : "+orderId+",\n" +
-                "    \"status\" : "+ Order.Status.ACCEPTED.ordinal() +"\n" +
+                "    \"status\" : "+ OrderStatus.ACCEPTED.ordinal() +"\n" +
                 "\n}\n" +
                 "}";
 
@@ -508,7 +508,7 @@ public class MockingOrderControllerFromAddOneclickCardToCloseTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateAccepted.getStatusCode());
 
         Order orderUpdateAccepted = exchangeUpdateAccepted.getBody().getOrderList().get(0);
-        Assert.assertEquals(Order.Status.ACCEPTED, orderUpdateAccepted.getStatus());
+        Assert.assertEquals(OrderStatus.ACCEPTED, orderUpdateAccepted.getStatus());
 
     }
 

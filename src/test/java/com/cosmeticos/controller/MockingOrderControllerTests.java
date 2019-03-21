@@ -4,7 +4,8 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderRequestBody;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.Order;
-import com.cosmeticos.service.OrderService;
+import com.cosmeticos.model.OrderStatus;
+import com.cosmeticos.service.order.OrderService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,7 @@ public class MockingOrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.CANCELLED);
+        s1.setStatus(OrderStatus.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);
@@ -69,7 +70,7 @@ public class MockingOrderControllerTests {
 
         Order s1 = new Order();
         s1.setIdOrder(1L);
-        s1.setStatus(Order.Status.CANCELLED);
+        s1.setStatus(OrderStatus.CANCELLED);
 
         OrderRequestBody or = new OrderRequestBody();
         or.setOrder(s1);

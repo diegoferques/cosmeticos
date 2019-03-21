@@ -1,7 +1,7 @@
 package com.cosmeticos.repository;
 
 import com.cosmeticos.model.Order;
-import com.cosmeticos.model.Order.Status;
+import com.cosmeticos.model.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,13 +18,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByIdCustomer_idCustomer(Long idCustomer);
 
 
-    List<Order> findByStatus(Order.Status status);
+    List<Order> findByStatus(OrderStatus status);
 
 
     List<Order> findByProfessionalCategory_Professional_idProfessional(Long idProfessional);
 
     List<Order> findByStatusOrStatusAndProfessionalCategory_Professional_idProfessional(
-            Order.Status s1, Order.Status s2, Long idProfessional);
+            OrderStatus s1, OrderStatus s2, Long idProfessional);
 
     /**
      * PEga Orders abertas por um cliente a um mesmo profissional em um mesmo servico.
@@ -64,23 +64,23 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     /*
     @Query(value = "SELECT * FROM " +
             "Order o " +
-            "WHERE o.Status NOT LIKE 'CANCELLED' OR " +
-            "o.Status NOT LIKE 'CLOSED'",
+            "WHERE o.OrderStatus NOT LIKE 'CANCELLED' OR " +
+            "o.OrderStatus NOT LIKE 'CLOSED'",
             nativeQuery = true)
     */
-    //@Query("SELECT o FROM Order o WHERE o.Status NOT LIKE 'CANCELLED'")
+    //@Query("SELECT o FROM Order o WHERE o.OrderStatus NOT LIKE 'CANCELLED'")
     //List<Order> findAllCustom();
 
     //@Query("status:*?0* OR description:*?0*")
-    //@Query("Status NOT LIKE 'CANCELLED'")
+    //@Query("OrderStatus NOT LIKE 'CANCELLED'")
     //List<Order> findByQueryAnnotation();
 
-    //List<Order> findByStatusNotLike(Order.Status s1);
+    //List<Order> findByStatusNotLike(Order.OrderStatus s1);
     //List<Order> findByStatusNotLike(String s1);
     //List<Order> findByStatusNotLike(int s1);
-    List<Order> findByStatusNotIn(Collection<Status> status);
+    List<Order> findByStatusNotIn(Collection<OrderStatus> status);
 
-	List<Order> findByStatusNotInAndIdCustomer_user_email(Collection<Status> status,
+	List<Order> findByStatusNotInAndIdCustomer_user_email(Collection<OrderStatus> status,
 			String email);
 
     @Query(value = "" +
