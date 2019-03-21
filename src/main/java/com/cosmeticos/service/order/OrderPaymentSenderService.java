@@ -8,7 +8,6 @@ import com.cosmeticos.payment.ChargeRequest;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.PaymentRepository;
-import com.cosmeticos.validation.OrderValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.cosmeticos.model.Payment.Status.PAGO_E_CAPTURADO;
 import static com.cosmeticos.model.Payment.Type.CC;
 
 /**
@@ -42,6 +40,9 @@ public class OrderPaymentSenderService implements OrderStatusHandler {
     private Charger paymentService;
 
     @Autowired
+    private PaymentCaptureHelper paymentCaptureHelper;
+
+    @Autowired
     private PaymentRepository paymentRepository;
 
     @Override
@@ -59,47 +60,6 @@ public class OrderPaymentSenderService implements OrderStatusHandler {
             }
         }
 
-        //ACHEI MELHOR FAZER UMA NOVA VERIFICACAO APOS SALVAR, POIS PRECISAMOS TER ARMAZENADO QUANDO MUDAMOS O STATUS
-        //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
-        //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
-        if (persistentOrder.getStatus() == OrderStatus.READY2CHARGE) {
-            Payment payment = persistentOrder.getPaymentCollection()
-                    .stream()
-                    .findFirst()
-                    .get();
-
-            if (CC.equals(payment.getType())) {
-
-                if (    // Se ja esta PAGO_E_CAPTURADO nao precisamos capturar mais nada e nao executara a proxima clausula.
-                        PAGO_E_CAPTURADO.equals(payment.getStatus()) ||
-
-                                //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-                                this.sendPaymentCapture(payment)) {
-
-                    //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
-                    //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
-                    //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA CLOSED
-                    persistentOrder.setStatus(OrderStatus.CLOSED);
-                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
-
-                } else {
-                    persistentOrder.setStatus(OrderStatus.FAILED_ON_PAYMENT);
-                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
-                }
-
-            } else if (Payment.Type.CASH.equals(payment.getType())) {
-
-                //TODO - SE ORDER NO BANCO FOR READY2CHARGE E PAGAMENTO EM DINHEIRO, ENTAO MUDAMOS O STATUS PARA O SOLICITADO???
-                //NAO ESTOU ENTENDENDO ISSO!!!
-                //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
-                // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
-                // Garry: Ta estranho mesmo.. vamos apagar esta instrucao
-                persistentOrder.setStatus(OrderStatus.CLOSED);
-
-            } else {
-                boolean mustPersistOrder = false;
-            }
-        }
     }
 
     private Boolean sendPaymentRequest(Payment payment) {
@@ -108,28 +68,6 @@ public class OrderPaymentSenderService implements OrderStatusHandler {
 
         return ResponseCode.SUCCESS.equals(retornoTransacaoSuperpay.getResponseCode());
     }
-
-    /**
-     * Captura um pagamento caso ele ja nao tenha sido capturado anteriormente.
-     * //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
-     * //BRANCH: RNF101
-     * //BRANCH: RNFapp39-templatando-plus-cartao
-     */
-    private Boolean sendPaymentCapture(Payment payment) throws OrderValidationException {
-
-        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
-
-        switch (chargeResponse.getResponseCode()) {
-            case SUCCESS:
-            case GATEWAY_DUPLICATE_PAYMENT:
-                return true;
-            default:
-                throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
-        }
-
-    }
-
-
 
     //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
     //BRANCH: RNF101
@@ -140,7 +78,7 @@ public class OrderPaymentSenderService implements OrderStatusHandler {
         List<Payment> paymentList = paymentRepository.findByOrderStatus(OrderStatus.READY2CHARGE);
 
         for (Payment payment : paymentList) {
-            this.sendPaymentCapture(payment);
+            this.paymentCaptureHelper.sendPaymentCapture(payment);
         }
 
     }

@@ -525,26 +525,6 @@ public class OrderService {
 
     }*/
 
-    /**
-     * Captura um pagamento caso ele ja nao tenha sido capturado anteriormente.
-     * //CARD: https://trello.com/c/G1x4Y97r/101-fluxo-de-captura-de-pagamento-no-superpay
-     * //BRANCH: RNF101
-     * //BRANCH: RNFapp39-templatando-plus-cartao
-     */
-    /*private Boolean sendPaymentCapture(Payment payment) throws JsonProcessingException, URISyntaxException, OrderValidationException {
-
-        ChargeResponse<Object> chargeResponse = paymentService.capture(new ChargeRequest<>(payment));
-
-        switch (chargeResponse.getResponseCode()) {
-            case SUCCESS:
-            case GATEWAY_DUPLICATE_PAYMENT:
-                return true;
-            default:
-                throw new OrderValidationException(chargeResponse.getResponseCode(), "Falha na captura do superpay.");
-        }
-
-    }*/
-
    /* private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
 
         Order persistenOrder = payment.getOrder();
