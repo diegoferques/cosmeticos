@@ -273,6 +273,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
         // fev 2019: Este teste falha pq a aplciacao esta considerando PAGO_E_CAPTURADO como erro. Na vdd devemos aceitar esse status e simplesmente nao fazer o capture.
+        // mar 2019: Estamos realizando a captura quando o profissional aceita o pedido, portanto alteraremos o codigo para aceitar PAGO_E_CAPTURADO como sucesso.
         Assert.assertEquals(OrderStatus.CLOSED, orderUpdateReady2Charger.getStatus());
 
         User professionalUser = orderUpdateReady2Charger.getProfessionalCategory()
