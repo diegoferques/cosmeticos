@@ -148,4 +148,8 @@ public class OrderScheduledPaymentSenderService implements OrderStatusHandler {
         return ResponseCode.SUCCESS.equals(retornoTransacaoSuperpay.getResponseCode());
     }
 
+    @Override
+    public void onAfterOrderPesistence(Order persistentOrder) {
+        // Nada a implementar
+    }
 }

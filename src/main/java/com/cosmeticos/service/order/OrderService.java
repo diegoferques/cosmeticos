@@ -4,7 +4,6 @@ import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.penalty.PenaltyService;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.BalanceItemService;
 import com.cosmeticos.service.FirebasePushNotifierService;
 import com.cosmeticos.service.WalletService;
 import com.cosmeticos.validation.OrderValidationException;
@@ -23,7 +22,6 @@ import java.util.*;
 
 import static com.cosmeticos.model.OrderStatus.*;
 import static com.cosmeticos.model.Payment.Type.CC;
-import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 import static org.springframework.util.StringUtils.isEmpty;
 
 /**
@@ -56,9 +54,6 @@ public class OrderService {
 
     @Autowired
     private PaymentRepository paymentRepository;
-
-    @Autowired
-    private BalanceItemService balanceItemService;
 
     @Autowired
     private FirebasePushNotifierService firebasePushNotifierService;
@@ -268,98 +263,23 @@ public class OrderService {
 
         OrderStatus newStatus = persistentOrder.getStatus();
 
-        // applyVote(receivedOrder, persistentOrder);
+        boolean orderStatusHasChanged = !previousOrderStatus.equals(newStatus);
 
-        //AQUI TRATAMOS O STATUS ACCEPTED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-        // Utilizamos a order persistente pois ela possui TODOS os atributos setados
-       /* if (receivedOrder.getStatus() == OrderStatus.ACCEPTED) {
-
-
-            for (Payment newPayment : persistentOrder.getPaymentCollection()) {
-                if (CC.equals(newPayment.getType())) {
-                    this.sendPaymentRequest(newPayment);
-                }
-            }
-        }*//*
-        //TIVE QUE COMENTAR A VALIDACAO ABAIXO POIS ESTAVA DANDO O ERRO ABAIXO:
-        //QUANDO VAMOS ATUALIZAR PARA SCHEDULED, AINDA NAO TEMOS OS DADOS QUE VAO SER ATUALIZADOS
-        //-- VALIDANDO O COMENTARIO ACIMA --//
-        //AQUI TRATAMOS O STATUS SCHEDULED QUE VAMOS NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-        else if (receivedOrder.getStatus() == OrderStatus.SCHEDULED) {
-
-            for (Payment newPayment : persistentOrder.getPaymentCollection()) {
-                persistentOrder.addPayment(newPayment);
-                orderRepository.save(persistentOrder);
-
-                if (CC.equals(newPayment.getType())) {
-                    this.validateScheduledAndsendPaymentRequest(newPayment);
-                }
-            }
-        }*/
-
-        boolean mustPersistOrder = !previousOrderStatus.equals(newStatus);
-/*
-        //ACHEI MELHOR FAZER UMA NOVA VERIFICACAO APOS SALVAR, POIS PRECISAMOS TER ARMAZENADO QUANDO MUDAMOS O STATUS
-        //PARA READY2CHARGE E QUANDO FIZEMOS A CAPTURA. POIS COMO ESTAVA ANTES NAO TINHAMOS O REGISTRO DE READY2CHARGE
-        //POIS QUANDO ERA ESTE STATUS, JA ENVIAMOS A CAPTURA E, LOGO APOS A CAPTURA, O CORRETO EH MUDAR O STATUS PARA PAYD
-        if (persistentOrder.getStatus() == OrderStatus.READY2CHARGE) {
-            Payment payment = persistentOrder.getPaymentCollection()
-                    .stream()
-                    .findFirst()
-                    .get();
-
-            if (CC.equals(payment.getType())) {
-
-                if (    // Se ja esta PAGO_E_CAPTURADO nao precisamos capturar mais nada e nao executara a proxima clausula.
-                        PAGO_E_CAPTURADO.equals(payment.getStatus()) ||
-
-                                //AQUI TRATAMOS O STATUS READY2CHARGE QUE VAI NA SUPERPAY EFETUAR A RESERVA DO VALOR PARA PAGAMENTO
-                                this.sendPaymentCapture(payment)) {
-
-                    //ADICIONEI O QUE SEGUE ABAIXO POIS PRECISAMOS TER O REGISTRO DA ATUALIZACAO DOS DOIS STATUS
-                    //PRIMEIRO READY2CHARGE E, LOGO EM SEGUIDA, SE A CAPTURA FOR FEITA COM SUCESSO, MUDAMOS PARA PAID
-                    //OBS.: COMO NAO TEMOS O STATUS PAID, MUDEI PARA CLOSED
-                    persistentOrder.setStatus(OrderStatus.CLOSED);
-                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
-
-                } else {
-                    persistentOrder.setStatus(OrderStatus.FAILED_ON_PAYMENT);
-                    persistentOrder.setLastStatusUpdate(Calendar.getInstance().getTime());
-                }
-
-                mustPersistOrder = true;
-            } else if (Payment.Type.CASH.equals(payment.getType())) {
-
-                //TODO - SE ORDER NO BANCO FOR READY2CHARGE E PAGAMENTO EM DINHEIRO, ENTAO MUDAMOS O STATUS PARA O SOLICITADO???
-                //NAO ESTOU ENTENDENDO ISSO!!!
-                //TODO - VERIFICAR POIS SER FOR ENVIADO CLOSED PODE BATER AQUI E GERAR PROBLEMA
-                // ACCEPTED ou READY2CHARGE?  Deivison quer que pague so apos executar o servico
-                // Garry: Ta estranho mesmo.. vamos apagar esta instrucao
-                persistentOrder.setStatus(OrderStatus.CLOSED);
-
-                mustPersistOrder = true;
-            }
-            else {
-                log.debug("bate aqui?");
-            }
-        } else {
-
-            mustPersistOrder = true;
-        }*/
-
-        if (mustPersistOrder) {
+        if (orderStatusHasChanged) {
             orderRepository.save(persistentOrder);
 
-            if (CLOSED.equals(persistentOrder.getStatus())
-                    || AUTO_CLOSED.equals(persistentOrder.getStatus())) {
+            persistentOrder.getStatus().afterPersist(applicationContext, persistentOrder);
 
-                if (persistentOrder.isCreditCard()) {
-                    balanceItemService.create(creditFromOrder(persistentOrder));
-                }
-            }
-        }
+            //if (CLOSED.equals(persistentOrder.getStatus())
+            //        || AUTO_CLOSED.equals(persistentOrder.getStatus())) {
+//
+            //    if (persistentOrder.isCreditCard()) {
+            //        balanceItemService.create(creditFromOrder(persistentOrder));
+            //    }
+//
+            //    // TODO: acumular pontos ao prof e ao cliente.
+            //}
 
-        if (!previousOrderStatus.equals(persistentOrder.getStatus())) {
             // TODO: Mandar pruma fila, ser assincrono.
             firebasePushNotifierService.push(persistentOrder);
         }
@@ -367,22 +287,6 @@ public class OrderService {
         MDC.put("newOrderStatus", String.valueOf(persistentOrder.getStatus()));
 
         return persistentOrder;
-    }
-
-    private boolean userHasOneClickCard(User persistentUser) {
-
-        Set<CreditCard> cards = persistentUser.getCreditCardCollection();
-
-        if (cards.isEmpty()) {
-            return false;
-        } else {
-            CreditCard persistentUserCreditCard = cards.stream()
-                    .findFirst()
-                    .get();
-
-            Boolean oneclick = persistentUserCreditCard.isOneClick();
-            return oneclick == null ? true : oneclick;
-        }
     }
 
     /**
@@ -471,145 +375,6 @@ public class OrderService {
             }
         }
     }
-/*
-    private void applyVote(Order receivedOrder, Order persistentOrder) {
-
-        if (receivedOrder.getStatus() == OrderStatus.SEMI_CLOSED) {
-
-            // Aplicado ao Customer quando o professional encerra o servico
-
-            User persistentUser = persistentOrder.getIdCustomer().getUser();
-
-            Customer receivedCustomer = receivedOrder.getIdCustomer();
-
-            if (receivedCustomer != null) {
-                User receivedUser = receivedOrder.getIdCustomer().getUser();
-
-                if (receivedUser != null) {
-                    Set<Vote> voteCollection = receivedUser.getVoteCollection();
-                    if (voteCollection != null && !voteCollection.isEmpty()) {
-                        Vote receivedvote = voteCollection.stream().findFirst().get();
-
-                        if (receivedvote != null) {
-                            addVotesToUser(persistentUser, receivedvote);
-                            MDC.put("customerVote", String.valueOf(receivedvote.getValue()));
-                        }
-                    }
-                }
-            }
-
-        } else if (receivedOrder.getStatus() == OrderStatus.READY2CHARGE) {
-
-            // Aplicado ao Professional quando o customer confirma realização do servico e avalia o professional
-
-            ProfessionalCategory persistentProfessionalCategory = persistentOrder.getProfessionalCategory();
-            User persistentUser = persistentProfessionalCategory.getProfessional().getUser();
-
-            ProfessionalCategory receivedProfessionalCategory = receivedOrder.getProfessionalCategory();
-            User receivedUser = receivedProfessionalCategory.getProfessional().getUser();
-
-            if (!receivedUser.getVoteCollection().isEmpty()) {
-                Vote receivedvote = receivedUser.getVoteCollection().stream().findFirst().get();
-
-                addVotesToUser(persistentUser, receivedvote);
-
-                MDC.put("professionalVote", String.valueOf(receivedvote.getValue()));
-            }
-        }
-    }
-
-    private void addVotesToUser(User persistentUser, Vote receivedVote) {
-
-        persistentUser.addVote(receivedVote);
-        voteService.create(receivedVote);
-
-        persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
-
-
-    }*/
-
-   /* private Boolean validateScheduledAndsendPaymentRequest(Payment payment) throws Exception {
-
-        Order persistenOrder = payment.getOrder();
-
-        Boolean success = false;
-
-        int daysToStart = Integer.parseInt(daysToStartPayment);
-        int daysBeforeStart = Integer.parseInt(daysBeforeStartToNotification);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
-        //INSTANCIAMOS O CALENDARIO
-        Calendar c = Calendar.getInstance();
-
-        //DATA ATUAL
-        //EX.: 20/08/2017
-        Date now = c.getTime();
-
-        //PEGAMOS A DATA DE INICIO DO AGENDAMENTO DO PEDIDO
-        Date scheduleDateStart = persistenOrder.getScheduleId().getScheduleStart();
-
-
-        //--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS COBRANCAS ---//
-        //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
-        c.setTime(scheduleDateStart);
-
-        //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
-        c.add(Calendar.DATE, -daysToStart);
-
-        //DATA DO AGENDAMENTO MENOS N DIAS NO FORMADO DATE. OU SEJA, A DATA QUE DEVE INICIAR AS TENTAVIDAS DE PAGAMENTO
-        Date dateToStartPayment = c.getTime();
-
-
-        //--- CONFIGURACOES PARA DEFINIR A DATA QUE DEVEMOS INICIAR AS NOTIFICACOES AO CLIENTE CASO FALHE ---//
-        //ATRIBUIMOS A DATA DO AGENDAMENTO DO PEDIDO AO CALENDARIO
-        c.setTime(scheduleDateStart);
-
-        //VOLTAMOS N DIAS, DEFINIDO EM PROPRIEDADES, NO CALENDARIO BASEADO NA DATA DO AGENDAMENTO
-        c.add(Calendar.DATE, -daysBeforeStart);
-
-        //UM DIA ANTES PARA NOTIFICAR AO CLIENTE SE DER ERRO NA RESERVA NO CARTAO E SUGERIR TROCAR PARA DINHEIRO
-        Date dateToStartNotification = c.getTime();
-
-
-        //TODO - VERIFICAR SE E UM DIA ANTES E TENTAR ENVIAR REQUEST, SE DER ERRO, LOGAR PARA DEPOIS NOTIFICAR NO APP
-        if (sdf.format(now).equals(sdf.format(dateToStartNotification))) {
-            //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-            if (!sendPaymentRequest(payment)) {
-                //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
-                log.error("Erro ao efetuar a reserva do pagamento, sugerimos que troque o pagamento para dinheiro");
-            } else {
-                success = true;
-            }
-
-            //TODO - VERIFICAR SE E O MESMO DIA, SE DER ERRO, NOTIFICAR PARA MUDAR PARA DINHEIRO
-        } else if (sdf.format(now).equals(sdf.format(scheduleDateStart))) {
-            //TODO - URGENTE: VERIFICAR MELHORIA, POIS O ERRO AQUI PODE SER DE REDE E ETC, NAO SO DE LIMITE DO CARTAO
-            if (!sendPaymentRequest(payment)) {
-                //AQUI O GARRY DISSE QUE TROCARIAMOS, POSTERIORMENTE, PARA ALGO QUE IRA GERAR O POPUP NA TELA DO CLIENTE
-                log.error("Erro ao efetuar a reserva do pagamento, seu agendamento não poderá prosseguir até que a" +
-                        " forma de pagamento seja alterado para dinheiro");
-            } else {
-                success = true;
-            }
-
-            //TODO - URGENTE: DEVERIAMOS COBRAR SOMENTE SE FOR ATE A DATA DE AGENDAMENTO? POIS CORREMOS O RISCO DE COBRAR ALGO BEM ANTIGO
-            //SE A DATA ATUAL FOR POSTERIOR A DATA QUE DEVE INICIAR AS TENTATIVAS DE RESERVA DO PAGAMENTO, ENVIAMOS PARA PAGAMENTO
-        } else if (now.after(dateToStartPayment)) {
-            //AQUI NAO FAZEMOS NENHUMA VERIFICACAO, POIS SE DER ERRO, AINDA TEREMOS OUTROS DIAS PARA TENTAR NOVAMENTE.
-            if (sendPaymentRequest(payment)) {
-                success = true;
-            }
-
-            //TODO - VAMOS FAZER ALGO CASO NAO ESTEJA EM NEMHUMA DAS CONDICOES ACIMA?
-        } else {
-            log.error("Fora do período defenido para iniciar a reserva do valor para pagamento. ORDER ID: " + persistenOrder.getIdOrder());
-        }
-
-        return success;
-
-    }
-*/
 
     public String delete() {
         throw new UnsupportedOperationException("Nao deletaremos registros, o status dele definirá sua situação.");
@@ -672,9 +437,7 @@ public class OrderService {
                 o.setLastStatusUpdate(Calendar.getInstance().getTime());
                 orderRepository.save(o);
 
-                if (o.isCreditCard()) {
-                    balanceItemService.create(creditFromOrder(o));
-                }
+                o.getStatus().afterPersist(applicationContext, o);
             }
         }
         log.debug("{} orders foram atualizada para {}.", count, OrderStatus.AUTO_CLOSED.toString());
@@ -847,32 +610,6 @@ public class OrderService {
         }
     }
 
-    private void validateBusyScheduled2(Order order) throws ValidationException {
-
-        Date newOrderScheduleStart = order.getScheduleId().getScheduleStart();
-        newOrderScheduleStart.getTime();
-
-        ProfessionalCategory ps = order.getProfessionalCategory();
-        Professional p = ps.getProfessional();
-
-        Long idProfessional = p.getIdProfessional();
-        Date pretendedStart = order.getScheduleId().getScheduleStart();
-        //Date pretendedEnd = order.getScheduleId().getScheduleEnd();
-        /*
-        Aplico mais filtros na query e trago só as orders que interessa.
-
-		Eh sempre a melhor opcao deixar os filtros na responsabilidade do banco.
-		 */
-        List<Order> orders = orderRepository.findScheduledOrdersByProfessionalWithScheduleConflict(idProfessional, pretendedStart);
-        // A query busca tudo que esta conflitando no banco. Se houver resultado, eh pq tem conflito.
-        if (!orders.isEmpty()) {
-
-            throw new ValidationException("Ja existe agendamento marcado no horario de  " + newOrderScheduleStart.toString());
-        } else {
-            newOrderScheduleStart = order.getScheduleId().getScheduleStart();
-        }
-    }
-
     @Scheduled(cron = "${order.expired.cron}")
     public void updateStatusOpenToExpired() {
 
@@ -903,6 +640,5 @@ public class OrderService {
                 && OrderStatus.SCHEDULED.equals(receivedOrder.getStatus())) {
             throw new OrderValidationException(ResponseCode.INVALID_SCHEDULE_END, "Precisa de data final no agendamento");
         }
-
     }
 }

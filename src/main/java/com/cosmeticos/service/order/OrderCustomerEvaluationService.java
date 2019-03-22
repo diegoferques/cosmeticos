@@ -46,4 +46,9 @@ public class OrderCustomerEvaluationService implements OrderStatusHandler {
         voteService.create(receivedVote);
         persistentUser.setEvaluation(voteService.getUserEvaluation(persistentUser));
     }
+
+    @Override
+    public void onAfterOrderPesistence(Order persistentOrder) {
+        // Nada a implementar
+    }
 }

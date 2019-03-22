@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,6 +46,7 @@ public class FirebasePushNotifierService {
     private String pathToFcm = "https://fcm.googleapis.com/fcm/send";
     private String serverKey = "AIzaSyAytvPfzrG3jaNIxQPY-5dn2phBl4fz3Wg";
 
+    @Async
     public void push(Order persistentOrder) {
 
         Object requestorSessionValue = httpSession.getAttribute(Application.PRINCIPAL_EMAIL_HEADER_KEY);

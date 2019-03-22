@@ -46,6 +46,11 @@ public enum OrderStatus {
         bean.handle(transientOrder, persistentOrder);
     }
 
+    public void afterPersist(ApplicationContext applicationContext, Order persistentOrder) {
+        OrderStatusHandler bean = applicationContext.getBean(this.getValue(), beanClass);
+        bean.onAfterOrderPesistence(persistentOrder);
+    }
+
     public String getValue() {
         return value;
     }
@@ -53,7 +58,7 @@ public enum OrderStatus {
     public interface Values
     {
         /*
-        Constantes usadas para dar nomes a spring beans
+        Constantes que tambem serao usadas para dar nomes a spring beans
          */
         String OPEN_NAME = "ORDER_STATUS_OPEN";
         String SCHEDULED_NAME = "ORDER_STATUS_SCHEDULED";

@@ -14,7 +14,7 @@ import java.util.List;
 import static java.time.LocalDateTime.now;
 
 /**
- *
+ * Classe responsavel por controlar o saldo em dinheiro que o profissional tem com o ipretty.
  */
 @Service
 public class BalanceItemService {
@@ -91,7 +91,7 @@ public class BalanceItemService {
     public Long withdrawal(String email) {
         List<BalanceItem> balanceItens = findByProfessional(email);
 
-        Long balance = balanceItens.stream().mapToLong(i -> i.getValue()).sum();
+        Long balance = sum(balanceItens);
 
         BalanceItem item = new BalanceItem();
         item.setDate(Timestamp.valueOf(now()));

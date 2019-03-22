@@ -170,4 +170,9 @@ public class OrderPaymentSenderService implements OrderStatusHandler {
             }
         }
     }
+
+    @Override
+    public void onAfterOrderPesistence(Order persistentOrder) {
+        // Nada a implementar
+    }
 }
