@@ -261,7 +261,10 @@ public class OrderService {
             }
         }
 
-        receivedOrder.getStatus().handle(applicationContext, receivedOrder, persistentOrder);
+        if(receivedOrder.getStatus() != null)
+        {
+            receivedOrder.getStatus().handle(applicationContext, receivedOrder, persistentOrder);
+        }
 
         OrderStatus newStatus = persistentOrder.getStatus();
 

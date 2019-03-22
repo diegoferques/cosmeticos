@@ -13,7 +13,11 @@ import org.springframework.context.annotation.Configuration;
 public class OrderStatusNullServicesConfiguration {
 
     @Bean(name = {
-            OrderStatus.Values.INPROGRESS_NAME
+            OrderStatus.Values.INPROGRESS_NAME,
+            OrderStatus.Values.CLOSED_NAME,
+            OrderStatus.Values.EXPIRED_NAME,
+            OrderStatus.Values.EXECUTED_NAME,
+            OrderStatus.Values.CANCELLED_NAME,
     })
     public OrderStatusNullService orderStatusNullService() {
         return new OrderStatusNullService();

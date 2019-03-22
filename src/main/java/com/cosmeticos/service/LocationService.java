@@ -6,6 +6,7 @@ import com.cosmeticos.commons.google.LocationGoogle;
 import com.cosmeticos.model.Address;
 import com.cosmeticos.model.Location;
 import com.cosmeticos.repository.LocationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import static java.text.MessageFormat.format;
 /**
  * Created by matto on 10/07/2017.
  */
+@Slf4j
 @Service
 public class LocationService {
     @Autowired
@@ -96,6 +98,7 @@ public class LocationService {
             sourceLocation = new LocationGoogle();
             sourceLocation.setLat(0.0);
             sourceLocation.setLng(0.0);
+            log.warn("A fail has ocurred during geocode with google", e);
         }
 
         return sourceLocation;
