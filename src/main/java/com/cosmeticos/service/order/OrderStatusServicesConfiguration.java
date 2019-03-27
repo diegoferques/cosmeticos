@@ -2,6 +2,7 @@ package com.cosmeticos.service.order;
 
 import com.cosmeticos.model.OrderStatus;
 import com.cosmeticos.service.BalanceItemService;
+import com.cosmeticos.service.PointService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,7 +28,7 @@ public class OrderStatusServicesConfiguration {
             OrderStatus.Values.CLOSED_NAME,
             OrderStatus.Values.AUTO_CLOSED_NAME,
     })
-    public OrderStatusClosedService orderStatusClosedService(BalanceItemService balanceItemService) {
-        return new OrderStatusClosedService(balanceItemService);
+    public OrderStatusClosedService orderStatusClosedService(BalanceItemService balanceItemService, PointService pointService) {
+        return new OrderStatusClosedService(balanceItemService, pointService);
     }
 }

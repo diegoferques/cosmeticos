@@ -30,6 +30,7 @@ public enum ResponseCode {
     UNFINISHED_PAYMENT(HttpStatus.BAD_REQUEST),
     CANCELED_PAYMENT(HttpStatus.GONE),
     REFUNDED_PAYMENT(HttpStatus.GONE),
+    INVALID_POINT_USAGE(HttpStatus.BAD_REQUEST),
     INVALID_OPERATION(HttpStatus.UNAUTHORIZED);
 
     private HttpStatus httpStatus;

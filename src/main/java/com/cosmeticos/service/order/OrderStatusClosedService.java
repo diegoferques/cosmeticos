@@ -2,9 +2,10 @@ package com.cosmeticos.service.order;
 
 import com.cosmeticos.model.Order;
 import com.cosmeticos.service.BalanceItemService;
+import com.cosmeticos.service.PointService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 
@@ -16,6 +17,7 @@ import static com.cosmeticos.service.BalanceItemService.creditFromOrder;
 public class OrderStatusClosedService implements OrderStatusHandler {
 
     private final BalanceItemService balanceItemService;
+    private final PointService pointService;
 
     @Override
     public void handle(Order transientOrder, Order persistentOrder) {
@@ -25,10 +27,12 @@ public class OrderStatusClosedService implements OrderStatusHandler {
     @Override
     public void onAfterOrderPesistence(Order persistentOrder) {
 
+        // Creditos para resgate em R$ sao dados em vendas por cartao de credito, pois como essas vendas são feitas em nome da ipretty, o profissional precisa solicitar ao ipretty qye lhe devolva o R$.
         if (persistentOrder.isCreditCard()) {
             balanceItemService.create(creditFromOrder(persistentOrder));
         }
 
-        // TODO: acumular pontos ao prof e ao cliente.
+        // Incremento de pontos acontece assincronamente, independente da venda ter sido por cartao ou dinheiro.
+        new SimpleAsyncTaskExecutor().execute(() -> pointService.increase(persistentOrder));
     }
 }
