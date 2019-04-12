@@ -1,6 +1,7 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.Application;
+import com.cosmeticos.controller.CustomerControllerTests;
 import com.cosmeticos.controller.ProfessionalControllerTests;
 import com.cosmeticos.model.*;
 import com.cosmeticos.repository.PointRepository;
@@ -65,5 +66,29 @@ public class PointServiceTest {
         Point increased = pointService.increase(order);
 
         assertThat(increased.getValue()).isEqualTo(41);
+    }
+
+    @Test
+    public void testDecreasingPoints() {
+
+        PriceRule pr = new PriceRule("testWithCentsPriceIncreasingAsRoundedUpPoints", 4015);// R$ 40,15
+
+        Payment p = new Payment(Payment.Type.CC);
+        p.setPriceRule(pr);
+        Professional fakeProfessional = ProfessionalControllerTests.createFakeProfessional();
+        fakeProfessional.getUser().setIdLogin(12345670000000L);
+        Category fakeCategory = new Category();
+
+        Order order = new Order();
+
+        addAll(order.getPaymentCollection(), p);
+        order.setProfessionalCategory(new ProfessionalCategory(fakeProfessional, fakeCategory));
+
+        // Neste ponto, o usuario possui 41 pontos (R$ 40,15 eh arredondado pra R$ 41,00).
+        pointService.increase(order);
+
+        Long remainingBalance = pointService.decrease(fakeProfessional.getUser(), 5L);
+
+        assertThat(remainingBalance).isEqualTo(36);
     }
 }

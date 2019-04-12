@@ -434,7 +434,6 @@ public class CustomerControllerTests {
 		c1.setDateRegister(Calendar.getInstance().getTime());
 		c1.setGenre('M');
 		c1.setNameCustomer(String.valueOf(System.nanoTime()));
-		//nonCreditCardCustomer.setOrderCollection(null);
 		c1.setStatus(Customer.Status.ACTIVE.ordinal());
 		c1.setAddress(createFakeAddress(c1));
 		c1.setUser(createFakeLogin(c1));

@@ -2,6 +2,7 @@ package com.cosmeticos.service;
 
 import com.cosmeticos.model.Order;
 import com.cosmeticos.model.Point;
+import com.cosmeticos.model.User;
 import com.cosmeticos.repository.PointRepository;
 import com.cosmeticos.service.point.PointNormalizer;
 import com.cosmeticos.validation.OrderValidationException;
@@ -51,16 +52,23 @@ public class PointService {
 
         Long normalizedPoints = pointNormalizer.normalize(value);
 
-        return create(fromOrder(order, normalizedPoints));
+        return create(build(order, normalizedPoints));
     }
 
     /**
-     * O resgate eh sempre total. O que o profissional tiver na conta sera transferido na sua totalidade.
-     *
-     * @return The full balance withdrawaled
+     * @return The remaining balance after decreasing.
      */
-    public Long decrease(Point decreasedPoint) {
-        List<Point> balanceItens = findByUser(decreasedPoint.getUserId());
+    public Long decrease(User user, Long value) {
+
+        if(value <= 0 )
+            throw new IllegalArgumentException("value must be positive greater than zero.");
+
+        // Negativando para fazer o decremento
+        Long decreasingValue = value * -1;
+
+        List<Point> balanceItens = findByUser(user.getIdLogin());
+
+        Point decreasedPoint = build(user, decreasingValue);
 
         // Junta os pontos q serao retirados à lista para q seja realizado o somatorio
         balanceItens.add(decreasedPoint);
@@ -80,20 +88,25 @@ public class PointService {
         }
     }
 
-    private Point fromOrder(Order order, Long value) {
-
-        Point item = new Point();
-        item.setDescription(String.format("%s %s", order.getClass().getSimpleName(), String.valueOf(order.getStatus())));
-        item.setOrderId(order.getIdOrder());
-        item.setDate(Timestamp.valueOf(now()));
-        item.setUserId(order
+    private Point build(Order order, Long value) {
+        Point item = build(
+                order
                 .getProfessionalCategory()
                 .getProfessional()
-                .getUser()
-                .getIdLogin()
+                .getUser(),
+                value
         );
-        item.setValue(value);
+        item.setOrderId(order.getIdOrder());
+        item.setDescription(String.format("%s %s", order.getClass().getSimpleName(), String.valueOf(order.getStatus())));
+        return item;
+    }
 
+    private Point build(User user, Long value) {
+        Point item = new Point();
+        item.setUserId(user.getIdLogin());
+        item.setValue(value);
+        item.setDescription(String.format("Adding %s points", value));
+        item.setDate(Timestamp.valueOf(now()));
         return item;
     }
 
@@ -111,13 +124,4 @@ public class PointService {
     private Point create(Point point) {
         return repository.save(point);
     }
-
-   /* public List<Point> listBy(Point point) {
-        return repository.findAll(Example.of(point));
-    }
-
-    public List<Point> listAll() {
-        return repository.findAll();
-    }*/
-
 }
