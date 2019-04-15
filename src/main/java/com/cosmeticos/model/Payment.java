@@ -165,6 +165,11 @@ public class Payment implements Serializable {
 		this.type = type;
 	}
 
+	public Payment(Type type, PriceRule priceRule) {
+		this.type = type;
+		this.priceRule = priceRule;
+	}
+
 	public String getLastCardDigits() {
 		if(creditCard == null || creditCard.getNumber() == null || creditCard.getNumber().isEmpty())
 			return "";

@@ -38,11 +38,12 @@ public class PointService {
     private PointNormalizer pointNormalizer;
 
     /**
+     * Incrementamos os pontos do profissional e do cliente associados a Order informada.
      * Criamos assincronamente pois eventuais falhas neste procedimento nao podem impactar na execucao da transacao, entretanto devem ser logadas.
      *
      * @return
      */
-    public Point increase(Order order) {
+    public void increase(Order order) {
         Long value = order.getPaymentCollection()
                 .stream()
                 .findFirst()
@@ -52,7 +53,27 @@ public class PointService {
 
         Long normalizedPoints = pointNormalizer.normalize(value);
 
-        return create(build(order, normalizedPoints));
+        String description = String.format("Adding %d points, orderStatus: %s", normalizedPoints, order.getStatus());
+        User professsionalUser = order.getProfessionalCategory().getProfessional().getUser();
+        User customerUser = order.getIdCustomer().getUser();
+
+
+        Point professionalPoint = new Point();
+        professionalPoint.setUserId(professsionalUser.getIdLogin());
+        professionalPoint.setValue(normalizedPoints);
+        professionalPoint.setDate(Timestamp.valueOf(now()));
+        professionalPoint.setOrderId(order.getIdOrder());
+        professionalPoint.setDescription(description);
+        create(professionalPoint);
+
+
+        Point customerPoint = new Point();
+        customerPoint.setUserId(customerUser.getIdLogin());
+        customerPoint.setValue(normalizedPoints);
+        customerPoint.setDate(Timestamp.valueOf(now()));
+        customerPoint.setOrderId(order.getIdOrder());
+        customerPoint.setDescription(description);
+        create(customerPoint);
     }
 
     /**
@@ -68,10 +89,15 @@ public class PointService {
 
         List<Point> balanceItens = findByUser(user.getIdLogin());
 
-        Point decreasedPoint = build(user, decreasingValue);
+        Point negativePoints = new Point();
+        negativePoints.setUserId(user.getIdLogin());
+        negativePoints.setValue(decreasingValue);
+        negativePoints.setDate(Timestamp.valueOf(now()));
+        negativePoints.setOrderId(null);
+        negativePoints.setDescription(String.format("Decreasing %d points.", decreasingValue));
 
         // Junta os pontos q serao retirados à lista para q seja realizado o somatorio
-        balanceItens.add(decreasedPoint);
+        balanceItens.add(negativePoints);
 
         Long balance = sum(balanceItens);
 
@@ -80,34 +106,12 @@ public class PointService {
             Nao permitimos que o saldo de pontos seja negativo. A app cliente deve conhecer o saldo do usuario e pedir
             que estejam dentro do saldo de pontos do usuario.
              */
-            throw new OrderValidationException(INVALID_POINT_USAGE, "Nao eh possivel usar " + decreasedPoint.getValue() + " pontos, pois o saldo atual eh: " + balance);
+            throw new OrderValidationException(INVALID_POINT_USAGE, "Nao eh possivel usar " + negativePoints.getValue() + " pontos, pois o saldo atual eh: " + balance);
         } else {
-            create(decreasedPoint);
+            create(negativePoints);
 
             return balance;
         }
-    }
-
-    private Point build(Order order, Long value) {
-        Point item = build(
-                order
-                .getProfessionalCategory()
-                .getProfessional()
-                .getUser(),
-                value
-        );
-        item.setOrderId(order.getIdOrder());
-        item.setDescription(String.format("%s %s", order.getClass().getSimpleName(), String.valueOf(order.getStatus())));
-        return item;
-    }
-
-    private Point build(User user, Long value) {
-        Point item = new Point();
-        item.setUserId(user.getIdLogin());
-        item.setValue(value);
-        item.setDescription(String.format("Adding %s points", value));
-        item.setDate(Timestamp.valueOf(now()));
-        return item;
     }
 
     public List<Point> findByUser(Long userId) {

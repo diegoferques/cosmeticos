@@ -1,8 +1,9 @@
 package com.cosmeticos.service;
 
 import com.cosmeticos.Application;
-import com.cosmeticos.model.Order;
-import com.cosmeticos.model.OrderStatus;
+import com.cosmeticos.controller.CustomerControllerTests;
+import com.cosmeticos.controller.ProfessionalControllerTests;
+import com.cosmeticos.model.*;
 import com.cosmeticos.service.order.OrderStatusValidator;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.lang.Exception;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -164,6 +167,23 @@ public class OrderTest {
 		} catch (Exception e) {
 			Assert.assertTrue(e instanceof IllegalStateException);
 		}
+	}
+
+
+	public static Order buildFakeOrder() {
+
+		Customer fakeCustomer = CustomerControllerTests.createFakeCustomer();
+		fakeCustomer.getUser().setIdLogin(System.nanoTime());
+
+		Professional fakeProfessional = ProfessionalControllerTests.createFakeProfessional();
+		fakeProfessional.getUser().setIdLogin(System.nanoTime());
+
+		Category fakeCategory = new Category();
+
+		Order order = new Order();
+		order.setIdCustomer(fakeCustomer);
+		order.setProfessionalCategory(new ProfessionalCategory(fakeProfessional, fakeCategory));
+		return order;
 	}
 
 }
