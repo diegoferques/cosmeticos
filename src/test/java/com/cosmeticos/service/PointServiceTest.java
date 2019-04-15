@@ -100,7 +100,7 @@ public class PointServiceTest {
     }
 
     @Test
-    public void testCustomerDecreasingPoints() {
+    public void testProfessionalDecreasingPoints() {
 
         Payment p = new Payment(Payment.Type.CC, new PriceRule(testName.getMethodName(), 4015));// R$ 40,15
 
@@ -123,7 +123,7 @@ public class PointServiceTest {
     }
 
     @Test
-    public void testProfessionalDecreasingPoints() {
+    public void testCustomerDecreasingPoints() {
 
         Payment p = new Payment(Payment.Type.CC, new PriceRule(testName.getMethodName(), 4015));// R$ 40,15
 
