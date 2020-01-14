@@ -39,3 +39,25 @@ Projeto sem nome definido, estamos aguardando o cliente.
 
 # Endpoints REST
 - professionalcategory/search: utiliza o termo de busca (query) para filtrar 3 dados: nome da categoria, nome da regra de preco e nome do profissional. Vide ProfessionalCategoryRepository. Como a propria query determina, apenas categorias que possuam tabela de preço e associadas a profissionais serao retornadas. 
+
+
+# Migração de um repositorio para outro
+git init
+git remote add origin https://github.com/garrydias/ipretty.git 
+git status
+git pull
+git pull origin master
+git checkout dev
+git remote add garry https://github.com/garrydias/ipretty.git
+git push garry '*:*'
+git checkout master
+git pull
+git push -f garry '*:*'
+git fetch origin
+git branch -l
+for remote in `git branch -r`; do git branch --track ${remote#origin/} $remote; done
+git branch -l
+git fetch --all
+git pull --all
+git branch -l
+git push -f garry '*:*'
