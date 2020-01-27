@@ -154,6 +154,12 @@ public class CategoryController {
         }
     }
 
+
+
+
+
+
+
     private CategoryResponseBody buildErrorResponse(BindingResult bindingResult) {
         List<String> errors = bindingResult.getFieldErrors()
                 .stream()

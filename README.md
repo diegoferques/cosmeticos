@@ -40,6 +40,11 @@ Projeto sem nome definido, estamos aguardando o cliente.
 # Endpoints REST
 - professionalcategory/search: utiliza o termo de busca (query) para filtrar 3 dados: nome da categoria, nome da regra de preco e nome do profissional. Vide ProfessionalCategoryRepository. Como a propria query determina, apenas categorias que possuam tabela de preço e associadas a profissionais serao retornadas. 
 
+# Troubleshooting
+## REST endpoints
+1- Check http status 
+2- Response body description
+3- Read backend server log files. Run deploydir aliased command to be moved into log directory. Logs are currently in nohup.out directory
 
 # Migração de um repositorio para outro
 git init
@@ -61,3 +66,5 @@ git fetch --all
 git pull --all
 git branch -l
 git push -f garry '*:*'
+
+
