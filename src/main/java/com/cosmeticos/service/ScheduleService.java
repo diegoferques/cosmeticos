@@ -19,14 +19,14 @@ public class ScheduleService {
 
     public Schedule update(ScheduleRequestBody request)
     {
-        Schedule schedule = repository.findOne(request.getIdSchedule());
+        Schedule schedule = repository.findById(request.getIdSchedule()).get();
         schedule.setScheduleStart(request.getScheduleStart());
         return repository.save(schedule);
     }
 
     public Optional<Schedule> find(Long id)
     {
-        return Optional.of(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public void delete()

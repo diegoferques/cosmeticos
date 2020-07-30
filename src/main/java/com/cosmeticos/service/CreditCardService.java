@@ -34,7 +34,7 @@ public class CreditCardService {
 
     public List<CreditCard> findAll() {
 
-        User u = userRepository.findOne(1L);
+        User u = userRepository.findById(1L).get();
 
         //Iterable<CreditCard> result = repository.findAll();
         List<CreditCard> savedOrders = repository.findByUserEmail(u.getEmail());
@@ -58,7 +58,7 @@ public class CreditCardService {
 
     public CreditCard create(CreditCard creditCard) {
 
-        Optional<User> persistentUserOptional = Optional.ofNullable(userRepository.findOne(creditCard.getUser().getIdLogin()));
+        Optional<User> persistentUserOptional = (userRepository.findById(creditCard.getUser().getIdLogin()));
 
         if (persistentUserOptional.isPresent()) {
             User persistentUser = persistentUserOptional.get();
@@ -88,7 +88,7 @@ public class CreditCardService {
 
     public CreditCard update(CreditCard creditCardFromRequest) {
 
-        Optional<CreditCard> persistentCreditCardOptional = Optional.ofNullable(repository.findOne(creditCardFromRequest.getIdCreditCard()));
+        Optional<CreditCard> persistentCreditCardOptional = (repository.findById(creditCardFromRequest.getIdCreditCard()));
 
         if (persistentCreditCardOptional.isPresent()) {
 

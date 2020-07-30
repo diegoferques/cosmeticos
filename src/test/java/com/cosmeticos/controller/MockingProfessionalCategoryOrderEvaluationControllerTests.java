@@ -269,7 +269,7 @@ public class MockingProfessionalCategoryOrderEvaluationControllerTests {
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateReady2Charger.getStatusCode());
 
 
-        Order orderUpdateReady2Charger =  orderRepository.findOne(orderUpdateSemiClosed.getIdOrder());
+        Order orderUpdateReady2Charger =  orderRepository.findById(orderUpdateSemiClosed.getIdOrder()).get();
 
         // Cliente manda READY2CHARGE e servidor realiza o pagamento e retorna CLOSED
         // fev 2019: Este teste falha pq a aplciacao esta considerando PAGO_E_CAPTURADO como erro. Na vdd devemos aceitar esse status e simplesmente nao fazer o capture.

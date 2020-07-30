@@ -62,7 +62,7 @@ public class OrderService {
     private ApplicationContext applicationContext;
 
     public Optional<Order> find(Long idOrder) {
-        return Optional.of(orderRepository.findOne(idOrder));
+        return (orderRepository.findById(idOrder));
     }
 
     public Order create(Order receivedOrder) throws OrderValidationException {
@@ -79,13 +79,13 @@ public class OrderService {
              * nao vir preenchidos ou preenchidos de qualquer forma so pra nao ser barrado
              * pelo @Valid, portanto devemos buscar o objeto real no banco.
              */
-        Customer persistentCustomer = customerResponsitory.findOne(receivedOrder.getIdCustomer().getIdCustomer());
+        Customer persistentCustomer = customerResponsitory.findById(receivedOrder.getIdCustomer().getIdCustomer()).get();
 
         Long receivedProfessionalCategoryId =
                 receivedOrder.getProfessionalCategory().getProfessionalCategoryId();
 
         ProfessionalCategory persistentProfessionalCategory =
-                professionalCategoryRepository.findOne(receivedProfessionalCategoryId);
+                professionalCategoryRepository.findById(receivedProfessionalCategoryId).get();
 
         /********************************************************/
         /*****   VALIDACOES    **********************************/
@@ -166,7 +166,7 @@ public class OrderService {
 
         paymentRepository.save(validatedPayment);// Pra ver se grava o pricerule pq nao esta salvando.
 
-        org.apache.log4j.MDC.put("idOrder", newOrder.getIdOrder());
+        MDC.put("idOrder", newOrder.getIdOrder().toString());
 
         // Buscando se o customer que chegou no request esta na wallet
         addInWallet(persistentProfessionalCategory.getProfessional(), persistentCustomer);
@@ -178,7 +178,7 @@ public class OrderService {
 
     public Order update(Order receivedOrder) throws Exception {
 
-        Order persistentOrder = orderRepository.findOne(receivedOrder.getIdOrder());
+        Order persistentOrder = orderRepository.findById(receivedOrder.getIdOrder()).get();
 
         OrderStatus previousOrderStatus = persistentOrder.getStatus();
 
@@ -303,7 +303,7 @@ public class OrderService {
         if (chosenPriceRule == null) {
             throw new OrderValidationException(ResponseCode.INVALID_PAYMENT_CONFIGURATION, "Regra de preco nao foi enviada pelo cliente");
         } else {
-            chosenPriceRule = priceRuleRepository.findOne(chosenPriceRule.getId());
+            chosenPriceRule = priceRuleRepository.findById(chosenPriceRule.getId()).get();
 
             /**
              * Buscamos o pricerule no banco pq o q chega no request é so o ID.
@@ -385,7 +385,7 @@ public class OrderService {
     }
 
     public void abort(Order order) {
-        Order o = orderRepository.findOne(order.getIdOrder());
+        Order o = orderRepository.findById(order.getIdOrder()).get();
 
         penaltyService.apply(o.getIdCustomer().getUser(), com.cosmeticos.penalty.PenaltyType.Value.NONE);
     }
@@ -461,7 +461,7 @@ public class OrderService {
         } else {
             Long idProfessionalCategory = receivedOrder.getProfessionalCategory().getProfessionalCategoryId();
 
-            ProfessionalCategory professionalCategory = professionalCategoryRepository.findOne(idProfessionalCategory);
+            ProfessionalCategory professionalCategory = professionalCategoryRepository.findById(idProfessionalCategory).get();
 
             Professional professional = professionalCategory.getProfessional();
 
@@ -485,7 +485,7 @@ public class OrderService {
 
         MDC.put("idOrder", String.valueOf(idOrder));
 
-        Order persistentOrder = orderRepository.findOne(idOrder);
+        Order persistentOrder = orderRepository.findById(idOrder).get();
 
         Professional professional;
         ProfessionalCategory professionalCategory = receivedOrder.getProfessionalCategory();

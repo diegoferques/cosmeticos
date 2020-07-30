@@ -34,7 +34,7 @@ public class CategoryService {
         // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdCategory = categoryFromRequest.getIdCategory();
 
-        Optional<Category> optional = Optional.ofNullable(repository.findOne(requestedIdCategory));
+        Optional<Category> optional = (repository.findById(requestedIdCategory));
 
         if (optional.isPresent()) {
             Category persistentCategory = optional.get();
@@ -49,7 +49,7 @@ public class CategoryService {
     }
 
     public Optional<Category> find(Long id){
-        return Optional.ofNullable(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public void deletar(){

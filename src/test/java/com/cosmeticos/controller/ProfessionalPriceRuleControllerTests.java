@@ -136,7 +136,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals(1, persistentProfessional.getProfessionalCategoryCollection()
                 .stream()
@@ -200,7 +200,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals(1, persistentProfessional.getProfessionalCategoryCollection()
                 .stream()
@@ -249,7 +249,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
         Set<ProfessionalCategory> profCategList2 = persistentProfessional.getProfessionalCategoryCollection();
 
         // Escolhemos o primeiro cara so por escolher. Podia sser qq um.
@@ -286,7 +286,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
 
-        Professional persistentProfessional2 = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional2 = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals(1, persistentProfessional2.getProfessionalCategoryCollection()
                 .stream()
@@ -334,7 +334,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
         Set<ProfessionalCategory> profCategList2 = persistentProfessional.getProfessionalCategoryCollection();
 
         // Escolhemos o primeiro cara so por escolher. Podia sser qq um.
@@ -380,7 +380,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
 
-        Professional persistentProfessional2 = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional2 = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals("Não foi adicionado pricerule, como esparado", 2, persistentProfessional2.getProfessionalCategoryCollection()
                 .stream()
@@ -430,7 +430,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
         Set<ProfessionalCategory> profCategList2 = persistentProfessional.getProfessionalCategoryCollection();
 
         // Escolhemos o primeiro cara so por escolher. Podia sser qq um.
@@ -477,7 +477,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
 
-        Professional persistentProfessional2 = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional2 = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals("Não foi adicionado pricerule, como esparado", 2, persistentProfessional2.getProfessionalCategoryCollection()
                 .stream()
@@ -519,7 +519,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate3);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate3.getStatusCode());
 
-        Professional persistentProfessional3 = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional3 = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Set<ProfessionalCategory> professionalCategories3 = persistentProfessional3.getProfessionalCategoryCollection();
         ProfessionalCategory professionalCategory3 = professionalCategories3.stream()
@@ -585,7 +585,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
         Set<ProfessionalCategory> profCategList2 = persistentProfessional.getProfessionalCategoryCollection();
 
         // Escolhemos o primeiro cara so por escolher. Podia sser qq um.
@@ -632,7 +632,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate2);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate2.getStatusCode());
 
-        Professional persistentProfessional2 = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional2 = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals("Não foi adicionado pricerule, como esparado", 2, persistentProfessional2.getProfessionalCategoryCollection()
                 .stream()
@@ -667,7 +667,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate3);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate3.getStatusCode());
 
-        Professional persistentProfessional3 = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional3 = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Set<ProfessionalCategory> professionalCategories3 = persistentProfessional3.getProfessionalCategoryCollection();
         ProfessionalCategory professionalCategory3 = professionalCategories3.stream()
@@ -786,7 +786,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdate.getStatusCode());
 
-        Professional persistentProfessional = professionalRepository.findOne(professional.getIdProfessional());
+        Professional persistentProfessional = professionalRepository.findById(professional.getIdProfessional()).get();
 
         Assert.assertEquals(1, persistentProfessional.getProfessionalCategoryCollection()
                 .stream()
@@ -844,7 +844,7 @@ public class ProfessionalPriceRuleControllerTests {
         Assert.assertNotNull(exchangeUpdate);
         Assert.assertEquals(HttpStatus.OK, exchangeUpdateRule.getStatusCode());
 
-        Professional persistentProfessional2 = professionalRepository.findOne(professional2.getIdProfessional());
+        Professional persistentProfessional2 = professionalRepository.findById(professional2.getIdProfessional()).get();
 
         Assert.assertEquals(1, persistentProfessional2.getProfessionalCategoryCollection()
                 .stream()

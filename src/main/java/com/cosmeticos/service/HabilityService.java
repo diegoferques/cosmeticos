@@ -22,7 +22,7 @@ public class HabilityService {
     private HabilityRepository repository;
 
     public Optional<Hability> find(Long id) {
-        return Optional.ofNullable(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public Hability create(Hability newHAbility) {
@@ -42,7 +42,7 @@ public class HabilityService {
     public Optional<Hability> update(HabilityRequestBody request) {
         Hability incomingHability = request.getHability();
 
-        Optional<Hability> optional = Optional.ofNullable(repository.findOne(incomingHability.getId()));
+        Optional<Hability> optional = (repository.findById(incomingHability.getId()));
 
         if(optional.isPresent()) {
 

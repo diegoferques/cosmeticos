@@ -66,7 +66,7 @@ public class ProfessionalRepositoryTests {
 
         id = p1.getIdProfessional();
 
-        Professional customer = repository.findOne(id);
+        Professional customer = repository.findById(id).get();
 
         Assert.assertNotNull(customer);
 
@@ -78,8 +78,8 @@ public class ProfessionalRepositoryTests {
     @Test
     public void testWalletIncresing()
     {
-        Customer c1 = customerRepository.findOne(1L);
-        Customer c2 = customerRepository.findOne(2L);
+        Customer c1 = customerRepository.findById(1L).get();
+        Customer c2 = customerRepository.findById(2L).get();
 
         Wallet cw1 = new Wallet();
         cw1.getCustomers().add(c1);

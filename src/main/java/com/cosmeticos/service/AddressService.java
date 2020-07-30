@@ -78,7 +78,7 @@ return address;
 
     public void updateGeocodeFromProfessionalUpdate(Professional professionalRequest) {
 
-        Optional<Professional> professionalOptional = Optional.ofNullable(professionalRepository.findOne(professionalRequest.getIdProfessional()));
+        Optional<Professional> professionalOptional = (professionalRepository.findById(professionalRequest.getIdProfessional()));
         Address address = professionalOptional.get().getAddress();
         //Address address = professionalRequest.getAddress();
 

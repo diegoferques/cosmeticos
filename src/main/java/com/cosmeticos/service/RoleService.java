@@ -30,7 +30,7 @@ public class RoleService {
         // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdRole = roleFromRequest.getIdRole();
 
-        Optional<Role> optional = Optional.ofNullable(repository.findOne(requestedIdRole));
+        Optional<Role> optional = (repository.findById(requestedIdRole));
 
         if (optional.isPresent()) {
             Role persistentRole = optional.get();
@@ -45,7 +45,7 @@ public class RoleService {
     }
 
     public Optional<Role> find(Long id) {
-        return Optional.ofNullable(repository.findOne(id));
+        return (repository.findById(id));
     }
 
     public void delete() {

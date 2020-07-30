@@ -27,14 +27,14 @@ public class ImageService {
     }
 
     public Optional<Image> find(Long id){
-        return Optional.ofNullable(imageRepository.findOne(id));
+        return (imageRepository.findById(id));
     }
 
     public void delete(Long id) {
 
-        Image i = imageRepository.findOne(id);
+        Image i = imageRepository.findById(id).get();
 
-        User user = userRepository.findOne(i.getUser().getIdLogin());
+        User user = userRepository.findById(i.getUser().getIdLogin()).get();
 
         if(user != null ) {
 

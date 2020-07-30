@@ -56,7 +56,7 @@ public class ExceptionService {
         // TODO ver possibilidade de usar VO pq para update, o ID deve ser obrigatorio.
         Long requestedIdException = exceptionFromRequest.getId();
 
-        Optional<Exception> optional = Optional.ofNullable(exceptionRepository.findOne(requestedIdException));
+        Optional<Exception> optional = (exceptionRepository.findById(requestedIdException));
 
         if (optional.isPresent()) {
             Exception persistentException = optional.get();

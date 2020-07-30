@@ -23,7 +23,7 @@ public class VoteService {
     }
 
     public Optional<Vote> find(Long id){
-        return Optional.ofNullable(voteRepository.findOne(id));
+        return (voteRepository.findById(id));
     }
 
     public List<Vote> findAllByUser(User user){

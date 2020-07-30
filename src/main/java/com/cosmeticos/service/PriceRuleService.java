@@ -18,17 +18,17 @@ public class PriceRuleService {
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     public Optional<PriceRule> find(Long id){
-        return Optional.ofNullable(priceRuleRepository.findOne(id));
+        return (priceRuleRepository.findById(id));
     }
 
     public void delete(Long id) {
 
-        PriceRule i = priceRuleRepository.findOne(id);
+        PriceRule i = priceRuleRepository.findById(id).get();
 
         ProfessionalCategory professionalCategory =
-                professionalCategoryRepository.findOne(
+                professionalCategoryRepository.findById(
                         i.getProfessionalCategory().getProfessionalCategoryId()
-                );
+                ).get();
 
         if(professionalCategory != null ) {
 

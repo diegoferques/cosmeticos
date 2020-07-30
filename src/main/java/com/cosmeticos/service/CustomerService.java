@@ -29,7 +29,7 @@ public class CustomerService {
     private AddressService addressService;
 
     public Optional<Customer> find(Long idCustomer) {
-        return Optional.of(repository.findOne(idCustomer));
+        return (repository.findById(idCustomer));
     }
 
     public List<Customer> findBy(Customer probe) {
@@ -82,7 +82,7 @@ public class CustomerService {
 
 
     public Customer update(Customer receivedCustomer) {
-        Customer persistentCustomer = repository.findOne(receivedCustomer.getIdCustomer());
+        Customer persistentCustomer = repository.findById(receivedCustomer.getIdCustomer()).get();
 
         if(!StringUtils.isEmpty(receivedCustomer.getBirthDate())) {
             persistentCustomer.setBirthDate(receivedCustomer.getBirthDate());
