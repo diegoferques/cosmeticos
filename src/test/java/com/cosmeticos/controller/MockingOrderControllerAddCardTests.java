@@ -8,7 +8,7 @@ import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
 import com.cosmeticos.payment.Charger;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.SuperpayOneClickPaymentService;
+import com.cosmeticos.service.CieloOneClickPaymentService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class MockingOrderControllerAddCardTests {
     private TestRestTemplate testRestTemplate;
 
     @MockBean
-    SuperpayOneClickPaymentService oneClickPaymentService;
+    CieloOneClickPaymentService oneClickPaymentService;
 
     @Autowired
     private CustomerRepository customerRepository;

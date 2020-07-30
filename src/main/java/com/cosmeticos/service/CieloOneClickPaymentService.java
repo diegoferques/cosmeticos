@@ -148,6 +148,16 @@ public class CieloOneClickPaymentService implements Charger{
         }
     }
 
+    @Override
+    public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public ChargeResponse<Object> getStatus(ChargeRequest<Payment> chargeRequest) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
     private ChargeResponse<Object> buildResponse(AuthorizeAndTokenResponse result) {
 
         Integer cieloPaymentStatus = result.getPayment().getStatus();
@@ -173,16 +183,6 @@ public class CieloOneClickPaymentService implements Charger{
         } else {
             throw new OrderValidationException(ResponseCode.GATEWAY_FAILURE, "Gateway respondeu com status  de erro");
         }
-    }
-
-    @Override
-    public ChargeResponse<Object> capture(ChargeRequest<Payment> chargeRequest) {
-        throw new UnsupportedOperationException("Not yet implemented.");
-    }
-
-    @Override
-    public ChargeResponse<Object> getStatus(ChargeRequest<Payment> chargeRequest) {
-        throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     // TODO avaliar se as classes concretas realmente devem implementar isso pra expor ou se isso fica de reposabilidade de cada classe concreta.

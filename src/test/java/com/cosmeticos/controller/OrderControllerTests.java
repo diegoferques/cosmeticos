@@ -5,9 +5,9 @@ import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.commons.ResponseCode;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
+//import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.*;
-import com.cosmeticos.service.MulticlickPaymentService;
+import com.cosmeticos.service.CieloOneClickPaymentService;
 import com.cosmeticos.service.VoteService;
 import com.cosmeticos.service.order.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
@@ -82,7 +81,7 @@ public class OrderControllerTests {
      * Apesar de nao ser uma classe de teste mocking, precisamos mocar a ida ao superpay,.
      */
     @MockBean
-    private MulticlickPaymentService paymentService;
+    private CieloOneClickPaymentService paymentService;
 
     @Before
     public void setup() throws ParseException, JsonProcessingException {
@@ -107,19 +106,17 @@ public class OrderControllerTests {
         ///////////////////////////////////////////////////////////////////////
         ///////// Mocando chamadas a consulta transacao ///////////////////////
         ///////////////////////////////////////////////////////////////////////
-        RetornoTransacao fakeRetornoTransacao = new RetornoTransacao();
-        fakeRetornoTransacao.setStatusTransacao(1);// TODO: Transformar esse 1 em um enum de status
+//        RetornoTransacao fakeRetornoTransacao = new RetornoTransacao();
+//        fakeRetornoTransacao.setStatusTransacao(1);// TODO: Transformar esse 1 em um enum de status
+//
+//        ResponseEntity<RetornoTransacao> mockedResponse = new ResponseEntity<RetornoTransacao>(
+//                fakeRetornoTransacao,
+//                HttpStatus.OK
+//        ) ;
 
-        ResponseEntity<RetornoTransacao> mockedResponse = new ResponseEntity<RetornoTransacao>(
-                fakeRetornoTransacao,
-                HttpStatus.OK
-        ) ;
         Mockito.when(
-                paymentService.doConsultaTransacao(
-                        Mockito.anyObject(),
-                        Mockito.anyObject(),
-                        Mockito.anyObject())
-        ).thenReturn(mockedResponse);
+                paymentService.getStatus(Mockito.anyObject())
+        ).thenReturn(new ChargeResponse<>(new Object()));
 
         ////////////////////////////////////////////////////////////////////////////
         ///////// Mocando Update Payment OrderStatus, que ainda nao foi implementado  ///
@@ -1885,26 +1882,27 @@ public class OrderControllerTests {
     }
 
     private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {
-        RetornoTransacao retornoTransacao = new RetornoTransacao();
-        retornoTransacao.setNumeroTransacao(3);
-        retornoTransacao.setCodigoEstabelecimento("1501698887865");
-        retornoTransacao.setCodigoFormaPagamento(170);
-        retornoTransacao.setValor(100);
-        retornoTransacao.setValorDesconto(0);
-        retornoTransacao.setParcelas(1);
-        retornoTransacao.setStatusTransacao(statusTransacao);
-        retornoTransacao.setAutorizacao("20170808124436912");
-        retornoTransacao.setCodigoTransacaoOperadora("0");
-        retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
-        retornoTransacao.setNumeroComprovanteVenda("0808124434526");
-        retornoTransacao.setNsu("4436912");
-        retornoTransacao.setUrlPagamento("1502206705884f8a21ff8-db8f-4c7d-a779-8f35f35cfd71");
-
-        List<String> cartaoUtilizado = new ArrayList<>();
-        cartaoUtilizado.add("000000******0001");
-        retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
-
-        return new ChargeResponse(retornoTransacao);
+//        RetornoTransacao retornoTransacao = new RetornoTransacao();
+//        retornoTransacao.setNumeroTransacao(3);
+//        retornoTransacao.setCodigoEstabelecimento("1501698887865");
+//        retornoTransacao.setCodigoFormaPagamento(170);
+//        retornoTransacao.setValor(100);
+//        retornoTransacao.setValorDesconto(0);
+//        retornoTransacao.setParcelas(1);
+//        retornoTransacao.setStatusTransacao(statusTransacao);
+//        retornoTransacao.setAutorizacao("20170808124436912");
+//        retornoTransacao.setCodigoTransacaoOperadora("0");
+//        retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
+//        retornoTransacao.setNumeroComprovanteVenda("0808124434526");
+//        retornoTransacao.setNsu("4436912");
+//        retornoTransacao.setUrlPagamento("1502206705884f8a21ff8-db8f-4c7d-a779-8f35f35cfd71");
+//
+//        List<String> cartaoUtilizado = new ArrayList<>();
+//        cartaoUtilizado.add("000000******0001");
+//        retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
+//
+//        return new ChargeResponse(retornoTransacao);
+        return new ChargeResponse(new Object());
 
     }
 

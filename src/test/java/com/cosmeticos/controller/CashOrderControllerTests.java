@@ -4,12 +4,12 @@ import com.cosmeticos.Application;
 import com.cosmeticos.commons.OrderResponseBody;
 import com.cosmeticos.model.*;
 import com.cosmeticos.payment.ChargeResponse;
-import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
+//import com.cosmeticos.payment.superpay.client.rest.model.RetornoTransacao;
 import com.cosmeticos.repository.CategoryRepository;
 import com.cosmeticos.repository.CustomerRepository;
 import com.cosmeticos.repository.ProfessionalCategoryRepository;
 import com.cosmeticos.repository.ProfessionalRepository;
-import com.cosmeticos.service.MulticlickPaymentService;
+import com.cosmeticos.service.CieloOneClickPaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class CashOrderControllerTests {
     private ProfessionalCategoryRepository professionalCategoryRepository;
 
     @MockBean
-    private MulticlickPaymentService paymentService;
+    private CieloOneClickPaymentService paymentService;
 
     @Test
     public void testReady2ChargeToSemiClosed() throws URISyntaxException, ParseException, JsonProcessingException {
@@ -255,27 +255,29 @@ public class CashOrderControllerTests {
 
 
     private ChargeResponse<Object> getOptionalFakeRetornoTransacao(int statusTransacao) {
-        RetornoTransacao retornoTransacao = new RetornoTransacao();
-        retornoTransacao.setNumeroTransacao(3);
-        retornoTransacao.setCodigoEstabelecimento("1501698887865");
-        retornoTransacao.setCodigoFormaPagamento(170);
-        retornoTransacao.setValor(100);
-        retornoTransacao.setValorDesconto(0);
-        retornoTransacao.setParcelas(1);
-        retornoTransacao.setStatusTransacao(statusTransacao);
-        retornoTransacao.setAutorizacao("20170808124436912");
-        retornoTransacao.setCodigoTransacaoOperadora("0");
-        retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
-        retornoTransacao.setNumeroComprovanteVenda("0808124434526");
-        retornoTransacao.setNsu("4436912");
-        retornoTransacao.setUrlPagamento("1502206705884f8a21ff8-db8f-4c7d-a779-8f35f35cfd71");
 
-        List<String> cartaoUtilizado = new ArrayList<>();
-        cartaoUtilizado.add("000000******0001");
-        retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
-
-        return new ChargeResponse(retornoTransacao);
-
+        // TODO: migrar cielo
+        //        RetornoTransacao retornoTransacao = new RetornoTransacao();
+//        retornoTransacao.setNumeroTransacao(3);
+//        retornoTransacao.setCodigoEstabelecimento("1501698887865");
+//        retornoTransacao.setCodigoFormaPagamento(170);
+//        retornoTransacao.setValor(100);
+//        retornoTransacao.setValorDesconto(0);
+//        retornoTransacao.setParcelas(1);
+//        retornoTransacao.setStatusTransacao(statusTransacao);
+//        retornoTransacao.setAutorizacao("20170808124436912");
+//        retornoTransacao.setCodigoTransacaoOperadora("0");
+//        retornoTransacao.setDataAprovacaoOperadora("2017-08-11 04:56:25");
+//        retornoTransacao.setNumeroComprovanteVenda("0808124434526");
+//        retornoTransacao.setNsu("4436912");
+//        retornoTransacao.setUrlPagamento("1502206705884f8a21ff8-db8f-4c7d-a779-8f35f35cfd71");
+//
+//        List<String> cartaoUtilizado = new ArrayList<>();
+//        cartaoUtilizado.add("000000******0001");
+//        retornoTransacao.setCartoesUtilizados(cartaoUtilizado);
+//
+//        return new ChargeResponse(retornoTransacao);
+return null;
     }
 
 }
